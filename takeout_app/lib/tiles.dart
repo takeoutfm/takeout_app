@@ -1,4 +1,4 @@
-// Copyright (C) 2022 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //

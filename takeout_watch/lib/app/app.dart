@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -19,7 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
 const appVersion = '0.4.0';
-const appSource = 'https://github.com/defsub/takeout_app';
+const appSource = 'https://github.com/takeoutfm/takeout_app';
 const appHome = 'https://takeout.fm/';
 
 class AppState {

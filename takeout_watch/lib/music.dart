@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -39,10 +39,8 @@ class MusicPage extends StatelessWidget {
       case HomeGridType.mix:
       case HomeGridType.added:
         releases = state.added;
-        break;
       default:
         releases = state.released;
-        break;
     }
     return MediaPage(releases,
         title: context.strings.musicLabel,

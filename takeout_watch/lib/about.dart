@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -51,7 +51,7 @@ class AboutPage extends StatelessWidget {
               //data.forEach((key, value) { print('$key => $value'); });
               final entries = [
                 AboutEntry('Copyleft \u00a9 2023',
-                    subtitle: 'The Takeout Authors'),
+                    subtitle: 'defsub'),
                 AboutEntry(context.strings.connectivityLabel,
                     subtitle: context.connectivity.state.type.name,
                     onTap: () => context.connectivity.check()),

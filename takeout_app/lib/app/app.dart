@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -18,8 +18,8 @@
 import 'package:bloc/bloc.dart';
 
 const appVersion = '0.10.5';
-const appSource = 'https://github.com/defsub/takeout_app';
-const appHome = 'https://defsub.github.io';
+const appSource = 'https://github.com/takeoutfm/takeout_app';
+const appHome = 'https://takeout.fm/';
 
 enum NavigationIndex { home, artists, history, radio, player }
 

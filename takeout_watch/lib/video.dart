@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -45,10 +45,8 @@ class VideoPage extends StatelessWidget {
       case HomeGridType.mix:
       case HomeGridType.added:
         movies = state.addedMovies;
-        break;
       default:
         movies = state.newMovies;
-        break;
     }
     return MediaPage(movies,
         title: context.strings.moviesLabel,

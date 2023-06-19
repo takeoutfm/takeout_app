@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -54,16 +54,12 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
     switch (state.mediaType) {
       case MediaType.music:
         emit(MediaTypeState(MediaType.video));
-        break;
       case MediaType.video:
         emit(MediaTypeState(MediaType.podcast));
-        break;
       case MediaType.podcast:
         emit(MediaTypeState(MediaType.music));
-        break;
       default:
         emit(MediaTypeState(MediaType.music));
-        break;
     }
   }
 
@@ -72,16 +68,12 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
     switch (state.mediaType) {
       case MediaType.music:
         emit(MediaTypeState(MediaType.podcast));
-        break;
       case MediaType.video:
         emit(MediaTypeState(MediaType.music));
-        break;
       case MediaType.podcast:
         emit(MediaTypeState(MediaType.video));
-        break;
       default:
         emit(MediaTypeState(MediaType.music));
-        break;
     }
   }
 

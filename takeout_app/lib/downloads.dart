@@ -1,4 +1,4 @@
-// Copyright (C) 2020 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -104,16 +104,12 @@ void downloadsSort(DownloadSortType sortType, List<Spiff> entries) {
   switch (sortType) {
     case DownloadSortType.oldest:
       entries.sort((a, b) => _compare(a.lastModified, b.lastModified));
-      break;
     case DownloadSortType.newest:
       entries.sort((a, b) => _compare(a.lastModified, b.lastModified));
-      break;
     case DownloadSortType.name:
       entries.sort((a, b) => a.title.compareTo(b.title));
-      break;
     case DownloadSortType.size:
       entries.sort((a, b) => a.size.compareTo(b.size));
-      break;
   }
 }
 

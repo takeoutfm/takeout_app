@@ -1,4 +1,4 @@
-// Copyright (C) 2020 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -490,7 +490,7 @@ abstract class _HomeGrid extends StatelessWidget {
         context: context,
         applicationName: context.strings.takeoutTitle,
         applicationVersion: appVersion,
-        applicationLegalese: 'Copyleft \u00a9 2020-2023 The Takeout Authors',
+        applicationLegalese: 'Copyleft \u00a9 2020-2023 defsub',
         children: <Widget>[
           InkWell(
               child: const Text(

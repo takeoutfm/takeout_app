@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -530,12 +530,10 @@ class _MoviePlayerState extends State<MoviePlayer> {
           _controlsTimer = Timer(const Duration(seconds: 2), () {
             showControls(false);
           });
-          break;
         default:
           Wakelock.disable();
           _controlsTimer?.cancel();
           showControls(true);
-          break;
       }
     });
 

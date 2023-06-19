@@ -1,4 +1,4 @@
-// Copyright (C) 2023 The Takeout Authors.
+// Copyright 2023 defsub
 //
 // This file is part of Takeout.
 //
@@ -51,7 +51,15 @@ class Settings {
         homeGridType: HomeGridType.mix,
       );
 
-  String get endpoint => host;
+  String get endpoint {
+    if (host.startsWith(RegExp(r'(http|https)://.+/'))) {
+      return host;
+    } else if (host.contains(RegExp(r'^[a-zA-Z0-9\.-]+$'))) {
+      return 'https://$host/';
+    } else {
+      return host;
+    }
+  }
 
   Settings copyWith({
     String? user,
