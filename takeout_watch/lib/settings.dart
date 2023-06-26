@@ -55,12 +55,12 @@ class SettingsPage extends StatelessWidget {
           context.strings.settingMobileDownloads, toggleMobileDownload,
           icon: const Icon(Icons.cloud_download_outlined),
           currentValue: (state) =>
-              '${state.settings.allowMobileDownload.settingValue(context)} (${connectivity.type.name})'),
+              state.settings.allowMobileDownload.settingValue(context)),
       SettingEntry<String>(
           context.strings.settingMobileStreaming, toggleMobileStreaming,
           icon: const Icon(Icons.cloud_outlined),
           currentValue: (state) =>
-              '${state.settings.allowMobileStreaming.settingValue(context)} (${connectivity.type.name})'),
+              state.settings.allowMobileStreaming.settingValue(context)),
       SettingEntry<void>(context.strings.soundLabel, onSound,
           icon: const Icon(Icons.volume_up)),
       SettingEntry<void>(context.strings.bluetoothLabel, onBluetooth,
@@ -75,7 +75,7 @@ class SettingsPage extends StatelessWidget {
 
     // TODO blue isn't working
     const subtitleColor = Colors.blueAccent;
-    var textStyle = Theme.of(context).listTileTheme.subtitleTextStyle;
+    var textStyle = context.listTileTheme.subtitleTextStyle;
     textStyle ??= textStyle?.copyWith(color: subtitleColor);
 
     return BlocBuilder<SettingsCubit, SettingsState>(

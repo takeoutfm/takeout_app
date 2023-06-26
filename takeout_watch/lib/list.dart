@@ -17,6 +17,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:rotary_scrollbar/rotary_scrollbar.dart';
+import 'package:takeout_watch/app/context.dart';
 
 class RotaryList<T> extends StatefulWidget {
   final List<T> entries;
@@ -54,8 +55,8 @@ class _RotaryListState<T> extends State<RotaryList<T>> {
         header = Container(
             padding: const EdgeInsets.only(top: 8, bottom: 4),
             child: Center(
-                child: Text(title,
-                    style: Theme.of(context).listTileTheme.titleTextStyle)));
+                child:
+                    Text(title, style: context.listTileTheme.titleTextStyle)));
       }
     }
     // add some padding at the bottom

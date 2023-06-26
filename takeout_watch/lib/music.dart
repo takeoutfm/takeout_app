@@ -24,7 +24,6 @@ import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/dialog.dart';
 import 'package:takeout_watch/list.dart';
 import 'package:takeout_watch/media.dart';
-import 'package:takeout_watch/player.dart';
 import 'package:takeout_watch/settings.dart';
 
 class MusicPage extends StatelessWidget {
@@ -129,7 +128,7 @@ class ReleasePage extends ClientPage<ReleaseView> {
     return ListTile(
         enabled: enableStreaming,
         // leading: Text('${t.trackNum}.',
-        //     style: Theme.of(context).textTheme.bodySmall),
+        //     style: context.textTheme.bodySmall),
         title: Text(t.title),
         subtitle: subtitle,
         onTap: () => onTrack(context, t));
@@ -142,7 +141,7 @@ class ReleasePage extends ClientPage<ReleaseView> {
       creator: release.creator,
       title: release.name,
     );
-    showPlayer(context);
+    context.showPlayer(context);
   }
 }
 

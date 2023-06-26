@@ -23,7 +23,6 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/download.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_watch/app/context.dart';
-import 'package:takeout_watch/player.dart';
 import 'package:takeout_watch/settings.dart';
 
 import 'dialog.dart';
@@ -53,7 +52,7 @@ class DownloadsPage extends StatelessWidget {
       final creator = spiff.playlist.creator;
       if (creator != null) {
         children.add(Text(creator,
-            style: Theme.of(context).listTileTheme.subtitleTextStyle));
+            style: context.listTileTheme.subtitleTextStyle));
       }
 
       final count = trackCache.state.count(spiff.playlist.tracks);
@@ -97,13 +96,13 @@ class DownloadsPage extends StatelessWidget {
           } else {
             // just play
             context.play(spiff);
-            showPlayer(context);
+            context.showPlayer(context);
           }
         });
       }
     } else {
       context.play(spiff);
-      showPlayer(context);
+      context.showPlayer(context);
     }
   }
 

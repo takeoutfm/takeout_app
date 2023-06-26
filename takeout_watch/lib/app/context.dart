@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -35,9 +36,10 @@ extension AppContext on BuildContext {
 
   AppCubit get app => read<AppCubit>();
 
-  void showPlayer(BuildContext context) {
-    Scaffold.of(context).showBottomSheet<void>((context) {
-      return const PlayerPage();
-    });
-  }
+  void showPlayer(BuildContext context) => Navigator.push(
+      context, CupertinoPageRoute<void>(builder: (_) => const PlayerPage()));
+
+  ListTileThemeData get listTileTheme => Theme.of(this).listTileTheme;
+
+  TextTheme get textTheme => Theme.of(this).textTheme;
 }

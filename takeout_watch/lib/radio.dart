@@ -21,7 +21,6 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_watch/app/context.dart';
-import 'package:takeout_watch/player.dart';
 import 'package:takeout_watch/settings.dart';
 
 import 'list.dart';
@@ -95,6 +94,6 @@ class RadioPage extends ClientPage<RadioView> {
         mediaType: mediaType,
         title: station.name,
         creator: context.strings.radioLabel);
-    showPlayer(context);
+    context.showPlayer(context);
   }
 }

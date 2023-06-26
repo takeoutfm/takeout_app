@@ -16,15 +16,16 @@
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
+import 'package:takeout_watch/app/context.dart';
 
 Future<bool?> confirmDialog(BuildContext context,
     {String? title, String? body}) {
   return showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-            titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+            titleTextStyle: context.textTheme.bodyMedium,
             title: title != null ? Center(child: Text(title)) : null,
-            contentTextStyle: Theme.of(context).textTheme.bodySmall,
+            contentTextStyle: context.textTheme.bodySmall,
             content: body != null ? Text(body, textAlign: TextAlign.center) : null,
             actionsAlignment: MainAxisAlignment.spaceBetween,
             actions: <Widget>[

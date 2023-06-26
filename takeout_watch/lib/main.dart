@@ -44,7 +44,7 @@ class WatchApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appTheme = ThemeData.localize(ThemeData.dark(useMaterial3: true),
-        Theme.of(context).textTheme.apply(fontSizeFactor: 1.0));
+        context.textTheme.apply(fontSizeFactor: 1.0));
 
     appTheme = appTheme.copyWith(
         listTileTheme: appTheme.listTileTheme.copyWith(

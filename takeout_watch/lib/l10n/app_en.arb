@@ -45,6 +45,9 @@
   "soundLabel": "Sound",
   "bluetoothLabel": "Bluetooth",
   "resumeLabel": "Resume",
-  "moviesLabel": "Movies"
+  "moviesLabel": "Movies",
+  "starringLabel": "Starring",
+  "writingLabel": "Writing",
+  "directingLabel": "Directing"
 }
 

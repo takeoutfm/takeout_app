@@ -27,14 +27,6 @@ import 'package:takeout_watch/queue.dart';
 
 import 'button.dart';
 
-void showPlayer(BuildContext context) {
-  // Scaffold.of(context).showBottomSheet<void>((context) {
-  //   return const PlayerPage();
-  // });
-  Navigator.push(
-      context, CupertinoPageRoute<void>(builder: (_) => const PlayerPage()));
-}
-
 class PlayerPage extends StatelessWidget {
   const PlayerPage({super.key});
 

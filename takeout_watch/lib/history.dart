@@ -21,7 +21,6 @@ import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_watch/app/context.dart';
-import 'package:takeout_watch/player.dart';
 
 import 'list.dart';
 
@@ -48,6 +47,6 @@ class HistoryPage extends StatelessWidget {
 
   void onPlay(BuildContext context, Spiff spiff) {
     context.play(spiff);
-    showPlayer(context);
+    context.showPlayer(context);
   }
 }

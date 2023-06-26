@@ -18,6 +18,7 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/model.dart';
+import 'package:takeout_watch/app/context.dart';
 
 typedef MediaEntryCallback = void Function(BuildContext, MediaEntry);
 
@@ -108,13 +109,10 @@ class MediaGridTile extends StatelessWidget {
                   backgroundColor: Colors.black26,
                   title: Center(
                       child: Text(entry.album,
-                          style:
-                              Theme.of(context).listTileTheme.titleTextStyle)),
+                          style: context.listTileTheme.titleTextStyle)),
                   subtitle: Center(
                       child: Text(entry.creator,
-                          style: Theme.of(context)
-                              .listTileTheme
-                              .subtitleTextStyle)),
+                          style: context.listTileTheme.subtitleTextStyle)),
                 )),
             child:
                 circleCover(context, entry.image, radius: media.size.width) ??

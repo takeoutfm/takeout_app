@@ -69,10 +69,10 @@ class HomePage extends ClientPage<HomeView> {
       final entries = [
         // TODO hide if not playing?
         HomeEntry(
-            PlayerTitle(style: Theme.of(context).listTileTheme.titleTextStyle),
+            PlayerTitle(style: context.listTileTheme.titleTextStyle),
             icon: const SizedBox.square(dimension: 36, child: PlayerImage()),
             subtitle: PlayerArtist(
-                style: Theme.of(context).listTileTheme.subtitleTextStyle),
+                style: context.listTileTheme.subtitleTextStyle),
             onSelected: (context, state) => onPlayer(context, state)),
         if (history.spiffs.isNotEmpty)
           HomeEntry(Text(context.strings.recentLabel),

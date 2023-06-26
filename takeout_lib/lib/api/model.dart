@@ -651,6 +651,18 @@ class MovieView {
     return crew?.isNotEmpty ?? false;
   }
 
+  bool hasStarring() {
+    return starring?.isNotEmpty ?? false;
+  }
+
+  bool hasDirecting() {
+    return directing?.isNotEmpty ?? false;
+  }
+
+  bool hasWriting() {
+    return writing?.isNotEmpty ?? false;
+  }
+
   List<Cast> castMembers() {
     return cast ?? [];
   }
@@ -661,6 +673,18 @@ class MovieView {
 
   List<Movie> relatedMovies() {
     return other ?? [];
+  }
+
+  List<Person> starringPeople() {
+    return starring ?? [];
+  }
+
+  List<Person> directingPeople() {
+    return directing ?? [];
+  }
+
+  List<Person> writingPeople() {
+    return writing ?? [];
   }
 }
 

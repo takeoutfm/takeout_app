@@ -97,6 +97,11 @@ class MoviePage extends ClientPage<MovieView> {
             icon: const Icon(Icons.movie),
             title: context.strings.relatedLabel,
             onSelected: onRelated),
+      if (state.hasStarring())
+        MovieEntry(
+          icon: const Icon(Icons.people),
+          title: context.strings.starringLabel,
+          onSelected: onStarring),
     ];
     return Scaffold(
         body: RefreshIndicator(
@@ -149,6 +154,14 @@ class MoviePage extends ClientPage<MovieView> {
         CupertinoPageRoute<void>(
             builder: (_) => MoviesPage(
                 context.strings.relatedLabel, state.relatedMovies())));
+  }
+
+  void onStarring(BuildContext context, MovieView state) async {
+    Navigator.push(
+        context,
+        CupertinoPageRoute<void>(
+            builder: (_) => PeoplePage(
+                context.strings.starringLabel, state.starringPeople())));
   }
 }
 
@@ -257,5 +270,54 @@ void _onDownload(BuildContext context, Movie movie) {
         context.downloadMovie(movie);
       }
     });
+  }
+}
+
+class PeoplePage extends StatelessWidget {
+  final String title;
+  final List<Person> people;
+
+  const PeoplePage(this.title, this.people, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: RotaryList<Person>(people,
+            title: title, tileBuilder: personTile));
+  }
+
+  Widget personTile(BuildContext context, Person person) {
+    return ListTile(
+        leading: const Icon(Icons.person),
+        title: Text(person.name),
+        onTap: () => onPerson(context, person));
+  }
+
+  void onPerson(BuildContext context, Person person) async {
+    Navigator.push(
+        context, CupertinoPageRoute<void>(builder: (_) => ProfilePage(person)));
+  }
+}
+
+class ProfilePage extends ClientPage<ProfileView> {
+  final Person person;
+
+  ProfilePage(this.person, {super.key});
+
+  @override
+  void load(BuildContext context, {Duration? ttl}) {
+    context.client.profile(person.id, ttl: ttl);
+  }
+
+  @override
+  Widget page(BuildContext context, ProfileView state) {
+    final movies = <Movie>[];
+    if (state.starring != null) {
+      movies.addAll(state.starring ?? []);
+    }
+    return MediaPage(movies,
+        title: state.person.name,
+        onLongPress: (context, entry) => _onDownload(context, entry as Movie),
+        onTap: (context, entry) => _onMovie(context, entry as Movie));
   }
 }

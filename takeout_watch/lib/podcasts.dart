@@ -27,7 +27,6 @@ import 'package:takeout_lib/util.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/list.dart';
 import 'package:takeout_watch/media.dart';
-import 'package:takeout_watch/player.dart';
 import 'package:takeout_watch/settings.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -91,7 +90,7 @@ class SeriesPage extends ClientPage<SeriesView> {
         mediaType: MediaType.podcast,
         creator: episode.creator,
         title: episode.title);
-    showPlayer(context);
+    context.showPlayer(context);
   }
 
   void onDownload(BuildContext context, Episode episode) {
@@ -124,7 +123,7 @@ class EpisodeTile extends StatelessWidget {
     final children = <Widget>[];
     final date = DateTime.parse(episode.date);
     children.add(Text(timeago.format(date),
-        style: Theme.of(context).listTileTheme.subtitleTextStyle));
+        style: context.listTileTheme.subtitleTextStyle));
     final remaining = offsets.remaining(episode);
     if (remaining != null) {
       children.add(LinearPercentIndicator(
@@ -133,7 +132,7 @@ class EpisodeTile extends StatelessWidget {
           backgroundColor: Colors.grey.shade800,
           barRadius: const Radius.circular(10),
           center: Text('${remaining.inHoursMinutes} remaining',
-              style: Theme.of(context).listTileTheme.subtitleTextStyle),
+              style: context.listTileTheme.subtitleTextStyle),
           // TODO intl
           percent: offsets.value(episode) ?? 0.0));
     }

@@ -10,8 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  audio_service: ^0.18.9
-  audio_session: ^0.1.14
+  audio_service: ^0.18.10
+  audio_session: ^0.1.16
   cached_network_image: ^3.2.3
   chewie: ^1.5.0
   connectivity_plus: ^4.0.1
@@ -21,7 +21,7 @@ dependencies:
   hydrated_bloc: ^9.1.1
   logging: ^1.1.1
   json_annotation: ^4.8.0
-  just_audio: ^0.9.33
+  just_audio: ^0.9.34
   palette_generator: ^0.3.3+2
   path_provider: ^2.0.15
   rxdart: ^0.27.7
