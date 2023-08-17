@@ -21,26 +21,29 @@ import 'package:http/http.dart';
 import 'package:takeout_lib/api/client.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/patch.dart';
 
 import 'provider.dart';
 
 class ClientRepository {
   final ClientProvider _provider;
 
-  ClientRepository({required SettingsRepository settingsRepository,
-    required JsonCacheRepository jsonCacheRepository,
-    required TokenRepository tokenRepository,
-    String? userAgent,
-    ClientProvider? provider})
+  ClientRepository(
+      {required SettingsRepository settingsRepository,
+      required JsonCacheRepository jsonCacheRepository,
+      required TokenRepository tokenRepository,
+      String? userAgent,
+      ClientProvider? provider})
       : _provider = provider ??
-      TakeoutClient(
-          userAgent: userAgent,
-          settingsRepository: settingsRepository,
-          jsonCacheRepository: jsonCacheRepository,
-          tokenRepository: tokenRepository);
+            TakeoutClient(
+                userAgent: userAgent,
+                settingsRepository: settingsRepository,
+                jsonCacheRepository: jsonCacheRepository,
+                tokenRepository: tokenRepository);
 
   Client get client => _provider.client;
 
@@ -145,7 +148,7 @@ class ClientRepository {
     return _provider.release(id, ttl: ttl);
   }
 
-  Future<Spiff> releasePlaylist(int id, {Duration? ttl}) async {
+  Future<Spiff> releasePlaylist(String id, {Duration? ttl}) async {
     return _provider.releasePlaylist(id, ttl: ttl);
   }
 
@@ -184,5 +187,23 @@ class ClientRepository {
 
   Future<int> updateActivity(Events events) async {
     return _provider.updateActivity(events);
+  }
+
+  Future<Spiff?> replace(
+    String ref, {
+    int index = 0,
+    double position = 0.0,
+    MediaType mediaType = MediaType.music,
+    String? creator = '',
+    String? title = '',
+  }) async {
+    final body =
+        patchReplace(ref, mediaType.name, creator: creator, title: title) +
+            patchPosition(index, position);
+    final result = await patch(body);
+    if (result.isModified) {
+      return Spiff.fromJson(result.body);
+    }
+    return null;
   }
 }

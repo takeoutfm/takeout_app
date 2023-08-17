@@ -24,6 +24,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:logging/logging.dart';
+import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -45,6 +46,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final TokenRepository tokenRepository;
   final SettingsRepository settingsRepository;
   final OffsetCacheRepository offsetRepository;
+  final MediaRepository mediaRepository;
 
   final AudioPlayer _player = AudioPlayer();
   final PlayCallback onPlay;
@@ -81,6 +83,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required this.tokenRepository,
     required this.settingsRepository,
     required this.offsetRepository,
+    required this.mediaRepository,
     Duration? skipToBeginningInterval,
     int? positionSteps,
     Duration? minPositionPeriod,
@@ -102,6 +105,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required TokenRepository tokenRepository,
     required SettingsRepository settingsRepository,
     required OffsetCacheRepository offsetRepository,
+    required MediaRepository mediaRepository,
     required PlayCallback onPlay,
     required PauseCallback onPause,
     required StoppedCallback onStop,
@@ -133,6 +137,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
               tokenRepository: tokenRepository,
               settingsRepository: settingsRepository,
               offsetRepository: offsetRepository,
+              mediaRepository: mediaRepository,
               skipToBeginningInterval: skipBeginningInterval,
               positionSteps: positionSteps,
               minPositionPeriod: minPositionPeriod,
@@ -281,9 +286,9 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       if (state.playing) {
         onPlay(_spiff, duration, _player.position, buffering);
       } else {
-      // } else if (state.processingState == ProcessingState.ready ||
-      //           state.processingState == ProcessingState.completed) {
-      //         // only send pause (ready to play) if ready or completed
+        // } else if (state.processingState == ProcessingState.ready ||
+        //           state.processingState == ProcessingState.completed) {
+        //         // only send pause (ready to play) if ready or completed
         onPause(_spiff, duration, _player.position, buffering);
       }
     }));
@@ -456,6 +461,35 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     playbackState.add(playbackState.value.copyWith(
       processingState: AudioProcessingState.idle,
     ));
+  }
+
+  @override
+  Future<void> playFromMediaId(String mediaId,
+      [Map<String, dynamic>? extras]) async {
+    return mediaRepository.playFromMediaId(mediaId);
+  }
+
+  @override
+  Future<List<MediaItem>> getChildren(String parentMediaId,
+      [Map<String, dynamic>? options]) async {
+    if (parentMediaId == AudioService.browsableRootId) {
+      return mediaRepository.getRoot();
+    } else if (parentMediaId == AudioService.recentRootId) {
+      return mediaRepository.getRecent();
+    }
+    return mediaRepository.getChildren(parentMediaId);
+  }
+
+  @override
+  Future<void> playFromSearch(String query,
+      [Map<String, dynamic>? extras]) async {
+    return mediaRepository.playFromSearch(query);
+  }
+
+  @override
+  Future<List<MediaItem>> search(String query,
+      [Map<String, dynamic>? extras]) async {
+    return mediaRepository.search(query);
   }
 
   Duration _seekCheck(Duration pos) {

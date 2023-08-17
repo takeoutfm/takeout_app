@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/provider.dart';
 import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/track.dart';
@@ -40,8 +41,9 @@ import 'package:takeout_lib/tokens/tokens.dart';
 import 'package:takeout_lib/history/history.dart';
 
 extension TakeoutContext on BuildContext {
-  void play(Spiff spiff) {
-    nowPlaying.add(spiff, autoplay: settings.state.settings.autoplay);
+  void play(Spiff spiff, {bool? autoplay}) {
+    autoplay ??= settings.state.settings.autoplay;
+    nowPlaying.add(spiff, autoplay: autoplay);
   }
 
   void stream(int station) {
@@ -64,7 +66,7 @@ extension TakeoutContext on BuildContext {
 
   void downloadRelease(Release release) {
     clientRepository
-        .releasePlaylist(release.id)
+        .releasePlaylist('${release.id}')
         .then((spiff) => download(spiff));
   }
 
@@ -159,4 +161,6 @@ extension TakeoutContext on BuildContext {
   TokensCubit get tokens => read<TokensCubit>();
 
   TrackCacheCubit get trackCache => read<TrackCacheCubit>();
+
+  MediaRepository get mediaRepository => read<MediaRepository>();
 }

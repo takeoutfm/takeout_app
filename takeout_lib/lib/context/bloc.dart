@@ -23,6 +23,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:nested/nested.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:takeout_lib/art/provider.dart';
+import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
@@ -35,6 +36,8 @@ import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/connectivity/repository.dart';
 import 'package:takeout_lib/db/search.dart';
+import 'package:takeout_lib/history/history.dart';
+import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/player/player.dart';
@@ -46,8 +49,6 @@ import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
-import 'package:takeout_lib/history/history.dart';
-import 'package:takeout_lib/history/repository.dart';
 
 import 'context.dart';
 
@@ -104,6 +105,11 @@ class TakeoutBloc {
 
     final artProvider = ArtProvider(settingsRepository, clientRepository);
 
+    final mediaRepository = MediaRepository(
+        clientRepository: clientRepository,
+        historyRepository: historyRepository,
+        settingsRepository: settingsRepository);
+
     return [
       RepositoryProvider(create: (_) => search),
       RepositoryProvider(create: (_) => settingsRepository),
@@ -117,6 +123,7 @@ class TakeoutBloc {
       RepositoryProvider(create: (_) => trackResolver),
       RepositoryProvider(create: (_) => historyRepository),
       RepositoryProvider(create: (_) => artProvider),
+      RepositoryProvider(create: (_) => mediaRepository),
     ];
   }
 
@@ -130,7 +137,15 @@ class TakeoutBloc {
             return settings;
           }),
       BlocProvider(create: (_) => MediaTypeCubit()),
-      BlocProvider(create: (_) => NowPlayingCubit()),
+      BlocProvider(
+          lazy: false,
+          create: (context) {
+            final nowPlaying = NowPlayingCubit();
+            context
+                .read<MediaRepository>()
+                .init(DefaultMediaPlayer(nowPlaying));
+            return nowPlaying;
+          }),
       BlocProvider(
           create: (context) => PlaylistCubit(context.read<ClientRepository>())),
       BlocProvider(
@@ -199,10 +214,15 @@ class TakeoutBloc {
             }
           }),
       BlocListener<PlaylistCubit, PlaylistState>(
-          listenWhen: (_, state) => state is PlaylistChange,
+          listenWhen: (_, state) =>
+              state is PlaylistChange || state is PlaylistSync,
           listener: (context, state) {
             if (state is PlaylistChange) {
               _onPlaylistChange(context, state);
+            } else if (state is PlaylistSync) {
+              if (state.spiff != context.nowPlaying.state.spiff) {
+                _onPlaylistSyncChange(context, state);
+              }
             }
           }),
       BlocListener<DownloadCubit, DownloadState>(
@@ -239,7 +259,8 @@ class TakeoutBloc {
         offsetRepository: context.read<OffsetCacheRepository>(),
         settingsRepository: context.read<SettingsRepository>(),
         tokenRepository: context.read<TokenRepository>(),
-        trackResolver: context.read<MediaTrackResolver>());
+        trackResolver: context.read<MediaTrackResolver>(),
+        mediaRepository: context.read<MediaRepository>());
   }
 
   /// NowPlaying manages the playlist that should be playing.
@@ -248,8 +269,12 @@ class TakeoutBloc {
     context.player.load(spiff, autoplay: autoplay);
   }
 
-  void _onPlaylistChange(BuildContext context, PlaylistChange state) {
+  void _onPlaylistChange(BuildContext context, PlaylistState state) {
     context.play(state.spiff);
+  }
+
+  void _onPlaylistSyncChange(BuildContext context, PlaylistState state) {
+    context.play(state.spiff, autoplay: false);
   }
 
   /// Restore playlist once the player is ready.
@@ -311,5 +336,15 @@ class TakeoutBloc {
         : true) {
       context.downloads.check();
     }
+  }
+}
+
+class DefaultMediaPlayer implements MediaPlayer {
+  final NowPlayingCubit player;
+
+  DefaultMediaPlayer(this.player);
+
+  void play(Spiff spiff) {
+    player.add(spiff, autoplay: true);
   }
 }

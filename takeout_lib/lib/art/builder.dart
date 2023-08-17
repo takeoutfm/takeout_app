@@ -85,9 +85,10 @@ class ArtworkBuilder {
           return errorIcon;
         });
     _provider = imageProvider;
-    return artwork.borderRadius != null
+    final borderRadius = artwork.borderRadius;
+    return borderRadius != null
         ? ClipRRect(
-            borderRadius: artwork.borderRadius,
+            borderRadius: borderRadius,
             child: _hero(image, artwork.tag))
         : _hero(image, artwork.tag);
   }

@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -64,6 +65,7 @@ abstract class PlayerProvider {
       required TokenRepository tokenRepository,
       required SettingsRepository settingsRepository,
       required OffsetCacheRepository offsetRepository,
+      required MediaRepository mediaRepository,
       PositionInterval? positionInterval,
       PlayCallback? onPlay,
       PauseCallback? onPause,
@@ -107,6 +109,7 @@ class DefaultPlayerProvider implements PlayerProvider {
       required TokenRepository tokenRepository,
       required SettingsRepository settingsRepository,
       required OffsetCacheRepository offsetRepository,
+      required MediaRepository mediaRepository,
       PositionInterval? positionInterval,
       PlayCallback? onPlay,
       PauseCallback? onPause,
@@ -122,6 +125,7 @@ class DefaultPlayerProvider implements PlayerProvider {
         tokenRepository: tokenRepository,
         settingsRepository: settingsRepository,
         offsetRepository: offsetRepository,
+        mediaRepository: mediaRepository,
         positionSteps: positionInterval?.steps,
         minPositionPeriod: positionInterval?.minPeriod,
         maxPositionPeriod: positionInterval?.maxPeriod,

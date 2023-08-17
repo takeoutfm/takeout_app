@@ -109,6 +109,9 @@ class PopupItem {
   PopupItem.wantList(BuildContext context, MenuCallback onSelected)
       : this(const Icon(Icons.shopping_bag_outlined),
       context.strings.wantList, onSelected);
+
+  PopupItem.syncPlaylist(BuildContext context, MenuCallback onSelected)
+  : this(const Icon(Icons.sync), context.strings.syncPlaylist, onSelected);
 }
 
 Widget popupMenu(BuildContext context, List<PopupItem> items) {

@@ -128,7 +128,7 @@ class ClientCubit extends Cubit<ClientState> {
       _doit<ReleaseView>(({Duration? ttl}) => repository.release(id, ttl: ttl),
           ttl: ttl);
 
-  void releasePlaylist(int id, {Duration? ttl}) => _doit<Spiff>(
+  void releasePlaylist(String id, {Duration? ttl}) => _doit<Spiff>(
       ({Duration? ttl}) => repository.releasePlaylist(id, ttl: ttl),
       ttl: ttl);
 

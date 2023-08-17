@@ -37,8 +37,8 @@ class PlaylistChange extends PlaylistState {
   PlaylistChange(super.spiff);
 }
 
-class PlaylistUpdate extends PlaylistState {
-  PlaylistUpdate(super.spiff);
+class PlaylistSync extends PlaylistState {
+  PlaylistSync(super.spiff);
 }
 
 class PlaylistCubit extends Cubit<PlaylistState> {
@@ -58,6 +58,12 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     load(ttl: Duration.zero);
   }
 
+  void sync() {
+    clientRepository.playlist(ttl: Duration.zero).then((spiff) {
+      emit(PlaylistSync(spiff));
+    }).onError((error, stackTrace) {});
+  }
+
   void replace(
     String ref, {
     int index = 0,
@@ -66,15 +72,18 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     String? creator = '',
     String? title = '',
   }) {
-    final body =
-        patchReplace(ref, mediaType.name, creator: creator, title: title) +
-            patchPosition(index, position);
-    clientRepository.patch(body).then((result) {
-      if (result.isModified) {
-        final spiff = Spiff.fromJson(result.body);
+    clientRepository
+        .replace(ref,
+            index: index,
+            position: position,
+            mediaType: mediaType,
+            creator: creator,
+            title: title)
+        .then((spiff) {
+      if (spiff != null) {
         emit(PlaylistChange(spiff));
       } else {
-        // emit as PlaylistChange for now
+        // unchanged, emit as PlaylistChange for now
         emit(PlaylistChange(state.spiff));
       }
     }).onError((error, stackTrace) {

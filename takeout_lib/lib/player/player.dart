@@ -23,6 +23,7 @@ import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/browser/repository.dart';
 
 abstract class PlayerState {
   final Spiff spiff;
@@ -165,11 +166,13 @@ class Player extends Cubit<PlayerState> {
   final TokenRepository tokenRepository;
   final SettingsRepository settingsRepository;
   final OffsetCacheRepository offsetRepository;
+  final MediaRepository mediaRepository;
 
   Player({required this.trackResolver,
     required this.tokenRepository,
     required this.settingsRepository,
     required this.offsetRepository,
+    required this.mediaRepository,
     PositionInterval? positionInterval,
     PlayerProvider? provider})
       : _provider = provider ?? DefaultPlayerProvider(),
@@ -180,6 +183,7 @@ class Player extends Cubit<PlayerState> {
         settingsRepository: settingsRepository,
         trackResolver: trackResolver,
         offsetRepository: offsetRepository,
+        mediaRepository: mediaRepository,
         positionInterval: positionInterval,
         onPlay: (spiff, duration, position, buffering) =>
             emit(PlayerPlay(spiff,

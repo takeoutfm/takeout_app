@@ -68,11 +68,6 @@
   "settingArtworkSubtitle": "Allow artwork on mobile networks",
   "settingEnabled": "Enabled",
   "settingDisabled": "Disabled",
-  "settingLive": "Live",
-  "settingLiveMode": "Live Mode",
-  "settingLiveShare": "Share",
-  "settingLiveFollow": "Follow",
-  "settingLiveNone": "None",
   "recentlyPlayed": "Recent Tracks",
   "recentlyWatched": "Recently Watched",
   "popularTracks": "Popular Tracks",
@@ -81,6 +76,7 @@
   "episodesLabel": "Episodes",
   "variousArtists": "Various Artists",
   "wantList": "Want List",
+  "syncPlaylist": "Sync Playlist",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

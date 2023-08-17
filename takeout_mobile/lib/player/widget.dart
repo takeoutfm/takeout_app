@@ -15,12 +15,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
-// This file is heavily based on the audio_service example app located here:
+// This file was heavily based on the audio_service example app located here:
 // https://github.com/ryanheise/audio_service
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/menu.dart';
 import 'package:takeout_mobile/tiles.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/empty.dart';
@@ -31,6 +32,18 @@ import 'package:takeout_lib/player/seekbar.dart';
 class PlayerWidget extends StatelessWidget {
   const PlayerWidget({super.key});
 
+  void _onSyncPlaylist(BuildContext context) {
+    context.playlist.sync();
+  }
+
+  List<Widget> actions(BuildContext context) {
+    return <Widget>[
+      popupMenu(context, [
+        PopupItem.syncPlaylist(context, _onSyncPlaylist),
+      ])
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final builder = (BuildContext context) => PlayerScaffold(
@@ -38,7 +51,7 @@ class PlayerWidget extends StatelessWidget {
               SliverAppBar(
                   automaticallyImplyLeading: false,
                   expandedHeight: MediaQuery.of(context).size.height / 3,
-                  actions: const [],
+                  actions: actions(context),
                   backgroundColor: backgroundColor,
                   flexibleSpace: FlexibleSpaceBar(
                     stretchModes: const [
