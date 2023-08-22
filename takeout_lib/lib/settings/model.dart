@@ -30,6 +30,7 @@ class Settings {
   final bool allowMobileArtistArtwork;
   final bool autoplay;
   final HomeGridType homeGridType;
+  final String? listenBrainzToken;
 
   Settings({
     required this.user,
@@ -39,6 +40,7 @@ class Settings {
     required this.allowMobileArtistArtwork,
     this.autoplay = true,
     this.homeGridType = HomeGridType.mix,
+    this.listenBrainzToken,
   });
 
   factory Settings.initial() => Settings(
@@ -69,6 +71,7 @@ class Settings {
     bool? allowMobileArtistArtwork,
     bool? autoplay,
     HomeGridType? homeGridType,
+    String? listenBrainzToken,
   }) =>
       Settings(
         user: user ?? this.user,
@@ -79,6 +82,7 @@ class Settings {
             allowMobileArtistArtwork ?? this.allowMobileArtistArtwork,
         autoplay: autoplay ?? this.autoplay,
         homeGridType: homeGridType ?? this.homeGridType,
+        listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
       );
 
   factory Settings.fromJson(Map<String, dynamic> json) =>

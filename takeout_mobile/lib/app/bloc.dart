@@ -45,44 +45,16 @@ class AppBloc extends TakeoutBloc {
 }
 
 mixin AppBlocState {
-  StreamSubscription<PlayerProgressChange>? _considerPlayedSubscription;
-
   void appInitState(BuildContext context) {
     if (context.tokens.state.tokens.authenticated) {
       // restore authenticated state
       context.app.authenticated();
     }
 
-    // keep track of position changes and update history once a track is considered played
-    // TODO consider a more efficient way to do this
-    //
-    // TODO: not happy with this code. currently this will send history/activity event again
-    // when you resume playing something that is more than 1/2 way through.
-
-    // _considerPlayedSubscription = context.player.stream
-    //     .where((state) => state is PlayerProgressChange)
-    //     .cast<PlayerProgressChange>()
-    //     .distinct((a, b) =>
-    //         a.currentTrack?.etag == b.currentTrack?.etag &&
-    //         a.considerPlayed == b.considerPlayed)
-    //     .listen((state) {
-    //   if (state.considerPlayed) {
-    //     final currentTrack = state.currentTrack;
-    //     if (currentTrack != null) {
-    //       print('consider played ${state.currentTrack?.title}');
-    //       // add track to history & activity
-    //       context.history.add(track: currentTrack);
-    //       context.clientRepository.updateActivity(
-    //           Events(trackEvents: [TrackEvent.now(currentTrack.etag)]));
-    //     }
-    //   }
-    // });
-
     // prune incomplete/partial downloads
     pruneCache(context.spiffCache.repository, context.trackCache.repository);
   }
 
   void appDispose() {
-    _considerPlayedSubscription?.cancel();
   }
 }

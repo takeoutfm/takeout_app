@@ -26,9 +26,23 @@ class NowPlayingState {
   final Spiff spiff;
   @JsonKey(includeFromJson: false, includeToJson: false)
   final bool autoplay;
+  final List<DateTime?>? started;
+  final List<DateTime?>? listened;
 
-  NowPlayingState(this.spiff, {bool? autoplay})
+  NowPlayingState(this.spiff, {bool? autoplay, this.started, this.listened})
       : autoplay = autoplay ?? false;
+
+  bool listenedTo(int index) {
+    return listened?[index] != null;
+  }
+
+  DateTime? listenedAt(int index) {
+    return listened?[index];
+  }
+
+  DateTime? startedAt(int index) {
+    return started?[index];
+  }
 
   factory NowPlayingState.initial() => NowPlayingState(Spiff.empty());
 
@@ -43,7 +57,11 @@ class NowPlayingChange extends NowPlayingState {
 }
 
 class NowPlayingIndexChange extends NowPlayingState {
-  NowPlayingIndexChange(super.spiff);
+  NowPlayingIndexChange(super.spiff, {super.started});
+}
+
+class NowPlayingListenChange extends NowPlayingState {
+  NowPlayingListenChange(super.spiff, {super.listened});
 }
 
 class NowPlayingCubit extends HydratedCubit<NowPlayingState> {
@@ -52,8 +70,21 @@ class NowPlayingCubit extends HydratedCubit<NowPlayingState> {
   void add(Spiff spiff, {bool? autoplay}) =>
       emit(NowPlayingChange(spiff, autoplay: autoplay));
 
-  void index(int index) =>
-      emit(NowPlayingIndexChange(state.spiff.copyWith(index: index)));
+  void index(int index) {
+    final started =
+        state.started ?? List<DateTime?>.filled(state.spiff.length, null);
+    started[index] = DateTime.now();
+    emit(NowPlayingIndexChange(state.spiff.copyWith(index: index),
+        started: started));
+  }
+
+  void listened(int index, DateTime listenedAt) {
+    final listened =
+        state.listened ?? List<DateTime?>.filled(state.spiff.length, null);
+    listened[index] = listenedAt;
+    emit(NowPlayingListenChange(state.spiff.copyWith(index: index),
+        listened: listened));
+  }
 
   @override
   NowPlayingState fromJson(Map<String, dynamic> json) =>

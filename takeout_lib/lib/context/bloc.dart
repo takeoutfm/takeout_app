@@ -39,6 +39,7 @@ import 'package:takeout_lib/db/search.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/index/index.dart';
+import 'package:takeout_lib/listen/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
@@ -110,6 +111,10 @@ class TakeoutBloc {
         historyRepository: historyRepository,
         settingsRepository: settingsRepository);
 
+    final listenRepository = ListenRepository(
+        settingsRepository: settingsRepository,
+        clientRepository: clientRepository);
+
     return [
       RepositoryProvider(create: (_) => search),
       RepositoryProvider(create: (_) => settingsRepository),
@@ -124,6 +129,7 @@ class TakeoutBloc {
       RepositoryProvider(create: (_) => historyRepository),
       RepositoryProvider(create: (_) => artProvider),
       RepositoryProvider(create: (_) => mediaRepository),
+      RepositoryProvider(create: (_) => listenRepository),
     ];
   }
 
@@ -184,10 +190,17 @@ class TakeoutBloc {
   List<SingleChildWidget> listeners(BuildContext context) {
     return [
       BlocListener<NowPlayingCubit, NowPlayingState>(
-          listenWhen: (_, state) => state is NowPlayingChange,
+          listenWhen: (_, state) =>
+              state is NowPlayingChange ||
+              state is NowPlayingIndexChange ||
+              state is NowPlayingListenChange,
           listener: (context, state) {
             if (state is NowPlayingChange) {
               onNowPlayingChange(context, state.spiff, state.autoplay);
+            } else if (state is NowPlayingIndexChange) {
+              _onNowPlayingIndexChange(context, state);
+            } else if (state is NowPlayingListenChange) {
+              _onNowPlayingListenChange(context, state);
             }
           }),
       BlocListener<Player, PlayerState>(
@@ -196,6 +209,7 @@ class TakeoutBloc {
               state is PlayerLoad ||
               state is PlayerPlay ||
               state is PlayerPause ||
+              state is PlayerTrackListen ||
               state is PlayerIndexChange ||
               state is PlayerTrackEnd,
           listener: (context, state) {
@@ -207,6 +221,8 @@ class TakeoutBloc {
               _onPlayerPlay(context, state);
             } else if (state is PlayerPause) {
               _onPlayerPause(context, state);
+            } else if (state is PlayerTrackListen) {
+              _onPlayerTrackListen(context, state);
             } else if (state is PlayerIndexChange) {
               _onPlayerIndexChange(context, state);
             } else if (state is PlayerTrackEnd) {
@@ -269,6 +285,24 @@ class TakeoutBloc {
     context.player.load(spiff, autoplay: autoplay);
   }
 
+  void _onNowPlayingIndexChange(
+      BuildContext context, NowPlayingIndexChange state) {
+    final startedAt = state.startedAt(state.spiff.index);
+    if (startedAt != null) {
+      final track = state.spiff.playlist.tracks[state.spiff.index];
+      context.listenRepository.playingNow(track);
+    }
+  }
+
+  void _onNowPlayingListenChange(
+      BuildContext context, NowPlayingListenChange state) {
+    final listenedAt = state.listenedAt(state.spiff.index);
+    if (listenedAt != null) {
+      final track = state.spiff.playlist.tracks[state.spiff.index];
+      context.listenRepository.listenedAt(track, listenedAt);
+    }
+  }
+
   void _onPlaylistChange(BuildContext context, PlaylistState state) {
     context.play(state.spiff);
   }
@@ -315,6 +349,16 @@ class TakeoutBloc {
 
   void _onPlayerTrackEnd(BuildContext context, PlayerTrackEnd state) {
     _updateProgress(context, state);
+  }
+
+  void _onPlayerTrackListen(BuildContext context, PlayerTrackListen state) {
+    if (state.spiff.isMusic()) {
+      final index = state.currentIndex;
+      if (context.nowPlaying.state.listenedTo(index) == false) {
+        final listenedAt = DateTime.now(); // TODO is now ok?
+        context.nowPlaying.listened(index, listenedAt);
+      }
+    }
   }
 
   void _onDownloadComplete(BuildContext context, DownloadComplete state) {

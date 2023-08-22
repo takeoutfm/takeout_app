@@ -86,8 +86,6 @@ class AppBloc extends TakeoutBloc {
 }
 
 mixin AppBlocState {
-  StreamSubscription<PlayerProgressChange>? _considerPlayedSubscription;
-
   void appInitState(BuildContext context) {
     if (context.tokens.state.tokens.authenticated) {
       // restore authenticated state
@@ -98,6 +96,5 @@ mixin AppBlocState {
   }
 
   void appDispose() {
-    _considerPlayedSubscription?.cancel();
   }
 }

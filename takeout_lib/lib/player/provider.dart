@@ -29,7 +29,7 @@ final dummyPauseCallback = (_, __, ___, ____) {};
 final dummyStoppedCallback = (_) {};
 final dummyTrackChangeCallback = (_, __, {String? title}) {};
 final dummyPositionCallback = (_, __, ___, ____) {};
-final dummyProgressCallback = (_, __, ___, ____) {};
+final dummyListenCallback = (_, __, ___, ____) {};
 final dummyIndexCallback = (_, __) {};
 final dummyTrackEndCallback = (_, __, ___, ____, _____) {};
 
@@ -38,7 +38,7 @@ typedef PlayCallback = void Function(Spiff, Duration, Duration, bool);
 typedef PauseCallback = void Function(Spiff, Duration, Duration, bool);
 typedef IndexCallback = void Function(Spiff, bool);
 typedef PositionCallback = void Function(Spiff, Duration, Duration, bool);
-typedef ProgressCallback = void Function(Spiff, Duration, Duration, bool);
+typedef ListenCallback = void Function(Spiff, Duration, Duration, bool);
 typedef StoppedCallback = void Function(Spiff);
 typedef TrackChangeCallback = void Function(Spiff, int index, {String? title});
 typedef TrackEndCallback = void Function(
@@ -73,7 +73,7 @@ abstract class PlayerProvider {
       IndexCallback? onIndexChange,
       PositionCallback? onPositionChange,
       PositionCallback? onDurationChange,
-      ProgressCallback? onProgressChange,
+      ListenCallback? onListen,
       TrackChangeCallback? onTrackChange,
       TrackEndCallback? onTrackEnd});
 
@@ -117,7 +117,7 @@ class DefaultPlayerProvider implements PlayerProvider {
       IndexCallback? onIndexChange,
       PositionCallback? onPositionChange,
       PositionCallback? onDurationChange,
-      ProgressCallback? onProgressChange,
+      ListenCallback? onListen,
       TrackChangeCallback? onTrackChange,
       TrackEndCallback? onTrackEnd}) async {
     handler = await TakeoutPlayerHandler.create(
@@ -135,7 +135,7 @@ class DefaultPlayerProvider implements PlayerProvider {
         onIndexChange: onIndexChange ?? dummyIndexCallback,
         onPositionChange: onPositionChange ?? dummyPositionCallback,
         onDurationChange: onDurationChange ?? dummyPositionCallback,
-        onProgressChange: onProgressChange ?? dummyProgressCallback,
+        onListen: onListen ?? dummyListenCallback,
         onTrackChange: onTrackChange ?? dummyTrackChangeCallback,
         onTrackEnd: onTrackEnd ?? dummyTrackEndCallback);
   }

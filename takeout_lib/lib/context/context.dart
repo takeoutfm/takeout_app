@@ -30,6 +30,7 @@ import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/db/search.dart';
 import 'package:takeout_lib/index/index.dart';
+import 'package:takeout_lib/listen/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
@@ -163,4 +164,6 @@ extension TakeoutContext on BuildContext {
   TrackCacheCubit get trackCache => read<TrackCacheCubit>();
 
   MediaRepository get mediaRepository => read<MediaRepository>();
+
+  ListenRepository get listenRepository => read<ListenRepository>();
 }

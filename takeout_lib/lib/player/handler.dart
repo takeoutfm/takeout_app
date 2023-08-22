@@ -30,6 +30,7 @@ import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/util.dart';
 
 import 'provider.dart';
 
@@ -55,11 +56,12 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final IndexCallback onIndexChange;
   final PositionCallback onPositionChange;
   final PositionCallback onDurationChange;
-  final ProgressCallback onProgressChange;
+  final ListenCallback onListen;
   final TrackChangeCallback onTrackChange;
   final TrackEndCallback onTrackEnd;
 
   final _subscriptions = <StreamSubscription<dynamic>>[];
+  final _listens = ExpiringSet<String>(Duration(minutes: 15));
 
   Spiff _spiff = Spiff.empty();
   final _queue = <MediaItem>[];
@@ -76,7 +78,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required this.onIndexChange,
     required this.onPositionChange,
     required this.onDurationChange,
-    required this.onProgressChange,
+    required this.onListen,
     required this.onTrackChange,
     required this.onTrackEnd,
     required this.trackResolver,
@@ -112,7 +114,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required IndexCallback onIndexChange,
     required PositionCallback onPositionChange,
     required PositionCallback onDurationChange,
-    required ProgressCallback onProgressChange,
+    required ListenCallback onListen,
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     Duration? skipBeginningInterval,
@@ -130,7 +132,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
               onIndexChange: onIndexChange,
               onPositionChange: onPositionChange,
               onDurationChange: onDurationChange,
-              onProgressChange: onProgressChange,
+              onListen: onListen,
               onTrackChange: onTrackChange,
               onTrackEnd: onTrackEnd,
               trackResolver: trackResolver,
@@ -169,14 +171,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         mediaItem.add(_queue[index]);
 
         // update the spiff
-        _spiff = _spiff.copyWith(index: index);
-        onIndexChange(_spiff, _player.playing);
+        if (index != _spiff.index) {
+          _spiff = _spiff.copyWith(index: index);
+          onIndexChange(_spiff, _player.playing);
+        }
       }
-      // else {
-      //   print(
-      //       'bad index change $index ${_spiff.playlist.tracks.length}  ${_queue.length}');
-      //   }
-      // }
     }));
 
     // media duration changes
@@ -294,17 +293,39 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     }));
 
     // create a stream to update progress less frequently than position updates
-    // _subscriptions.add(_player
-    //     .createPositionStream(
-    //         steps: 100,
-    //         minPeriod: const Duration(seconds: 1),
-    //         maxPeriod: const Duration(seconds: 5))
-    //     .listen((position) {
-    //   if (_player.processingState == ProcessingState.ready) {
-    //     onProgressChange(_spiff, _player.duration ?? Duration.zero,
-    //         _player.position, _player.playing);
-    //   }
-    // }));
+    _subscriptions.add(_player
+        .createPositionStream(
+            steps: 100,
+            minPeriod: const Duration(seconds: 5),
+            maxPeriod: const Duration(seconds: 10))
+        .listen((position) {
+      if (_player.processingState == ProcessingState.ready) {
+        final item = mediaItem.value;
+        if (item != null) {
+          final key = '${item.artist}/${item.title}';
+          if (_listens.contains(key) == false) {
+            final duration = _player.duration ?? Duration.zero;
+            if (considerListened(position, duration)) {
+              _listens.add(key);
+              onListen(_spiff, duration, position, _player.playing);
+            }
+          }
+        }
+      }
+    }));
+  }
+
+  bool considerListened(Duration position, Duration duration) {
+    // ListenBrainz guidance:
+    // Listens should be submitted for tracks when the user has listened
+    // to half the track or 4 minutes of the track, whichever is lower. If the
+    // user hasn't listened to 4 minutes or half the track, it doesn't fully
+    // count as a listen and should not be submitted.
+    if (position > const Duration(minutes: 4)) {
+      return true;
+    }
+    final d = duration * 0.5;
+    return duration > Duration.zero && position >= d;
   }
 
   void dispose() {
@@ -374,7 +395,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
     final offset = await offsetRepository.get(_spiff[index]);
     final position = offset?.position() ?? Duration.zero;
-    // print('load setAudioSource $index offset $offset $position');
 
     // setAudioSource triggers events so use the correct index and position even though
     // skipToQueueItem does the same thing next.
@@ -396,7 +416,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   Future<void> skipToQueueItem(int index) async {
     final offset = await offsetRepository.get(_spiff.playlist.tracks[index]);
     var position = offset?.position() ?? Duration.zero;
-    // print('skipToQueueItem $index offset $offset $position');
 
     final currentIndex = _spiff.index;
     if (index == currentIndex - 1) {

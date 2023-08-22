@@ -42,8 +42,8 @@ class SettingsWidget extends StatelessWidget {
                     value: state.settings.homeGridType,
                     items: HomeGridType.values
                         .map((type) => DropdownMenuItem<HomeGridType>(
-                            child: Text(_gridTypeText(context, type)),
-                            value: type))
+                            value: type,
+                            child: Text(_gridTypeText(context, type))))
                         .toList(),
                     onChanged: (value) {
                       if (value != null) {
@@ -76,7 +76,25 @@ class SettingsWidget extends StatelessWidget {
                   state.settings.allowMobileArtistArtwork, (value) {
                 context.settings.allowArtistArtwork = value;
               }),
-            ]))
+            ])),
+            Card(
+                child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.key),
+                    title: Text(context.strings.settingListenBrainzToken),
+                    subtitle: TextFormField(
+                      onChanged: (value) {
+                        context.settings.listenBrainzToken = value.trim();
+                      },
+                      initialValue: state.settings.listenBrainzToken,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                    )),
+              ],
+            )),
           ]));
     });
   }

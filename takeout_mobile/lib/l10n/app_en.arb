@@ -68,6 +68,7 @@
   "settingArtworkSubtitle": "Allow artwork on mobile networks",
   "settingEnabled": "Enabled",
   "settingDisabled": "Disabled",
+  "settingListenBrainzToken": "ListenBrainz Token",
   "recentlyPlayed": "Recent Tracks",
   "recentlyWatched": "Recently Watched",
   "popularTracks": "Popular Tracks",
