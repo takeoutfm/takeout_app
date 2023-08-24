@@ -107,9 +107,11 @@ class TakeoutBloc {
     final artProvider = ArtProvider(settingsRepository, clientRepository);
 
     final mediaRepository = MediaRepository(
-        clientRepository: clientRepository,
-        historyRepository: historyRepository,
-        settingsRepository: settingsRepository);
+      clientRepository: clientRepository,
+      historyRepository: historyRepository,
+      settingsRepository: settingsRepository,
+      spiffCacheRepository: spiffCacheRepository,
+    );
 
     final listenRepository = ListenRepository(
         settingsRepository: settingsRepository,

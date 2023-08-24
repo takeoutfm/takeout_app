@@ -45,7 +45,7 @@ class DefaultListenProvider implements ListenProvider {
   }
 
   ListenBrainz? _listenBrainz(Settings? settings) {
-    if (settings == null) {
+    if (settings == null || settings.enableListenBrainz == false) {
       return null;
     }
     final token = settings.listenBrainzToken;

@@ -31,6 +31,7 @@ class Settings {
   final bool autoplay;
   final HomeGridType homeGridType;
   final String? listenBrainzToken;
+  final bool enableListenBrainz;
 
   Settings({
     required this.user,
@@ -41,6 +42,7 @@ class Settings {
     this.autoplay = true,
     this.homeGridType = HomeGridType.mix,
     this.listenBrainzToken,
+    this.enableListenBrainz = true,
   });
 
   factory Settings.initial() => Settings(
@@ -51,6 +53,7 @@ class Settings {
         allowMobileStreaming: true,
         autoplay: true,
         homeGridType: HomeGridType.mix,
+        enableListenBrainz: true,
       );
 
   String get endpoint {
@@ -72,6 +75,7 @@ class Settings {
     bool? autoplay,
     HomeGridType? homeGridType,
     String? listenBrainzToken,
+    bool? enableListenBrainz,
   }) =>
       Settings(
         user: user ?? this.user,
@@ -83,6 +87,7 @@ class Settings {
         autoplay: autoplay ?? this.autoplay,
         homeGridType: homeGridType ?? this.homeGridType,
         listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
+        enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
       );
 
   factory Settings.fromJson(Map<String, dynamic> json) =>

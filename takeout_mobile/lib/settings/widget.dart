@@ -82,17 +82,16 @@ class SettingsWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 ListTile(
-                    leading: const Icon(Icons.key),
-                    title: Text(context.strings.settingListenBrainzToken),
-                    subtitle: TextFormField(
-                      onChanged: (value) {
-                        context.settings.listenBrainzToken = value.trim();
-                      },
-                      initialValue: state.settings.listenBrainzToken,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                    )),
+                  leading: const Icon(Icons.key),
+                  title: Text(context.strings.settingListenBrainzToken),
+                  subtitle: _TokenField(state),
+                  trailing: Switch(
+                    value: state.settings.enableListenBrainz,
+                    onChanged: (value) {
+                      context.settings.enabledListenBrainz = value;
+                    },
+                  ),
+                ),
               ],
             )),
           ]));
@@ -119,6 +118,43 @@ class SettingsWidget extends StatelessWidget {
       title: Text(title),
       subtitle: Text(subtitle),
       trailing: Switch(value: value, onChanged: onChanged),
+    );
+  }
+}
+
+class _TokenField extends StatefulWidget {
+  final SettingsState state;
+
+  const _TokenField(this.state);
+
+  @override
+  State createState() => _TokenFieldState();
+}
+
+class _TokenFieldState extends State<_TokenField> {
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      obscureText: _obscureText,
+      onTap: () {
+        setState(() {
+          _obscureText = false;
+        });
+      },
+      onTapOutside: (_) {
+        setState(() {
+          _obscureText = true;
+        });
+      },
+      onChanged: (value) {
+        context.settings.listenBrainzToken = value.trim();
+      },
+      initialValue: widget.state.settings.listenBrainzToken,
+      // decoration: const InputDecoration(
+      //   border: OutlineInputBorder(),
+      // ),
     );
   }
 }

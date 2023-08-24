@@ -17,6 +17,7 @@
 
 import 'package:audio_service/audio_service.dart';
 import 'package:takeout_lib/browser/provider.dart';
+import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -34,10 +35,11 @@ class MediaRepository {
       {required ClientRepository clientRepository,
       required HistoryRepository historyRepository,
       required SettingsRepository settingsRepository,
+        required SpiffCacheRepository spiffCacheRepository,
       MediaProvider? provider})
       : _provider = provider ??
             DefaultMediaProvider(
-                clientRepository, historyRepository, settingsRepository);
+                clientRepository, historyRepository, settingsRepository, spiffCacheRepository);
 
   void init(MediaPlayer player) {
     this._player = player;

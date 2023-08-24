@@ -30,7 +30,8 @@ class ListenRepository {
     required this.settingsRepository,
     required this.clientRepository,
     ListenProvider? provider,
-  }) : _provider = provider ?? DefaultListenProvider(settingsRepository, clientRepository);
+  }) : _provider = provider ??
+            DefaultListenProvider(settingsRepository, clientRepository);
 
   Future<void> playingNow(MediaTrack track) async {
     return _provider.playingNow(track);

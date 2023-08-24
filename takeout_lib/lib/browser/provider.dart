@@ -15,8 +15,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/history/repository.dart';
@@ -41,13 +45,16 @@ class DefaultMediaProvider implements MediaProvider {
   final ClientRepository clientRepository;
   final HistoryRepository historyRepository;
   final SettingsRepository settingsRepository;
+  final SpiffCacheRepository spiffCacheRepository;
 
-  DefaultMediaProvider(
-      this.clientRepository, this.historyRepository, this.settingsRepository);
+  DefaultMediaProvider(this.clientRepository, this.historyRepository,
+      this.settingsRepository, this.spiffCacheRepository);
 
   Future<List<MediaItem>> getRoot() async {
     final items = <MediaItem>[];
     final index = await clientRepository.index();
+    // TODO need to localize these strings. Will need a repository for that
+    // since there's no context available here.
     items.add(MediaItem(id: '/history', title: 'Recent', playable: false));
     if (index.hasMusic) {
       items.add(MediaItem(id: '/music', title: 'Music', playable: false));
@@ -58,6 +65,11 @@ class DefaultMediaProvider implements MediaProvider {
     if (index.hasMusic) {
       items.add(MediaItem(id: '/radio', title: 'Radio', playable: false));
       items.add(MediaItem(id: '/artists', title: 'Artists', playable: false));
+    }
+    final downloads = await spiffCacheRepository.entries;
+    if (downloads.isNotEmpty && downloads.any((d) => d.isMusic())) {
+      items.add(
+          MediaItem(id: '/downloads', title: 'Downloads', playable: false));
     }
     return items;
   }
@@ -80,6 +92,8 @@ class DefaultMediaProvider implements MediaProvider {
         return _getRadio();
       case '/artists':
         return _getArtists();
+      case '/downloads':
+        return _getDownloads();
       default:
         if (parentId.startsWith('/artists/')) {
           return _getArtist(parentId);
@@ -129,10 +143,13 @@ class DefaultMediaProvider implements MediaProvider {
       spiff = spiff.copyWith(index: index);
     } else if (mediaId.startsWith('/history/spiffs/')) {
       spiff = await _getHistorySpiff(mediaId);
+    } else if (mediaId.startsWith('/downloads/spiffs/')) {
+      spiff = await _getDownloadSpiff(mediaId);
     }
     return spiff;
   }
 
+  // TODO search isn't tested yet. Not sure how to test.
   Future<Spiff?> spiffFromSearch(String query) async {
     final results = await _search(query);
     if (results.hits == 0) {
@@ -155,6 +172,19 @@ class DefaultMediaProvider implements MediaProvider {
 
     // TODO add more later
     return null;
+  }
+
+  Future<List<MediaItem>> _getDownloads() async {
+    final items = <MediaItem>[];
+    final downloads = await spiffCacheRepository.entries;
+    final entries = List<Spiff>.from(downloads);
+    entries.sort((a, b) => a.title.compareTo(b.title));
+    for (var d in entries) {
+      if (d.isMusic()) {
+        items.add(_download(d));
+      }
+    }
+    return items;
   }
 
   Future<List<MediaItem>> _getHistory() async {
@@ -271,6 +301,18 @@ class DefaultMediaProvider implements MediaProvider {
     return null;
   }
 
+  Future<Spiff?> _getDownloadSpiff(String mediaId) async {
+    final downloads = await spiffCacheRepository.entries;
+    // /downloads/spiffs/id
+    final id = mediaId.split('/')[3];
+    for (var s in downloads) {
+      if (_downloadKey(s) == id) {
+        return s;
+      }
+    }
+    return null;
+  }
+
   MediaItem _release(Release r) {
     return MediaItem(
         id: '/music/releases/${r.id}/tracks',
@@ -323,9 +365,30 @@ class DefaultMediaProvider implements MediaProvider {
         playable: true);
   }
 
+  String _md5(String input) {
+    return md5.convert(utf8.encode(input)).toString();
+  }
+
+  String _downloadKey(Spiff spiff) {
+    final lastModified = spiff.lastModified;
+    if (lastModified != null) {
+      // all downloads should have a lastModified
+      return '${lastModified.millisecondsSinceEpoch}';
+    }
+    // fallback to md5 just in case
+    return _md5('${spiff.title}${spiff.location}${spiff.date}');
+  }
+
+  MediaItem _download(Spiff spiff) {
+    return MediaItem(
+        id: '/downloads/spiffs/${_downloadKey(spiff)}',
+        title: spiff.title,
+        artUri: _img(spiff.cover),
+        playable: true);
+  }
+
   Uri _img(String i) {
     final endpoint = settingsRepository.settings?.endpoint;
-    String image = i;
     if (i.startsWith('/img/')) {
       i = '$endpoint$i';
     }
