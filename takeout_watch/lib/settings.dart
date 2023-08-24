@@ -42,7 +42,6 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectivity = context.watch<ConnectivityCubit>().state;
     final entries = [
       SettingEntry<bool>(context.strings.settingAutoplay, toggleAutoplay,
           icon: const Icon(Icons.play_arrow),
@@ -61,6 +60,11 @@ class SettingsPage extends StatelessWidget {
           icon: const Icon(Icons.cloud_outlined),
           currentValue: (state) =>
               state.settings.allowMobileStreaming.settingValue(context)),
+      SettingEntry<String>(
+          context.strings.settingListenBrainz, toggleListenBrainz,
+          icon: const Icon(Icons.hearing),
+          currentValue: (state) =>
+              state.settings.enableListenBrainz.settingValue(context)),
       SettingEntry<void>(context.strings.soundLabel, onSound,
           icon: const Icon(Icons.volume_up)),
       SettingEntry<void>(context.strings.bluetoothLabel, onBluetooth,
@@ -107,6 +111,11 @@ class SettingsPage extends StatelessWidget {
   void toggleMobileStreaming(BuildContext context) {
     context.settings.allowStreaming =
         !context.settings.state.settings.allowMobileStreaming;
+  }
+
+  void toggleListenBrainz(BuildContext context) {
+    context.settings.enabledListenBrainz =
+        !context.settings.state.settings.enableListenBrainz;
   }
 
   void logout(BuildContext context) {
