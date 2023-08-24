@@ -17,9 +17,9 @@
 
 import 'package:bloc/bloc.dart';
 
-const appVersion = '0.13.0';
+const appVersion = '0.13.1';
 const appSource = 'https://github.com/takeoutfm/takeout_app';
-const appHome = 'https://takeout.fm/';
+const appHome = 'https://takeoutfm.com/';
 
 enum NavigationIndex { home, artists, history, radio, player }
 
