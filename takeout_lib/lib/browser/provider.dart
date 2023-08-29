@@ -181,6 +181,7 @@ class DefaultMediaProvider implements MediaProvider {
     entries.sort((a, b) => a.title.compareTo(b.title));
     for (var d in entries) {
       if (d.isMusic()) {
+        // FIXME download keys appear to be the same
         items.add(_download(d));
       }
     }

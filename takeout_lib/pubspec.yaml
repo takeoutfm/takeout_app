@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  audio_service: ^0.18.10
+  audio_service: ^0.18.11
   audio_session: ^0.1.16
   cached_network_image: ^3.2.3
   chewie: ^1.5.0

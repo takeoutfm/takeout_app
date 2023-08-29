@@ -536,14 +536,20 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
     if (isPodcast) {
       controls = [
-        MediaControl.rewind,
+        const MediaControl(
+          androidIcon: 'drawable/replay_10_24px',
+          label: 'Rewind 10s',
+          action: MediaAction.rewind,
+        ),
         if (playing) MediaControl.pause else MediaControl.play,
-        MediaControl.fastForward,
+        const MediaControl(
+          androidIcon: 'drawable/forward_30_24px',
+          label: 'Fast Forward 30s',
+          action: MediaAction.fastForward,
+        ),
       ];
-      compactControls = const [0, 1, 2];
+      compactControls = const [0];
       systemActions = const [
-        MediaAction.skipToPrevious,
-        MediaAction.skipToNext,
         MediaAction.stop,
         MediaAction.seek,
         MediaAction.seekForward,
