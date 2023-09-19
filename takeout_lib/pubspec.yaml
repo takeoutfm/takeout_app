@@ -23,9 +23,9 @@ dependencies:
   json_annotation: ^4.8.1
   just_audio: ^0.9.34
   palette_generator: ^0.3.3+2
-  path_provider: ^2.0.15
+  path_provider: ^2.1.1
   rxdart: ^0.27.7
-  video_player: ^2.2.6
+  video_player: ^2.7.1
   listenbrainz_dart: ^0.0.4
 
 dev_dependencies:

@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
-import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,7 +49,7 @@ class AppBloc extends TakeoutBloc {
     String? userAgent,
   }) {
     return super.createClientRepository(
-      userAgent: 'Takeout-Watch',
+      userAgent: 'Takeout-Watch/$appVersion (takeoutfm.com; ${Platform.operatingSystem})',
       settingsRepository: settingsRepository,
       tokenRepository: tokenRepository,
       jsonCacheRepository: jsonCacheRepository,

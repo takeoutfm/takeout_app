@@ -17,7 +17,7 @@
 
 import 'package:bloc/bloc.dart';
 
-const appVersion = '0.13.2';
+const appVersion = '0.13.3';
 const appSource = 'https://github.com/takeoutfm/takeout_app';
 const appHome = 'https://takeoutfm.com/';
 
