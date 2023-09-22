@@ -19,6 +19,8 @@ FLUTTER = flutter
 
 ADB = adb
 
+APKSIGNER = apksigner
+
 GIT_VERSION ?= $(shell git log --format="%h" -n 1)
 
 SOURCES = $(wildcard lib/*.dart lib/*/*.dart)
@@ -63,6 +65,9 @@ ${DEBUG_APK}: ${SOURCES} ${RESOURCES}
 
 bundle: release
 	${FLUTTER} build appbundle
+
+verify:
+	${APKSIGNER} verify --verbose --print-certs ${RELEASE_APK}
 
 clean:
 	${FLUTTER} clean
