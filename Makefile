@@ -22,6 +22,11 @@ all:
 	${MAKE} --directory=takeout_mobile all
 	${MAKE} --directory=takeout_watch all
 
+release:
+	${MAKE} --directory=takeout_lib generate
+	${MAKE} --directory=takeout_mobile release
+	${MAKE} --directory=takeout_watch release
+
 clean:
 	${MAKE} --directory=takeout_lib clean
 	${MAKE} --directory=takeout_mobile clean
