@@ -37,7 +37,7 @@ DEBUG_APK = ./build/app/outputs/flutter-apk/app-debug.apk
 
 all: apk
 
-release: clean update generate release
+release: clean update apk
 
 apk: ${RELEASE_APK}
 
@@ -52,8 +52,6 @@ update:
 
 generate:
 	${FLUTTER} pub run build_runner build --delete-conflicting-outputs
-
-release: ${RELEASE_APK}
 
 ${RELEASE_APK}: ${SOURCES} ${RESOURCES}
 	${FLUTTER} build apk --release --target-platform ${TARGET_PLATFORM}
