@@ -21,6 +21,8 @@ VERSION = $(shell cat .version)
 
 RELEASE_APK = build/app/outputs/flutter-apk/app-release.apk
 
+RELEASE_AAB = build/app/outputs/bundle/release/app.aab
+
 ASSETS = ./assets
 
 .PHONY: all clean release assets
@@ -35,6 +37,11 @@ release:
 	${MAKE} --directory=takeout_mobile release
 	${MAKE} --directory=takeout_watch release
 
+bundle:
+	${MAKE} --directory=takeout_lib generate
+	${MAKE} --directory=takeout_mobile bundle
+	${MAKE} --directory=takeout_watch bundle
+
 clean:
 	rm -rf ${ASSETS}
 	${MAKE} --directory=takeout_lib clean
@@ -46,9 +53,11 @@ tag:
 	git push origin v${VERSION}
 
 assets:
-	mkdir ${ASSETS}
-	cp takeout_mobile/${RELEASE_APK} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.apk
-	cp takeout_watch/${RELEASE_APK} ${ASSETS}/com.takeoutfm.watch-${VERSION}.apk
+	@mkdir -p ${ASSETS}
+	@cp takeout_mobile/${RELEASE_APK} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.apk || true
+	@cp takeout_mobile/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.aab || true
+	@cp takeout_watch/${RELEASE_APK} ${ASSETS}/com.takeoutfm.watch-${VERSION}.akp || true
+	@cp takeout_watch/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.watch-${VERSION}.aab || true
 
 version:
 	scripts/version.sh && git commit -a

@@ -47,6 +47,10 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
     context.client.radio(ttl: ttl);
   }
 
+  bool _notEmpty(final List<dynamic>? l) {
+    return l != null && l.isNotEmpty;
+  }
+
   @override
   Widget page(BuildContext context, RadioView state) {
     return BlocBuilder<SpiffCacheCubit, SpiffCacheState>(
@@ -63,29 +67,32 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
                       title: header(context.strings.radioLabel),
                       actions: [
                         popupMenu(context, [
-                          PopupItem.reload(
-                              context, (_) => reloadPage(context)),
+                          PopupItem.reload(context, (_) => reloadPage(context)),
                         ]),
                       ],
                       bottom: TabBar(
                         tabs: [
-                          Tab(text: context.strings.genresLabel),
-                          Tab(text: context.strings.decadesLabel),
-                          Tab(text: context.strings.otherLabel),
-                          Tab(text: context.strings.streamsLabel),
+                          if (_notEmpty(state.genre))
+                            Tab(text: context.strings.genresLabel),
+                          if (_notEmpty(state.period))
+                            Tab(text: context.strings.decadesLabel),
+                          if (_notEmpty(state.series) || _notEmpty(state.other))
+                            Tab(text: context.strings.otherLabel),
+                          if (_notEmpty(state.stream))
+                            Tab(text: context.strings.streamsLabel),
                           if (haveDownloads)
-                            Tab(
-                                text: context.strings
-                                    .downloadsLabel)
+                            Tab(text: context.strings.downloadsLabel)
                         ],
                       )),
                   body: TabBarView(
                     children: [
-                      if (state.genre != null) _stations(state.genre!),
-                      if (state.period != null) _stations(state.period!),
-                      _stations(_merge(state.series != null ? state.series! : [],
-                          state.other != null ? state.other! : [])),
-                      if (state.stream != null) _stations(state.stream!),
+                      if (_notEmpty(state.genre)) _stations(state.genre!),
+                      if (_notEmpty(state.period)) _stations(state.period!),
+                      if (_notEmpty(state.series) || _notEmpty(state.other))
+                        _stations(_merge(
+                            state.series != null ? state.series! : [],
+                            state.other != null ? state.other! : [])),
+                      if (_notEmpty(state.stream)) _stations(state.stream!),
                       if (haveDownloads)
                         DownloadListWidget(filter: _radioFilter)
                     ],
