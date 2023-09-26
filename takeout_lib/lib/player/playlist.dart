@@ -83,8 +83,14 @@ class PlaylistCubit extends Cubit<PlaylistState> {
       if (spiff != null) {
         emit(PlaylistChange(spiff));
       } else {
-        // unchanged, emit as PlaylistChange for now
-        emit(PlaylistChange(state.spiff));
+        // unchanged
+        if (state.spiff.isEmpty) {
+          // no local state, force a sync
+          sync();
+        } else {
+          // emit as PlaylistChange for now
+          emit(PlaylistChange(state.spiff));
+        }
       }
     }).onError((error, stackTrace) {
       // TODO
