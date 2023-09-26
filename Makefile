@@ -21,7 +21,7 @@ VERSION = $(shell cat .version)
 
 RELEASE_APK = build/app/outputs/flutter-apk/app-release.apk
 
-RELEASE_AAB = build/app/outputs/bundle/release/app.aab
+RELEASE_AAB = build/app/outputs/bundle/release/app-release.aab
 
 ASSETS = ./assets
 
