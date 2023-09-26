@@ -56,7 +56,7 @@ assets:
 	@mkdir -p ${ASSETS}
 	@cp takeout_mobile/${RELEASE_APK} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.apk || true
 	@cp takeout_mobile/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.aab || true
-	@cp takeout_watch/${RELEASE_APK} ${ASSETS}/com.takeoutfm.watch-${VERSION}.akp || true
+	@cp takeout_watch/${RELEASE_APK} ${ASSETS}/com.takeoutfm.watch-${VERSION}.apk || true
 	@cp takeout_watch/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.watch-${VERSION}.aab || true
 
 version:
