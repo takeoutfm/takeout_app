@@ -548,7 +548,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           action: MediaAction.fastForward,
         ),
       ];
-      compactControls = const [0];
       systemActions = const [
         MediaAction.stop,
         MediaAction.seek,

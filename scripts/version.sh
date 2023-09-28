@@ -18,6 +18,7 @@
 
 number="[0-9]+\.[0-9]+\.[0-9]+"
 pattern="(${number})(.+#version#)"
+codePattern="([0-9]+)([#/; \t]+#versionCode#)"
 
 file=.version
 dryrun=0
@@ -36,7 +37,7 @@ do
 	    echo "Flags:"
 	    echo "  -f file    ; version file, default is .version"
 	    echo "  -x version ; override version file"
-	    echo "  -d         ; dryrun"
+	    echo "  -t         ; dryrun test"
 	    exit 0
 	    ;;
 	*) exit 1;;
@@ -69,17 +70,38 @@ else
     exit 1
 fi
 
+major=`echo $version | cut -d. -f 1`
+minor=`echo $version | cut -d. -f 2`
+patch=`echo $version | cut -d. -f 3`
+build=0 # not used (yet)
+versionCode=$((major*10000 + minor*1000 + patch*100 + build))
+
 # find files with version patterns
 find . -type f | xargs egrep -l -E "${pattern}" | while read f
 do
     if test ${dryrun} -eq 1
     then
 	# dryrun print only
-	result=`sed -E -e "s/${pattern}/${version}\2/g" $f`
-	echo "${f}: ${result}"
+	result=`sed -E -e "s/${pattern}/${version}\2/g" $f|grep $version`
+	echo "1 ${f}: ${result}"
     else
 	# update file
 	sed -i -E -e "s/${pattern}/${version}\2/g" $f
+	echo "${f}: updated"
+    fi
+done
+
+# find files with version code patterns
+find . -type f | xargs egrep -l -E "${codePattern}" | while read f
+do
+    if test ${dryrun} -eq 1
+    then
+	# dryrun print only
+	result=`sed -E -e "s/${codePattern}/${versionCode}\2/g" $f|grep $versionCode`
+	echo "2 ${f}: ${result}"
+    else
+	# update file
+	sed -i -E -e "s/${codePattern}/${versionCode}\2/g" $f
 	echo "${f}: updated"
     fi
 done
