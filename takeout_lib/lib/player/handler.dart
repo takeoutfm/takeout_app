@@ -583,7 +583,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     playbackState.add(playbackState.value.copyWith(
       controls: controls,
       systemActions: Set<MediaAction>.from(systemActions),
-      androidCompactActionIndices: compactControls,
       processingState: const {
         ProcessingState.idle: AudioProcessingState.idle,
         ProcessingState.loading: AudioProcessingState.loading,
