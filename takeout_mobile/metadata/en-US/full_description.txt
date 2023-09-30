@@ -10,6 +10,8 @@ Takeout for Android supports:
 * Internet Radio
 * Offline playback
 * Android Auto
+* Material 3 design, Material You, light/dark
+* ListenBrainz
 
 The Takeout server is required and provides secure access to your media with rich metadata and extensive search capabilities. Please find more information at: <a href="https://takeoutfm.com/" target="_blank">takeoutfm.com</a>.
 

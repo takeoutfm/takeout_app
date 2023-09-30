@@ -1,15 +1,18 @@
 # Build
 
-This repo builds an Android and Wear OS app, both of which share a common
-library.
+This source repository contains an Android and Wear OS app, both of which share
+a common library.
 
 * takeout_lib - common code
 * takeout_mobile - the Android app
 * takeout_watch - the Wear OS app
 
+This document describes general steps to build release versions of both apps
+using command line tools.
+
 ## Requirements
 
-Flutter 3 and Android 33+ SDK tools are required.
+Flutter 3 is required and Android 33+ SDK (Android 13+) is recommended.
 
 * Flutter can be downloaded from [flutter.dev](https://flutter.dev). Follow the
   installation steps and requirements. Steps below assume manual install from a
@@ -20,7 +23,7 @@ Flutter 3 and Android 33+ SDK tools are required.
 
 * Use cmdline-tools to download the Android build-tools and platforms.
 
-These steps may be helpful:
+These steps may be helpful: (replace xyz with latest versions)
 
 	$ cd ~
     $ tar -Jxvf flutter_linux_xyz-stable.tar.xz
@@ -43,29 +46,29 @@ These steps may be helpful:
 	# Optional, add ~/android/platform-tools to your PATH
 
 After these steps you'll have Flutter and the necessary Android tools ready to
-build Takeout.
+build Takeout apps.
 
 ## Steps
 
 There is a Makefile that can be used to do the entire build. The steps are:
 
 * Run code generation in the lib directory
-
 * Build the mobile app for Android
-
 * Build the watch app for Wear OS
 
 ## Release Builds
 
-Run ``make release`` or ``make bundle``.
+Run ``make release`` or ``make bundle``. Both options will build a signed
+release apk and ``bundle`` creates and appbundle for Google Play.
 
 A signing key is *required* for release builds. Create a key.properties file in
-each of the app android directories. Like this:
+each of the app ``android`` directories. Do not add keys to source control!
+Example:
 
 * takeout_watch/android/key.properties
 * takeout_mobile/android/key.properties
 
-And the key.properties should have the following:
+The key.properties should have the following:
 
     storePassword=<your store password>
     keyPassword=<your key password>
@@ -79,12 +82,12 @@ Example:
     keyAlias=mykey
     storeFile=/home/myuser/.keystore
 
-The key for both apps can be the same or different.
+The signing key for both apps can be the same or different.
 
 ## Release Assets
 
-Run ``make assets`` to copy built apk files to the assets directory with
-appropriate version in the apk filename. For example:
+Run ``make assets`` to copy built apk files (and bundles) to the assets
+directory with appropriate version in the apk filename. For example:
 
 * com.takeoutfm.mobile-0.14.4.apk
 * com.takeoutfm.watch-0.14.4.apk
