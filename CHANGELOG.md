@@ -1,3 +1,8 @@
+## 0.14.5
+
+- Added gradle wrapper sha256
+- Moved metadata up one directory for f-droid to find it
+
 ## 0.14.4
 
 - Disable shrink resources
