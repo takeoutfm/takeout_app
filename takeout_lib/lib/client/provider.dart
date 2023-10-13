@@ -62,6 +62,8 @@ abstract class ClientProvider {
 
   Future<GenreView> moviesGenre(String genre, {Duration? ttl});
 
+  Future<MoviesView> movies({Duration? ttl});
+
   Future<ProfileView> profile(int id, {Duration? ttl});
 
   Future<RadioView> radio({Duration? ttl});
@@ -71,6 +73,10 @@ abstract class ClientProvider {
   Future<Spiff> releasePlaylist(String id, {Duration? ttl});
 
   Future<SeriesView> series(int id, {Duration? ttl});
+
+  Future<void> seriesSubscribe(int id);
+
+  Future<void> seriesUnsubscribe(int id);
 
   Future<Spiff> seriesPlaylist(int id, {Duration? ttl});
 
@@ -93,4 +99,8 @@ abstract class ClientProvider {
   Future<ActivityView> activity({Duration? ttl});
 
   Future<int> updateActivity(Events events);
+
+  Future<PodcastsView> podcasts({Duration? ttl});
+
+  Future<PodcastsView> podcastsSubscribed({Duration? ttl});
 }

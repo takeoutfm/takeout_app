@@ -60,6 +60,7 @@ class _ClientError extends Error {
 }
 
 class CodeError extends Error {}
+
 class InvalidCodeError extends CodeError {}
 
 class _ClientWithUserAgent extends http.BaseClient {
@@ -198,35 +199,52 @@ class TakeoutClient implements ClientProvider {
     }
   }
 
-  // Future _delete(String uri) async {
-  //   final token = tokenRepository.accessToken;
-  //   if (token == null) {
-  //     throw ClientException(
-  //       statusCode: HttpStatus.networkAuthenticationRequired,
-  //     );
-  //   }
-  //
-  //   try {
-  //     log.fine('DELETE $endpoint$uri');
-  //     final response = await _client.delete(Uri.parse('$endpoint$uri'),
-  //         headers: _headersWithAccessToken());
-  //     log.fine('got ${response.statusCode}');
-  //     switch (response.statusCode) {
-  //       case HttpStatus.accepted:
-  //       case HttpStatus.noContent:
-  //       case HttpStatus.ok:
-  //         // success
-  //         break;
-  //       default:
-  //         // failure
-  //         throw ClientException(
-  //             statusCode: response.statusCode,
-  //             url: response.request?.url.toString());
-  //     }
-  //   } on TlsException catch (e) {
-  //     return Future.error(e);
-  //   }
-  // }
+  Future _delete(String uri) async {
+    return _method("DELETE", uri);
+  }
+
+  Future _put(String uri) async {
+    return _method("PUT", uri);
+  }
+
+  // call a method w/o any input or output data.
+  Future _method(String method, String uri) async {
+    final token = tokenRepository.accessToken;
+    if (token == null) {
+      throw ClientException(
+        statusCode: HttpStatus.networkAuthenticationRequired,
+      );
+    }
+
+    try {
+      log.fine('$method $endpoint$uri');
+      http.Response response;
+      if (method == "DELETE") {
+        response = await _client.delete(Uri.parse('$endpoint$uri'),
+            headers: _headersWithAccessToken());
+      } else if (method == "PUT") {
+        response = await _client.put(Uri.parse('$endpoint$uri'),
+            headers: _headersWithAccessToken());
+      } else {
+        throw ClientException(statusCode: HttpStatus.badRequest);
+      }
+      log.fine('got ${response.statusCode}');
+      switch (response.statusCode) {
+        case HttpStatus.accepted:
+        case HttpStatus.noContent:
+        case HttpStatus.ok:
+          // success
+          break;
+        default:
+          // failure
+          throw ClientException(
+              statusCode: response.statusCode,
+              url: response.request?.url.toString());
+      }
+    } on TlsException catch (e) {
+      return Future.error(e);
+    }
+  }
 
   /// no caching
   Future<Map<String, dynamic>> _postJson(String uri, Map<String, dynamic> json,
@@ -593,12 +611,30 @@ class TakeoutClient implements ClientProvider {
           .then((j) => PodcastsView.fromJson(j))
           .catchError((Object e) => Future<PodcastsView>.error(e)));
 
+  /// GET /api/podcasts/subscribed
+  Future<PodcastsView> podcastsSubscribed({Duration? ttl}) async =>
+      _retry<PodcastsView>(() => _getJson('/api/podcasts/subscribed', ttl: ttl)
+          .then((j) => PodcastsView.fromJson(j))
+          .catchError((Object e) => Future<PodcastsView>.error(e)));
+
   /// GET /api/series/1
   @override
   Future<SeriesView> series(int id, {Duration? ttl}) async =>
       _retry<SeriesView>(() => _getJson('/api/series/$id', ttl: ttl)
           .then((j) => SeriesView.fromJson(j))
           .catchError((Object e) => Future<SeriesView>.error(e)));
+
+  /// PUT /api/series/1/subscribed
+  @override
+  Future<void> seriesSubscribe(int id) async =>
+      _retry<void>(() => _put('/api/series/$id/subscribed')
+          .catchError((Object e) => Future<void>.error(e)));
+
+  /// DELETE /api/series/1/subscribed
+  @override
+  Future<void> seriesUnsubscribe(int id) async =>
+      _retry<void>(() => _delete('/api/series/$id/subscribed')
+          .catchError((Object e) => Future<void>.error(e)));
 
   /// GET /api/series/1/playlist
   @override

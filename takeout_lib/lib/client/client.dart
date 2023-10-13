@@ -112,6 +112,10 @@ class ClientCubit extends Cubit<ClientState> {
       _doit<Spiff>(({Duration? ttl}) => repository.moviePlaylist(id, ttl: ttl),
           ttl: ttl);
 
+  void movies({Duration? ttl}) =>
+      _doit<MoviesView>(({Duration? ttl}) => repository.movies(ttl: ttl),
+          ttl: ttl);
+
   void moviesGenre(String genre, {Duration? ttl}) => _doit<GenreView>(
       ({Duration? ttl}) => repository.moviesGenre(genre, ttl: ttl),
       ttl: ttl);
@@ -139,6 +143,12 @@ class ClientCubit extends Cubit<ClientState> {
   void series(int id, {Duration? ttl}) =>
       _doit<SeriesView>(({Duration? ttl}) => repository.series(id, ttl: ttl),
           ttl: ttl);
+
+  void seriesSubscribe(int id) =>
+      _doit<void>(({Duration? ttl}) => repository.seriesSubscribe(id));
+
+  void seriesUnsubscribe(int id) =>
+      _doit<void>(({Duration? ttl}) => repository.seriesUnsubscribe(id));
 
   void seriesPlaylist(int id, {Duration? ttl}) =>
       _doit<Spiff>(({Duration? ttl}) => repository.seriesPlaylist(id, ttl: ttl),
@@ -187,6 +197,14 @@ class ClientCubit extends Cubit<ClientState> {
 
   void updateActivity(Events events) =>
       _doit<int>(({Duration? ttl}) => repository.updateActivity(events));
+
+  void podcasts({Duration? ttl}) =>
+      _doit<PodcastsView>(({Duration? ttl}) => repository.podcasts(ttl: ttl),
+          ttl: ttl);
+
+  void podcastsSubscribed({Duration? ttl}) => _doit<PodcastsView>(
+      ({Duration? ttl}) => repository.podcastsSubscribed(ttl: ttl),
+      ttl: ttl);
 
   Future<void> _doit<T>(ClientRequest<T> call, {Duration? ttl}) async {
     emit(ClientLoading());

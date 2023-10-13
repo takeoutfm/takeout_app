@@ -34,6 +34,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'nav.dart';
 import 'style.dart';
 import 'tiles.dart';
+import 'menu.dart';
 
 class SeriesWidget extends ClientPage<SeriesView> {
   final Series _series;
@@ -58,7 +59,16 @@ class SeriesWidget extends ClientPage<SeriesView> {
               final expandedHeight = screen.height / 2;
               return CustomScrollView(slivers: [
                 SliverAppBar(
-                  // actions: [ ],
+                  actions: [
+                    popupMenu(context, [
+                      if (context.subscribed.state.isSubscribed(state.series))
+                        PopupItem.unsubscribe(context,
+                            (context) => _onUnsubscribe(context, state.series))
+                      else
+                        PopupItem.subscribe(context,
+                            (context) => _onSubscribe(context, state.series)),
+                    ]),
+                  ],
                   expandedHeight: expandedHeight,
                   flexibleSpace: FlexibleSpaceBar(
                       // centerTitle: true,
@@ -99,6 +109,14 @@ class SeriesWidget extends ClientPage<SeriesView> {
                     child: _SeriesEpisodeListWidget(state, color)),
               ]);
             })));
+  }
+
+  void _onSubscribe(BuildContext context, Series series) {
+    context.subscribed.subscribe(series);
+  }
+
+  void _onUnsubscribe(BuildContext context, Series series) {
+    context.subscribed.unsubscribe(series);
   }
 
   Widget _title(BuildContext context) {

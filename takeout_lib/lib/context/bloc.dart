@@ -41,6 +41,7 @@ import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/listen/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
+import 'package:takeout_lib/media_type/repository.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/playlist.dart';
@@ -48,6 +49,8 @@ import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/subscribed/repository.dart';
+import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
 
@@ -106,11 +109,17 @@ class TakeoutBloc {
 
     final artProvider = ArtProvider(settingsRepository, clientRepository);
 
+    final mediaTypeRepository = MediaTypeRepository();
+
+    final subscribedRepository = SubscribedRepository();
+
     final mediaRepository = MediaRepository(
       clientRepository: clientRepository,
       historyRepository: historyRepository,
       settingsRepository: settingsRepository,
       spiffCacheRepository: spiffCacheRepository,
+      mediaTypeRepository: mediaTypeRepository,
+      subscribedRepository: subscribedRepository,
     );
 
     final listenRepository = ListenRepository(
@@ -132,6 +141,8 @@ class TakeoutBloc {
       RepositoryProvider(create: (_) => artProvider),
       RepositoryProvider(create: (_) => mediaRepository),
       RepositoryProvider(create: (_) => listenRepository),
+      RepositoryProvider(create: (_) => mediaTypeRepository),
+      RepositoryProvider(create: (_) => subscribedRepository),
     ];
   }
 
@@ -144,7 +155,6 @@ class TakeoutBloc {
             context.read<SettingsRepository>().init(settings);
             return settings;
           }),
-      BlocProvider(create: (_) => MediaTypeCubit()),
       BlocProvider(
           lazy: false,
           create: (context) {
@@ -185,7 +195,22 @@ class TakeoutBloc {
       BlocProvider(
           create: (context) => HistoryCubit(context.read<HistoryRepository>())),
       BlocProvider(
-          create: (context) => IndexCubit(context.read<ClientRepository>()))
+          create: (context) => IndexCubit(context.read<ClientRepository>())),
+      BlocProvider(
+          lazy: false,
+          create: (context) {
+            final mediaType = MediaTypeCubit();
+            context.read<MediaTypeRepository>().init(mediaType);
+            return mediaType;
+          }),
+      BlocProvider(
+          lazy: false,
+          create: (context) {
+            final subscribed =
+                SubscribedCubit(context.read<ClientRepository>());
+            context.read<SubscribedRepository>().init(subscribed);
+            return subscribed;
+          }),
     ];
   }
 

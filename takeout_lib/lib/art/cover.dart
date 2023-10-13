@@ -48,6 +48,10 @@ Widget gridPoster(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.posterGrid(url), hero: true).build(context);
 }
 
+Widget gridSeries(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.seriesGrid(url), hero: true).build(context);
+}
+
 Widget playerCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.playerCover(url), hero: false).build(context);
 }

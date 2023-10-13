@@ -18,8 +18,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/settings/model.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/dialog.dart';
 import 'package:takeout_watch/list.dart';
@@ -34,9 +34,8 @@ class MusicPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Release> releases;
-    switch (context.settings.state.settings.homeGridType) {
-      case HomeGridType.mix:
-      case HomeGridType.added:
+    switch (context.selectedMediaType.state.musicType) {
+      case MusicType.added:
         releases = state.added;
       default:
         releases = state.released;

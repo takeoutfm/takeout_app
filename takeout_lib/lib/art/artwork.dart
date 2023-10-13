@@ -103,7 +103,7 @@ class Artwork {
           aspectRatio: posterAspectRatio, placeholder: const Icon(Icons.movie));
 
   factory Artwork.seriesGrid(String url) =>
-      Artwork(url, posterGridWidth, posterGridHeight, BoxFit.fill,
+      Artwork(url, seriesGridWidth, seriesGridHeight, BoxFit.fill,
           aspectRatio: seriesAspectRatio,
           placeholder: const Icon(Icons.podcasts));
 

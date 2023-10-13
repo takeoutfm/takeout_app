@@ -92,10 +92,6 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
     emit(SettingsState(state.settings.copyWith(autoplay: value)));
   }
 
-  set homeGridType(HomeGridType value) {
-    emit(SettingsState(state.settings.copyWith(homeGridType: value)));
-  }
-
   set listenBrainzToken(String value) {
     emit(SettingsState(state.settings.copyWith(listenBrainzToken: value)));
   }

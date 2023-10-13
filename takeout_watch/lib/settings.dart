@@ -19,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/settings/model.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_watch/app/context.dart';
@@ -46,10 +47,15 @@ class SettingsPage extends StatelessWidget {
       SettingEntry<bool>(context.strings.settingAutoplay, toggleAutoplay,
           icon: const Icon(Icons.play_arrow),
           currentValue: (state) => state.settings.autoplay),
-      SettingEntry<HomeGridType>(
-          context.strings.settingsMediaSort, nextHomeGridType,
+      SettingEntry<MusicType>(context.strings.musicSortType, nextMusicType,
           icon: const Icon(Icons.sort),
-          currentValue: (state) => state.settings.homeGridType),
+          currentValue: (_) => context.selectedMediaType.state.musicType),
+      SettingEntry<VideoType>(context.strings.videoSortType, nextVideoType,
+          icon: const Icon(Icons.sort),
+          currentValue: (_) => context.selectedMediaType.state.videoType),
+      SettingEntry<PodcastType>(context.strings.podcastSortType, nextPodcastType,
+          icon: const Icon(Icons.sort),
+          currentValue: (_) => context.selectedMediaType.state.podcastType),
       SettingEntry<String>(
           context.strings.settingMobileDownloads, toggleMobileDownload,
           icon: const Icon(Icons.cloud_download_outlined),
@@ -91,12 +97,16 @@ class SettingsPage extends StatelessWidget {
             ));
   }
 
-  void nextHomeGridType(BuildContext context) {
-    final nextType =
-        context.settings.state.settings.homeGridType == HomeGridType.added
-            ? HomeGridType.released
-            : HomeGridType.added;
-    context.settings.homeGridType = nextType;
+  void nextMusicType(BuildContext context) {
+    context.selectedMediaType.nextMusicType();
+  }
+
+  void nextVideoType(BuildContext context) {
+    context.selectedMediaType.nextVideoType();
+  }
+
+  void nextPodcastType(BuildContext context) {
+    context.selectedMediaType.nextPodcastType();
   }
 
   void toggleAutoplay(BuildContext context) {
@@ -131,24 +141,31 @@ class SettingsPage extends StatelessWidget {
 
   Widget settingTile(BuildContext context, SettingEntry entry,
       {TextStyle? subtitleTextStyle}) {
-    final settings = context.watch<SettingsCubit>().state;
-    String subtitle = '';
-    if (entry.currentValue != null) {
-      final value = entry.currentValue?.call(settings);
-      if (value is bool) {
-        subtitle = value.settingValue(context);
-      } else if (value is HomeGridType) {
-        subtitle = value.settingValue(context);
-      } else {
-        subtitle = value.toString();
+    return Builder(builder: (BuildContext context) {
+      final settings = context.watch<SettingsCubit>().state;
+      final mediaType = context.watch<MediaTypeCubit>().state;
+      String subtitle = '';
+      if (entry.currentValue != null) {
+        final value = entry.currentValue?.call(settings);
+        if (value is bool) {
+          subtitle = value.settingValue(context);
+        } else if (value is MusicType) {
+          subtitle = value.settingValue(mediaType);
+        } else if (value is VideoType) {
+          subtitle = value.settingValue(mediaType);
+        } else if (value is PodcastType) {
+          subtitle = value.settingValue(mediaType);
+        } else {
+          subtitle = value.toString();
+        }
       }
-    }
-    return ListTile(
-        leading: entry.icon,
-        title: Text(entry.name),
-        subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
-        subtitleTextStyle: subtitleTextStyle,
-        onTap: () => entry.onSelected(context));
+      return ListTile(
+          leading: entry.icon,
+          title: Text(entry.name),
+          subtitle: subtitle.isNotEmpty ? Text(subtitle) : null,
+          subtitleTextStyle: subtitleTextStyle,
+          onTap: () => entry.onSelected(context));
+    });
   }
 
   void onAbout(BuildContext context) {
@@ -185,13 +202,14 @@ extension SettingBool on bool {
   }
 }
 
-extension SettingHomeGridType on HomeGridType {
-  String settingValue(BuildContext context) {
-    if (this == HomeGridType.added || this == HomeGridType.mix) {
-      return context.strings.settingHomeGridAdded;
-    } else if (this == HomeGridType.released) {
-      return context.strings.settingHomeGridReleased;
-    }
-    return 'Unknown';
-  }
+extension SettingMusicType on MusicType {
+  String settingValue(MediaTypeState state) => state.musicType.name;
+}
+
+extension SettingVideoType on VideoType {
+  String settingValue(MediaTypeState state) => state.videoType.name;
+}
+
+extension SettingPodcastType on PodcastType {
+  String settingValue(MediaTypeState state) => state.podcastType.name;
 }

@@ -20,8 +20,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/settings/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
@@ -40,13 +40,21 @@ class VideoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Movie> movies;
-    // TODO consider recommended movies
-    switch (context.settings.state.settings.homeGridType) {
-      case HomeGridType.mix:
-      case HomeGridType.added:
+    switch (context.selectedMediaType.state.videoType) {
+      case VideoType.added:
         movies = state.addedMovies;
-      default:
+      case VideoType.recent:
         movies = state.newMovies;
+      case VideoType.recommended:
+        final recommended = state.recommendMovies;
+        if (recommended != null && recommended.isNotEmpty) {
+          movies = recommended.first.movies ?? [];
+        } else {
+          movies = [];
+        }
+      case VideoType.all:
+        // TODO all not supported yet
+        movies = [];
     }
     return MediaPage(movies,
         title: context.strings.moviesLabel,

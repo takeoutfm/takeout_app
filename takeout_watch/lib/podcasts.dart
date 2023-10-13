@@ -39,8 +39,16 @@ class PodcastsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final series = state.newSeries ?? [];
-
+    List<Series> series;
+    switch (context.selectedMediaType.state.podcastType) {
+      case PodcastType.recent:
+        series = state.newSeries ?? [];
+      case PodcastType.subscribed:
+        series = context.subscribed.state.series;
+      default:
+        // TODO support all
+        series = state.newSeries ?? [];
+    }
     return MediaGrid(series,
         title: context.strings.podcastsLabel,
         onTap: (context, entry) => _onSeries(context, entry as Series));

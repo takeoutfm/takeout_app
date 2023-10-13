@@ -37,6 +37,7 @@ import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/playlist.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
 import 'package:takeout_lib/history/history.dart';
@@ -156,6 +157,8 @@ extension TakeoutContext on BuildContext {
   SettingsCubit get settings => read<SettingsCubit>();
 
   SpiffCacheCubit get spiffCache => read<SpiffCacheCubit>();
+
+  SubscribedCubit get subscribed => read<SubscribedCubit>();
 
   TokenRepository get tokenRepository => read<TokenRepository>();
 

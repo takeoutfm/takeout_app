@@ -54,12 +54,6 @@
   "searchHelperText": "text or artist:name or guitar:person",
   "homeSettingsTitle": "Home Settings",
   "networkSettingsTitle": "Network Settings",
-  "settingHomeGridTitle": "Home Grid",
-  "settingHomeGridSubtitle": "What to show on the home page",
-  "settingHomeGridMix": "Downloads + Added",
-  "settingHomeGridDownloads": "Downloads Only",
-  "settingHomeGridAdded": "Recently Added",
-  "settingHomeGridReleased": "Recently Released",
   "settingStreamingTitle": "Streaming",
   "settingStreamingSubtitle": "Allow streaming on mobile networks",
   "settingDownloadsTitle": "Downloads",
@@ -78,6 +72,8 @@
   "variousArtists": "Various Artists",
   "wantList": "Want List",
   "syncPlaylist": "Sync Playlist",
+  "subscribe": "Subscribe",
+  "unsubscribe": "Unsubscribe",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

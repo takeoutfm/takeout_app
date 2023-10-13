@@ -109,10 +109,6 @@ class _MainPageState extends State<MainPage>
       // TODO need UI to enter host
       context.settings.host = 'https://takeout.fm';
     }
-    if (settings.homeGridType == HomeGridType.mix) {
-      // mix isn't used on watch
-      context.settings.homeGridType = HomeGridType.added;
-    }
   }
 
   @override

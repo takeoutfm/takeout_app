@@ -19,8 +19,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'model.g.dart';
 
-enum HomeGridType { mix, downloads, released, added }
-
 @JsonSerializable()
 class Settings {
   final String user;
@@ -29,7 +27,6 @@ class Settings {
   final bool allowMobileDownload;
   final bool allowMobileArtistArtwork;
   final bool autoplay;
-  final HomeGridType homeGridType;
   final String? listenBrainzToken;
   final bool enableListenBrainz;
 
@@ -40,7 +37,6 @@ class Settings {
     required this.allowMobileDownload,
     required this.allowMobileArtistArtwork,
     this.autoplay = true,
-    this.homeGridType = HomeGridType.mix,
     this.listenBrainzToken,
     this.enableListenBrainz = true,
   });
@@ -52,7 +48,6 @@ class Settings {
         allowMobileDownload: true,
         allowMobileStreaming: true,
         autoplay: true,
-        homeGridType: HomeGridType.mix,
         enableListenBrainz: true,
       );
 
@@ -73,7 +68,6 @@ class Settings {
     bool? allowMobileDownload,
     bool? allowMobileArtistArtwork,
     bool? autoplay,
-    HomeGridType? homeGridType,
     String? listenBrainzToken,
     bool? enableListenBrainz,
   }) =>
@@ -85,7 +79,6 @@ class Settings {
         allowMobileArtistArtwork:
             allowMobileArtistArtwork ?? this.allowMobileArtistArtwork,
         autoplay: autoplay ?? this.autoplay,
-        homeGridType: homeGridType ?? this.homeGridType,
         listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
         enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
       );

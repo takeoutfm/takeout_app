@@ -103,6 +103,14 @@ class ClientRepository {
     return _provider.series(id, ttl: ttl);
   }
 
+  Future<void> seriesSubscribe(int id) async {
+    return _provider.seriesSubscribe(id);
+  }
+
+  Future<void> seriesUnsubscribe(int id) async {
+    return _provider.seriesUnsubscribe(id);
+  }
+
   Future<Spiff> seriesPlaylist(int id, {Duration? ttl = Duration.zero}) async {
     return _provider.seriesPlaylist(id, ttl: ttl);
   }
@@ -134,6 +142,10 @@ class ClientRepository {
   Future<GenreView> moviesGenre(String genre,
       {Duration? ttl = Duration.zero}) async {
     return _provider.moviesGenre(genre, ttl: ttl);
+  }
+
+  Future<MoviesView> movies({Duration? ttl = Duration.zero}) async {
+    return _provider.movies(ttl: ttl);
   }
 
   Future<ProfileView> profile(int id, {Duration? ttl = Duration.zero}) async {
@@ -187,6 +199,14 @@ class ClientRepository {
 
   Future<int> updateActivity(Events events) async {
     return _provider.updateActivity(events);
+  }
+
+  Future<PodcastsView> podcasts({Duration? ttl}) async {
+    return _provider.podcasts(ttl: ttl);
+  }
+
+  Future<PodcastsView> podcastsSubscribed({Duration? ttl}) async {
+    return _provider.podcastsSubscribed(ttl: ttl);
   }
 
   Future<Spiff?> replace(

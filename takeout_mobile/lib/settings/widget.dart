@@ -33,28 +33,6 @@ class SettingsWidget extends StatelessWidget {
             Card(
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              ListTile(
-                  leading: const Icon(Icons.home),
-                  title: Text(context.strings.settingHomeGridTitle),
-                  subtitle: Text(context.strings.settingHomeGridSubtitle)),
-              Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                DropdownButton<HomeGridType>(
-                    value: state.settings.homeGridType,
-                    items: HomeGridType.values
-                        .map((type) => DropdownMenuItem<HomeGridType>(
-                            value: type,
-                            child: Text(_gridTypeText(context, type))))
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        context.settings.homeGridType = value;
-                      }
-                    })
-              ])
-            ])),
-            Card(
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               _switchTile(
                   Icons.cloud_outlined,
                   context.strings.settingStreamingTitle,
@@ -96,19 +74,6 @@ class SettingsWidget extends StatelessWidget {
             )),
           ]));
     });
-  }
-
-  String _gridTypeText(BuildContext context, HomeGridType type) {
-    switch (type) {
-      case HomeGridType.mix:
-        return context.strings.settingHomeGridMix;
-      case HomeGridType.downloads:
-        return context.strings.settingHomeGridDownloads;
-      case HomeGridType.added:
-        return context.strings.settingHomeGridAdded;
-      case HomeGridType.released:
-        return context.strings.settingHomeGridReleased;
-    }
   }
 
   Widget _switchTile(IconData icon, String title, String subtitle, bool value,

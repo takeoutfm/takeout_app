@@ -17,15 +17,19 @@
 
 import 'dart:convert';
 
-import 'package:crypto/crypto.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:crypto/crypto.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
+import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/history/repository.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
+import 'package:takeout_lib/media_type/repository.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/subscribed/repository.dart';
 
 abstract class MediaProvider {
   Future<List<MediaItem>> getRoot();
@@ -46,9 +50,16 @@ class DefaultMediaProvider implements MediaProvider {
   final HistoryRepository historyRepository;
   final SettingsRepository settingsRepository;
   final SpiffCacheRepository spiffCacheRepository;
+  final MediaTypeRepository mediaTypeRepository;
+  final SubscribedRepository subscribedRepository;
 
-  DefaultMediaProvider(this.clientRepository, this.historyRepository,
-      this.settingsRepository, this.spiffCacheRepository);
+  DefaultMediaProvider(
+      this.clientRepository,
+      this.historyRepository,
+      this.settingsRepository,
+      this.spiffCacheRepository,
+      this.mediaTypeRepository,
+      this.subscribedRepository);
 
   Future<List<MediaItem>> getRoot() async {
     final items = <MediaItem>[];
@@ -272,8 +283,20 @@ class DefaultMediaProvider implements MediaProvider {
 
   Future<List<MediaItem>> _getPodcasts() async {
     final items = <MediaItem>[];
-    final home = await clientRepository.home();
-    for (var s in home.newSeries ?? []) {
+    List<Series> series;
+    final podcastType = mediaTypeRepository.podcastType;
+    if (podcastType == PodcastType.subscribed) {
+      series = await subscribedRepository.series;
+    } else {
+      final home = await clientRepository.home();
+      if (podcastType == PodcastType.recent) {
+        series = home.newSeries ?? [];
+      } else {
+        // TODO support all
+        series = [];
+      }
+    }
+    for (var s in series) {
       items.add(_series(s));
     }
     return items;
@@ -399,7 +422,7 @@ class DefaultMediaProvider implements MediaProvider {
   Future<SearchView> _search(String query) async {
     if (query.contains(RegExp(r'[:"\\*]')) == false) {
       query =
-      "title:\"$query*\" release:\"$query*\" artist:\"$query*\" genre:\"$query*\"";
+          "title:\"$query*\" release:\"$query*\" artist:\"$query*\" genre:\"$query*\"";
     }
     return await clientRepository.search(query);
   }

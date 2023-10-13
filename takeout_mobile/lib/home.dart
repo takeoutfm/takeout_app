@@ -19,27 +19,22 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
+import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/downloads.dart';
 import 'package:takeout_mobile/settings/widget.dart';
-import 'package:takeout_mobile/spiff/widget.dart';
-import 'package:takeout_mobile/tiles.dart';
-import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/api/model.dart' hide Offset;
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/spiff.dart';
+import 'package:takeout_lib/cache/spiff_track.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/client.dart';
-import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/settings/model.dart';
-import 'package:takeout_lib/settings/settings.dart';
-import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -50,413 +45,187 @@ import 'release.dart';
 import 'style.dart';
 import 'video.dart';
 
-class HomeWidget extends NavigatorClientPage<HomeView> {
-  static final log = Logger('HomeState');
+class HomeWidget extends StatelessWidget {
   final VoidContextCallback _onSearch;
 
-  HomeWidget(this._onSearch, {super.key});
-
-  _HomeGrid _grid(HomeView view, MediaType mediaType, HomeGridType gridType,
-      TrackCacheState cacheState) {
-    switch (mediaType) {
-      case MediaType.video:
-        return _MovieHomeGrid(view, gridType, cacheState, _onSearch);
-      case MediaType.music:
-      case MediaType.stream: // unused for now
-        return _MusicHomeGrid(view, gridType, cacheState, _onSearch);
-      case MediaType.podcast:
-        return _SeriesHomeGrid(view, gridType, cacheState, _onSearch);
-    }
-  }
-
-  @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.home(ttl: ttl);
-  }
-
-  @override
-  void reload(BuildContext context) {
-    super.reload(context);
-    context.reload();
-  }
-
-  @override
-  Widget page(BuildContext context, HomeView state) {
-    return Builder(builder: (context) {
-      final mediaType = context.watch<MediaTypeCubit>();
-      final trackCache = context.watch<TrackCacheCubit>();
-      final settings = context.watch<SettingsCubit>();
-      return Scaffold(
-          body: RefreshIndicator(
-        onRefresh: () => reloadPage(context),
-        child: _grid(state, mediaType.state.mediaType,
-            settings.state.settings.homeGridType, trackCache.state),
-      ));
-    });
-  }
-}
-
-abstract class _HomeItem {
-  Widget Function() get onTap;
-
-  bool get overlay;
-
-  Widget? get title;
-
-  Widget? get subtitle;
-
-  String get key;
-
-  Widget getTrailing(BuildContext context);
-
-  Widget image(BuildContext context);
-
-  @override
-  int get hashCode {
-    return key.hashCode;
-  }
-
-  @override
-  bool operator ==(Object o) {
-    return o is _HomeItem && o.key == key;
-  }
-}
-
-class _MediaHomeItem extends _HomeItem {
-  final MediaAlbum album;
-  final TrackCacheState trackCache;
-  String? _key;
-
-  _MediaHomeItem(
-    this.trackCache,
-    this.album,
-  );
-
-  @override
-  Widget Function() get onTap {
-    return () {
-      if (album is _SpiffAlbum) {
-        return SpiffWidget(value: (album as _SpiffAlbum).spiff);
-      }
-      return const EmptyWidget();
-    };
-  }
-
-  @override
-  bool get overlay => album.album.isNotEmpty || album.creator.isNotEmpty;
-
-  @override
-  Widget? get title => Text(album.album);
-
-  @override
-  Widget? get subtitle => album.creator.isNotEmpty ? Text(album.creator) : null;
-
-  Widget _downloadIcon(BuildContext context, Spiff download,
-      IconData completeIcon, IconData downloadingIcon) {
-    final isCached = trackCache.containsAll(download.playlist.tracks);
-    return Icon(isCached ? completeIcon : downloadingIcon);
-  }
-
-  @override
-  Widget getTrailing(BuildContext context) {
-    var year = album.year;
-    if (album is _SpiffAlbum) {
-      return _downloadIcon(context, (album as _SpiffAlbum).spiff,
-          iconsDownloadDone, iconsDownload);
-    } else if (year > 1) {
-      return Text('$year');
-    }
-    return const EmptyWidget();
-  }
-
-  @override
-  String get key {
-    if (_key == null) {
-      if (album.creator == 'Radio') {
-        _key = '${album.album}/${album.creator}/${album.date}';
-      } else {
-        _key = '${album.album}/${album.creator}';
-      }
-    }
-    return _key!;
-  }
-
-  @override
-  Widget image(BuildContext context) {
-    return gridCover(context, album.image);
-  }
-}
-
-class _ReleaseHomeItem extends _MediaHomeItem {
-  _ReleaseHomeItem(super.trackCache, super.release);
-
-  @override
-  Widget Function() get onTap {
-    return () => ReleaseWidget(album as Release);
-  }
-}
-
-class _MovieHomeItem extends _MediaHomeItem {
-  _MovieHomeItem(super.trackCache, super.movie);
-
-  @override
-  Widget Function() get onTap {
-    return () => MovieWidget(album as Movie);
-  }
-
-  @override
-  String get key => (album as Movie).titleYear;
-
-  @override
-  Widget? get title => null; //(album as Movie).rating;
-
-  @override
-  Widget? get subtitle => null;
-
-  @override
-  Widget getTrailing(BuildContext context) => const EmptyWidget();
-
-  @override
-  Widget image(BuildContext context) {
-    return gridPoster(context, album.image);
-  }
-}
-
-class _SeriesHomeItem extends _MediaHomeItem {
-  _SeriesHomeItem(super.trackCache, super.series);
-
-  @override
-  Widget Function() get onTap {
-    return () => SeriesWidget(album as Series);
-  }
-
-  @override
-  String get key => album.album + '/' + album.creator; // == title/author
-
-  @override
-  Widget? get title => null;
-
-  @override
-  Widget? get subtitle => RelativeDateWidget.from((album as Series).date);
-
-  @override
-  Widget getTrailing(BuildContext context) =>
-      const EmptyWidget(); // no trailer (year)
-
-  @override
-  Widget image(BuildContext context) {
-    return gridPoster(context, album.image);
-  }
-}
-
-class _SpiffAlbum implements MediaAlbum {
-  final Spiff spiff;
-
-  _SpiffAlbum(this.spiff);
-
-  @override
-  String get creator => spiff.playlist.creator ?? '';
-
-  @override
-  String get album => spiff.playlist.title;
-
-  @override
-  String get image => spiff.cover;
-
-  @override
-  String get date => spiff.date ?? '';
-
-  @override
-  int get year {
-    return -1;
-  }
-}
-
-abstract class _HomeGrid extends StatelessWidget {
-  final HomeView _view;
-  final HomeGridType _type;
-  final TrackCacheState _cacheState;
-  final VoidContextCallback _onSearch;
-  final _buttons =
-      SplayTreeMap<MediaType, IconButton>((a, b) => a.index.compareTo(b.index));
-
-  _HomeGrid(this._view, this._type, this._cacheState, this._onSearch);
-
-  Iterable<_HomeItem> _items(List<Spiff> downloads);
-
-  double _gridAspectRatio();
-
-  double _gridMaxCrossAxisExtent();
-
-  void _onTap(BuildContext context, _HomeItem item) {
-    Navigator.of(context)
-        .push(MaterialPageRoute<void>(builder: (_) => item.onTap()));
-  }
-
-  List<_MediaHomeItem> _downloadedItems(
-      MediaType mediaType, List<Spiff> downloads) {
-    List<_MediaHomeItem> items = [];
-    for (var d in downloads) {
-      if (d.mediaType == mediaType) {
-        items.add(_MediaHomeItem(_cacheState, _SpiffAlbum(d)));
-      }
-    }
-    return items;
-  }
-
-  SliverGrid _itemGrid(BuildContext context, Iterable<_HomeItem> items) {
-    int dir = 0;
-    return SliverGrid.extent(
-        childAspectRatio: _gridAspectRatio(),
-        maxCrossAxisExtent: _gridMaxCrossAxisExtent(),
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          ...items.map((i) => GestureDetector(
-              onTap: () => _onTap(context, i),
-              onPanUpdate: (d) {
-                dir = d.delta.dx < 0 ? -1 : 1;
-              },
-              onPanEnd: (_) {
-                if (dir == -1) {
-                  nextGridType(context);
-                } else if (dir == 1) {
-                  prevGridType(context);
-                }
-              },
-              child: GridTile(
-                footer: i.overlay
-                    ? Material(
-                        color: Colors.transparent,
-                        // shape: RoundedRectangleBorder(
-                        //     borderRadius: BorderRadius.vertical(
-                        //         bottom: Radius.circular(4))),
-                        clipBehavior: Clip.antiAlias,
-                        child: GridTileBar(
-                          backgroundColor: Colors.black26,
-                          title: i.title,
-                          subtitle: i.subtitle,
-                          trailing: i.getTrailing(context),
-                        ))
-                    : null,
-                child: i.image(context),
-              )))
-        ]);
-  }
-
-  void nextGridType(BuildContext context) => context.selectedMediaType.next();
-
-  void prevGridType(BuildContext context) =>
-      context.selectedMediaType.previous();
+  const HomeWidget(this._onSearch, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<IndexCubit, IndexState>(builder: (context, state) {
-      final mediaType = context.selectedMediaType.state.mediaType;
-      const iconSize = 22.0;
-      final selectedColor = Theme.of(context).indicatorColor;
-      _buttons.clear();
-      if (state.music) {
-        _buttons[MediaType.music] = IconButton(
-            iconSize: iconSize,
-            color: mediaType == MediaType.music ? selectedColor : null,
-            icon: const Icon(Icons.audiotrack),
-            onPressed: () => _onMusicSelected(context));
-      }
-      if (state.movies) {
-        _buttons[MediaType.video] = IconButton(
-            iconSize: iconSize,
-            color: mediaType == MediaType.video ? selectedColor : null,
-            icon: const Icon(Icons.movie),
-            onPressed: () => _onVideoSelected(context));
-      }
-      if (state.podcasts) {
-        _buttons[MediaType.podcast] = IconButton(
-            iconSize: iconSize,
-            color: mediaType == MediaType.podcast ? selectedColor : null,
-            icon: const Icon(Icons.podcasts),
-            onPressed: () => _onPodcastsSelected(context));
-      }
-
-      final iconBar = <Widget>[];
-      // below adds circular progress indicator status bar
-      // if (_cacheSnapshot.downloading.isNotEmpty) {
-      //   // add icon to show download progress
-      //   final downloadProgress = _cacheSnapshot.downloading.values
-      //       .fold<DownloadSnapshot>(
-      //           DownloadSnapshot(0, 0),
-      //           (total, e) => DownloadSnapshot(
-      //               total.size + e.size, total.offset + e.offset));
-      //   iconBar.add(Center(
-      //       child: SizedBox(
-      //           width: iconSize,
-      //           height: iconSize,
-      //           child:
-      //               CircularProgressIndicator(value: downloadProgress.value))));
-      // }
-      iconBar.addAll(_buttons.values);
-
-      return CustomScrollView(slivers: [
-        SliverAppBar(
-          pinned: false,
-          floating: true,
-          snap: true,
-          leading: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: () => _onSearch(context)),
-          // title: header(context.strings.takeoutTitle),
-          actions: [
-            ...iconBar,
-            popupMenu(context, [
-              PopupItem.playlist(
-                  context, (context) => _onRecentTracks(context)),
-              PopupItem.popular(
-                  context, (context) => _onPopularTracks(context)),
-              PopupItem.divider(),
-              PopupItem.settings(context, (context) => _onSettings(context)),
-              PopupItem.downloads(context, (context) => _onDownloads(context)),
-              PopupItem.logout(context, (_) => _onLogout(context)),
-              PopupItem.divider(),
-              PopupItem.about(context, (context) => _onAbout(context)),
-            ]),
-          ],
-          bottom: _appBarBottom(),
-        ),
-        BlocBuilder<SpiffCacheCubit, SpiffCacheState>(
-            builder: (context, cacheState) {
-          final downloads = List<Spiff>.from(cacheState.spiffs ?? <Spiff>[]);
-          downloadsSort(DownloadSortType.newest, downloads);
-          return _itemGrid(context, _items(downloads));
-        })
-      ]);
+    final builder = Builder(builder: (context) {
+      final indexState = context.watch<IndexCubit>().state;
+      final mediaTypeState = context.watch<MediaTypeCubit>().state;
+      return _grid(context, indexState, mediaTypeState);
     });
+    return Navigator(
+        key: key,
+        initialRoute: '/',
+        observers: [heroController()],
+        onGenerateRoute: (RouteSettings settings) {
+          return MaterialPageRoute(
+              builder: (context) => builder.build(context), settings: settings);
+        });
   }
 
-  // void _onSearch(BuildContext context) {
-  //   Navigator.push(
-  //       context, MaterialPageRoute(builder: (context) => SearchWidget()));
-  // }
+  void _onMovie(BuildContext context, Movie movie) => Navigator.of(context)
+      .push(MaterialPageRoute<void>(builder: (_) => MovieWidget(movie)));
 
-  PreferredSizeWidget? _appBarBottom() {
-    return null;
-    // return _cacheState.downloading.isNotEmpty
-    //     ? PreferredSize(
-    //         child: LinearProgressIndicator(value: _cacheSnapshot.fold().value),
-    //         preferredSize: Size.fromHeight(4.0),
-    //       )
-    //     : null;
+  void _onRelease(BuildContext context, Release release) =>
+      Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => ReleaseWidget(release)));
+
+  void _onSeries(BuildContext context, Series series) => Navigator.of(context)
+      .push(MaterialPageRoute<void>(builder: (_) => SeriesWidget(series)));
+
+  Widget _grid(BuildContext context, IndexState indexState,
+      MediaTypeState mediaTypeState) {
+    final mediaType = mediaTypeState.mediaType;
+    final appBar = _appBar(context, indexState, mediaType);
+    switch (mediaType) {
+      case MediaType.music:
+      case MediaType.stream:
+        return HomeViewGrid(
+          mediaTypeState,
+          appBar,
+          itemsFunc: (view) => mediaTypeState.musicType == MusicType.recent
+              ? view.released
+              : view.added,
+          coverFunc: (context, item) => gridCover(context, item.image),
+          onTap: (context, item) => _onRelease(context, item as Release),
+          childAspectRatio: coverAspectRatio,
+          maxCrossAxisExtent: coverGridWidth,
+        );
+      case MediaType.video:
+        final videoType = mediaTypeState.videoType;
+        return videoType == VideoType.all
+            ? MoviesViewGrid(appBar,
+                onTap: (context, item) => _onMovie(context, item))
+            : HomeViewGrid(
+                mediaTypeState,
+                appBar,
+                itemsFunc: (view) {
+                  List<Movie> result = [];
+                  switch (videoType) {
+                    case VideoType.recent:
+                      result = view.newMovies;
+                    case VideoType.added:
+                      result = view.addedMovies;
+                    case VideoType.recommended:
+                      final recommended = view.recommendMovies;
+                      if (recommended != null) {
+                        // TODO only takes first recommendation
+                        result = recommended.first.movies ?? [];
+                      }
+                    default:
+                      result = [];
+                  }
+                  return result;
+                },
+                coverFunc: (context, item) => gridPoster(context, item.image),
+                onTap: (context, item) => _onMovie(context, item as Movie),
+                childAspectRatio: posterAspectRatio,
+                maxCrossAxisExtent: posterGridWidth,
+              );
+      case MediaType.podcast:
+        final podcastType = mediaTypeState.podcastType;
+        switch (podcastType) {
+          case PodcastType.all:
+            return PodcastsViewGrid(
+              appBar,
+              onTap: (context, series) => _onSeries(context, series),
+            );
+          case PodcastType.subscribed:
+            return SubscribedPodcastsViewGrid(
+              appBar,
+              onTap: (context, series) => _onSeries(context, series),
+            );
+          default: // recent
+            return HomeViewGrid(
+              mediaTypeState,
+              appBar,
+              itemsFunc: (view) => view.newSeries ?? [],
+              coverFunc: (context, item) => gridSeries(context, item.image),
+              onTap: (context, item) => _onSeries(context, item as Series),
+              childAspectRatio: seriesAspectRatio,
+              maxCrossAxisExtent: seriesGridWidth,
+            );
+        }
+    }
+  }
+
+  Widget _appBar(BuildContext context, IndexState state, MediaType mediaType) {
+    const iconSize = 22.0;
+    final selectedColor = Theme.of(context).indicatorColor;
+    final buttons = SplayTreeMap<MediaType, IconButton>(
+        (a, b) => a.index.compareTo(b.index));
+    if (state.music) {
+      buttons[MediaType.music] = IconButton(
+          iconSize: iconSize,
+          color: mediaType == MediaType.music ? selectedColor : null,
+          icon: const Icon(Icons.audiotrack),
+          onPressed: () => _onMusicSelected(context));
+    }
+    if (state.movies) {
+      buttons[MediaType.video] = IconButton(
+          iconSize: iconSize,
+          color: mediaType == MediaType.video ? selectedColor : null,
+          icon: const Icon(Icons.movie),
+          onPressed: () => _onVideoSelected(context));
+    }
+    if (state.podcasts) {
+      buttons[MediaType.podcast] = IconButton(
+          iconSize: iconSize,
+          color: mediaType == MediaType.podcast ? selectedColor : null,
+          icon: const Icon(Icons.podcasts),
+          onPressed: () => _onPodcastsSelected(context));
+    }
+    final iconBar = <Widget>[];
+    iconBar.addAll(buttons.values);
+
+    return SliverAppBar(
+      pinned: false,
+      floating: true,
+      snap: true,
+      leading: IconButton(
+          icon: const Icon(Icons.search), onPressed: () => _onSearch(context)),
+      actions: [
+        ...iconBar,
+        popupMenu(context, [
+          PopupItem.playlist(context, (context) => _onRecentTracks(context)),
+          PopupItem.popular(context, (context) => _onPopularTracks(context)),
+          PopupItem.divider(),
+          PopupItem.settings(context, (context) => _onSettings(context)),
+          PopupItem.downloads(context, (context) => _onDownloads(context)),
+          PopupItem.logout(context, (_) => _onLogout(context)),
+          PopupItem.divider(),
+          PopupItem.about(context, (context) => _onAbout(context)),
+        ]),
+      ],
+    );
   }
 
   void _onVideoSelected(BuildContext context) {
-    context.selectedMediaType.select(MediaType.video);
+    if (context.selectedMediaType.state.isVideo()) {
+      context.selectedMediaType.nextVideoType();
+    } else {
+      context.selectedMediaType.select(MediaType.video);
+    }
   }
 
   void _onMusicSelected(BuildContext context) {
-    context.selectedMediaType.select(MediaType.music);
+    if (context.selectedMediaType.state.isMusic()) {
+      context.selectedMediaType.nextMusicType();
+    } else {
+      context.selectedMediaType.select(MediaType.music);
+    }
   }
 
   void _onPodcastsSelected(BuildContext context) {
-    context.selectedMediaType.select(MediaType.podcast);
+    if (context.selectedMediaType.state.isPodcast()) {
+      context.selectedMediaType.nextPodcastType();
+    } else {
+      context.selectedMediaType.select(MediaType.podcast);
+    }
   }
 
   void _onDownloads(BuildContext context) {
@@ -512,99 +281,213 @@ abstract class _HomeGrid extends StatelessWidget {
   }
 }
 
-class _MusicHomeGrid extends _HomeGrid {
-  _MusicHomeGrid(super.view, super._type, super._cacheState, super._onSearch);
+mixin _GridTile<T> {
+  Widget? _tile(MediaAlbum item, SpiffTrackCacheState cache,
+      {String? subtitle}) {
+    final title = Text(item.album);
+    final cached = cache.isCached(item);
+    final downloaded = cache.isDownloaded(item);
+    return Material(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAlias,
+        child: GridTileBar(
+          backgroundColor: Colors.black26,
+          title: title,
+          subtitle: subtitle != null ? Text(subtitle) : null,
+          trailing: cached
+              ? Icon(downloaded ? iconsDownloadDone : iconsDownload)
+              : null,
+        ));
+  }
+
+  Widget _grid(BuildContext context, T state, SpiffTrackCacheState cache);
+}
+
+abstract class ViewGrid<T> extends ClientPage<T> with _GridTile<T> {
+  final Widget appBar;
+
+  ViewGrid(this.appBar, {super.key});
 
   @override
-  double _gridAspectRatio() => coverAspectRatio;
+  void reload(BuildContext context) {
+    super.reload(context);
+    context.reload();
+  }
 
   @override
-  double _gridMaxCrossAxisExtent() => coverGridWidth;
-
-  @override
-  Iterable<_HomeItem> _items(List<Spiff> downloads) {
-    switch (_type) {
-      case HomeGridType.released:
-        return _view.released.map((r) => _ReleaseHomeItem(_cacheState, r));
-      case HomeGridType.added:
-        return _view.added.map((r) => _ReleaseHomeItem(_cacheState, r));
-      case HomeGridType.downloads:
-        return _downloadedItems(MediaType.music, downloads);
-      case HomeGridType.mix:
-        final LinkedHashSet<_HomeItem> items = LinkedHashSet();
-        items.addAll(_downloadedItems(MediaType.music, downloads));
-        for (var r in _view.added) {
-          items.add(_ReleaseHomeItem(_cacheState, r));
-        }
-        return items;
-    }
+  Widget page(BuildContext context, T state) {
+    return Builder(builder: (context) {
+      final trackCacheState = context.watch<TrackCacheCubit>().state;
+      final spiffCacheState = context.watch<SpiffCacheCubit>().state;
+      return RefreshIndicator(
+          onRefresh: () => reloadPage(context),
+          child: CustomScrollView(slivers: [
+            appBar,
+            _grid(context, state,
+                SpiffTrackCacheState(spiffCacheState, trackCacheState)),
+          ]));
+    });
   }
 }
 
-class _MovieHomeGrid extends _HomeGrid {
-  _MovieHomeGrid(super.view, super._type, super._cacheState, super._onSearch);
+class HomeViewGrid extends ViewGrid<HomeView> {
+  final MediaTypeState state;
+  final double childAspectRatio;
+  final double maxCrossAxisExtent;
+  final Iterable<MediaAlbum> Function(HomeView) itemsFunc;
+  final Widget Function(BuildContext, MediaAlbum) coverFunc;
+  final void Function(BuildContext, MediaAlbum) onTap;
+
+  HomeViewGrid(
+    this.state,
+    super.appBar, {
+    required this.itemsFunc,
+    required this.maxCrossAxisExtent,
+    required this.coverFunc,
+    required this.onTap,
+    this.childAspectRatio = 1.0,
+    super.key,
+  });
 
   @override
-  double _gridAspectRatio() => posterAspectRatio;
+  void load(BuildContext context, {Duration? ttl}) {
+    context.client.home(ttl: ttl);
+  }
 
   @override
-  double _gridMaxCrossAxisExtent() => posterGridWidth;
-
-  @override
-  Iterable<_HomeItem> _items(List<Spiff> downloads) {
-    switch (_type) {
-      case HomeGridType.released:
-        return _view.newMovies.map((v) => _MovieHomeItem(_cacheState, v));
-      case HomeGridType.added:
-        return _view.addedMovies.map((v) => _MovieHomeItem(_cacheState, v));
-      case HomeGridType.downloads:
-        return _downloadedItems(MediaType.video, downloads);
-      case HomeGridType.mix:
-        final LinkedHashSet<_HomeItem> items = LinkedHashSet();
-        items.addAll(_downloadedItems(MediaType.video, downloads));
-        for (var v in _view.addedMovies) {
-          items.add(_MovieHomeItem(_cacheState, v));
-        }
-        return items;
-    }
+  Widget _grid(
+      BuildContext context, HomeView state, SpiffTrackCacheState cache) {
+    return SliverGrid.extent(
+        childAspectRatio: childAspectRatio,
+        maxCrossAxisExtent: maxCrossAxisExtent,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...itemsFunc(state).map((i) => GestureDetector(
+              onTap: () => onTap(context, i),
+              child: GridTile(
+                footer: _tile(i, cache,
+                    subtitle: i.creator.isNotEmpty ? i.creator : null),
+                child: coverFunc(context, i),
+              )))
+        ]);
   }
 }
 
-class _SeriesHomeGrid extends _HomeGrid {
-  _SeriesHomeGrid(super.view, super._type, super._cacheState, super._onSearch);
+class MoviesViewGrid extends ViewGrid<MoviesView> {
+  final void Function(BuildContext, Movie) onTap;
+
+  MoviesViewGrid(
+    super.appBar, {
+    required this.onTap,
+    super.key,
+  });
 
   @override
-  double _gridAspectRatio() => seriesAspectRatio;
+  void load(BuildContext context, {Duration? ttl}) {
+    context.client.movies(ttl: ttl);
+  }
 
   @override
-  double _gridMaxCrossAxisExtent() => seriesGridWidth;
+  Widget _grid(
+      BuildContext context, MoviesView state, SpiffTrackCacheState cache) {
+    return SliverGrid.extent(
+        childAspectRatio: posterAspectRatio,
+        maxCrossAxisExtent: posterGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.movies.map((i) => GestureDetector(
+              onTap: () => onTap(context, i),
+              child: GridTile(
+                footer: _tile(i, cache),
+                child: gridPoster(context, i.image),
+              )))
+        ]);
+  }
+}
+
+class PodcastsViewGrid extends ViewGrid<PodcastsView> {
+  final void Function(BuildContext, Series) onTap;
+  final void Function(BuildContext, Series, Offset)? onLongPress;
+
+  PodcastsViewGrid(
+    super.appBar, {
+    required this.onTap,
+    this.onLongPress,
+    super.key,
+  });
 
   @override
-  Iterable<_HomeItem> _items(List<Spiff> downloads) {
-    switch (_type) {
-      case HomeGridType.released:
-      case HomeGridType.added:
-        return _view.newSeries!.map((v) => _SeriesHomeItem(_cacheState, v));
-      case HomeGridType.downloads:
-        final items = <_HomeItem>[];
-        final downloadedItems = _downloadedItems(MediaType.podcast, downloads);
-        for (var v in _view.newSeries!) {
-          // use series items with downloads over download items
-          final seriesItem = _SeriesHomeItem(_cacheState, v);
-          if (downloadedItems.any((e) => e.key == seriesItem.key)) {
-            items.add(seriesItem);
-          }
-        }
-        return items;
-      case HomeGridType.mix:
-        // final LinkedHashSet<_HomeItem> items = LinkedHashSet();
-        // items.addAll(_downloadedItems(MediaType.podcast, downloads));
-        // _view.newSeries!
-        //     .forEach((v) => items.add(_SeriesHomeItem(_cacheSnapshot, v)));
-        // prefer series items over downloads
-        final items =
-            _view.newSeries!.map((v) => _SeriesHomeItem(_cacheState, v));
-        return items;
-    }
+  void load(BuildContext context, {Duration? ttl}) {
+    context.client.podcasts(ttl: ttl);
+  }
+
+  @override
+  Widget _grid(
+      BuildContext context, PodcastsView state, SpiffTrackCacheState cache) {
+    final onLongPress = this.onLongPress;
+    return SliverGrid.extent(
+        childAspectRatio: seriesAspectRatio,
+        maxCrossAxisExtent: seriesGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.series.map((i) => GestureDetector(
+              onTap: () => onTap(context, i),
+              onLongPressStart: onLongPress != null
+                  ? (details) => onLongPress(context, i, details.globalPosition)
+                  : null,
+              child: GridTile(
+                footer: _tile(i, cache),
+                child: gridSeries(context, i.image),
+              )))
+        ]);
+  }
+}
+
+class SubscribedPodcastsViewGrid extends StatelessWidget
+    with _GridTile<SubscribedState> {
+  final Widget appBar;
+  final void Function(BuildContext, Series) onTap;
+
+  SubscribedPodcastsViewGrid(this.appBar, {required this.onTap, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(builder: (context) {
+      final state = context.watch<SubscribedCubit>().state;
+      final trackCacheState = context.watch<TrackCacheCubit>().state;
+      final spiffCacheState = context.watch<SpiffCacheCubit>().state;
+      return RefreshIndicator(
+          onRefresh: () => reload(context),
+          child: CustomScrollView(slivers: [
+            appBar,
+            _grid(context, state,
+                SpiffTrackCacheState(spiffCacheState, trackCacheState)),
+          ]));
+    });
+  }
+
+  Future<void> reload(BuildContext context) async {
+    context.subscribed.reload();
+  }
+
+  @override
+  Widget _grid(
+      BuildContext context, SubscribedState state, SpiffTrackCacheState cache) {
+    return SliverGrid.extent(
+        childAspectRatio: seriesAspectRatio,
+        maxCrossAxisExtent: seriesGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.series.map((i) => GestureDetector(
+              onTap: () => onTap(context, i),
+              child: GridTile(
+                footer: _tile(i, cache),
+                child: gridSeries(context, i.image),
+              )))
+        ]);
   }
 }

@@ -20,8 +20,10 @@ import 'package:takeout_lib/browser/provider.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/repository.dart';
+import 'package:takeout_lib/media_type/repository.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/subscribed/repository.dart';
 
 abstract class MediaPlayer {
   void play(Spiff spiff);
@@ -35,11 +37,18 @@ class MediaRepository {
       {required ClientRepository clientRepository,
       required HistoryRepository historyRepository,
       required SettingsRepository settingsRepository,
-        required SpiffCacheRepository spiffCacheRepository,
+      required SpiffCacheRepository spiffCacheRepository,
+      required MediaTypeRepository mediaTypeRepository,
+      required SubscribedRepository subscribedRepository,
       MediaProvider? provider})
       : _provider = provider ??
             DefaultMediaProvider(
-                clientRepository, historyRepository, settingsRepository, spiffCacheRepository);
+                clientRepository,
+                historyRepository,
+                settingsRepository,
+                spiffCacheRepository,
+                mediaTypeRepository,
+                subscribedRepository);
 
   void init(MediaPlayer player) {
     this._player = player;

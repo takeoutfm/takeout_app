@@ -30,8 +30,6 @@
   "tracksLabel": "Tracks",
   "relatedLabel": "Related",
   "settingAutoplay": "Autoplay",
-  "settingHomeGridAdded": "Recently Added",
-  "settingHomeGridReleased": "Recently Released",
   "settingMobileDownloads": "Mobile Downloads",
   "settingMobileStreaming": "Mobile Streaming",
   "settingsMediaSort": "Media Sort",
@@ -49,6 +47,9 @@
   "moviesLabel": "Movies",
   "starringLabel": "Starring",
   "writingLabel": "Writing",
-  "directingLabel": "Directing"
+  "directingLabel": "Directing",
+  "musicSortType": "Music Sort",
+  "videoSortType": "Movie Sort",
+  "podcastSortType": "Podcast Sort"
 }
 
