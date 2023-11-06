@@ -1,3 +1,10 @@
+## 0.14.8
+
+- Change key for media browser (Android Audio) downloads
+- Removed optional fields from media player
+- Fix empty initial history on watch
+- pub upgrade
+
 ## 0.14.7
 
 - Fixed watch gradle wrapper sha256

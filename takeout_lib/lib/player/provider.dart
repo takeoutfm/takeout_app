@@ -24,15 +24,6 @@ import 'package:takeout_lib/tokens/repository.dart';
 
 import 'handler.dart';
 
-final dummyPlayCallback = (_, __, ___, ____) {};
-final dummyPauseCallback = (_, __, ___, ____) {};
-final dummyStoppedCallback = (_) {};
-final dummyTrackChangeCallback = (_, __, {String? title}) {};
-final dummyPositionCallback = (_, __, ___, ____) {};
-final dummyListenCallback = (_, __, ___, ____) {};
-final dummyIndexCallback = (_, __) {};
-final dummyTrackEndCallback = (_, __, ___, ____, _____) {};
-
 typedef LoadCallback = void Function(Spiff, Duration, bool, bool);
 typedef PlayCallback = void Function(Spiff, Duration, Duration, bool);
 typedef PauseCallback = void Function(Spiff, Duration, Duration, bool);
@@ -60,22 +51,23 @@ class PositionInterval {
 }
 
 abstract class PlayerProvider {
-  Future<void> init(
-      {required MediaTrackResolver trackResolver,
-      required TokenRepository tokenRepository,
-      required SettingsRepository settingsRepository,
-      required OffsetCacheRepository offsetRepository,
-      required MediaRepository mediaRepository,
-      PositionInterval? positionInterval,
-      PlayCallback? onPlay,
-      PauseCallback? onPause,
-      StoppedCallback? onStop,
-      IndexCallback? onIndexChange,
-      PositionCallback? onPositionChange,
-      PositionCallback? onDurationChange,
-      ListenCallback? onListen,
-      TrackChangeCallback? onTrackChange,
-      TrackEndCallback? onTrackEnd});
+  Future<void> init({
+    required MediaTrackResolver trackResolver,
+    required TokenRepository tokenRepository,
+    required SettingsRepository settingsRepository,
+    required OffsetCacheRepository offsetRepository,
+    required MediaRepository mediaRepository,
+    required PlayCallback onPlay,
+    required PauseCallback onPause,
+    required StoppedCallback onStop,
+    required IndexCallback onIndexChange,
+    required PositionCallback onPositionChange,
+    required PositionCallback onDurationChange,
+    required ListenCallback onListen,
+    required TrackChangeCallback onTrackChange,
+    required TrackEndCallback onTrackEnd,
+    PositionInterval? positionInterval,
+  });
 
   void load(Spiff spiff, {LoadCallback? onLoad});
 
@@ -104,22 +96,23 @@ class DefaultPlayerProvider implements PlayerProvider {
   late final TakeoutPlayerHandler handler;
 
   @override
-  Future<void> init(
-      {required MediaTrackResolver trackResolver,
-      required TokenRepository tokenRepository,
-      required SettingsRepository settingsRepository,
-      required OffsetCacheRepository offsetRepository,
-      required MediaRepository mediaRepository,
-      PositionInterval? positionInterval,
-      PlayCallback? onPlay,
-      PauseCallback? onPause,
-      StoppedCallback? onStop,
-      IndexCallback? onIndexChange,
-      PositionCallback? onPositionChange,
-      PositionCallback? onDurationChange,
-      ListenCallback? onListen,
-      TrackChangeCallback? onTrackChange,
-      TrackEndCallback? onTrackEnd}) async {
+  Future<void> init({
+    required MediaTrackResolver trackResolver,
+    required TokenRepository tokenRepository,
+    required SettingsRepository settingsRepository,
+    required OffsetCacheRepository offsetRepository,
+    required MediaRepository mediaRepository,
+    required PlayCallback onPlay,
+    required PauseCallback onPause,
+    required StoppedCallback onStop,
+    required IndexCallback onIndexChange,
+    required PositionCallback onPositionChange,
+    required PositionCallback onDurationChange,
+    required ListenCallback onListen,
+    required TrackChangeCallback onTrackChange,
+    required TrackEndCallback onTrackEnd,
+    PositionInterval? positionInterval,
+  }) async {
     handler = await TakeoutPlayerHandler.create(
         trackResolver: trackResolver,
         tokenRepository: tokenRepository,
@@ -129,15 +122,15 @@ class DefaultPlayerProvider implements PlayerProvider {
         positionSteps: positionInterval?.steps,
         minPositionPeriod: positionInterval?.minPeriod,
         maxPositionPeriod: positionInterval?.maxPeriod,
-        onPlay: onPlay ?? dummyPlayCallback,
-        onPause: onPause ?? dummyPauseCallback,
-        onStop: onStop ?? dummyStoppedCallback,
-        onIndexChange: onIndexChange ?? dummyIndexCallback,
-        onPositionChange: onPositionChange ?? dummyPositionCallback,
-        onDurationChange: onDurationChange ?? dummyPositionCallback,
-        onListen: onListen ?? dummyListenCallback,
-        onTrackChange: onTrackChange ?? dummyTrackChangeCallback,
-        onTrackEnd: onTrackEnd ?? dummyTrackEndCallback);
+        onPlay: onPlay,
+        onPause: onPause,
+        onStop: onStop,
+        onIndexChange: onIndexChange,
+        onPositionChange: onPositionChange,
+        onDurationChange: onDurationChange,
+        onListen: onListen,
+        onTrackChange: onTrackChange,
+        onTrackEnd: onTrackEnd);
   }
 
   @override

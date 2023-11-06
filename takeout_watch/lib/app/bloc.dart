@@ -49,7 +49,8 @@ class AppBloc extends TakeoutBloc {
     String? userAgent,
   }) {
     return super.createClientRepository(
-      userAgent: 'Takeout-Watch/$appVersion (takeoutfm.com; ${Platform.operatingSystem})',
+      userAgent:
+          'Takeout-Watch/$appVersion (takeoutfm.com; ${Platform.operatingSystem})',
       settingsRepository: settingsRepository,
       tokenRepository: tokenRepository,
       jsonCacheRepository: jsonCacheRepository,
@@ -80,8 +81,10 @@ class AppBloc extends TakeoutBloc {
   @override
   void onNowPlayingChange(BuildContext context, Spiff spiff, bool autoplay) {
     super.onNowPlayingChange(context, spiff, autoplay);
-    context.history.add(spiff: Spiff.cleanup(spiff));
-    context.app.nowPlaying(spiff);
+    if (spiff.isNotEmpty) {
+      context.history.add(spiff: Spiff.cleanup(spiff));
+      context.app.nowPlaying(spiff);
+    }
   }
 }
 
@@ -95,6 +98,5 @@ mixin AppBlocState {
     pruneCache(context.spiffCache.repository, context.trackCache.repository);
   }
 
-  void appDispose() {
-  }
+  void appDispose() {}
 }

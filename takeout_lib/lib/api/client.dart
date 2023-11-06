@@ -175,7 +175,8 @@ class TakeoutClient implements ClientProvider {
           .timeout(defaultTimeout);
       log.fine('got ${response.statusCode}');
       if (response.statusCode != HttpStatus.ok) {
-        if (response.statusCode >= 500 && cachedJson != null) {
+        if (response.statusCode >= HttpStatus.internalServerError &&
+            cachedJson != null) {
           return cachedJson;
         }
         throw ClientException(

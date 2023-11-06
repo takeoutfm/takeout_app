@@ -286,14 +286,14 @@ class DefaultMediaProvider implements MediaProvider {
     List<Series> series;
     final podcastType = mediaTypeRepository.podcastType;
     if (podcastType == PodcastType.subscribed) {
-      series = await subscribedRepository.series;
+      series = subscribedRepository.series;
     } else {
       final home = await clientRepository.home();
       if (podcastType == PodcastType.recent) {
         series = home.newSeries ?? [];
       } else {
         // TODO support all
-        series = [];
+        series = home.newSeries ?? [];
       }
     }
     for (var s in series) {
@@ -394,13 +394,7 @@ class DefaultMediaProvider implements MediaProvider {
   }
 
   String _downloadKey(Spiff spiff) {
-    final lastModified = spiff.lastModified;
-    if (lastModified != null) {
-      // all downloads should have a lastModified
-      return '${lastModified.millisecondsSinceEpoch}';
-    }
-    // fallback to md5 just in case
-    return _md5('${spiff.title}${spiff.location}${spiff.date}');
+    return _md5('${spiff.location}${spiff.date}');
   }
 
   MediaItem _download(Spiff spiff) {
