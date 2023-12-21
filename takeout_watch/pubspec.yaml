@@ -13,6 +13,7 @@ dependencies:
   takeout_lib:
     path: ../takeout_lib/
   android_intent_plus: ^4.0.1
+  bloc: ^8.1.2
   flutter_bloc: ^8.1.3
   cupertino_icons: ^1.0.6
   nested: ^1.0.0

@@ -112,7 +112,7 @@ class HomeWidget extends StatelessWidget {
                       result = view.addedMovies;
                     case VideoType.recommended:
                       final recommended = view.recommendMovies;
-                      if (recommended != null) {
+                      if (recommended != null && recommended.isNotEmpty) {
                         // TODO only takes first recommendation
                         result = recommended.first.movies ?? [];
                       }

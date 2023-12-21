@@ -24,6 +24,7 @@ import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/cache/prune.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/context/bloc.dart';
+import 'package:takeout_lib/intent/intent.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
@@ -56,11 +57,73 @@ class AppBloc extends TakeoutBloc {
     String? userAgent,
   }) {
     return super.createClientRepository(
-      userAgent: 'Takeout-App/$appVersion (takeoutfm.com; ${Platform.operatingSystem})',
+      userAgent:
+          'Takeout-App/$appVersion (takeoutfm.com; ${Platform.operatingSystem})',
       settingsRepository: settingsRepository,
       tokenRepository: tokenRepository,
       jsonCacheRepository: jsonCacheRepository,
     );
+  }
+  
+  @override
+  void onIntentStart(BuildContext context, IntentStart intent) {
+    super.onIntentStart(context, intent);
+    _handleIntent(context, intent);
+  }
+
+  @override
+  void onIntentReceive(BuildContext context, IntentReceive intent) {
+    super.onIntentReceive(context, intent);
+    _handleIntent(context, intent);
+  }
+  
+  void _handleIntent(BuildContext context, IntentAction intent) {
+    print('got ${intent.action}');
+    switch (intent.action) {
+      case 'com.takeoutfm.action.PLAY_ARTIST':
+        final artist = intent.parameters?['artist'];
+        if (artist != null) {
+          context.playlist.replace('/music/search?q=artist:"$artist"&radio=1');
+        }
+      case 'com.takeoutfm.action.PLAY_ARTIST_SONG':
+        final artist = intent.parameters?['artist'];
+        final song = intent.parameters?['song'];
+        if (artist != null && song != null) {
+          context.playlist.replace('/music/search?q=+artist:"$artist" +title:"$song"');
+        }
+      case 'com.takeoutfm.action.PLAY_ARTIST_ALBUM':
+        final artist = intent.parameters?['artist'];
+        final album = intent.parameters?['album'];
+        if (artist != null && album != null) {
+          context.playlist.replace('/music/search?q=+artist:"$artist" +release:"$album"');
+        }
+      case 'com.takeoutfm.action.PLAY_ARTIST_RADIO':
+        final artist = intent.parameters?['artist'];
+        if (artist != null) {
+          context.playlist.replace('/music/search?q=artist:"$artist"&radio=1');
+        }
+      case 'com.takeoutfm.action.PLAY_ARTIST_POPULAR_SONGS':
+        final artist = intent.parameters?['artist'];
+        if (artist != null) {
+          context.playlist.replace('/music/search?q=+artist:"$artist" +popularity:<11');
+        }
+      case 'com.takeoutfm.action.PLAY_ALBUM':
+        final album = intent.parameters?['album'];
+        if (album != null) {
+          context.playlist.replace('/music/search?q=release:"$album"');
+        }
+      case 'com.takeoutfm.action.PLAY_SONG':
+        final song = intent.parameters?['song'];
+        if (song != null) {
+          context.playlist.replace('/music/search?q=title:"$song"');
+        }
+      case 'com.takeoutfm.action.PLAYER_PLAY':
+        context.player.play();
+      case 'com.takeoutfm.action.PLAYER_PAUSE':
+        context.player.pause();
+      case 'com.takeoutfm.action.PLAYER_NEXT':
+        context.player.skipToNext();
+    }
   }
 }
 
@@ -75,6 +138,5 @@ mixin AppBlocState {
     pruneCache(context.spiffCache.repository, context.trackCache.repository);
   }
 
-  void appDispose() {
-  }
+  void appDispose() {}
 }

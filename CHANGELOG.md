@@ -1,3 +1,9 @@
+## 0.15.0
+
+- Fix home with empty movie recommendations
+- Use Wrap for movie genre buttons
+- Support Android intents to manage playlist & playback
+
 ## 0.14.8
 
 - Change key for media browser (Android Audio) downloads

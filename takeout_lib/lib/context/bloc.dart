@@ -39,6 +39,7 @@ import 'package:takeout_lib/db/search.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/index/index.dart';
+import 'package:takeout_lib/intent/intent.dart';
 import 'package:takeout_lib/listen/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/media_type/repository.dart';
@@ -211,6 +212,7 @@ class TakeoutBloc {
             context.read<SubscribedRepository>().init(subscribed);
             return subscribed;
           }),
+      BlocProvider(lazy: false, create: (context) => IntentCubit()),
     ];
   }
 
@@ -279,6 +281,16 @@ class TakeoutBloc {
             }
             _onDownloadChange(context, state);
           }),
+      BlocListener<IntentCubit, IntentState>(
+          listenWhen: (_, state) =>
+              state is IntentStart || state is IntentReceive,
+          listener: (context, state) {
+            if (state is IntentStart) {
+              onIntentStart(context, state);
+            } else if (state is IntentReceive) {
+              onIntentReceive(context, state);
+            }
+          }),
     ];
   }
 
@@ -311,6 +323,12 @@ class TakeoutBloc {
     // load now playing playlist into player
     context.player.load(spiff, autoplay: autoplay);
   }
+
+  /// Process start intent
+  void onIntentStart(BuildContext context, IntentStart intent) {}
+
+  /// Process received intent
+  void onIntentReceive(BuildContext context, IntentReceive intent) {}
 
   void _onNowPlayingIndexChange(
       BuildContext context, NowPlayingIndexChange state) {

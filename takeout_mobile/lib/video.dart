@@ -199,10 +199,15 @@ class MovieWidget extends ClientPage<MovieView> {
 
   Widget _genres(BuildContext context, MovieView view) {
     return Center(
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      ...view.genres!.map((g) =>
-          OutlinedButton(onPressed: () => _onGenre(context, g), child: Text(g)))
-    ]));
+        child: Wrap(
+            direction: Axis.horizontal,
+            spacing: 8.0,
+            runSpacing: 8.0,
+            // runAlignment: WrapAlignment.spaceEvenly,
+            children: [
+          ...view.genres!.map((g) => OutlinedButton(
+              onPressed: () => _onGenre(context, g), child: Text(g)))
+        ]));
   }
 
   Widget _playButton(BuildContext context, MovieView view, bool isCached) {
