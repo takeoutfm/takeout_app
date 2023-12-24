@@ -1,3 +1,8 @@
+## 0.15.1
+
+- Upgrades for pub.dev, gradle and kotlin
+- Note that watch build needs some manual fixes due to outdated wear plugin
+
 ## 0.15.0
 
 - Fix home with empty movie recommendations

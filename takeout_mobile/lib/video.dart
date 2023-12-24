@@ -35,7 +35,7 @@ import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'buttons.dart';
 import 'nav.dart';
@@ -530,13 +530,13 @@ class _MoviePlayerState extends State<MoviePlayer> {
     _stateSubscription = _stateStream.distinct().listen((state) {
       switch (state) {
         case MovieState.playing:
-          Wakelock.enable();
+          WakelockPlus.enable();
           _controlsTimer?.cancel();
           _controlsTimer = Timer(const Duration(seconds: 2), () {
             showControls(false);
           });
         default:
-          Wakelock.disable();
+          WakelockPlus.disable();
           _controlsTimer?.cancel();
           showControls(true);
       }
@@ -641,7 +641,7 @@ class _MoviePlayerState extends State<MoviePlayer> {
 
   @override
   void dispose() {
-    Wakelock.disable();
+    WakelockPlus.disable();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
     super.dispose();
