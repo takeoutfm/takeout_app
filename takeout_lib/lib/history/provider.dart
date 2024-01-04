@@ -24,7 +24,8 @@ import 'package:takeout_lib/spiff/model.dart';
 import 'model.dart';
 
 abstract class HistoryProvider {
-  Future<History> add({String? search, Spiff? spiff, MediaTrack? track});
+  Future<History> add(
+      {String? search, Spiff? spiff, MediaTrack? track, DateTime? dateTime});
 
   Future<History> get();
 
@@ -40,11 +41,19 @@ class JsonHistoryProvider implements HistoryProvider {
       : _file = File('${directory.path}/history.json');
 
   @override
-  Future<History> add({String? search, Spiff? spiff, MediaTrack? track}) async {
+  Future<History> add({
+    String? search,
+    Spiff? spiff,
+    MediaTrack? track,
+    DateTime? dateTime,
+  }) async {
+    if (dateTime == null) {
+      dateTime = DateTime.now();
+    }
     final history = await _checkLoaded();
     if (search != null) {
       // append search or merge duplicate
-      final entry = SearchHistory(search, DateTime.now());
+      final entry = SearchHistory(search, dateTime);
       if (history.searches.isNotEmpty &&
           history.searches.last.compareTo(entry) == 0) {
         history.searches.removeLast();
@@ -52,13 +61,16 @@ class JsonHistoryProvider implements HistoryProvider {
       history.searches.add(entry);
     }
     if (spiff != null) {
-      // append spiff or merge duplicate
-      final entry = SpiffHistory(spiff, DateTime.now());
-      if (history.spiffs.isNotEmpty &&
-          history.spiffs.last.compareTo(entry) == 0) {
-        history.spiffs.removeLast();
+      final last = history.lastSpiff;
+      if (last != null && last.spiff == spiff) {
+        // update last entry with new index (or position, etc.)
+        final entry = last.copyWith(spiff: spiff);
+        history.spiffs[history.spiffs.length - 1] = entry;
+      } else {
+        // add history entry
+        final entry = SpiffHistory(spiff, dateTime);
+        history.spiffs.add(entry);
       }
-      history.spiffs.add(entry);
     }
     if (track != null) {
       // maintain map of unique tracks by etag with play counts
@@ -73,7 +85,7 @@ class JsonHistoryProvider implements HistoryProvider {
               1,
               DateTime.now())
           : history.tracks[track.etag] =
-              entry.copyWith(count: entry.count + 1, dateTime: DateTime.now());
+              entry.copyWith(count: entry.count + 1, dateTime: dateTime);
     }
     _prune(history);
     await _save(_file, history);

@@ -67,6 +67,11 @@ class SettingsPage extends StatelessWidget {
           currentValue: (state) =>
               state.settings.allowMobileStreaming.settingValue(context)),
       SettingEntry<String>(
+          context.strings.settingTrackActivity, toggleTrackActivity,
+          icon: const Icon(Icons.share),
+          currentValue: (state) =>
+              state.settings.enableTrackActivity.settingValue(context)),
+      SettingEntry<String>(
           context.strings.settingListenBrainz, toggleListenBrainz,
           icon: const Icon(Icons.hearing),
           currentValue: (state) =>
@@ -126,6 +131,11 @@ class SettingsPage extends StatelessWidget {
   void toggleListenBrainz(BuildContext context) {
     context.settings.enabledListenBrainz =
         !context.settings.state.settings.enableListenBrainz;
+  }
+
+  void toggleTrackActivity(BuildContext context) {
+    context.settings.enableTrackActivity =
+    !context.settings.state.settings.enableTrackActivity;
   }
 
   void logout(BuildContext context) {

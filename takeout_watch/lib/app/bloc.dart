@@ -25,6 +25,7 @@ import 'package:takeout_lib/cache/prune.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_lib/player/player.dart';
+import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
@@ -81,10 +82,24 @@ class AppBloc extends TakeoutBloc {
   @override
   void onNowPlayingChange(BuildContext context, Spiff spiff, bool autoplay) {
     super.onNowPlayingChange(context, spiff, autoplay);
+    addSpiffHistory(context, spiff);
     if (spiff.isNotEmpty) {
-      context.history.add(spiff: Spiff.cleanup(spiff));
       context.app.nowPlaying(spiff);
     }
+  }
+
+  @override
+  void onNowPlayingIndexChange(
+      BuildContext context, NowPlayingIndexChange state) {
+    super.onNowPlayingIndexChange(context, state);
+    updateSpiffHistory(context, state);
+  }
+
+  @override
+  void onNowPlayingListenChange(
+      BuildContext context, NowPlayingListenChange state) {
+    super.onNowPlayingListenChange(context, state);
+    addTrackHistory(context, state);
   }
 }
 

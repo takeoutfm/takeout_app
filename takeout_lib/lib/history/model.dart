@@ -29,8 +29,8 @@ class History {
 
   History(
       {this.searches = const [],
-        this.spiffs = const [],
-        this.tracks = const {}});
+      this.spiffs = const [],
+      this.tracks = const {}});
 
   factory History.empty() => History();
 
@@ -43,6 +43,8 @@ class History {
       searches: List.from(searches),
       spiffs: List.from(spiffs),
       tracks: Map.from(tracks));
+
+  SpiffHistory? get lastSpiff => spiffs.isNotEmpty ? spiffs.last : null;
 
   factory History.fromJson(Map<String, dynamic> json) =>
       _$HistoryFromJson(json);
@@ -84,6 +86,9 @@ class SpiffHistory implements Comparable<SpiffHistory> {
   int compareTo(SpiffHistory other) {
     return spiff == other.spiff ? 0 : dateTime.compareTo(other.dateTime);
   }
+
+  SpiffHistory copyWith({Spiff? spiff}) =>
+      SpiffHistory(spiff ?? this.spiff, this.dateTime);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -105,6 +110,5 @@ class TrackHistory {
   Map<String, dynamic> toJson() => _$TrackHistoryToJson(this);
 
   TrackHistory copyWith({required int count, required DateTime dateTime}) =>
-      TrackHistory(creator, album, title, image, etag,
-          count, dateTime);
+      TrackHistory(creator, album, title, image, etag, count, dateTime);
 }

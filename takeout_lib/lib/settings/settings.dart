@@ -44,7 +44,8 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
           bool? allowDownload,
           bool? allowArtistArtwork,
           String? listenBrainzToken,
-          bool? enableListenBrainz}) =>
+          bool? enableListenBrainz,
+          bool? enableTrackActivity}) =>
       emit(SettingsState(state.settings.copyWith(
         user: user,
         host: host,
@@ -53,6 +54,7 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
         allowMobileArtistArtwork: allowArtistArtwork,
         listenBrainzToken: listenBrainzToken,
         enableListenBrainz: enableListenBrainz,
+        enableTrackActivity: enableTrackActivity,
       )));
 
   void apply(Settings settings) {
@@ -64,6 +66,7 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
       autoplay: settings.autoplay,
       listenBrainzToken: settings.listenBrainzToken,
       enableListenBrainz: settings.enableListenBrainz,
+      enableTrackActivity: settings.enableTrackActivity,
     )));
   }
 
@@ -98,6 +101,10 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
 
   set enabledListenBrainz(bool value) {
     emit(SettingsState(state.settings.copyWith(enableListenBrainz: value)));
+  }
+
+  set enableTrackActivity(bool value) {
+    emit(SettingsState(state.settings.copyWith(enableTrackActivity: value)));
   }
 
   @override

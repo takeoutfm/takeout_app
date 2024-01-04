@@ -22,6 +22,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:nested/nested.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/provider.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
@@ -227,9 +228,9 @@ class TakeoutBloc {
             if (state is NowPlayingChange) {
               onNowPlayingChange(context, state.spiff, state.autoplay);
             } else if (state is NowPlayingIndexChange) {
-              _onNowPlayingIndexChange(context, state);
+              onNowPlayingIndexChange(context, state);
             } else if (state is NowPlayingListenChange) {
-              _onNowPlayingListenChange(context, state);
+              onNowPlayingListenChange(context, state);
             }
           }),
       BlocListener<Player, PlayerState>(
@@ -318,17 +319,23 @@ class TakeoutBloc {
         mediaRepository: context.read<MediaRepository>());
   }
 
+  /// Process start intent
+  void onIntentStart(BuildContext context, IntentStart intent) {}
+
+  /// Process received intent
+  void onIntentReceive(BuildContext context, IntentReceive intent) {}
+
   /// NowPlaying manages the playlist that should be playing.
   void onNowPlayingChange(BuildContext context, Spiff spiff, bool autoplay) {
     // load now playing playlist into player
     context.player.load(spiff, autoplay: autoplay);
   }
 
-  /// Process start intent
-  void onIntentStart(BuildContext context, IntentStart intent) {}
-
-  /// Process received intent
-  void onIntentReceive(BuildContext context, IntentReceive intent) {}
+  /// NowPlaying playlist index change event
+  void onNowPlayingIndexChange(
+      BuildContext context, NowPlayingIndexChange state) {
+    _onNowPlayingIndexChange(context, state);
+  }
 
   void _onNowPlayingIndexChange(
       BuildContext context, NowPlayingIndexChange state) {
@@ -339,11 +346,21 @@ class TakeoutBloc {
     }
   }
 
+  /// NowPlaying track listen change
+  void onNowPlayingListenChange(
+      BuildContext context, NowPlayingListenChange state) {
+    _onNowPlayingListenChange(context, state);
+  }
+
   void _onNowPlayingListenChange(
       BuildContext context, NowPlayingListenChange state) {
     final listenedAt = state.listenedAt(state.spiff.index);
     if (listenedAt != null) {
       final track = state.spiff.playlist.tracks[state.spiff.index];
+      // submit takeout activity
+      _updateTrackActivity(context, track);
+
+      // submit listen to listenbrainz
       context.listenRepository.listenedAt(track, listenedAt);
     }
   }
@@ -424,6 +441,42 @@ class TakeoutBloc {
         ? context.settings.state.settings.allowMobileDownload
         : true) {
       context.downloads.check();
+    }
+  }
+
+  void _updateTrackActivity(BuildContext context, Entry track) {
+    if (context.settings.state.settings.enableTrackActivity) {
+      final events = Events(
+        trackEvents: [
+          TrackEvent.now(track.etag),
+        ],
+      );
+      context.clientRepository.updateActivity(events);
+    }
+  }
+
+  // add spiff to history
+  void addSpiffHistory(BuildContext context, Spiff spiff) {
+    if (spiff.isNotEmpty) {
+      context.history.add(spiff: Spiff.cleanup(spiff));
+    }
+  }
+
+  // update spiff history with index
+  void updateSpiffHistory(
+      BuildContext context, NowPlayingIndexChange state) {
+    final spiff = state.spiff;
+    if (spiff.isNotEmpty) {
+      context.history.add(spiff: Spiff.cleanup(spiff));
+    }
+  }
+
+  // add to local track history
+  void addTrackHistory(BuildContext context, NowPlayingListenChange state) {
+    final listenedAt = state.listenedAt(state.spiff.index);
+    if (listenedAt != null) {
+      final track = state.spiff.playlist.tracks[state.spiff.index];
+      context.history.add(track: track, dateTime: listenedAt);
     }
   }
 }

@@ -1,3 +1,9 @@
+## 0.15.2
+
+- Ensure track index is updated in latest history entry
+- Add listened tracks to local track history
+- Restore track listen activity
+
 ## 0.15.1
 
 - Upgrades for pub.dev, gradle and kotlin

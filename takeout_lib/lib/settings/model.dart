@@ -29,6 +29,7 @@ class Settings {
   final bool autoplay;
   final String? listenBrainzToken;
   final bool enableListenBrainz;
+  final bool enableTrackActivity;
 
   Settings({
     required this.user,
@@ -39,6 +40,7 @@ class Settings {
     this.autoplay = true,
     this.listenBrainzToken,
     this.enableListenBrainz = true,
+    this.enableTrackActivity = true,
   });
 
   factory Settings.initial() => Settings(
@@ -70,6 +72,7 @@ class Settings {
     bool? autoplay,
     String? listenBrainzToken,
     bool? enableListenBrainz,
+    bool? enableTrackActivity,
   }) =>
       Settings(
         user: user ?? this.user,
@@ -81,6 +84,7 @@ class Settings {
         autoplay: autoplay ?? this.autoplay,
         listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
         enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
+        enableTrackActivity: enableTrackActivity ?? this.enableTrackActivity,
       );
 
   factory Settings.fromJson(Map<String, dynamic> json) =>

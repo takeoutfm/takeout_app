@@ -238,8 +238,8 @@ class SpiffTrackListView extends StatelessWidget {
         final e = tracks[i];
         final subChildren = _subtitle(trackCache.state, offsets.state, e);
         final subtitle = Column(
-            children: subChildren,
-            crossAxisAlignment: CrossAxisAlignment.start);
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: subChildren);
         final isThreeLine = subChildren.length > 1 || _spiff.isPodcast();
         children.add(ListTile(
             isThreeLine: isThreeLine,
@@ -248,6 +248,7 @@ class SpiffTrackListView extends StatelessWidget {
             leading: _leading(context, e, sameArtwork),
             trailing: _trailing(downloads.state, trackCache.state, e),
             subtitle: subtitle,
+            selected: i == _spiff.index,
             title: Text(e.title)));
       }
       return Column(children: children);

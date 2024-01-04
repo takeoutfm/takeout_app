@@ -63,6 +63,8 @@
   "settingEnabled": "Enabled",
   "settingDisabled": "Disabled",
   "settingListenBrainzToken": "ListenBrainz Token",
+  "settingTrackActivityTitle": "Track Activity",
+  "settingTrackActivitySubtitle": "Submit listens to Takeout",
   "recentlyPlayed": "Recent Tracks",
   "recentlyWatched": "Recently Watched",
   "popularTracks": "Popular Tracks",

@@ -34,8 +34,8 @@ class HistoryRepository {
     return _provider.get();
   }
 
-  Future<History> add({String? search, Spiff? spiff, MediaTrack? track}) async {
-    return _provider.add(search: search, spiff: spiff, track: track);
+  Future<History> add({String? search, Spiff? spiff, MediaTrack? track, DateTime? dateTime}) async {
+    return _provider.add(search: search, spiff: spiff, track: track, dateTime: dateTime);
   }
 
   Future<History> remove() async {

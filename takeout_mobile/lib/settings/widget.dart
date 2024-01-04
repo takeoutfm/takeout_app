@@ -56,6 +56,20 @@ class SettingsWidget extends StatelessWidget {
               }),
             ])),
             Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _switchTile(
+                      Icons.share,
+                      context.strings.settingTrackActivityTitle,
+                      context.strings.settingTrackActivitySubtitle,
+                      state.settings.enableTrackActivity, (value) {
+                    context.settings.enableTrackActivity = value;
+                  }),
+                ],
+              ),
+            ),
+            Card(
                 child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[

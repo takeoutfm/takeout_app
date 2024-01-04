@@ -25,6 +25,7 @@ import 'package:takeout_lib/cache/prune.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_lib/intent/intent.dart';
+import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
@@ -42,11 +43,24 @@ class AppBloc extends TakeoutBloc {
   @override
   void onNowPlayingChange(BuildContext context, Spiff spiff, bool autoplay) {
     super.onNowPlayingChange(context, spiff, autoplay);
-    // include in history and show the player
+    addSpiffHistory(context, spiff);
     if (spiff.isNotEmpty) {
-      context.history.add(spiff: Spiff.cleanup(spiff));
       context.app.showPlayer();
     }
+  }
+
+  @override
+  void onNowPlayingIndexChange(
+      BuildContext context, NowPlayingIndexChange state) {
+    super.onNowPlayingIndexChange(context, state);
+    updateSpiffHistory(context, state);
+  }
+
+  @override
+  void onNowPlayingListenChange(
+      BuildContext context, NowPlayingListenChange state) {
+    super.onNowPlayingListenChange(context, state);
+    addTrackHistory(context, state);
   }
 
   @override
@@ -64,7 +78,7 @@ class AppBloc extends TakeoutBloc {
       jsonCacheRepository: jsonCacheRepository,
     );
   }
-  
+
   @override
   void onIntentStart(BuildContext context, IntentStart intent) {
     super.onIntentStart(context, intent);
@@ -76,7 +90,7 @@ class AppBloc extends TakeoutBloc {
     super.onIntentReceive(context, intent);
     _handleIntent(context, intent);
   }
-  
+
   void _handleIntent(BuildContext context, IntentAction intent) {
     print('got ${intent.action}');
     switch (intent.action) {
@@ -89,13 +103,15 @@ class AppBloc extends TakeoutBloc {
         final artist = intent.parameters?['artist'];
         final song = intent.parameters?['song'];
         if (artist != null && song != null) {
-          context.playlist.replace('/music/search?q=+artist:"$artist" +title:"$song"');
+          context.playlist
+              .replace('/music/search?q=+artist:"$artist" +title:"$song"');
         }
       case 'com.takeoutfm.action.PLAY_ARTIST_ALBUM':
         final artist = intent.parameters?['artist'];
         final album = intent.parameters?['album'];
         if (artist != null && album != null) {
-          context.playlist.replace('/music/search?q=+artist:"$artist" +release:"$album"');
+          context.playlist
+              .replace('/music/search?q=+artist:"$artist" +release:"$album"');
         }
       case 'com.takeoutfm.action.PLAY_ARTIST_RADIO':
         final artist = intent.parameters?['artist'];
@@ -105,7 +121,8 @@ class AppBloc extends TakeoutBloc {
       case 'com.takeoutfm.action.PLAY_ARTIST_POPULAR_SONGS':
         final artist = intent.parameters?['artist'];
         if (artist != null) {
-          context.playlist.replace('/music/search?q=+artist:"$artist" +popularity:<11');
+          context.playlist
+              .replace('/music/search?q=+artist:"$artist" +popularity:<11');
         }
       case 'com.takeoutfm.action.PLAY_ALBUM':
         final album = intent.parameters?['album'];

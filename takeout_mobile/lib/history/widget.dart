@@ -52,7 +52,7 @@ class HistoryListWidget extends StatelessWidget {
                 child: ListView.builder(
                     itemCount: spiffs.length,
                     itemBuilder: (buildContext, index) {
-                      return SpiffHistoryWidget(spiffs[index]);
+                      return SpiffHistoryTile(spiffs[index]);
                     }))
           ]));
     };
@@ -95,11 +95,11 @@ class HistoryListWidget extends StatelessWidget {
   }
 }
 
-class SpiffHistoryWidget extends StatelessWidget {
+class SpiffHistoryTile extends StatelessWidget {
   final SpiffHistory spiffHistory;
   final String _cover;
 
-  SpiffHistoryWidget(this.spiffHistory, {super.key})
+  SpiffHistoryTile(this.spiffHistory, {super.key})
       : _cover = spiffHistory.spiff.cover;
 
   @override
