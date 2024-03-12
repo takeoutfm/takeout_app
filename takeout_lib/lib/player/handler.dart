@@ -27,6 +27,7 @@ import 'package:logging/logging.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
@@ -502,13 +503,13 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   @override
   Future<void> playFromSearch(String query,
       [Map<String, dynamic>? extras]) async {
-    return mediaRepository.playFromSearch(query);
+    return mediaRepository.playFromSearch(query, mediaType: MediaType.music);
   }
 
   @override
   Future<List<MediaItem>> search(String query,
       [Map<String, dynamic>? extras]) async {
-    return mediaRepository.search(query);
+    return mediaRepository.search(query, mediaType: MediaType.music);
   }
 
   Duration _seekCheck(Duration pos) {
@@ -528,7 +529,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   void _broadcastState(PlaybackEvent event) {
     final playing = _player.playing;
     List<MediaControl> controls;
-    List<int> compactControls;
     List<MediaAction> systemActions;
 
     final isPodcast = _spiff.isPodcast();
@@ -558,7 +558,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       controls = [
         if (playing) MediaControl.pause else MediaControl.play,
       ];
-      compactControls = const [0];
       systemActions = const [
         MediaAction.stop,
         MediaAction.seek,
@@ -569,7 +568,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         if (playing) MediaControl.pause else MediaControl.play,
         MediaControl.skipToNext,
       ];
-      compactControls = const [0, 1, 2];
       systemActions = const [
         MediaAction.skipToPrevious,
         MediaAction.skipToNext,

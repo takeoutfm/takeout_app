@@ -14,26 +14,26 @@ dependencies:
   takeout_lib:
     path: ../takeout_lib/
   cupertino_icons: ^1.0.6
-  dynamic_color: ^1.6.9
-  bloc: ^8.1.2
-  flutter_bloc: ^8.1.3
+  dynamic_color: ^1.7.0
+  bloc: ^8.1.3
+  flutter_bloc: ^8.1.4
   json_annotation: ^4.8.1
   logging: ^1.2.0
   nested: ^1.0.0
   recase: ^4.1.0
-  receive_intent: ^0.2.4
+  receive_intent: ^0.2.5
   rxdart: ^0.27.7
-  timeago: ^3.6.0
+  timeago: ^3.6.1
   timeago_flutter: ^3.6.0
-  url_launcher: ^6.2.2
-  video_player: ^2.8.1
+  url_launcher: ^6.2.5
+  video_player: ^2.8.3
   wakelock_plus: ^1.1.4
-  webview_flutter: ^4.4.2
+  webview_flutter: ^4.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.7
+  build_runner: ^2.4.8
   json_serializable: ^6.7.1
   flutter_lints: ^3.0.1
 

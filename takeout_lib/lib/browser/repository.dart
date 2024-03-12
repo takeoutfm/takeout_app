@@ -16,17 +16,21 @@
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:audio_service/audio_service.dart';
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/browser/provider.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/repository.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/media_type/repository.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/subscribed/repository.dart';
 
 abstract class MediaPlayer {
-  void play(Spiff spiff);
+  void playSpiff(Spiff spiff);
+
+  void playMovie(Movie movie);
 }
 
 class MediaRepository {
@@ -66,21 +70,33 @@ class MediaRepository {
     return _provider.getChildren(parentId);
   }
 
-  Future<List<MediaItem>> search(String query) async {
-    return _provider.search(query);
+  Future<List<MediaItem>> search(String query, {MediaType? mediaType}) async {
+    return _provider.search(query, mediaType: mediaType);
   }
 
   Future<void> playFromMediaId(String mediaId) async {
     final spiff = await _provider.spiffFromMediaId(mediaId);
     if (spiff != null) {
-      _player?.play(spiff);
+      _player?.playSpiff(spiff);
     }
   }
 
-  Future<void> playFromSearch(String query) async {
-    final spiff = await _provider.spiffFromSearch(query);
-    if (spiff != null) {
-      _player?.play(spiff);
+  Future<void> playFromSearch(String query, {MediaType? mediaType}) async {
+    if (mediaType == MediaType.video) {
+      final results = await _provider.search(query, mediaType: mediaType);
+      if (results.isNotEmpty) {
+        // TODO this plays first result
+        final movie = await _provider.movieFromMediaId(results.first.id);
+        if (movie != null) {
+          _player?.playMovie(movie);
+        }
+      }
+    } else {
+      final spiff = await _provider.spiffFromSearch(
+          query, mediaType: mediaType);
+      if (spiff != null) {
+        _player?.playSpiff(spiff);
+      }
     }
   }
 }

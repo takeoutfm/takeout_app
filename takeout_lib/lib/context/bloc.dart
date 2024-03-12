@@ -163,7 +163,7 @@ class TakeoutBloc {
             final nowPlaying = NowPlayingCubit();
             context
                 .read<MediaRepository>()
-                .init(DefaultMediaPlayer(nowPlaying));
+                .init(createMediaPlayer(nowPlaying));
             return nowPlaying;
           }),
       BlocProvider(
@@ -317,6 +317,10 @@ class TakeoutBloc {
         tokenRepository: context.read<TokenRepository>(),
         trackResolver: context.read<MediaTrackResolver>(),
         mediaRepository: context.read<MediaRepository>());
+  }
+
+  MediaPlayer createMediaPlayer(NowPlayingCubit nowPlaying) {
+    return BaseMediaPlayer(nowPlaying);
   }
 
   /// Process start intent
@@ -481,12 +485,18 @@ class TakeoutBloc {
   }
 }
 
-class DefaultMediaPlayer implements MediaPlayer {
+class BaseMediaPlayer implements MediaPlayer {
   final NowPlayingCubit player;
 
-  DefaultMediaPlayer(this.player);
+  BaseMediaPlayer(this.player);
 
-  void play(Spiff spiff) {
+  @override
+  void playSpiff(Spiff spiff) {
     player.add(spiff, autoplay: true);
+  }
+
+  @override
+  void playMovie(Movie movie) {
+    throw UnimplementedError;
   }
 }

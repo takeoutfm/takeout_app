@@ -17,6 +17,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/buttons.dart';
 import 'package:takeout_mobile/tiles.dart';
@@ -110,19 +112,45 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
     return ListView.builder(
         itemCount: stations.length,
         itemBuilder: (context, index) {
-          final isStream = stations[index].type == radioStream;
+          final station = stations[index];
+          final isStream = station.type == radioStream;
           return isStream
               ? StreamingTile(
-                  onTap: () => _onRadioStream(context, stations[index]),
-                  leading: const Icon(Icons.radio),
-                  title: Text(stations[index].name),
+                  onTap: () => _onRadioStream(context, station),
+                  leading: station.image.isNotEmpty
+                      ? tileCover(context, station.image)
+                      : null,
+                  title: Text(station.name),
+                  subtitle: _stationSubtitle(station),
+                  isThreeLine: station.description.isNotEmpty,
                   trailing: const Icon(Icons.play_arrow))
               : ListTile(
-                  title: Text(stations[index].name),
-                  onTap: () => _onStation(context, stations[index]),
+                  onTap: () => _onStation(context, station),
+                  leading: station.image.isNotEmpty
+                      ? tileCover(context, station.image)
+                      : null,
+                  title: Text(station.name),
+                  subtitle: _stationSubtitle(station),
+                  isThreeLine: station.description.isNotEmpty,
                   trailing: DownloadButton(
-                      onPressed: () => _onDownload(context, stations[index])));
+                      onPressed: () => _onDownload(context, station)));
         });
+  }
+
+  Widget? _stationSubtitle(Station station) {
+    var creator = station.creator;
+    if (creator == 'Radio' || creator == 'Takeout') {
+      // auto created by server, no need to display these
+      creator = '';
+    }
+    if (station.description.isNotEmpty && creator.isNotEmpty) {
+      return Text(merge([creator, station.description]));
+    } else if (creator.isNotEmpty) {
+      return Text(creator);
+    } else if (station.description.isNotEmpty) {
+      return Text(station.description);
+    }
+    return null;
   }
 
   void _onRadioStream(BuildContext context, Station station) {

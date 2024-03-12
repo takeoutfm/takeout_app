@@ -20,7 +20,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_lib/empty.dart';
-import 'package:takeout_lib/settings/model.dart';
 import 'package:takeout_watch/app/app.dart';
 import 'package:takeout_watch/app/bloc.dart';
 import 'package:takeout_watch/app/context.dart';

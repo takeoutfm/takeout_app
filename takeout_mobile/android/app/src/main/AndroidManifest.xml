@@ -53,6 +53,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
+                <action android:name="com.takeoutfm.action.PLAY_RADIO"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.takeoutfm.action.PLAY_SEARCH"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="com.takeoutfm.action.PLAYER_PLAY"/>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -62,6 +70,10 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="com.takeoutfm.action.PLAYER_NEXT"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.takeoutfm.action.PLAY_MOVIE"/>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

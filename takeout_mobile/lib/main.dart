@@ -17,6 +17,7 @@
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -217,17 +218,21 @@ class _TakeoutState extends State<_TakeoutWidget>
       final builders = _pageBuilders();
       final pages = List.generate(
           _routes.length, (index) => builders[_routes[index]]!(context));
-      return WillPopScope(
-          onWillPop: () async {
-            NavigatorState? navState = _navigatorState(context.app.state.index);
+      final navIndex = context.app.state.index;
+      return PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) async {
+            if (didPop) {
+              return;
+            }
+            NavigatorState? navState = _navigatorState(navIndex);
             if (navState != null) {
               final handled = await navState.maybePop();
-              if (!handled && context.app.state.index == NavigationIndex.home) {
+              if (!handled && navIndex == NavigationIndex.home) {
                 // allow pop and app to exit
-                return true;
+                await SystemNavigator.pop();
               }
             }
-            return false;
           },
           child: Scaffold(
               floatingActionButton: _fab(context),

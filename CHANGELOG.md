@@ -1,3 +1,11 @@
+## 0.15.3
+
+- Support intents `PLAY_RADIO` & `PLAY_SEARCH`
+- Show station creator, image and description
+- Fix settings scrolling
+- Start of movie mediabrowser support
+- Use PopScope instead of WillPopScope
+
 ## 0.15.2
 
 - Ensure track index is updated in latest history entry

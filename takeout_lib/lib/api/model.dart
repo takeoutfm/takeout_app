@@ -57,8 +57,7 @@ class Code {
 
   Code({required this.code});
 
-  factory Code.fromJson(Map<String, dynamic> json) =>
-      _$CodeFromJson(json);
+  factory Code.fromJson(Map<String, dynamic> json) => _$CodeFromJson(json);
 
   Map<String, dynamic> toJson() => _$CodeToJson(this);
 }
@@ -205,6 +204,7 @@ class SearchView {
   final List<Movie>? movies;
   final List<Series>? series;
   final List<Episode>? episodes;
+  final List<Station>? stations;
   final String query;
   final int hits;
 
@@ -215,6 +215,7 @@ class SearchView {
       this.movies = const [],
       this.series = const [],
       this.episodes = const [],
+      this.stations = const [],
       required this.query,
       required this.hits});
 
@@ -510,8 +511,17 @@ class Station {
   final int id;
   final String name;
   final String type;
+  final String creator;
+  final String image;
+  final String description;
 
-  Station({required this.id, required this.name, required this.type});
+  Station(
+      {required this.id,
+      required this.name,
+      required this.type,
+      this.creator = '',
+      this.image = '',
+      this.description = ''});
 
   factory Station.fromJson(Map<String, dynamic> json) =>
       _$StationFromJson(json);

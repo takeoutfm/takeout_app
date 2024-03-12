@@ -20,11 +20,14 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
+import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/cache/prune.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_lib/intent/intent.dart';
+import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
@@ -77,6 +80,11 @@ class AppBloc extends TakeoutBloc {
       tokenRepository: tokenRepository,
       jsonCacheRepository: jsonCacheRepository,
     );
+  }
+
+  @override
+  MediaPlayer createMediaPlayer(NowPlayingCubit nowPlaying) {
+    return DefaultMediaPlayer(nowPlaying);
   }
 
   @override
@@ -134,12 +142,33 @@ class AppBloc extends TakeoutBloc {
         if (song != null) {
           context.playlist.replace('/music/search?q=title:"$song"');
         }
+      case 'com.takeoutfm.action.PLAY_RADIO':
+        final station = intent.parameters?['station'];
+        if (station != null) {
+          context.playlist.replace('/music/radio/stations/$station');
+        }
+      case 'com.takeoutfm.action.PLAY_SEARCH':
+        final q = intent.parameters?['q'];
+        if (q != null && q is String) {
+          var match = '';
+          if (q.contains(':') == false) {
+            // assume best match with simple queries
+            match = '&m=1';
+          }
+          context.playlist.replace('/music/search?q=$q$match');
+        }
       case 'com.takeoutfm.action.PLAYER_PLAY':
         context.player.play();
       case 'com.takeoutfm.action.PLAYER_PAUSE':
         context.player.pause();
       case 'com.takeoutfm.action.PLAYER_NEXT':
         context.player.skipToNext();
+      case 'com.takeoutfm.action.PLAY_MOVIE':
+        final title = intent.parameters?['title'] as String?;
+        if (title != null) {
+          context.mediaRepository
+              .playFromSearch(title, mediaType: MediaType.video);
+        }
     }
   }
 }
@@ -156,4 +185,14 @@ mixin AppBlocState {
   }
 
   void appDispose() {}
+}
+
+class DefaultMediaPlayer extends BaseMediaPlayer {
+  DefaultMediaPlayer(super.player);
+
+  @override
+  void playMovie(Movie movie) {
+    // TODO
+    throw UnimplementedError;
+  }
 }

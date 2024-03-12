@@ -22,7 +22,6 @@ import 'package:crypto/crypto.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
-import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
@@ -38,11 +37,13 @@ abstract class MediaProvider {
 
   Future<List<MediaItem>> getChildren(String parentId);
 
-  Future<List<MediaItem>> search(String query);
+  Future<List<MediaItem>> search(String query, {MediaType? mediaType});
 
   Future<Spiff?> spiffFromMediaId(String mediaId);
 
-  Future<Spiff?> spiffFromSearch(String query);
+  Future<Spiff?> spiffFromSearch(String query, {MediaType? mediaType});
+
+  Future<Movie?> movieFromMediaId(String mediaId);
 }
 
 class DefaultMediaProvider implements MediaProvider {
@@ -117,19 +118,45 @@ class DefaultMediaProvider implements MediaProvider {
     }
   }
 
-  Future<List<MediaItem>> search(String query) async {
+  Future<List<MediaItem>> search(String query, {MediaType? mediaType}) async {
     final items = <MediaItem>[];
     final results = await _search(query);
-    for (var a in results.artists ?? []) {
-      items.add(_artist(a));
-    }
-    for (var r in results.releases ?? []) {
-      items.add(_release(r));
-    }
-    for (var t in results.tracks ?? []) {
-      items.add(_track(t));
+
+    if (mediaType == MediaType.video) {
+      for (var m in results.movies ?? []) {
+        items.add(_movie(m));
+      }
+    } else if (mediaType == MediaType.podcast) {
+      for (var s in results.series ?? []) {
+        items.add(_series(s));
+      }
+    } else if (mediaType == MediaType.stream) {
+      for (var s in results.stations ?? []) {
+        items.add(_station(s));
+      }
+    } else {
+      // default to music
+      for (var a in results.artists ?? []) {
+        items.add(_artist(a));
+      }
+      for (var r in results.releases ?? []) {
+        items.add(_release(r));
+      }
+      for (var t in results.tracks ?? []) {
+        items.add(_track(t));
+      }
     }
     return items;
+  }
+
+  Future<Movie?> movieFromMediaId(String mediaId) async {
+    Movie? movie;
+    if (mediaId.startsWith('/movies/')) {
+      final id = int.parse(mediaId.split('/')[2]);
+      final view = await clientRepository.movie(id);
+      movie = view.movie;
+    }
+    return movie;
   }
 
   Future<Spiff?> spiffFromMediaId(String mediaId) async {
@@ -160,8 +187,8 @@ class DefaultMediaProvider implements MediaProvider {
     return spiff;
   }
 
-  // TODO search isn't tested yet. Not sure how to test.
-  Future<Spiff?> spiffFromSearch(String query) async {
+  // TODO search isn't tested yet. Not sure how to test with ADB/AA.
+  Future<Spiff?> spiffFromSearch(String query, {MediaType? mediaType}) async {
     final results = await _search(query);
     if (results.hits == 0) {
       return null;
@@ -386,6 +413,14 @@ class DefaultMediaProvider implements MediaProvider {
         id: '/music/releases/${t.reid}?index=${t.trackIndex}',
         title: t.title,
         artUri: _img(t.image),
+        playable: true);
+  }
+
+  MediaItem _movie(Movie m) {
+    return MediaItem(
+        id: '/movies/${m.id}',
+        title: m.title,
+        artUri: _img(m.image),
         playable: true);
   }
 

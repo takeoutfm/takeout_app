@@ -259,7 +259,7 @@ class HomeWidget extends StatelessWidget {
         context: context,
         applicationName: context.strings.takeoutTitle,
         applicationVersion: appVersion,
-        applicationLegalese: 'Copyleft \u00a9 2020-2023 defsub',
+        applicationLegalese: 'Copyleft \u00a9 2020-2024 defsub',
         children: <Widget>[
           InkWell(
               child: const Text(

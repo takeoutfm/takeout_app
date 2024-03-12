@@ -18,7 +18,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_lib/settings/model.dart';
 import 'package:takeout_lib/settings/settings.dart';
 
 class SettingsWidget extends StatelessWidget {
@@ -29,7 +28,8 @@ class SettingsWidget extends StatelessWidget {
     return BlocBuilder<SettingsCubit, SettingsState>(builder: (context, state) {
       return Scaffold(
           appBar: AppBar(title: Text(context.strings.settingsLabel)),
-          body: Column(children: [
+          body: SingleChildScrollView(
+              child: Column(children: [
             Card(
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -86,7 +86,7 @@ class SettingsWidget extends StatelessWidget {
                 ),
               ],
             )),
-          ]));
+          ])));
     });
   }
 

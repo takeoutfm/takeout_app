@@ -15,9 +15,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
 
-// This file is heavily based on the audio_service example app located here:
-// https://github.com/ryanheise/audio_service
-
 import 'dart:io';
 
 import 'provider.dart';

@@ -189,6 +189,7 @@ abstract class _ConnectivityTile extends StatelessWidget {
   final Widget? trailing;
   final Widget? title;
   final Widget? subtitle;
+  final bool isThreeLine;
 
   const _ConnectivityTile(
       {super.key,
@@ -196,7 +197,8 @@ abstract class _ConnectivityTile extends StatelessWidget {
       this.leading,
       this.trailing,
       this.title,
-      this.subtitle});
+      this.subtitle,
+      this.isThreeLine = false});
 
   bool _enabled(BuildContext context, ConnectivityState state);
 
@@ -205,12 +207,14 @@ abstract class _ConnectivityTile extends StatelessWidget {
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
         builder: (context, state) {
       return ListTile(
-          enabled: _enabled(context, state),
-          onTap: onTap,
-          leading: leading,
-          trailing: trailing,
-          title: title,
-          subtitle: subtitle);
+        enabled: _enabled(context, state),
+        onTap: onTap,
+        leading: leading,
+        trailing: trailing,
+        title: title,
+        subtitle: subtitle,
+        isThreeLine: isThreeLine,
+      );
     });
   }
 }
@@ -222,7 +226,8 @@ class StreamingTile extends _ConnectivityTile {
       super.leading,
       super.trailing,
       super.title,
-      super.subtitle});
+      super.subtitle,
+      super.isThreeLine});
 
   @override
   bool _enabled(BuildContext context, ConnectivityState state) {
