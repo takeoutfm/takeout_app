@@ -1,8 +1,8 @@
-Takeout is a free and open source media system. You manage and stream your media on your own terms. Store your media at home or in the cloud, run the server anywhere, and create a media system that works best for you.
+TakeoutFM is a free and open source media system. You manage and stream your media on your own terms. Store your media at home or in the cloud, run the server anywhere, and create a media system that works best for you.
 
 Enjoy your media on your phone, desktop, television, and watch. All using free (as in freedom) software, without any restrictions or limits. Any fees for servers, media, storage, and egress are decided by you.
 
-Takeout for Android supports:
+TakeoutFM for Android supports:
 
 * Music
 * Movies
@@ -13,6 +13,6 @@ Takeout for Android supports:
 * Material 3 design, Material You, light/dark
 * ListenBrainz
 
-The Takeout server is required and provides secure access to your media with rich metadata and extensive search capabilities. Please find more information at: <a href="https://takeoutfm.com/" target="_blank">takeoutfm.com</a>.
+The TakeoutFM server is required and provides secure access to your media with rich metadata and extensive search capabilities. Please find more information at: <a href="https://takeoutfm.com/" target="_blank">takeoutfm.com</a>.
 
-Takeout software is distributed under the terms of the GNU Affero General Public License 3.0.
+TakeoutFM software is distributed under the terms of the GNU Affero General Public License 3.0.

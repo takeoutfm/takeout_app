@@ -7,7 +7,7 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="Takeout"
+        android:label="TakeoutFM"
         android:usesCleartextTraffic="true">
         <!--            android:name=".MainActivity"-->
         <activity

@@ -6,7 +6,7 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="Takeout"
+        android:label="TakeoutFM"
         android:usesCleartextTraffic="true">
         <activity
             android:name="com.takeoutfm.mobile.MainActivity"

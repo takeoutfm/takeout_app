@@ -1,5 +1,5 @@
 {
-  "takeoutTitle": "Takeout",
+  "takeoutTitle": "TakeoutFM",
   "artistsLabel": "Artists",
   "confirmDelete": "Really delete?",
   "deleteAll": "Delete all?",
@@ -64,7 +64,7 @@
   "settingDisabled": "Disabled",
   "settingListenBrainzToken": "ListenBrainz Token",
   "settingTrackActivityTitle": "Track Activity",
-  "settingTrackActivitySubtitle": "Submit listens to Takeout",
+  "settingTrackActivitySubtitle": "Submit listens to TakeoutFM",
   "recentlyPlayed": "Recent Tracks",
   "recentlyWatched": "Recently Watched",
   "popularTracks": "Popular Tracks",

@@ -1,19 +1,19 @@
 // Copyright 2023 defsub
 //
-// This file is part of Takeout.
+// This file is part of TakeoutFM.
 //
-// Takeout is free software: you can redistribute it and/or modify it under the
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
 // terms of the GNU Affero General Public License as published by the Free
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version.
 //
-// Takeout is distributed in the hope that it will be useful, but WITHOUT ANY
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
 // more details.
 //
 // You should have received a copy of the GNU Affero General Public License
-// along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
 import 'package:takeout_mobile/app/context.dart';
@@ -99,7 +99,7 @@ class WantReleaseCard extends StatelessWidget {
   }
 
   Widget _link(String text, void Function() onPressed) {
-    return TextButton(child: Text(text), onPressed: onPressed);
+    return TextButton(onPressed: onPressed, child: Text(text));
   }
 
   void _onAmazon() {
@@ -119,7 +119,7 @@ class WantReleaseCard extends StatelessWidget {
 
   void _onGoogle() {
     final uri =
-        'https://www.google.com/search?q=${Uri.encodeQueryComponent(release.name + " by " + artist.name)}';
+        'https://www.google.com/search?q=${Uri.encodeQueryComponent("${release.name} by ${artist.name}")}';
     launchUrl(Uri.parse(uri), mode: LaunchMode.externalApplication);
   }
 

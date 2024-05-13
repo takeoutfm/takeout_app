@@ -1,3 +1,11 @@
+## 0.15.4
+
+- Use compileSdkVersion 34 for plugins
+- Save & restore position to/from history
+- Fix watch re-login on auth expiration
+- Update to Android Studio Iguana
+- Update to Flutter 3.19.6
+
 ## 0.15.3
 
 - Support intents `PLAY_RADIO` & `PLAY_SEARCH`

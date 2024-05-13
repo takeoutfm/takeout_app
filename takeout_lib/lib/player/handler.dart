@@ -1,19 +1,19 @@
 // Copyright 2023 defsub
 //
-// This file is part of Takeout.
+// This file is part of TakeoutFM.
 //
-// Takeout is free software: you can redistribute it and/or modify it under the
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
 // terms of the GNU Affero General Public License as published by the Free
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version.
 //
-// Takeout is distributed in the hope that it will be useful, but WITHOUT ANY
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
 // more details.
 //
 // You should have received a copy of the GNU Affero General Public License
-// along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 // This file is based on the audio_service example app located here:
 // https://github.com/ryanheise/audio_service
@@ -285,10 +285,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       final duration = _player.duration ?? Duration.zero;
       if (state.playing) {
         onPlay(_spiff, duration, _player.position, buffering);
-      } else {
-        // } else if (state.processingState == ProcessingState.ready ||
-        //           state.processingState == ProcessingState.completed) {
-        //         // only send pause (ready to play) if ready or completed
+      } else if (state.processingState != ProcessingState.idle) {
+        // FIXME
+        // There's still a problem here where during load() the initialPosition
+        // is reset back to 0 and onPause is sent incorrectly. This gets fixed
+        // later in skipToQueue.
         onPause(_spiff, duration, _player.position, buffering);
       }
     }));
@@ -394,6 +395,9 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     final source = ConcatenatingAudioSource(children: []);
     await source.addAll(sources);
 
+    // Note: this initialPosition doesn't actually work since the player
+    // goes back to zero. skipToQueue below is where restoring position needs
+    // to happen.
     final offset = await offsetRepository.get(_spiff[index]);
     final position = offset?.position() ?? Duration.zero;
 
@@ -415,8 +419,21 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   @override
   Future<void> skipToQueueItem(int index) async {
+    Duration? position;
+
+    // restore position from server saved offset
     final offset = await offsetRepository.get(_spiff.playlist.tracks[index]);
-    var position = offset?.position() ?? Duration.zero;
+    position = offset?.position();
+
+    if (position == null) {
+      if (index == _spiff.index && _spiff.position > 0) {
+        // restore spiff position
+        position = Duration(seconds: _spiff.position.toInt());
+        // only use this to restore position once
+        _spiff = _spiff.copyWith(position: 0);
+      }
+    }
+    position ??= Duration.zero;
 
     final currentIndex = _spiff.index;
     if (index == currentIndex - 1) {

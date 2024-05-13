@@ -1,5 +1,5 @@
 name: takeout_mobile
-description: Takeout
+description: TakeoutFM
 publish_to: 'none'
 
 environment:
@@ -29,6 +29,7 @@ dependencies:
   video_player: ^2.8.3
   wakelock_plus: ^1.1.4
   webview_flutter: ^4.7.0
+  audio_service: ^0.18.13
 
 dev_dependencies:
   flutter_test:

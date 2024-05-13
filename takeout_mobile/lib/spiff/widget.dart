@@ -1,19 +1,19 @@
 // Copyright 2023 defsub
 //
-// This file is part of Takeout.
+// This file is part of TakeoutFM.
 //
-// Takeout is free software: you can redistribute it and/or modify it under the
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
 // terms of the GNU Affero General Public License as published by the Free
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version.
 //
-// Takeout is distributed in the hope that it will be useful, but WITHOUT ANY
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
 // more details.
 //
 // You should have received a copy of the GNU Affero General Public License
-// along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +35,10 @@ import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/util.dart';
 
 typedef FetchSpiff = void Function(ClientCubit, {Duration? ttl});
+
+Icon _spiffPlayIcon(Spiff spiff) {
+  return spiff.index == 0 ? playIcon : resumeIcon;
+}
 
 class SpiffWidget extends ClientPage<Spiff> {
   final FetchSpiff? fetch;
@@ -161,9 +165,10 @@ class SpiffWidget extends ClientPage<Spiff> {
   }
 
   Widget playButton(BuildContext context, Spiff spiff, bool isCached) {
+    final icon = _spiffPlayIcon(spiff);
     return isCached
-        ? PlayButton(onPressed: () => onPlay(context, spiff))
-        : StreamingButton(onPressed: () => onPlay(context, spiff));
+        ? PlayButton(onPressed: () => onPlay(context, spiff), icon: icon)
+        : StreamingButton(onPressed: () => onPlay(context, spiff), icon: icon);
   }
 
   void onPlay(BuildContext context, Spiff spiff) {

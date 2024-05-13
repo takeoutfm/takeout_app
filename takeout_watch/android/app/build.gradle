@@ -55,8 +55,8 @@ android {
         applicationId "com.takeoutfm.watch"
         minSdkVersion 23
         targetSdkVersion 30 // Wear OS must be 30..33
-        versionCode 1503 // #versionCode#
-        versionName "0.15.3" // #version#
+        versionCode 1504 // #versionCode#
+        versionName "0.15.4" // #version#
     }
 
     signingConfigs {

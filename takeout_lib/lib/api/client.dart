@@ -1,19 +1,19 @@
 // Copyright 2023 defsub
 //
-// This file is part of Takeout.
+// This file is part of TakeoutFM.
 //
-// Takeout is free software: you can redistribute it and/or modify it under the
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
 // terms of the GNU Affero General Public License as published by the Free
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version.
 //
-// Takeout is distributed in the hope that it will be useful, but WITHOUT ANY
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
 // more details.
 //
 // You should have received a copy of the GNU Affero General Public License
-// along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'dart:async';
 import 'dart:convert';
@@ -105,7 +105,7 @@ class TakeoutClient implements ClientProvider {
       required this.tokenRepository,
       required this.jsonCacheRepository,
       String? userAgent})
-      : _userAgent = userAgent ?? 'Takeout-App' {
+      : _userAgent = userAgent ?? 'TakeoutFM-App' {
     _client = _ClientWithUserAgent(http.Client(), _userAgent);
   }
 
@@ -558,10 +558,10 @@ class TakeoutClient implements ClientProvider {
           .then((j) => RadioView.fromJson(j))
           .catchError((Object e) => Future<RadioView>.error(e)));
 
-  /// GET /api/radio/stations/1
+  /// GET /api/stations/1
   @override
   Future<Spiff> station(int id, {Duration? ttl}) async =>
-      spiff('/api/radio/stations/$id/playlist', ttl: ttl);
+      spiff('/api/stations/$id/playlist', ttl: ttl);
 
   /// GET /path -> spiff
   Future<Spiff> spiff(String path, {Duration? ttl}) async =>
@@ -579,11 +579,11 @@ class TakeoutClient implements ClientProvider {
           .then((j) => MoviesView.fromJson(j))
           .catchError((Object e) => Future<MoviesView>.error(e)));
 
-  /// GET /api/movies
+  /// GET /api/movie-genres/name
   @override
   Future<GenreView> moviesGenre(String genre, {Duration? ttl}) async =>
       _retry<GenreView>(() =>
-          _getJson('/api/movies/genres/${Uri.encodeComponent(genre)}', ttl: ttl)
+          _getJson('/api/movie-genres/${Uri.encodeComponent(genre)}', ttl: ttl)
               .then((j) => GenreView.fromJson(j))
               .catchError((Object e) => Future<GenreView>.error(e)));
 

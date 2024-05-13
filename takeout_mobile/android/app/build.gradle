@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.takeoutfm.mobile"
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     lintOptions {
         disable 'InvalidPackage'
@@ -45,8 +45,8 @@ android {
         applicationId "com.takeoutfm.mobile"
         minSdkVersion 23
         targetSdkVersion 33 // Must target 33 (Android 13) or higher
-        versionCode 1503 // #versionCode#
-        versionName "0.15.3" // #version#
+        versionCode 1504 // #versionCode#
+        versionName "0.15.4" // #version#
     }
 
     signingConfigs {

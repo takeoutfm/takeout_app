@@ -1,19 +1,19 @@
 // Copyright 2023 defsub
 //
-// This file is part of Takeout.
+// This file is part of TakeoutFM.
 //
-// Takeout is free software: you can redistribute it and/or modify it under the
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
 // terms of the GNU Affero General Public License as published by the Free
 // Software Foundation, either version 3 of the License, or (at your option)
 // any later version.
 //
-// Takeout is distributed in the hope that it will be useful, but WITHOUT ANY
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 // FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
 // more details.
 //
 // You should have received a copy of the GNU Affero General Public License
-// along with Takeout.  If not, see <https://www.gnu.org/licenses/>.
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'dart:io';
 
@@ -161,9 +161,7 @@ class TakeoutBloc {
           lazy: false,
           create: (context) {
             final nowPlaying = NowPlayingCubit();
-            context
-                .read<MediaRepository>()
-                .init(createMediaPlayer(nowPlaying));
+            context.read<MediaRepository>().init(createMediaPlayer(nowPlaying));
             return nowPlaying;
           }),
       BlocProvider(
@@ -230,6 +228,7 @@ class TakeoutBloc {
             } else if (state is NowPlayingIndexChange) {
               onNowPlayingIndexChange(context, state);
             } else if (state is NowPlayingListenChange) {
+              print('onnowplayinglistenchange');
               onNowPlayingListenChange(context, state);
             }
           }),
@@ -395,18 +394,8 @@ class TakeoutBloc {
 
   void _onPlayerPlay(BuildContext context, PlayerPlay state) {}
 
-  void _updateProgress(BuildContext context, PlayerPositionState state) {
-    if (state.spiff.isPodcast()) {
-      final currentTrack = state.currentTrack;
-      if (currentTrack != null) {
-        context.updateProgress(currentTrack.etag,
-            position: state.position, duration: state.duration);
-      }
-    }
-  }
-
   void _onPlayerPause(BuildContext context, PlayerPause state) {
-    _updateProgress(context, state);
+    saveProgress(context, state);
   }
 
   void _onPlayerIndexChange(BuildContext context, PlayerIndexChange state) {
@@ -414,7 +403,7 @@ class TakeoutBloc {
   }
 
   void _onPlayerTrackEnd(BuildContext context, PlayerTrackEnd state) {
-    _updateProgress(context, state);
+    saveProgress(context, state);
   }
 
   void _onPlayerTrackListen(BuildContext context, PlayerTrackListen state) {
@@ -459,6 +448,34 @@ class TakeoutBloc {
     }
   }
 
+  // override this to change behavior
+  void saveProgress(BuildContext context, PlayerPositionState state) {
+    if (state.buffering == false) {
+      // print('saveProgress $state ${state.position} ${state.buffering}');
+      if (state.spiff.isPodcast()) {
+        // save podcast progress at server
+        final currentTrack = state.currentTrack;
+        if (currentTrack != null) {
+          context.updateProgress(currentTrack.etag,
+              position: state.position, duration: state.duration);
+        }
+      }
+      if (state.spiff.isStream() == false) {
+        // save progress in history for quick restore
+        updateSpiffHistoryPosition(context, state);
+      }
+    }
+  }
+
+  void updateSpiffHistoryPosition(
+      BuildContext context, PlayerPositionState state) {
+    final spiff =
+        state.spiff.copyWith(position: state.position.inSeconds.toDouble());
+    if (spiff.isNotEmpty && spiff.isStream() == false) {
+      context.history.add(spiff: Spiff.cleanup(spiff));
+    }
+  }
+
   // add spiff to history
   void addSpiffHistory(BuildContext context, Spiff spiff) {
     if (spiff.isNotEmpty) {
@@ -467,8 +484,7 @@ class TakeoutBloc {
   }
 
   // update spiff history with index
-  void updateSpiffHistory(
-      BuildContext context, NowPlayingIndexChange state) {
+  void updateSpiffHistory(BuildContext context, NowPlayingIndexChange state) {
     final spiff = state.spiff;
     if (spiff.isNotEmpty) {
       context.history.add(spiff: Spiff.cleanup(spiff));
