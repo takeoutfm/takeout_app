@@ -47,8 +47,17 @@ class ClientRepository {
 
   Client get client => _provider.client;
 
-  Future<bool> login(String user, String password) async {
-    return _provider.login(user, password);
+  Future<bool> login(String user, String password, {String? passcode}) async {
+    return _provider.login(user, password, passcode: passcode);
+  }
+
+  Future<bool> link(
+      {required String code,
+      required String user,
+      required String password,
+      String? passcode}) async {
+    return _provider.link(
+        code: code, user: user, password: password, passcode: passcode);
   }
 
   Future<AccessCode> code() async {

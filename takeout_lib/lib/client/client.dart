@@ -57,8 +57,19 @@ class ClientCubit extends Cubit<ClientState> {
       : _timeout = timeout ?? const Duration(seconds: 10),
         super(ClientReady());
 
-  void login(String user, String password) =>
-      _doit<bool>(({Duration? ttl}) => repository.login(user, password),
+  void login(String user, String password, {String? passcode}) => _doit<bool>(
+      ({Duration? ttl}) => repository.login(user, password, passcode: passcode),
+      ttl: Duration.zero);
+
+  void link({
+    required String code,
+    required String user,
+    required String password,
+    String? passcode,
+  }) =>
+      _doit<bool>(
+          ({Duration? ttl}) => repository.link(
+              code: code, user: user, password: password, passcode: passcode),
           ttl: Duration.zero);
 
   void code() => _doit<AccessCode>(({Duration? ttl}) => repository.code(),

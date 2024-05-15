@@ -21,36 +21,33 @@ import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/empty.dart';
 
-class LoginWidget extends ClientPage<bool> {
-  final TextEditingController _hostText = TextEditingController();
+class LinkWidget extends ClientPage<bool> {
   final TextEditingController _userText = TextEditingController();
   final TextEditingController _passwordText = TextEditingController();
   final TextEditingController _passcodeText = TextEditingController();
+  final TextEditingController _codeText = TextEditingController();
 
-  LoginWidget({super.key}) : super(value: false);
+  LinkWidget({super.key}) : super(value: false);
 
   @override
   void load(BuildContext context, {Duration? ttl}) {
-    final host = _hostText.text.trim();
-    if (host.isNotEmpty) {
-      context.settings.host = host;
-    }
-
-    // TODO assume host is emitted into settings repo for login below
-
     final user = _userText.text.trim();
     final password = _passwordText.text.trim();
     final passcode = _passcodeText.text.trim();
-    if (user.isNotEmpty && password.isNotEmpty) {
-      context.client.login(user, password,
-          passcode: passcode.isNotEmpty ? passcode : null);
+    final code = _codeText.text.trim();
+    if (user.isNotEmpty && password.isNotEmpty && code.isNotEmpty) {
+      context.client.link(
+        code: code,
+        user: user,
+        password: password,
+        passcode: passcode,
+      );
     }
   }
 
   @override
   Widget page(BuildContext context, bool state) {
     if (state) {
-      context.app.authenticated();
       return const EmptyWidget();
     }
 
@@ -66,25 +63,7 @@ class LoginWidget extends ClientPage<bool> {
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(10),
                     child: Text(
-                      context.strings.hostLabel,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 30),
-                    )),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _hostText,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.hostLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      context.strings.loginLabel,
+                      context.strings.linkTitle,
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, fontSize: 30),
                     )),
@@ -122,10 +101,21 @@ class LoginWidget extends ClientPage<bool> {
                   ),
                 ),
                 Container(
+                  padding: const EdgeInsets.all(10),
+                  child: TextFormField(
+                    controller: _codeText,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: context.strings.codeLabel,
+                    ),
+                  ),
+                ),
+                Container(
                     height: 70,
                     padding: const EdgeInsets.all(10),
                     child: OutlinedButton(
-                      child: Text(context.strings.loginLabel),
+                      child: Text(context.strings.linkLabel),
                       onPressed: () {
                         reloadPage(context);
                       },

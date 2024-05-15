@@ -24,7 +24,9 @@ import 'package:takeout_lib/spiff/model.dart';
 abstract class ClientProvider {
   Client get client;
 
-  Future<bool> login(String user, String password);
+  Future<bool> login(String user, String password, {String? passcode});
+
+  Future<bool> link({required String code, required String user, required String password, String? passcode});
 
   Future<AccessCode> code();
 

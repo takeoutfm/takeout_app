@@ -63,6 +63,9 @@ class PopupItem {
       : this(const Icon(Icons.refresh_sharp), context.strings.refreshLabel,
             onSelected);
 
+  PopupItem.linkLogin(BuildContext context, MenuCallback onSelected)
+      : this(const Icon(Icons.login), context.strings.linkLabel, onSelected);
+
   PopupItem.logout(BuildContext context, MenuCallback onSelected)
       : this(const Icon(Icons.logout), context.strings.logoutLabel, onSelected);
 

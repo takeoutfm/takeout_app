@@ -325,9 +325,12 @@ class TakeoutClient implements ClientProvider {
 
   /// POST /api/token
   @override
-  Future<bool> login(String user, String pass) async {
+  Future<bool> login(String user, String pass, {String? passcode}) async {
     var success = false;
     final json = {'User': user, 'Pass': pass};
+    if (passcode != null) {
+      json['Passcode'] = passcode;
+    }
     try {
       final result = await _postJson('/api/token', json);
       log.fine(result);
@@ -338,6 +341,32 @@ class TakeoutClient implements ClientProvider {
             accessToken: result[fieldAccessToken] as String,
             mediaToken: result[fieldMediaToken] as String,
             refreshToken: result[fieldRefreshToken] as String);
+        success = true;
+      }
+      return success;
+    } on ClientException {
+      return false;
+    }
+  }
+
+  /// POST /api/link
+  @override
+  Future<bool> link({
+    required String code,
+    required String user,
+    required String password,
+    String? passcode,
+  }) async {
+    const uri = '/api/link';
+    var success = false;
+    final json = {'Code': code, 'User': user, 'Pass': password};
+    if (passcode != null) {
+      json['Passcode'] = passcode;
+    }
+    try {
+      final result = await _postJson(uri, json);
+      log.fine(result);
+      if (result['statusCode'] == HttpStatus.noContent) {
         success = true;
       }
       return success;

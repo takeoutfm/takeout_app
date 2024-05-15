@@ -24,6 +24,7 @@ import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/downloads.dart';
+import 'package:takeout_mobile/link.dart';
 import 'package:takeout_mobile/settings/widget.dart';
 import 'package:takeout_lib/api/model.dart' hide Offset;
 import 'package:takeout_lib/art/artwork.dart';
@@ -197,6 +198,7 @@ class HomeWidget extends StatelessWidget {
           PopupItem.divider(),
           PopupItem.settings(context, (context) => _onSettings(context)),
           PopupItem.downloads(context, (context) => _onDownloads(context)),
+          PopupItem.linkLogin(context, (_) => _onLink(context)),
           PopupItem.logout(context, (_) => _onLogout(context)),
           PopupItem.divider(),
           PopupItem.about(context, (context) => _onAbout(context)),
@@ -249,6 +251,10 @@ class HomeWidget extends StatelessWidget {
         context,
         (ClientCubit client, {Duration? ttl}) =>
             client.popularTracks(ttl: Duration.zero));
+  }
+
+  void _onLink(BuildContext context) {
+    push(context, builder: (_) => LinkWidget());
   }
 
   void _onLogout(BuildContext context) {

@@ -56,7 +56,7 @@ class Settings {
   String get endpoint {
     if (host.startsWith(RegExp(r'(http|https)://.+/'))) {
       return host;
-    } else if (host.contains(RegExp(r'^[a-zA-Z0-9\.-]+$'))) {
+    } else if (host.contains(RegExp(r'^[a-zA-Z0-9\\.-]+$'))) {
       return 'https://$host';
     } else {
       return host;

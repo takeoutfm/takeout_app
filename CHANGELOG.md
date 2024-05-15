@@ -1,3 +1,8 @@
+## 0.16.0
+
+- Support 2FA login with passcode (TOTP)
+- Support /api/link and LinkWidget UI
+
 ## 0.15.4
 
 - Use compileSdkVersion 34 for plugins
