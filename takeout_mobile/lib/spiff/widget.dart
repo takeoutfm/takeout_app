@@ -20,6 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/buttons.dart';
 import 'package:takeout_mobile/menu.dart';
+import 'package:takeout_mobile/playlists.dart';
 import 'package:takeout_mobile/style.dart';
 import 'package:takeout_mobile/tiles.dart';
 import 'package:takeout_lib/art/cover.dart';
@@ -42,8 +43,9 @@ Icon _spiffPlayIcon(Spiff spiff) {
 
 class SpiffWidget extends ClientPage<Spiff> {
   final FetchSpiff? fetch;
+  final String? ref;
 
-  SpiffWidget({super.key, super.value, this.fetch});
+  SpiffWidget({super.key, super.value, this.fetch, this.ref});
 
   @override
   void load(BuildContext context, {Duration? ttl}) {
@@ -52,10 +54,15 @@ class SpiffWidget extends ClientPage<Spiff> {
 
   List<Widget>? actions(
       BuildContext context, Spiff spiff, bool isCached, bool isDownloaded) {
+    final reference = ref;
     return [
       popupMenu(context, [
         if (fetch != null)
           PopupItem.reload(context, (_) => reloadPage(context)),
+        PopupItem.shuffle(context, (_) => _onShuffle(context, spiff)),
+        if (reference != null)
+          PopupItem.playlistAppend(
+              context, (_) => _onPlaylistAppend(context, reference)),
         if (isCached || isDownloaded)
           PopupItem.delete(context, context.strings.deleteItem,
               (_) => _onDelete(context, spiff)),
@@ -148,7 +155,7 @@ class SpiffWidget extends ClientPage<Spiff> {
                   title(context, spiff),
                   subtitle(context, spiff),
                 ]))),
-        SliverToBoxAdapter(child: SpiffTrackListView(spiff)),
+        SliverToBoxAdapter(child: _SpiffTrackListView(spiff)),
       ]);
     });
   }
@@ -210,12 +217,20 @@ class SpiffWidget extends ClientPage<Spiff> {
   void _onDeleteConfirmed(BuildContext context, Spiff spiff) {
     context.remove(spiff);
   }
+
+  void _onPlaylistAppend(BuildContext context, String reference) {
+    showPlaylistAppend(context, reference);
+  }
+
+  void _onShuffle(BuildContext context, Spiff spiff) {
+    context.client.result<Spiff>(spiff.shuffle());
+  }
 }
 
-class SpiffTrackListView extends StatelessWidget {
+class _SpiffTrackListView extends StatelessWidget {
   final Spiff _spiff;
 
-  const SpiffTrackListView(this._spiff, {super.key});
+  const _SpiffTrackListView(this._spiff);
 
   void _onTrack(BuildContext context, int index) {
     if (_spiff.isMusic() || _spiff.isPodcast()) {

@@ -171,6 +171,21 @@ class Spiff {
     return copyWith(playlist: playlist.updateAt(index, entry));
   }
 
+  Spiff shuffle() {
+    final newPlaylist = playlist.shuffle();
+    var newIndex = index;
+    if (index != -1) {
+      for (var i = 0; i < newPlaylist.tracks.length; i++) {
+        if (newPlaylist.tracks[i].etag == playlist.tracks[index].etag) {
+          // retain current index in newly shuffled playlist
+          newIndex = i;
+          break;
+        }
+      }
+    }
+    return copyWith(index: newIndex, playlist: newPlaylist);
+  }
+
   static Spiff cleanup(Spiff spiff) {
     final creator = _playlistCreator(spiff);
     final title = _playlistTitle(spiff);
@@ -181,10 +196,10 @@ class Spiff {
     return spiff;
   }
 
-  factory Spiff.empty() => Spiff(
+  factory Spiff.empty({String title = ''}) => Spiff(
       index: 0,
       position: 0,
-      playlist: Playlist(title: '', tracks: []),
+      playlist: Playlist(title: title, tracks: []),
       type: MediaType.music.name);
 }
 
@@ -321,6 +336,12 @@ class Playlist {
         tracks: tracks ?? this.tracks,
       );
 
+  Playlist shuffle() {
+    final list = List<Entry>.from(tracks);
+    list.shuffle();
+    return copyWith(tracks: list);
+  }
+
   Playlist updateAt(int index, Entry entry) {
     if (index >= 0 && index < tracks.length) {
       final newTracks = List<Entry>.from(tracks);
@@ -378,8 +399,7 @@ String _playlistCreator(Spiff spiff) {
     return spiff.playlist.creator!;
   }
   // use track creator(s)
-  final list = <String>{}
-    ..addAll(spiff.playlist.tracks.map((e) => e.creator));
+  final list = <String>{}..addAll(spiff.playlist.tracks.map((e) => e.creator));
   // TODO localize, need context
   return list.length > 2 ? 'Various Artists' : list.join(', ');
 }

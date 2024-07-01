@@ -190,8 +190,25 @@ class ClientRepository {
     return _provider.patch(body);
   }
 
-  Future<Spiff> playlist({Duration? ttl}) async {
-    return _provider.playlist(ttl: ttl);
+  Future<Spiff> playlist({Duration? ttl, int? id, String? name}) async {
+    return _provider.playlist(id: id, ttl: ttl);
+  }
+
+  Future<PlaylistsView> playlists({Duration? ttl}) async {
+    return _provider.playlists(ttl: ttl);
+  }
+
+  Future<PlaylistView> createPlaylist(Spiff spiff) async {
+    return _provider.createPlaylist(spiff);
+  }
+
+  Future<PatchResult> patchPlaylist(
+      PlaylistView playlist, List<Map<String, dynamic>> body) async {
+    return _provider.patchPlaylist(playlist, body);
+  }
+
+  Future deletePlaylist(PlaylistView playlist) {
+    return _provider.deletePlaylist(playlist);
   }
 
   Future<ProgressView> progress({Duration? ttl}) async {
@@ -230,6 +247,36 @@ class ClientRepository {
         patchReplace(ref, mediaType.name, creator: creator, title: title) +
             patchPosition(index, position);
     final result = await patch(body);
+    if (result.isModified) {
+      return Spiff.fromJson(result.body);
+    }
+    return null;
+  }
+
+  // update current index and position
+  Future<Spiff?> playlistUpdate(PlaylistView playlist,
+          {int index = 0, double position = 0.0}) async =>
+      _doPatch(playlist, patchPosition(index, position));
+
+  // replace contents with new ref
+  Future<Spiff?> playlistReplace(PlaylistView playlist, String ref,
+          {int index = 0, double position = 0.0}) async =>
+      _doPatch(
+          playlist,
+          patchReplace(ref, MediaType.music.name) +
+              patchPosition(index, position));
+
+  // remove track at index
+  Future<Spiff?> playlistRemove(PlaylistView playlist, int index) async =>
+      _doPatch(playlist, patchRemove(index.toString()));
+
+  // append ref
+  Future<Spiff?> playlistAppend(PlaylistView playlist, String ref) async =>
+      _doPatch(playlist, patchAppend(ref));
+
+  Future<Spiff?> _doPatch(
+      PlaylistView playlist, List<Map<String, dynamic>> body) async {
+    final result = await patchPlaylist(playlist, body);
     if (result.isModified) {
       return Spiff.fromJson(result.body);
     }

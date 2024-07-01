@@ -28,6 +28,8 @@ abstract class JsonCacheProvider {
   Future<bool> put(String uri, Uint8List body);
 
   Future<JsonCacheResult> get(String uri, {Duration? ttl});
+
+  Future<void> invalidate(String uri);
 }
 
 class JsonCacheEntry extends JsonCacheResult {
@@ -105,5 +107,17 @@ class DirectoryJsonCache implements JsonCacheProvider {
         return JsonCacheResult.notFound();
       }
     });
+  }
+
+  @override
+  Future<void> invalidate(String uri) async {
+    final file = _jsonFile(uri);
+    if (file.existsSync() == false) {
+      return;
+    }
+    final lastModified = file.lastModifiedSync();
+    // instead of deletion, make the entry very old
+    final expiration = lastModified.copyWith(year: lastModified.year - 1);
+    return file.setLastModified(expiration);
   }
 }

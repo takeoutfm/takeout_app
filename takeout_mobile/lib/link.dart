@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/empty.dart';
+import 'package:takeout_mobile/dialog.dart';
 
 class LinkWidget extends ClientPage<bool> {
   final TextEditingController _userText = TextEditingController();
@@ -48,6 +49,8 @@ class LinkWidget extends ClientPage<bool> {
   @override
   Widget page(BuildContext context, bool state) {
     if (state) {
+      showAlertDialog(context, context.strings.linkSuccess,
+          onConfirmed: () => Navigator.pop(context));
       return const EmptyWidget();
     }
 

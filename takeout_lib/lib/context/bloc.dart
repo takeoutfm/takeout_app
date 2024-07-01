@@ -228,7 +228,6 @@ class TakeoutBloc {
             } else if (state is NowPlayingIndexChange) {
               onNowPlayingIndexChange(context, state);
             } else if (state is NowPlayingListenChange) {
-              print('onnowplayinglistenchange');
               onNowPlayingListenChange(context, state);
             }
           }),

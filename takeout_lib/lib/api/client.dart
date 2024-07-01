@@ -235,6 +235,7 @@ class TakeoutClient implements ClientProvider {
         case HttpStatus.noContent:
         case HttpStatus.ok:
           // success
+          await jsonCacheRepository.invalidate(uri);
           break;
         default:
           // failure
@@ -309,6 +310,7 @@ class TakeoutClient implements ClientProvider {
         .then((response) {
       log.fine('response ${response.statusCode}');
       if (response.statusCode == HttpStatus.ok) {
+        jsonCacheRepository.invalidate(uri); // async
         return PatchResult(
             HttpStatus.ok,
             jsonDecode(utf8.decode(response.bodyBytes))
@@ -576,9 +578,63 @@ class TakeoutClient implements ClientProvider {
       spiff('/api/releases/$id/playlist', ttl: ttl);
 
   /// GET /api/playlist
+  /// GET /api/playlists/1/playlist
+  /// GET /api/playlists/name/playlist
   @override
-  Future<Spiff> playlist({Duration? ttl = playlistTTL}) async =>
-      spiff('/api/playlist', ttl: ttl);
+  Future<Spiff> playlist(
+      {Duration? ttl = playlistTTL, int? id, String? name}) async {
+    if (id != null) {
+      return spiff('/api/playlists/$id/playlist', ttl: ttl);
+    } else if (name != null) {
+      return spiff('/api/playlists/${Uri.encodeComponent(name)}/playlist',
+          ttl: ttl);
+    } else {
+      return spiff('/api/playlist', ttl: ttl);
+    }
+  }
+
+  /// GET /api/playlists
+  @override
+  Future<PlaylistsView> playlists({Duration? ttl}) async =>
+      _retry<PlaylistsView>(() => _getJson('/api/playlists', ttl: ttl)
+          .then((j) => PlaylistsView.fromJson(j))
+          .catchError((Object e) => Future<PlaylistsView>.error(e)));
+
+  /// POST /api/playlists
+  @override
+  Future<PlaylistView> createPlaylist(Spiff spiff) async {
+    try {
+      log.fine('createPlaylist $spiff');
+      final result = await _retry(
+          () => _postJson('/api/playlists', spiff.toJson(), requireAuth: true));
+      log.fine('createPlaylist got $result');
+      jsonCacheRepository.invalidate('/api/playlists');
+      return PlaylistView.fromJson(result);
+    } on ClientException {
+      return Future.error(HttpStatus.badRequest);
+    }
+  }
+
+  /// PATCH /api/playlists/1/playlist
+  @override
+  Future<PatchResult> patchPlaylist(
+          PlaylistView playlist, List<Map<String, dynamic>> body) async =>
+      _retry<PatchResult>(() {
+        return _patchJson('/api/playlists/${playlist.id}/playlist', body)
+            .then((result) {
+          if (result.statusCode == HttpStatus.ok) {
+            jsonCacheRepository.invalidate('/api/playlists');
+          }
+          return result;
+        });
+      });
+
+  /// DELETE /api/playlists/1
+  @override
+  Future<void> deletePlaylist(PlaylistView playlist) async =>
+      _retry<void>(() => _delete('/api/playlists/${playlist.id}')
+              .then((_) => jsonCacheRepository.invalidate('/api/playlists')))
+          .catchError((Object e) => Future<void>.error(e));
 
   /// GET /api/radio
   @override

@@ -27,6 +27,7 @@ import 'package:takeout_lib/client/download.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_mobile/playlists.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'artists.dart';
@@ -54,8 +55,17 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
         creator: _release.creator, title: _release.name);
   }
 
+  void _onShufflePlay(BuildContext context) {
+    context.playlist.replace(_release.reference,
+        creator: _release.creator, title: _release.name, shuffle: true);
+  }
+
   void _onDownload(BuildContext context, ReleaseView view) {
     context.downloadRelease(view.release);
+  }
+
+  void _onPlaylistAppend(BuildContext context, ReleaseView state) {
+    showPlaylistAppend(context, state.release.reference);
   }
 
   @override
@@ -83,8 +93,12 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
                   actions: [
                     popupMenu(context, [
                       PopupItem.play(context, (_) => _onPlay(context)),
+                      PopupItem.shuffle(
+                          context, (_) => _onShufflePlay(context)),
                       PopupItem.download(
                           context, (_) => _onDownload(context, state)),
+                      PopupItem.playlistAppend(
+                          context, (_) => _onPlaylistAppend(context, state)),
                       PopupItem.divider(),
                       PopupItem.link(context, 'MusicBrainz Release',
                           (_) => launchUrl(Uri.parse(releaseUrl))),

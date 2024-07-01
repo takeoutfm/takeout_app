@@ -3,9 +3,9 @@
 This source repository contains an Android and Wear OS app, both of which share
 a common library.
 
-* takeout_lib - common code
-* takeout_mobile - the Android app
-* takeout_watch - the Wear OS app
+* takeout\_lib - common code
+* takeout\_mobile - the Android app
+* takeout\_watch - the Wear OS app
 
 This document describes general steps to build release versions of both apps
 using command line tools.
@@ -25,25 +25,25 @@ Flutter 3 is required and Android 33+ SDK (Android 13+) is recommended.
 
 These steps may be helpful: (replace xyz with latest versions)
 
-	$ cd ~
+    $ cd ~
     $ tar -Jxvf flutter_linux_xyz-stable.tar.xz
-	$ cd flutter
+    $ cd flutter
 
-	# Add ~/flutter/bin to your PATH
+    # Add ~/flutter/bin to your PATH
 
     $ mkdir ~/android
     $ cd ~/android
     $ unzip commandlinetools-linux-xyz_latest.zip
-	$ cd cmdline-tools
+    $ cd cmdline-tools
     $ mkdir latest
     $ mv * latest
-	$ cd ../..
+    $ cd ../..
     $ ./cmdline-tools/latest/bin/sdkmanager --list
     $ ./cmdline-tools/latest/bin/sdkmanager --install 'build-tools;34.0.0'
     $ ./cmdline-tools/latest/bin/sdkmanager --install 'platforms;android-34'
 
-	# Add ANDROID_SDK_ROOT=~/android to your environment
-	# Optional, add ~/android/platform-tools to your PATH
+    # Add ANDROID_SDK_ROOT=~/android to your environment
+    # Optional, add ~/android/platform-tools to your PATH
 
 After these steps you'll have Flutter and the necessary Android tools ready to
 build Takeout apps.
@@ -65,8 +65,8 @@ A signing key is *required* for release builds. Create a key.properties file in
 each of the app ``android`` directories. Do not add keys to source control!
 Example:
 
-* takeout_watch/android/key.properties
-* takeout_mobile/android/key.properties
+* takeout\_watch/android/key.properties
+* takeout\_mobile/android/key.properties
 
 The key.properties should have the following:
 

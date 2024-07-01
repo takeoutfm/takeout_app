@@ -18,6 +18,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
+import 'dart:collection';
+
 part 'model.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -45,6 +47,12 @@ class History {
       tracks: Map.from(tracks));
 
   SpiffHistory? get lastSpiff => spiffs.isNotEmpty ? spiffs.last : null;
+
+  Iterable<String> recentArtists() {
+    final recent = List<SpiffHistory>.from(spiffs);
+    recent.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return recent.toSet().toList().map((e) => e.spiff.creator ?? '');
+  }
 
   factory History.fromJson(Map<String, dynamic> json) =>
       _$HistoryFromJson(json);

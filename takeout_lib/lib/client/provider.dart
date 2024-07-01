@@ -92,7 +92,15 @@ abstract class ClientProvider {
 
   Future<PatchResult> patch(List<Map<String, dynamic>> body);
 
-  Future<Spiff> playlist({Duration? ttl});
+  Future<Spiff> playlist({Duration? ttl, int? id, String? name});
+
+  Future<PlaylistsView> playlists({Duration? ttl});
+
+  Future<PlaylistView> createPlaylist(Spiff spiff);
+
+  Future<PatchResult> patchPlaylist(PlaylistView playlist, List<Map<String, dynamic>> body);
+
+  Future deletePlaylist(PlaylistView playlist);
 
   Future<ProgressView> progress({Duration? ttl});
 

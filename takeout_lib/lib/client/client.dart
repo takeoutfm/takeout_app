@@ -57,6 +57,10 @@ class ClientCubit extends Cubit<ClientState> {
       : _timeout = timeout ?? const Duration(seconds: 10),
         super(ClientReady());
 
+  void result<T>(T v) {
+    emit(ClientResult<T>(v));
+  }
+
   void login(String user, String password, {String? passcode}) => _doit<bool>(
       ({Duration? ttl}) => repository.login(user, password, passcode: passcode),
       ttl: Duration.zero);
@@ -191,9 +195,25 @@ class ClientCubit extends Cubit<ClientState> {
   void patch(List<Map<String, dynamic>> body) =>
       _doit<PatchResult>(({Duration? ttl}) => repository.patch(body));
 
-  void playlist({Duration? ttl}) =>
-      _doit<Spiff>(({Duration? ttl}) => repository.playlist(ttl: ttl),
+  void playlist({Duration? ttl, int? id}) =>
+      _doit<Spiff>(({Duration? ttl}) => repository.playlist(ttl: ttl, id: id),
           ttl: ttl);
+
+  void playlists({Duration? ttl}) =>
+      _doit<PlaylistsView>(({Duration? ttl}) => repository.playlists(ttl: ttl),
+          ttl: ttl);
+
+  void createPlaylist(Spiff spiff) => _doit2<PlaylistsView>(
+      ({Duration? ttl}) => repository.createPlaylist(spiff),
+      ({Duration? ttl}) => repository.playlists(ttl: Duration.zero));
+
+  void deletePlaylist(PlaylistView playlist) => _doit2<PlaylistsView>(
+      ({Duration? ttl}) => repository.deletePlaylist(playlist),
+      ({Duration? ttl}) => repository.playlists(ttl: Duration.zero));
+
+  void playlistAppend(PlaylistView playlist, String ref) {
+    repository.playlistAppend(playlist, ref);
+  }
 
   void progress({Duration? ttl}) =>
       _doit<ProgressView>(({Duration? ttl}) => repository.progress(ttl: ttl),
@@ -222,12 +242,28 @@ class ClientCubit extends Cubit<ClientState> {
     return call(ttl: ttl)
         .timeout(_timeout)
         .then((T result) => emit(ClientResult<T>(result)))
-        .onError((error, stackTrace) {
-      if (error is ClientException && error.authenticationFailed) {
-        emit(ClientAuthError(error.statusCode, error, stackTrace));
-      } else {
-        emit(ClientError(error, stackTrace));
-      }
-    });
+        .onError(_handleError);
+  }
+
+  // call1 must be idempotent since it may be called again if call2 fails.
+  Future<void> _doit2<T>(ClientRequest<dynamic> call1, ClientRequest<T> call2,
+      {Duration? ttl}) async {
+    emit(ClientLoading());
+    call1(ttl: ttl)
+        .timeout(_timeout)
+        .then((_) => call2(ttl: ttl)
+            .timeout(_timeout)
+            .then((T result) => emit(ClientResult<T>(result)))
+            .onError(_handleError))
+        .onError(_handleError);
+  }
+
+  // timeouts will be raised here as a TimeoutException and emitted as ClientError
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ClientException && error.authenticationFailed) {
+      emit(ClientAuthError(error.statusCode, error, stackTrace));
+    } else {
+      emit(ClientError(error, stackTrace));
+    }
   }
 }

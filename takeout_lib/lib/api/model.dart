@@ -1380,3 +1380,34 @@ class Events {
     return DateTime.now().toUtc().toIso8601String();
   }
 }
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class PlaylistView {
+  @JsonKey(name: 'ID')
+  final int id;
+  final String name;
+  final int trackCount;
+
+  PlaylistView({required this.id, required this.name, required this.trackCount});
+
+  factory PlaylistView.fromJson(Map<String, dynamic> json) =>
+      _$PlaylistViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlaylistViewToJson(this);
+
+  String get location => '/api/playlists/$id';
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class PlaylistsView {
+  final List<PlaylistView> playlists;
+
+  PlaylistsView({this.playlists = const []});
+
+  factory PlaylistsView.fromJson(Map<String, dynamic> json) =>
+      _$PlaylistsViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlaylistsViewToJson(this);
+
+  String get location => '/api/playlists';
+}

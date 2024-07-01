@@ -344,7 +344,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     }
     final uri = await trackResolver.resolve(entry);
     String id = uri.toString();
-    if (id.startsWith('/api/')) {
+    if (id.startsWith('/api/') || id.startsWith('/d/')) {
+      // TODO should this just do all relative ids? '^/'?
       id = '$endpoint$id';
     }
     return MediaItem(
@@ -365,7 +366,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   IndexedAudioSource toAudioSource(MediaItem item,
       {Map<String, String>? headers}) {
-    return AudioSource.uri(Uri.parse(item.id), headers: headers);
+    return AudioSource.uri(Uri.parse(item.id), headers: headers, tag: item);
   }
 
   Future<void> load(Spiff spiff, {LoadCallback? onLoad}) async {

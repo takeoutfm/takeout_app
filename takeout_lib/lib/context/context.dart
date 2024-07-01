@@ -100,6 +100,12 @@ extension TakeoutContext on BuildContext {
         .then((spiff) => download(spiff));
   }
 
+  void downloadPlaylist(PlaylistView playlist) {
+    clientRepository
+        .playlist(id: playlist.id, ttl: Duration.zero)
+        .then((spiff) => download(spiff));
+  }
+
   void downloadMovie(Movie movie) {
     clientRepository.moviePlaylist(movie.id).then((spiff) => download(spiff));
   }

@@ -26,6 +26,7 @@ import 'package:takeout_lib/art/builder.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_mobile/playlists.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'menu.dart';
@@ -142,6 +143,7 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
 
   void _onRadio(BuildContext context) {
     pushSpiff(
+        ref: '/music/artists/${_artist.id}/radio',
         context,
         (client, {Duration? ttl}) =>
             client.artistRadio(_artist.id, ttl: Duration.zero));
@@ -149,6 +151,7 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
 
   void _onShuffle(BuildContext context) {
     pushSpiff(
+        ref: '/music/artists/${_artist.id}/shuffle',
         context,
         (client, {Duration? ttl}) =>
             client.artistPlaylist(_artist.id, ttl: Duration.zero));
@@ -156,6 +159,7 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
 
   void _onSingles(BuildContext context) {
     pushSpiff(
+        ref: '/music/artists/${_artist.id}/singles',
         context,
         (client, {Duration? ttl}) =>
             client.artistSinglesPlaylist(_artist.id, ttl: ttl));
@@ -163,6 +167,7 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
 
   void _onPopular(BuildContext context) {
     pushSpiff(
+        ref: '/music/artists/${_artist.id}/popular',
         context,
         (client, {Duration? ttl}) =>
             client.artistPopularPlaylist(_artist.id, ttl: ttl));
@@ -180,6 +185,11 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
     push(context, builder: (_) => ArtistWantListWidget(_artist));
   }
 
+  void _onPlaylistAppend(BuildContext context) {
+    final ref = '/music/artists/${_artist.id}/playlist';
+    showPlaylistAppend(context, ref);
+  }
+
   @override
   List<Widget> actions(BuildContext context, ArtistView view) {
     final artistUrl = 'https://musicbrainz.org/artist/${_artist.arid}';
@@ -188,6 +198,7 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
       popupMenu(context, [
         PopupItem.shuffle(context, (_) => _onShuffle(context)),
         PopupItem.radio(context, (_) => _onRadio(context)),
+        PopupItem.playlistAppend(context, (_) => _onPlaylistAppend(context)),
         PopupItem.divider(),
         PopupItem.singles(context, (_) => _onSingles(context)),
         PopupItem.popular(context, (_) => _onPopular(context)),

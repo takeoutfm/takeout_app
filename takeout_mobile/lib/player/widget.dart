@@ -20,14 +20,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/menu.dart';
-import 'package:takeout_mobile/tiles.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/scaffold.dart';
 import 'package:takeout_lib/player/seekbar.dart';
+import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/menu.dart';
+import 'package:takeout_mobile/playlists.dart';
+import 'package:takeout_mobile/tiles.dart';
 
 class PlayerWidget extends StatelessWidget {
   const PlayerWidget({super.key});
@@ -36,10 +37,19 @@ class PlayerWidget extends StatelessWidget {
     context.playlist.sync();
   }
 
+  void _onPlaylists(BuildContext context) {
+    showPlaylistSelect(context, (playlist) {
+      context.clientRepository
+          .playlist(id: playlist.id)
+          .then((spiff) => context.play(spiff));
+    });
+  }
+
   List<Widget> actions(BuildContext context) {
     return <Widget>[
       popupMenu(context, [
         PopupItem.syncPlaylist(context, _onSyncPlaylist),
+        PopupItem.playlists(context, _onPlaylists),
       ])
     ];
   }

@@ -83,7 +83,7 @@ class JsonHistoryProvider implements HistoryProvider {
               track.image,
               track.etag,
               1,
-              DateTime.now())
+              dateTime)
           : history.tracks[track.etag] =
               entry.copyWith(count: entry.count + 1, dateTime: dateTime);
     }
@@ -103,7 +103,7 @@ class JsonHistoryProvider implements HistoryProvider {
   }
 
   Future<History> _load(File file) async {
-    if (file.existsSync() == false) {
+    if (file.existsSync() == false || file.lengthSync() == 0) {
       return History(spiffs: [], searches: [], tracks: {});
     }
 

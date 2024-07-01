@@ -1,3 +1,11 @@
+## 0.17.0
+
+- Update to Flutter 3.22.2, Dart 3.4.3
+- Added user playlist support
+- Added spiff shuffle support
+- Fixed empty history exception
+- Pop on link code success
+
 ## 0.16.0
 
 - Support 2FA login with passcode (TOTP)

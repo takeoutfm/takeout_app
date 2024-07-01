@@ -71,6 +71,7 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     MediaType mediaType = MediaType.music,
     String? creator = '',
     String? title = '',
+    bool shuffle = false,
   }) {
     clientRepository
         .replace(ref,
@@ -81,6 +82,9 @@ class PlaylistCubit extends Cubit<PlaylistState> {
             title: title)
         .then((spiff) {
       if (spiff != null) {
+        if (shuffle) {
+          spiff = spiff.shuffle();
+        }
         emit(PlaylistChange(spiff));
       } else {
         // unchanged

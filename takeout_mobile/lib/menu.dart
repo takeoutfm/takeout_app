@@ -27,13 +27,15 @@ class PopupItem {
   final String? title;
   final MenuCallback? onSelected;
   final bool divider;
+  final String? subtitle;
+  final Widget? trailing;
 
   bool get isDivider => divider;
 
   factory PopupItem.divider() => const PopupItem(null, '', null, divider: true);
 
   const PopupItem(this.icon, this.title, this.onSelected,
-      {this.divider = false});
+      {this.divider = false, this.subtitle, this.trailing});
 
   PopupItem.music(BuildContext context, MenuCallback onSelected)
       : this(const Icon(Icons.music_note), context.strings.musicSwitchLabel,
@@ -101,7 +103,7 @@ class PopupItem {
       : this(const Icon(Icons.people), name, onSelected);
 
   PopupItem.shuffle(BuildContext context, MenuCallback onSelected)
-      : this(const Icon(Icons.shuffle_sharp), context.strings.shuffleLabel,
+      : this(const Icon(Icons.shuffle), context.strings.shuffleLabel,
             onSelected);
 
   PopupItem.radio(BuildContext context, MenuCallback onSelected)
@@ -123,6 +125,14 @@ class PopupItem {
 
   PopupItem.unsubscribe(BuildContext context, MenuCallback onSelected)
       : this(const Icon(Icons.remove), context.strings.unsubscribe, onSelected);
+
+  PopupItem.playlists(BuildContext context, MenuCallback onSelected)
+      : this(const Icon(Icons.playlist_play), context.strings.playlists,
+            onSelected);
+
+  PopupItem.playlistAppend(BuildContext context, MenuCallback onSelected)
+      : this(const Icon(Icons.playlist_add), context.strings.playlistAdd,
+            onSelected);
 }
 
 Widget popupMenu(BuildContext context, List<PopupItem> items) {
@@ -131,6 +141,7 @@ Widget popupMenu(BuildContext context, List<PopupItem> items) {
       itemBuilder: (_) {
         List<PopupMenuEntry<int>> entries = [];
         for (var index = 0; index < items.length; index++) {
+          final subtitle = items[index].subtitle;
           if (items[index].isDivider) {
             entries.add(const PopupMenuDivider());
           } else {
@@ -139,6 +150,7 @@ Widget popupMenu(BuildContext context, List<PopupItem> items) {
                 child: ListTile(
                     leading: items[index].icon,
                     title: Text(items[index].title ?? 'no title'),
+                    subtitle: subtitle != null ? Text(subtitle) : null,
                     minLeadingWidth: 10)));
           }
         }
@@ -149,6 +161,7 @@ Widget popupMenu(BuildContext context, List<PopupItem> items) {
       });
 }
 
+// this isn't used
 void showPopupMenu(
     BuildContext context, RelativeRect position, List<PopupItem> items) async {
   List<PopupMenuEntry<int>> entries = [];
@@ -156,15 +169,18 @@ void showPopupMenu(
     if (items[index].isDivider) {
       entries.add(const PopupMenuDivider());
     } else {
+      final subtitle = items[index].subtitle;
       entries.add(PopupMenuItem<int>(
           value: index,
           child: ListTile(
               leading: items[index].icon,
               title: Text(items[index].title ?? 'no title'),
+              subtitle: subtitle != null ? Text(subtitle) : null,
               minLeadingWidth: 10)));
     }
   }
-  final selected = await showMenu(context: context, position: position, items: entries);
+  final selected =
+      await showMenu(context: context, position: position, items: entries);
   if (selected != null) {
     if (!context.mounted) {
       return;

@@ -159,6 +159,7 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
 
   void _onStation(BuildContext context, Station station) {
     pushSpiff(
+        ref: '/api/stations/${station.id}/playlist',
         context,
         (client, {Duration? ttl}) =>
             client.station(station.id, ttl: Duration.zero));
