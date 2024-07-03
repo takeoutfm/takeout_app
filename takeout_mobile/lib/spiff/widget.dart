@@ -38,7 +38,7 @@ import 'package:takeout_lib/util.dart';
 typedef FetchSpiff = void Function(ClientCubit, {Duration? ttl});
 
 Icon _spiffPlayIcon(Spiff spiff) {
-  return spiff.index == 0 ? playIcon : resumeIcon;
+  return spiff.index > 0 ? resumeIcon : playIcon;
 }
 
 class SpiffWidget extends ClientPage<Spiff> {

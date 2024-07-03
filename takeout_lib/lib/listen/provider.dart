@@ -34,14 +34,16 @@ class DefaultListenProvider implements ListenProvider {
 
   DefaultListenProvider(this.settingsRepository, this.clientRepository);
 
+  @override
   Future<void> playingNow(MediaTrack track) async {
     final client = _listenBrainz(settingsRepository.settings);
-    client?.submitPlayingNow(_track(track));
+    await client?.submitPlayingNow(_track(track));
   }
 
+  @override
   Future<void> listened(MediaTrack track, DateTime listenedAt) async {
     final client = _listenBrainz(settingsRepository.settings);
-    client?.submitSingle(_track(track), listenedAt);
+    await client?.submitSingle(_track(track), listenedAt);
   }
 
   ListenBrainz? _listenBrainz(Settings? settings) {

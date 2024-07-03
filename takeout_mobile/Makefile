@@ -50,6 +50,9 @@ install-debug: debug
 update:
 	${FLUTTER} pub get
 
+analyze:
+	${FLUTTER} analyze
+
 generate:
 	${FLUTTER} pub run build_runner build --delete-conflicting-outputs
 

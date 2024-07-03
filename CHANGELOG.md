@@ -1,3 +1,11 @@
+## 0.17.1
+
+- Flutter pub upgrade & tighten
+- Fixed playlist play icon
+- Added HasPlaylists to index
+- Added playlists in watch
+- Fixed all *flutter analyze* issue
+
 ## 0.17.0
 
 - Update to Flutter 3.22.2, Dart 3.4.3

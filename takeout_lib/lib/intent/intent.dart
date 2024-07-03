@@ -48,21 +48,21 @@ class IntentCubit extends Cubit<IntentState> {
     ReceiveIntent.getInitialIntent().then((intent) {
       if (intent != null) {
         // android.intent.action.MAIN
-        print('startIntent is ${intent.action}');
+        // print('startIntent is ${intent.action}');
         emit(IntentStart(action: intent.action ?? '', parameters: intent.extra));
       }
     });
 
     _subscription = ReceiveIntent.receivedIntentStream.listen((Intent? intent) {
-      print('intent $intent');
-      print(intent?.action);
-      print(intent?.extra);
-      print(intent?.fromPackageName);
+      // print('intent $intent');
+      // print(intent?.action);
+      // print(intent?.extra);
+      // print(intent?.fromPackageName);
       if (intent != null) {
         emit(IntentReceive(action: intent.action ?? '', parameters: intent.extra));
       }
-    }, onError: (err) {
-      print(err);
+    }, onError: (dynamic err) {
+      // print(err);
     });
   }
 

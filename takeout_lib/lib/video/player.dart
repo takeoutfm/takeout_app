@@ -34,7 +34,7 @@ class VideoPlayer extends StatefulWidget {
   final bool autoPlay;
   final bool allowedScreenSleep;
   final bool fullScreenByDefault;
-  final Function(Duration, Duration)? onPause;
+  final void Function(Duration, Duration)? onPause;
 
   VideoPlayer(this.state,
       {required this.mediaTrackResolver,

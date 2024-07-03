@@ -13,4 +13,4 @@ linter:
     unawaited_futures: true
     public_member_api_docs: false
     prefer_function_declarations_over_variables: false
-
+    avoid_slow_async_io: true

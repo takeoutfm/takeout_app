@@ -55,7 +55,7 @@ class MediaRepository {
                 subscribedRepository);
 
   void init(MediaPlayer player) {
-    this._player = player;
+    _player = player;
   }
 
   Future<List<MediaItem>> getRoot() async {

@@ -25,12 +25,17 @@ RELEASE_AAB = build/app/outputs/bundle/release/app-release.aab
 
 ASSETS = ./assets
 
-.PHONY: all clean release assets
+.PHONY: all clean release assets analyze
 
 all:
 	${MAKE} --directory=takeout_lib generate
 	${MAKE} --directory=takeout_mobile all
 	${MAKE} --directory=takeout_watch all
+
+analyze:
+	${MAKE} --directory=takeout_lib analyze
+	${MAKE} --directory=takeout_mobile analyze
+	${MAKE} --directory=takeout_watch analyze
 
 release:
 	${MAKE} --directory=takeout_lib generate

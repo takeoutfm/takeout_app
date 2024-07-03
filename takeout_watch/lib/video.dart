@@ -134,12 +134,12 @@ class MoviePage extends ClientPage<MovieView> {
         onTap: () => entry.onSelected?.call(context, state));
   }
 
-  void onPlay(BuildContext context, MovieView state) async {
+  void onPlay(BuildContext context, MovieView state) {
     Navigator.push(context,
         CupertinoPageRoute<void>(builder: (_) => VideoPlayerPage(state)));
   }
 
-  void onResume(BuildContext context, MovieView state) async {
+  void onResume(BuildContext context, MovieView state) {
     final offset = context.offsets.state.get(state.movie);
     final startOffset =
         offset != null ? Duration(seconds: offset.offset) : null;
@@ -149,14 +149,14 @@ class MoviePage extends ClientPage<MovieView> {
             builder: (_) => VideoPlayerPage(state, startOffset: startOffset)));
   }
 
-  void onGenres(BuildContext context, MovieView state) async {
+  void onGenres(BuildContext context, MovieView state) {
     Navigator.push(
         context,
         CupertinoPageRoute<void>(
             builder: (_) => GenresPage(state.genres ?? [])));
   }
 
-  void onRelated(BuildContext context, MovieView state) async {
+  void onRelated(BuildContext context, MovieView state) {
     Navigator.push(
         context,
         CupertinoPageRoute<void>(
@@ -164,7 +164,7 @@ class MoviePage extends ClientPage<MovieView> {
                 context.strings.relatedLabel, state.relatedMovies())));
   }
 
-  void onStarring(BuildContext context, MovieView state) async {
+  void onStarring(BuildContext context, MovieView state) {
     Navigator.push(
         context,
         CupertinoPageRoute<void>(
@@ -193,7 +193,7 @@ class MoviesPage extends StatelessWidget {
         onTap: () => onMovie(context, movie));
   }
 
-  void onMovie(BuildContext context, Movie movie) async {
+  void onMovie(BuildContext context, Movie movie) {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => MoviePage(movie)));
   }
@@ -242,7 +242,7 @@ class GenresPage extends StatelessWidget {
         onTap: () => onGenre(context, genre));
   }
 
-  void onGenre(BuildContext context, String genre) async {
+  void onGenre(BuildContext context, String genre) {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => GenrePage(genre)));
   }
@@ -301,7 +301,7 @@ class PeoplePage extends StatelessWidget {
         onTap: () => onPerson(context, person));
   }
 
-  void onPerson(BuildContext context, Person person) async {
+  void onPerson(BuildContext context, Person person) {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => ProfilePage(person)));
   }

@@ -207,7 +207,7 @@ class ClientRepository {
     return _provider.patchPlaylist(playlist, body);
   }
 
-  Future deletePlaylist(PlaylistView playlist) {
+  Future<void> deletePlaylist(PlaylistView playlist) {
     return _provider.deletePlaylist(playlist);
   }
 

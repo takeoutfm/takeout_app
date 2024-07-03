@@ -135,14 +135,17 @@ Future<Color> _backgroundColor(
     BuildContext context, ImageProvider imageProvider) async {
   final paletteGenerator =
       await PaletteGenerator.fromImageProvider(imageProvider);
+  if (!context.mounted) {
+    return Future.value(Colors.black);
+  }
   final brightness = MediaQuery.of(context).platformBrightness;
   if (brightness == Brightness.dark) {
     return paletteGenerator.darkVibrantColor?.color ??
         paletteGenerator.darkMutedColor?.color ??
-        Theme.of(context).colorScheme.background;
+        Theme.of(context).colorScheme.surface;
   } else {
     return paletteGenerator.lightVibrantColor?.color ??
         paletteGenerator.lightMutedColor?.color ??
-        Theme.of(context).colorScheme.background;
+        Theme.of(context).colorScheme.surface;
   }
 }

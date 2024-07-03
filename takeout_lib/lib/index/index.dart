@@ -22,12 +22,16 @@ class IndexState {
   final bool movies;
   final bool music;
   final bool podcasts;
+  final bool playlists;
 
   IndexState(
-      {required this.movies, required this.music, required this.podcasts});
+      {required this.movies,
+      required this.music,
+      required this.podcasts,
+      required this.playlists});
 
-  factory IndexState.initial() =>
-      IndexState(movies: false, music: false, podcasts: false);
+  factory IndexState.initial() => IndexState(
+      movies: false, music: false, podcasts: false, playlists: false);
 }
 
 class IndexCubit extends Cubit<IndexState> {
@@ -42,7 +46,8 @@ class IndexCubit extends Cubit<IndexState> {
       emit(IndexState(
           movies: view.hasMovies,
           music: view.hasMusic,
-          podcasts: view.hasPodcasts));
+          podcasts: view.hasPodcasts,
+          playlists: view.hasPlaylists));
     }).onError((error, stackTrace) {
       Future.delayed(const Duration(minutes: 3), () => _load());
     });

@@ -93,7 +93,7 @@ class SettingsPage extends StatelessWidget {
 
     return BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) => Scaffold(
-              body: RotaryList<SettingEntry>(entries,
+              body: RotaryList<SettingEntry<dynamic>>(entries,
                   title: context.strings.settingsLabel,
                   tileBuilder: (context, state) => settingTile(context, state,
                       subtitleTextStyle: textStyle)),
@@ -147,7 +147,7 @@ class SettingsPage extends StatelessWidget {
     });
   }
 
-  Widget settingTile(BuildContext context, SettingEntry entry,
+  Widget settingTile(BuildContext context, SettingEntry<dynamic> entry,
       {TextStyle? subtitleTextStyle}) {
     return Builder(builder: (BuildContext context) {
       final settings = context.watch<SettingsCubit>().state;

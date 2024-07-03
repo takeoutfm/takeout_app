@@ -43,9 +43,8 @@ class JsonCacheEntry extends JsonCacheResult {
   @override
   Future<Map<String, dynamic>> read() async {
     try {
-      return await file
-          .readAsBytes()
-          .then((body) => jsonDecode(utf8.decode(body)) as Map<String, dynamic>);
+      return await file.readAsBytes().then(
+          (body) => jsonDecode(utf8.decode(body)) as Map<String, dynamic>);
     } catch (e) {
       return Future.error(e);
     }
@@ -93,20 +92,19 @@ class DirectoryJsonCache implements JsonCacheProvider {
   @override
   Future<JsonCacheResult> get(String uri, {Duration? ttl}) async {
     final file = _jsonFile(uri);
-    return file.exists().then((exists) {
-      if (exists) {
-        final lastModified = file.lastModifiedSync();
-        if (ttl != null) {
-          final expirationTime = lastModified.add(ttl);
-          final expired = DateTime.now().isAfter(expirationTime);
-          return JsonCacheEntry(uri, file, lastModified, expired);
-        } else {
-          return JsonCacheEntry(uri, file, lastModified, false);
-        }
+    final exists = file.existsSync();
+    if (exists) {
+      final lastModified = file.lastModifiedSync();
+      if (ttl != null) {
+        final expirationTime = lastModified.add(ttl);
+        final expired = DateTime.now().isAfter(expirationTime);
+        return JsonCacheEntry(uri, file, lastModified, expired);
       } else {
-        return JsonCacheResult.notFound();
+        return JsonCacheEntry(uri, file, lastModified, false);
       }
-    });
+    } else {
+      return JsonCacheResult.notFound();
+    }
   }
 
   @override

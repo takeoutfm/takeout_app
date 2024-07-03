@@ -48,6 +48,9 @@ install-debug: debug
 update:
 	${FLUTTER} pub get
 
+analyze:
+	${FLUTTER} analyze
+
 generate:
 	${DART} run build_runner build --delete-conflicting-outputs
 

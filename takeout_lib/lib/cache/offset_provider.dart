@@ -85,7 +85,8 @@ class OffsetFileCache implements OffsetCache {
 
   Offset? _decode(File file) {
     try {
-      return Offset.fromJson(jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
+      return Offset.fromJson(
+          jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
     } on FormatException {
       log.warning(
           '_decode failed to parse $file with "${file.readAsStringSync()}"');
@@ -95,7 +96,8 @@ class OffsetFileCache implements OffsetCache {
 
   Future<File> _save(Offset offset) async {
     File file = _cacheFile(offset.etag);
-    log.fine('saving ${offset.etag} ${offset.position()} ${offset.duration} to $file');
+    log.fine(
+        'saving ${offset.etag} ${offset.position()} ${offset.duration} to $file');
     final data = jsonEncode(offset.toJson());
     return file.writeAsString(data);
   }
@@ -119,17 +121,16 @@ class OffsetFileCache implements OffsetCache {
     }
     if (ttl != null) {
       final file = _cacheFile(key);
-      return file.exists().then((exists) {
-        if (exists) {
-          if (file.isExpired(ttl)) {
-            log.fine('deleting expired offset $file');
-            _remove(key);
-          } else {
-            return _entries[key];
-          }
+      final exists = file.existsSync();
+      if (exists) {
+        if (file.isExpired(ttl)) {
+          log.fine('deleting expired offset $file');
+          _remove(key);
+        } else {
+          return _entries[key];
         }
-        return null;
-      });
+      }
+      return null;
     } else {
       return _entries[key];
     }

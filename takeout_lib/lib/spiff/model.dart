@@ -420,7 +420,7 @@ String _playlistTitle(Spiff spiff) {
     ..sort((a, b) => b.value.compareTo(a.value));
   if (sorted.length > 2) {
     // use top n album titles
-    return sorted.sublist(0, 2).map((e) => e.key).join(', ') + ', ...';
+    return '${sorted.sublist(0, 2).map((e) => e.key).join(', ')}, ...';
   }
   return sorted.map((e) => e.key).join(', ');
 }

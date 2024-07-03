@@ -28,6 +28,7 @@ import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/music.dart';
+import 'package:takeout_watch/playlists.dart';
 import 'package:takeout_watch/podcasts.dart';
 import 'package:takeout_watch/radio.dart';
 import 'package:takeout_watch/settings.dart';
@@ -79,16 +80,19 @@ class HomePage extends ClientPage<HomeView> {
       final history = context.watch<HistoryCubit>().state.history;
       final entries = [
         // TODO hide if not playing?
-        HomeEntry(
-            PlayerTitle(style: context.listTileTheme.titleTextStyle),
+        HomeEntry(PlayerTitle(style: context.listTileTheme.titleTextStyle),
             icon: const SizedBox.square(dimension: 36, child: PlayerImage()),
-            subtitle: PlayerArtist(
-                style: context.listTileTheme.subtitleTextStyle),
+            subtitle:
+                PlayerArtist(style: context.listTileTheme.subtitleTextStyle),
             onSelected: (context, state) => onPlayer(context, state)),
         if (history.spiffs.isNotEmpty)
           HomeEntry(Text(context.strings.recentLabel),
               icon: const Icon(Icons.history),
               onSelected: (context, state) => onHistory(context, state)),
+        if (index.playlists)
+          HomeEntry(Text(context.strings.playlistsLabel),
+              icon: const Icon(Icons.playlist_play),
+              onSelected: (context, state) => onPlaylists(context, state)),
         if (index.music)
           HomeEntry(Text(context.strings.musicLabel),
               icon: const Icon(Icons.music_note),
@@ -159,6 +163,11 @@ class HomePage extends ClientPage<HomeView> {
         });
   }
 
+  void onPlaylists(BuildContext context, HomeView _) {
+    Navigator.push(context,
+        CupertinoPageRoute<void>(builder: (_) => PlaylistsPage()));
+  }
+
   void onMusic(BuildContext context, HomeView state) {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => MusicPage(state)));
@@ -185,8 +194,8 @@ class HomePage extends ClientPage<HomeView> {
   }
 
   void onMovies(BuildContext context, HomeView state) {
-    Navigator.push(context,
-        CupertinoPageRoute<void>(builder: (_) => VideoPage(state)));
+    Navigator.push(
+        context, CupertinoPageRoute<void>(builder: (_) => VideoPage(state)));
   }
 
   void onDownloads(BuildContext context, HomeView _) {

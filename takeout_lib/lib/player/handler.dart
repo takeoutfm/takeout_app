@@ -62,7 +62,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final TrackEndCallback onTrackEnd;
 
   final _subscriptions = <StreamSubscription<dynamic>>[];
-  final _listens = ExpiringSet<String>(Duration(minutes: 15));
+  final _listens = ExpiringSet<String>(const Duration(minutes: 15));
 
   Spiff _spiff = Spiff.empty();
   final _queue = <MediaItem>[];

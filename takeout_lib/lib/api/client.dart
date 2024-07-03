@@ -200,19 +200,19 @@ class TakeoutClient implements ClientProvider {
     }
   }
 
-  Future _delete(String uri) async {
-    return _method("DELETE", uri);
+  Future<void> _delete(String uri) async {
+    return _method('DELETE', uri);
   }
 
-  Future _put(String uri) async {
-    return _method("PUT", uri);
+  Future<void> _put(String uri) async {
+    return _method('PUT', uri);
   }
 
   // call a method w/o any input or output data.
-  Future _method(String method, String uri) async {
+  Future<void> _method(String method, String uri) async {
     final token = tokenRepository.accessToken;
     if (token == null) {
-      throw ClientException(
+      throw const ClientException(
         statusCode: HttpStatus.networkAuthenticationRequired,
       );
     }
@@ -220,14 +220,14 @@ class TakeoutClient implements ClientProvider {
     try {
       log.fine('$method $endpoint$uri');
       http.Response response;
-      if (method == "DELETE") {
+      if (method == 'DELETE') {
         response = await _client.delete(Uri.parse('$endpoint$uri'),
             headers: _headersWithAccessToken());
-      } else if (method == "PUT") {
+      } else if (method == 'PUT') {
         response = await _client.put(Uri.parse('$endpoint$uri'),
             headers: _headersWithAccessToken());
       } else {
-        throw ClientException(statusCode: HttpStatus.badRequest);
+        throw const ClientException(statusCode: HttpStatus.badRequest);
       }
       log.fine('got ${response.statusCode}');
       switch (response.statusCode) {
@@ -380,6 +380,7 @@ class TakeoutClient implements ClientProvider {
   /// GET /api/code
   /// Request a code for external authorization. This returns a code and access token.
   /// After extern authorization, POST the code with access token to authorize.
+  @override
   Future<AccessCode> code() async {
     const uri = '/api/code';
     try {
@@ -402,6 +403,7 @@ class TakeoutClient implements ClientProvider {
   /// If this successful, the resulting tokens are stored and client is authorized.
   /// If not successful, try again.
   /// InvalidCodeError is returned if the code is invalid or expired.
+  @override
   Future<bool> checkCode(AccessCode accessCode) async {
     const uri = '/api/code';
     bool success = false;
@@ -608,7 +610,7 @@ class TakeoutClient implements ClientProvider {
       final result = await _retry(
           () => _postJson('/api/playlists', spiff.toJson(), requireAuth: true));
       log.fine('createPlaylist got $result');
-      jsonCacheRepository.invalidate('/api/playlists');
+      await jsonCacheRepository.invalidate('/api/playlists');
       return PlaylistView.fromJson(result);
     } on ClientException {
       return Future.error(HttpStatus.badRequest);
@@ -659,6 +661,7 @@ class TakeoutClient implements ClientProvider {
       _retry<PatchResult>(() => _patchJson('/api/playlist', body));
 
   /// GET /api/movies
+  @override
   Future<MoviesView> movies({Duration? ttl}) async =>
       _retry<MoviesView>(() => _getJson('/api/movies', ttl: ttl)
           .then((j) => MoviesView.fromJson(j))
@@ -692,12 +695,14 @@ class TakeoutClient implements ClientProvider {
           .catchError((Object e) => Future<ProfileView>.error(e)));
 
   /// GET /api/podcasts
+  @override
   Future<PodcastsView> podcasts({Duration? ttl}) async =>
       _retry<PodcastsView>(() => _getJson('/api/podcasts', ttl: ttl)
           .then((j) => PodcastsView.fromJson(j))
           .catchError((Object e) => Future<PodcastsView>.error(e)));
 
   /// GET /api/podcasts/subscribed
+  @override
   Future<PodcastsView> podcastsSubscribed({Duration? ttl}) async =>
       _retry<PodcastsView>(() => _getJson('/api/podcasts/subscribed', ttl: ttl)
           .then((j) => PodcastsView.fromJson(j))

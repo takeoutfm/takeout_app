@@ -62,34 +62,37 @@ class DefaultMediaProvider implements MediaProvider {
       this.mediaTypeRepository,
       this.subscribedRepository);
 
+  @override
   Future<List<MediaItem>> getRoot() async {
     final items = <MediaItem>[];
     final index = await clientRepository.index();
     // TODO need to localize these strings. Will need a repository for that
     // since there's no context available here.
-    items.add(MediaItem(id: '/history', title: 'Recent', playable: false));
+    items.add(const MediaItem(id: '/history', title: 'Recent', playable: false));
     if (index.hasMusic) {
-      items.add(MediaItem(id: '/music', title: 'Music', playable: false));
+      items.add(const MediaItem(id: '/music', title: 'Music', playable: false));
     }
     if (index.hasPodcasts) {
-      items.add(MediaItem(id: '/podcasts', title: 'Podcasts', playable: false));
+      items.add(const MediaItem(id: '/podcasts', title: 'Podcasts', playable: false));
     }
     if (index.hasMusic) {
-      items.add(MediaItem(id: '/radio', title: 'Radio', playable: false));
-      items.add(MediaItem(id: '/artists', title: 'Artists', playable: false));
+      items.add(const MediaItem(id: '/radio', title: 'Radio', playable: false));
+      items.add(const MediaItem(id: '/artists', title: 'Artists', playable: false));
     }
     final downloads = await spiffCacheRepository.entries;
     if (downloads.isNotEmpty && downloads.any((d) => d.isMusic())) {
       items.add(
-          MediaItem(id: '/downloads', title: 'Downloads', playable: false));
+          const MediaItem(id: '/downloads', title: 'Downloads', playable: false));
     }
     return items;
   }
 
+  @override
   Future<List<MediaItem>> getRecent() async {
     return _getHistory();
   }
 
+  @override
   Future<List<MediaItem>> getChildren(String parentId) async {
     switch (parentId) {
       case '/':
@@ -118,37 +121,39 @@ class DefaultMediaProvider implements MediaProvider {
     }
   }
 
+  @override
   Future<List<MediaItem>> search(String query, {MediaType? mediaType}) async {
     final items = <MediaItem>[];
     final results = await _search(query);
 
     if (mediaType == MediaType.video) {
-      for (var m in results.movies ?? []) {
+      for (var m in results.movies ?? <Movie>[]) {
         items.add(_movie(m));
       }
     } else if (mediaType == MediaType.podcast) {
-      for (var s in results.series ?? []) {
+      for (var s in results.series ??<Series> []) {
         items.add(_series(s));
       }
     } else if (mediaType == MediaType.stream) {
-      for (var s in results.stations ?? []) {
+      for (var s in results.stations ?? <Station>[]) {
         items.add(_station(s));
       }
     } else {
       // default to music
-      for (var a in results.artists ?? []) {
+      for (var a in results.artists ?? <Artist>[]) {
         items.add(_artist(a));
       }
-      for (var r in results.releases ?? []) {
+      for (var r in results.releases ?? <Release>[]) {
         items.add(_release(r));
       }
-      for (var t in results.tracks ?? []) {
+      for (var t in results.tracks ?? <Track>[]) {
         items.add(_track(t));
       }
     }
     return items;
   }
 
+  @override
   Future<Movie?> movieFromMediaId(String mediaId) async {
     Movie? movie;
     if (mediaId.startsWith('/movies/')) {
@@ -159,6 +164,7 @@ class DefaultMediaProvider implements MediaProvider {
     return movie;
   }
 
+  @override
   Future<Spiff?> spiffFromMediaId(String mediaId) async {
     Spiff? spiff;
     if (mediaId.startsWith('/podcasts/episodes/')) {
@@ -188,6 +194,7 @@ class DefaultMediaProvider implements MediaProvider {
   }
 
   // TODO search isn't tested yet. Not sure how to test with ADB/AA.
+  @override
   Future<Spiff?> spiffFromSearch(String query, {MediaType? mediaType}) async {
     final results = await _search(query);
     if (results.hits == 0) {
@@ -271,18 +278,18 @@ class DefaultMediaProvider implements MediaProvider {
     final radio = await clientRepository.radio();
     if (radio.genre != null) {
       items
-          .add(MediaItem(id: '/radio/genre', title: 'Genres', playable: false));
+          .add(const MediaItem(id: '/radio/genre', title: 'Genres', playable: false));
     }
     if (radio.period != null) {
       items.add(
-          MediaItem(id: '/radio/period', title: 'Decades', playable: false));
+          const MediaItem(id: '/radio/period', title: 'Decades', playable: false));
     }
     if (radio.other != null) {
-      items.add(MediaItem(id: '/radio/other', title: 'Other', playable: false));
+      items.add(const MediaItem(id: '/radio/other', title: 'Other', playable: false));
     }
     if (radio.stream != null) {
       items.add(
-          MediaItem(id: '/radio/stream', title: 'Streams', playable: false));
+          const MediaItem(id: '/radio/stream', title: 'Streams', playable: false));
     }
     return items;
   }
@@ -451,7 +458,7 @@ class DefaultMediaProvider implements MediaProvider {
   Future<SearchView> _search(String query) async {
     if (query.contains(RegExp(r'[:"\\*]')) == false) {
       query =
-          "title:\"$query*\" release:\"$query*\" artist:\"$query*\" genre:\"$query*\"";
+          'title:"$query*" release:"$query*" artist:"$query*" genre:"$query*"';
     }
     return await clientRepository.search(query);
   }

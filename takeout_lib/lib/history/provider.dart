@@ -47,9 +47,7 @@ class JsonHistoryProvider implements HistoryProvider {
     MediaTrack? track,
     DateTime? dateTime,
   }) async {
-    if (dateTime == null) {
-      dateTime = DateTime.now();
-    }
+    dateTime ??= DateTime.now();
     final history = await _checkLoaded();
     if (search != null) {
       // append search or merge duplicate

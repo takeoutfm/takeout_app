@@ -100,7 +100,7 @@ abstract class ClientProvider {
 
   Future<PatchResult> patchPlaylist(PlaylistView playlist, List<Map<String, dynamic>> body);
 
-  Future deletePlaylist(PlaylistView playlist);
+  Future<void> deletePlaylist(PlaylistView playlist);
 
   Future<ProgressView> progress({Duration? ttl});
 

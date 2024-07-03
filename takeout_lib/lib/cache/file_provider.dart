@@ -85,7 +85,7 @@ class DirectoryFileCache implements FileCacheProvider {
   Future<File?> get(FileIdentifier id) async {
     await _initialized;
     final file = _toFile(id);
-    return file.exists().then((exists) => exists ? file : null);
+    return file.existsSync() ? file : null;
   }
 
   @override

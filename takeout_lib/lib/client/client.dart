@@ -249,7 +249,7 @@ class ClientCubit extends Cubit<ClientState> {
   Future<void> _doit2<T>(ClientRequest<dynamic> call1, ClientRequest<T> call2,
       {Duration? ttl}) async {
     emit(ClientLoading());
-    call1(ttl: ttl)
+    return call1(ttl: ttl)
         .timeout(_timeout)
         .then((_) => call2(ttl: ttl)
             .timeout(_timeout)

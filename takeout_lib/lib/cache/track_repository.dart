@@ -15,13 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
-import 'dart:io';
-
 import 'package:takeout_lib/cache/file_provider.dart';
 import 'package:takeout_lib/cache/file_repository.dart';
 
 abstract class TrackIdentifier implements FileIdentifier {}
 
 class TrackCacheRepository extends FileCacheRepository {
-  TrackCacheRepository({required Directory directory}) : super(directory: directory);
+  TrackCacheRepository({required super.directory});
 }

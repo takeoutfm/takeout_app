@@ -18,8 +18,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
-import 'dart:collection';
-
 part 'model.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -96,7 +94,7 @@ class SpiffHistory implements Comparable<SpiffHistory> {
   }
 
   SpiffHistory copyWith({Spiff? spiff}) =>
-      SpiffHistory(spiff ?? this.spiff, this.dateTime);
+      SpiffHistory(spiff ?? this.spiff, dateTime);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)

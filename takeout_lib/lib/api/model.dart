@@ -44,7 +44,7 @@ class PostResult {
 class PatchResult extends PostResult {
   final Map<String, dynamic> body;
 
-  PatchResult(int statusCode, this.body) : super(statusCode);
+  PatchResult(super.statusCode, this.body);
 
   bool get isModified => statusCode == HttpStatus.ok;
 
@@ -81,12 +81,14 @@ class IndexView {
   final bool hasMusic;
   final bool hasMovies;
   final bool hasPodcasts;
+  final bool hasPlaylists;
 
   IndexView(
       {required this.time,
       required this.hasMusic,
       required this.hasMovies,
-      required this.hasPodcasts});
+      required this.hasPodcasts,
+      this.hasPlaylists = false});
 
   factory IndexView.fromJson(Map<String, dynamic> json) =>
       _$IndexViewFromJson(json);
@@ -1388,7 +1390,8 @@ class PlaylistView {
   final String name;
   final int trackCount;
 
-  PlaylistView({required this.id, required this.name, required this.trackCount});
+  PlaylistView(
+      {required this.id, required this.name, required this.trackCount});
 
   factory PlaylistView.fromJson(Map<String, dynamic> json) =>
       _$PlaylistViewFromJson(json);
