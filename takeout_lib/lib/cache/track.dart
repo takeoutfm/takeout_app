@@ -35,6 +35,7 @@ class TrackCacheCubit extends Cubit<TrackCacheState> {
 
   TrackCacheCubit(this.repository) : super(TrackCacheState.empty()) {
     _emitState();
+    repository.init(onChange: () => _emitState());
   }
 
   Future<void> _emitState() async {
@@ -43,23 +44,22 @@ class TrackCacheCubit extends Cubit<TrackCacheState> {
   }
 
   void add(TrackIdentifier id, File file) {
-    repository.put(id, file).whenComplete(() => _emitState());
+    repository.put(id, file);
   }
 
   void remove(TrackIdentifier id) {
-    repository.remove(id).whenComplete(() => _emitState());
+    repository.remove(id);
   }
 
   void removeIds(Iterable<TrackIdentifier> ids) {
-    Future.forEach<TrackIdentifier>(ids, (id) => repository.remove(id))
-        .whenComplete(() => _emitState());
+    repository.removeIds(ids);
   }
 
   void removeAll() {
-    repository.removeAll().whenComplete(() => _emitState());
+    repository.removeAll();
   }
 
   void retain(Iterable<TrackIdentifier> ids) {
-    repository.retain(ids).whenComplete(() => _emitState());
+    repository.retain(ids);
   }
 }

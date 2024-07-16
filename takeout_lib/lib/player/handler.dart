@@ -19,6 +19,7 @@
 // https://github.com/ryanheise/audio_service
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -66,6 +67,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   Spiff _spiff = Spiff.empty();
   final _queue = <MediaItem>[];
+  final _mapped = <String, Entry>{};
 
   final Duration _skipToBeginningInterval;
   final int _positionSteps;
@@ -359,17 +361,54 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   Future<List<MediaItem>> _mapAll(List<Entry> tracks) async {
     final list = <MediaItem>[];
     await Future.forEach<Entry>(tracks, (entry) async {
-      list.add(await _map(entry));
+      final item = await _map(entry);
+      _mapped[item.id] = entry;
+      list.add(item);
     });
     return list;
   }
 
-  IndexedAudioSource toAudioSource(MediaItem item,
-      {Map<String, String>? headers}) {
-    return AudioSource.uri(Uri.parse(item.id), headers: headers, tag: item);
+  File? _checkPlaybackCache(MediaItem item, Entry entry, bool autoCache) {
+    File? cacheFile;
+    if (autoCache && item.isRemote()) {
+      cacheFile = trackResolver.trackCacheRepository.create(entry);
+    }
+    return cacheFile;
   }
 
-  Future<void> load(Spiff spiff, {LoadCallback? onLoad}) async {
+  IndexedAudioSource toAudioSource(MediaItem item,
+      {Map<String, String>? headers, bool? autoCache}) {
+    final uri = Uri.parse(item.id);
+    final entry = _mapped[item.id];
+    IndexedAudioSource? audioSource;
+
+    if (entry != null) {
+      File? cacheFile = _checkPlaybackCache(item, entry, autoCache ?? false);
+      if (cacheFile != null) {
+        // only create a caching audio source to create a new cache file
+        // during playback, otherwise the uri source below will use the
+        // cached file or remote uri as needed.
+        // note that the track resolver is responsible for cleaning up
+        // incomplete downloads.
+        final cachingSource = LockCachingAudioSource(uri,
+            headers: headers, tag: item, cacheFile: cacheFile);
+        StreamSubscription<double>? subscription;
+        subscription = cachingSource.downloadProgressStream.listen((progress) {
+          if (progress == 1.0) {
+            subscription?.cancel();
+            trackResolver.trackCacheRepository.put(entry, cacheFile);
+          }
+        }, cancelOnError: true);
+        audioSource = cachingSource;
+      }
+    }
+
+    audioSource ??= AudioSource.uri(uri, headers: headers, tag: item);
+    return audioSource;
+  }
+
+  Future<void> load(Spiff spiff,
+      {LoadCallback? onLoad, bool? autoCache}) async {
     if (spiff.isEmpty) {
       return;
     }
@@ -382,6 +421,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
     // build a new MediaItem queue
     _queue.clear();
+    _mapped.clear();
     _queue.addAll(await _mapAll(_spiff.playlist.tracks));
 
     // broadcast queue state
@@ -390,8 +430,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     // build audio sources from the queue
     final headers = tokenRepository.addMediaToken();
     final sources = _queue
-        .map((item) =>
-            toAudioSource(item, headers: item.isRemote() ? headers : null))
+        .map((item) => toAudioSource(item,
+            autoCache: autoCache, headers: item.isRemote() ? headers : null))
         .toList();
     final source = ConcatenatingAudioSource(children: []);
     await source.addAll(sources);

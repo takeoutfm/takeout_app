@@ -66,6 +66,8 @@
   "settingDownloadsSubtitle": "Allow downloads on mobile networks",
   "settingArtworkTitle": "Artwork",
   "settingArtworkSubtitle": "Allow artwork on mobile networks",
+  "settingAutoCacheTitle": "Playback Caching",
+  "settingAutoCacheSubtitle": "Auto download while playing",
   "settingEnabled": "Enabled",
   "settingDisabled": "Disabled",
   "settingListenBrainzToken": "ListenBrainz Token",

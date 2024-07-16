@@ -43,9 +43,10 @@ import 'package:takeout_lib/tokens/tokens.dart';
 import 'package:takeout_lib/history/history.dart';
 
 extension TakeoutContext on BuildContext {
-  void play(Spiff spiff, {bool? autoplay}) {
-    autoplay ??= settings.state.settings.autoplay;
-    nowPlaying.add(spiff, autoplay: autoplay);
+  void play(Spiff spiff, {bool? autoPlay, bool? autoCache}) {
+    autoPlay ??= settings.state.settings.autoPlay;
+    autoCache ??= settings.state.settings.autoCache;
+    nowPlaying.add(spiff, autoPlay: autoPlay, autoCache: autoCache);
   }
 
   void stream(int station) {

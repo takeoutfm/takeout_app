@@ -26,7 +26,8 @@ class Settings {
   final bool allowMobileStreaming;
   final bool allowMobileDownload;
   final bool allowMobileArtistArtwork;
-  final bool autoplay;
+  final bool autoPlay;
+  final bool autoCache;
   final String? listenBrainzToken;
   final bool enableListenBrainz;
   final bool enableTrackActivity;
@@ -37,7 +38,8 @@ class Settings {
     required this.allowMobileStreaming,
     required this.allowMobileDownload,
     required this.allowMobileArtistArtwork,
-    this.autoplay = true,
+    this.autoPlay = true,
+    this.autoCache = false,
     this.listenBrainzToken,
     this.enableListenBrainz = true,
     this.enableTrackActivity = true,
@@ -49,7 +51,8 @@ class Settings {
         allowMobileArtistArtwork: true,
         allowMobileDownload: true,
         allowMobileStreaming: true,
-        autoplay: true,
+        autoPlay: true,
+        autoCache: false,
         enableListenBrainz: true,
       );
 
@@ -69,7 +72,8 @@ class Settings {
     bool? allowMobileStreaming,
     bool? allowMobileDownload,
     bool? allowMobileArtistArtwork,
-    bool? autoplay,
+    bool? autoPlay,
+    bool? autoCache,
     String? listenBrainzToken,
     bool? enableListenBrainz,
     bool? enableTrackActivity,
@@ -81,7 +85,8 @@ class Settings {
         allowMobileDownload: allowMobileDownload ?? this.allowMobileDownload,
         allowMobileArtistArtwork:
             allowMobileArtistArtwork ?? this.allowMobileArtistArtwork,
-        autoplay: autoplay ?? this.autoplay,
+        autoPlay: autoPlay ?? this.autoPlay,
+        autoCache: autoCache ?? this.autoCache,
         listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
         enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
         enableTrackActivity: enableTrackActivity ?? this.enableTrackActivity,

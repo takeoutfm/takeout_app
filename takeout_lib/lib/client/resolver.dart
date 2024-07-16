@@ -55,7 +55,12 @@ class DefaultTrackResolver implements TrackUriResolver {
   @override
   Future<Uri> resolve(MediaTrack track) async {
     final id = _TrackIdentifier(track);
-    final file = await trackCacheRepository.get(id);
+    var file = await trackCacheRepository.get(id);
+    if (file != null && file.lengthSync() < track.size) {
+      // cache file is incomplete
+      await trackCacheRepository.remove(id);
+      file = null;
+    }
     return (file != null) ? file.uri : Uri.parse(track.location);
   }
 }

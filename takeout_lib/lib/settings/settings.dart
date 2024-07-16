@@ -63,7 +63,8 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
       allowMobileArtistArtwork: settings.allowMobileArtistArtwork,
       allowMobileDownload: settings.allowMobileDownload,
       allowMobileStreaming: settings.allowMobileStreaming,
-      autoplay: settings.autoplay,
+      autoPlay: settings.autoPlay,
+      autoCache: settings.autoCache,
       listenBrainzToken: settings.listenBrainzToken,
       enableListenBrainz: settings.enableListenBrainz,
       enableTrackActivity: settings.enableTrackActivity,
@@ -91,8 +92,12 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
         state.settings.copyWith(allowMobileArtistArtwork: value)));
   }
 
-  set autoplay(bool value) {
-    emit(SettingsState(state.settings.copyWith(autoplay: value)));
+  set autoPlay(bool value) {
+    emit(SettingsState(state.settings.copyWith(autoPlay: value)));
+  }
+
+  set autoCache(bool value) {
+    emit(SettingsState(state.settings.copyWith(autoCache: value)));
   }
 
   set listenBrainzToken(String value) {

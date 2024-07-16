@@ -80,8 +80,10 @@ class AppBloc extends TakeoutBloc {
   }
 
   @override
-  void onNowPlayingChange(BuildContext context, Spiff spiff, bool autoplay) {
-    super.onNowPlayingChange(context, spiff, autoplay);
+  void onNowPlayingChange(BuildContext context, Spiff spiff,
+      {bool autoPlay = false, bool autoCache = false}) {
+    super.onNowPlayingChange(context, spiff,
+        autoPlay: autoPlay, autoCache: autoCache);
     addSpiffHistory(context, spiff);
     if (spiff.isNotEmpty) {
       context.app.nowPlaying(spiff);

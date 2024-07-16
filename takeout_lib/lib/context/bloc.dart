@@ -224,7 +224,8 @@ class TakeoutBloc {
               state is NowPlayingListenChange,
           listener: (context, state) {
             if (state is NowPlayingChange) {
-              onNowPlayingChange(context, state.spiff, state.autoplay);
+              onNowPlayingChange(context, state.spiff,
+                  autoPlay: state.autoPlay, autoCache: state.autoCache);
             } else if (state is NowPlayingIndexChange) {
               onNowPlayingIndexChange(context, state);
             } else if (state is NowPlayingListenChange) {
@@ -328,9 +329,14 @@ class TakeoutBloc {
   void onIntentReceive(BuildContext context, IntentReceive intent) {}
 
   /// NowPlaying manages the playlist that should be playing.
-  void onNowPlayingChange(BuildContext context, Spiff spiff, bool autoplay) {
+  void onNowPlayingChange(BuildContext context, Spiff spiff,
+      {bool autoPlay = false, bool autoCache = false}) {
+    if (autoCache) {
+      // add spiff to downloads. tracks will be downloaded during playback
+      context.spiffCache.add(spiff);
+    }
     // load now playing playlist into player
-    context.player.load(spiff, autoplay: autoplay);
+    context.player.load(spiff, autoPlay: autoPlay, autoCache: autoCache);
   }
 
   /// NowPlaying playlist index change event
@@ -372,13 +378,13 @@ class TakeoutBloc {
   }
 
   void _onPlaylistSyncChange(BuildContext context, PlaylistState state) {
-    context.play(state.spiff, autoplay: false);
+    context.play(state.spiff, autoPlay: false);
   }
 
   /// Restore playlist once the player is ready.
   void _onPlayerReady(BuildContext context, PlayerReady state) {
     final nowPlaying = context.nowPlaying.state;
-    onNowPlayingChange(context, nowPlaying.spiff, false);
+    onNowPlayingChange(context, nowPlaying.spiff);
 
     context.player.stream.timeout(const Duration(minutes: 1), onTimeout: (_) {
       context.player.stop();
@@ -386,7 +392,7 @@ class TakeoutBloc {
   }
 
   void _onPlayerLoad(BuildContext context, PlayerLoad state) {
-    if (state.autoplay) {
+    if (state.autoPlay) {
       context.player.play();
     }
   }
@@ -507,7 +513,7 @@ class BaseMediaPlayer implements MediaPlayer {
 
   @override
   void playSpiff(Spiff spiff) {
-    player.add(spiff, autoplay: true);
+    player.add(spiff, autoPlay: true);
   }
 
   @override

@@ -42,9 +42,12 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final entries = [
-      SettingEntry<bool>(context.strings.settingAutoplay, toggleAutoplay,
+      SettingEntry<bool>(context.strings.settingAutoPlay, toggleAutoPlay,
           icon: const Icon(Icons.play_arrow),
-          currentValue: (state) => state.settings.autoplay),
+          currentValue: (state) => state.settings.autoPlay),
+      SettingEntry<bool>(context.strings.settingAutoCache, toggleAutoCache,
+          icon: const Icon(Icons.cloud_download_outlined),
+          currentValue: (state) => state.settings.autoCache),
       SettingEntry<MusicType>(context.strings.musicSortType, nextMusicType,
           icon: const Icon(Icons.sort),
           currentValue: (_) => context.selectedMediaType.state.musicType),
@@ -112,8 +115,12 @@ class SettingsPage extends StatelessWidget {
     context.selectedMediaType.nextPodcastType();
   }
 
-  void toggleAutoplay(BuildContext context) {
-    context.settings.autoplay = !context.settings.state.settings.autoplay;
+  void toggleAutoPlay(BuildContext context) {
+    context.settings.autoPlay = !context.settings.state.settings.autoPlay;
+  }
+
+  void toggleAutoCache(BuildContext context) {
+    context.settings.autoCache = !context.settings.state.settings.autoCache;
   }
 
   void toggleMobileDownload(BuildContext context) {

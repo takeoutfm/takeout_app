@@ -22,24 +22,36 @@ import 'file_provider.dart';
 class FileCacheRepository {
   final Directory directory;
   final FileCacheProvider _cache;
+  void Function()? onChange;
 
   FileCacheRepository({required this.directory, FileCacheProvider? cache})
       : _cache = cache ?? DirectoryFileCache(directory: directory);
+
+  void init({void Function()? onChange}) {
+    this.onChange = onChange;
+  }
 
   Future<File?> get(FileIdentifier id) async {
     return _cache.get(id);
   }
 
   Future<void> put(FileIdentifier id, File file) async {
-    return _cache.put(id, file);
+    return _cache.put(id, file).whenComplete(() => onChange?.call());
   }
 
   Future<void> remove(FileIdentifier id, {bool delete = true}) async {
-    return _cache.remove(id, delete: delete);
+    return _cache
+        .remove(id, delete: delete)
+        .whenComplete(() => onChange?.call());
   }
 
-  Future<void> removeAll() {
-    return _cache.removeAll();
+  Future<void> removeIds(Iterable<FileIdentifier> ids) async {
+    return Future.forEach<FileIdentifier>(ids, (id) => _cache.remove(id))
+        .whenComplete(() => onChange?.call());
+  }
+
+  Future<void> removeAll() async {
+    return _cache.removeAll().whenComplete(() => onChange?.call());
   }
 
   File create(FileIdentifier id) {
@@ -75,7 +87,7 @@ class FileCacheRepository {
   int cacheSize() => _cache.cacheSize();
 
   Future<void> retain(Iterable<FileIdentifier> ids) async {
-    return _cache.retain(ids);
+    return _cache.retain(ids).whenComplete(() => onChange?.call());
   }
 
   Future<Iterable<String>> keys() async {

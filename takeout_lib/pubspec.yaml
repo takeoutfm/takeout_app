@@ -1,6 +1,6 @@
 name: takeout_lib
 description: TakeoutFM Library
-version: 0.12.0
+version: 0.18.0 # #version#
 publish_to: 'none'
 
 environment:
@@ -41,7 +41,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.4.11
   json_serializable: ^6.8.0
-  flutter_lints: ^3.0.2
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true

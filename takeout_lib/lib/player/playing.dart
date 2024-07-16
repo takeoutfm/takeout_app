@@ -25,12 +25,16 @@ part 'playing.g.dart';
 class NowPlayingState {
   final Spiff spiff;
   @JsonKey(includeFromJson: false, includeToJson: false)
-  final bool autoplay;
+  final bool autoPlay;
+  final bool autoCache;
   final List<DateTime?>? started;
   final List<DateTime?>? listened;
 
-  NowPlayingState(this.spiff, {bool? autoplay, this.started, this.listened})
-      : autoplay = autoplay ?? false;
+  NowPlayingState(this.spiff,
+      {this.autoPlay = false,
+      this.autoCache = false,
+      this.started,
+      this.listened});
 
   bool listenedTo(int index) {
     return listened?[index] != null;
@@ -53,7 +57,7 @@ class NowPlayingState {
 }
 
 class NowPlayingChange extends NowPlayingState {
-  NowPlayingChange(super.spiff, {super.autoplay});
+  NowPlayingChange(super.spiff, {super.autoPlay, super.autoCache});
 }
 
 class NowPlayingIndexChange extends NowPlayingState {
@@ -67,8 +71,8 @@ class NowPlayingListenChange extends NowPlayingState {
 class NowPlayingCubit extends HydratedCubit<NowPlayingState> {
   NowPlayingCubit() : super(NowPlayingState.initial());
 
-  void add(Spiff spiff, {bool? autoplay}) =>
-      emit(NowPlayingChange(spiff, autoplay: autoplay));
+  void add(Spiff spiff, {bool autoPlay = false, bool autoCache = false}) =>
+      emit(NowPlayingChange(spiff, autoPlay: autoPlay, autoCache: autoCache));
 
   void index(int index) {
     final started =

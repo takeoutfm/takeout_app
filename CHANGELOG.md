@@ -1,3 +1,11 @@
+## 0.18.0
+
+- Added support for automatic caching of tracks during playback
+- Added setting autoCache to control automatic caching
+- Renamed autoplay to autoPlay
+- Track history now 500 instead of 100
+- Dependency updates
+
 ## 0.17.1
 
 - Flutter pub upgrade & tighten

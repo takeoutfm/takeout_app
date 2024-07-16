@@ -69,7 +69,7 @@ abstract class PlayerProvider {
     PositionInterval? positionInterval,
   });
 
-  void load(Spiff spiff, {LoadCallback? onLoad});
+  void load(Spiff spiff, {LoadCallback? onLoad, bool? autoCache});
 
   void play();
 
@@ -134,8 +134,8 @@ class DefaultPlayerProvider implements PlayerProvider {
   }
 
   @override
-  void load(Spiff spiff, {LoadCallback? onLoad}) {
-    handler.load(spiff, onLoad: onLoad);
+  void load(Spiff spiff, {LoadCallback? onLoad, bool? autoCache}) {
+    handler.load(spiff, onLoad: onLoad, autoCache: autoCache);
   }
 
   @override

@@ -15,20 +15,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
-import 'package:takeout_lib/client/etag.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
 import 'spiff.dart';
 import 'track_repository.dart';
-
-class _TrackIdentifier implements TrackIdentifier {
-  final ETag _etag;
-
-  _TrackIdentifier(Entry track) : _etag = ETag(track.etag);
-
-  @override
-  String get key => _etag.key;
-}
 
 // TODO prune will currently delete all tracks not found in a spiff.
 // podcasts can download an episode w/o a spiff
@@ -39,10 +29,10 @@ Future<void> pruneCache(
   await Future.forEach<Spiff>(spiffs, (spiff) async {
     final tracks = spiff.playlist.tracks;
     await Future.forEach<Entry>(tracks, (track) async {
-      final id = _TrackIdentifier(track);
+      final id = track as TrackIdentifier;
       final file = await trackCache.get(id);
       if (file != null) {
-        final fileSize = file.statSync().size;
+        final fileSize = file.lengthSync();
         if (fileSize == track.size) {
           keep.add(id);
         } else if (spiff.isPodcast()) {

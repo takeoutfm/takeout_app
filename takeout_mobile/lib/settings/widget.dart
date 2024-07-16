@@ -54,6 +54,13 @@ class SettingsWidget extends StatelessWidget {
                   state.settings.allowMobileArtistArtwork, (value) {
                 context.settings.allowArtistArtwork = value;
               }),
+              _switchTile(
+                  Icons.image_outlined,
+                  context.strings.settingAutoCacheTitle,
+                  context.strings.settingAutoCacheSubtitle,
+                  state.settings.autoCache, (value) {
+                context.settings.autoCache = value;
+              }),
             ])),
             Card(
               child: Column(

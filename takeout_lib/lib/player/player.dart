@@ -91,9 +91,11 @@ abstract class PlayerPositionState extends PlayerProcessingState {
 }
 
 class PlayerLoad extends PlayerProcessingState {
-  final bool autoplay;
+  final bool autoPlay;
+  final bool autoCache;
 
-  PlayerLoad(super.spiff, this.autoplay, {super.buffering, super.playing});
+  PlayerLoad(super.spiff, {required this.autoPlay, required this.autoCache,
+    super.buffering, super.playing});
 }
 
 class PlayerInit extends PlayerState {
@@ -239,11 +241,12 @@ class Player extends Cubit<PlayerState> {
   }
 
 
-  void load(Spiff spiff, {bool autoplay = false}) {
+  void load(Spiff spiff, {bool autoPlay = false, bool autoCache = false}) {
     _provider.load(spiff,
+        autoCache: autoCache,
         onLoad: (spiff, position, playing, buffering) =>
             emit(PlayerLoad(
-                spiff, autoplay,
+                spiff, autoPlay: autoPlay, autoCache: autoCache,
                 buffering: buffering, playing: playing)));
   }
 

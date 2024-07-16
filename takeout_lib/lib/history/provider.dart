@@ -74,16 +74,9 @@ class JsonHistoryProvider implements HistoryProvider {
       // maintain map of unique tracks by etag with play counts
       final entry = history.tracks[track.etag];
       history.tracks[track.etag] = entry == null
-          ? history.tracks[track.etag] = TrackHistory(
-              track.creator,
-              track.album,
-              track.title,
-              track.image,
-              track.etag,
-              1,
-              dateTime)
-          : history.tracks[track.etag] =
-              entry.copyWith(count: entry.count + 1, dateTime: dateTime);
+          ? TrackHistory(track.creator, track.album, track.title, track.image,
+              track.etag, 1, dateTime)
+          : entry.copyWith(count: entry.count + 1, dateTime: dateTime);
     }
     _prune(history);
     await _save(_file, history);
@@ -122,7 +115,7 @@ class JsonHistoryProvider implements HistoryProvider {
 
   static const maxSearchHistory = 25;
   static const maxSpiffHistory = 25;
-  static const maxTrackHistory = 100;
+  static const maxTrackHistory = 500;
 
   void _prune(History history) {
     if (history.searches.length > maxSearchHistory) {
@@ -135,10 +128,15 @@ class JsonHistoryProvider implements HistoryProvider {
       history.spiffs.removeRange(0, history.spiffs.length - maxSpiffHistory);
     }
     if (history.tracks.length > maxTrackHistory) {
-      // remove oldest first
-      final oldest = history.tracks.values
-          .reduce((a, b) => a.dateTime.isBefore(b.dateTime) ? a : b);
-      history.tracks.remove(oldest.etag);
+      final oldestFirst = List<TrackHistory>.from(history.tracks.values);
+      oldestFirst.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+      final takeCount = history.tracks.length - maxTrackHistory;
+      if (takeCount > 0) {
+        final taken = oldestFirst.take(takeCount);
+        for (final e in taken) {
+          history.tracks.remove(e.etag);
+        }
+      }
     }
   }
 

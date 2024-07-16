@@ -52,6 +52,16 @@ class History {
     return recent.toSet().toList().map((e) => e.spiff.creator ?? '');
   }
 
+  // Map<String, TrackHistory> trackKeyMap() {
+  //   final oldest = List<TrackHistory>.from(tracks.values);
+  //   oldest.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+  //
+  //   // oldest first
+  //   return LinkedHashMap<String, TrackHistory>.fromIterable(oldest,
+  //       key: (e) => ETag((e as TrackHistory).etag).key,
+  //       value: (e) => e as TrackHistory);
+  // }
+
   factory History.fromJson(Map<String, dynamic> json) =>
       _$HistoryFromJson(json);
 

@@ -17,9 +17,23 @@
 
 import 'package:takeout_lib/cache/file_provider.dart';
 import 'package:takeout_lib/cache/file_repository.dart';
+import 'package:takeout_lib/client/etag.dart';
 
-abstract class TrackIdentifier implements FileIdentifier {}
+abstract class TrackIdentifier extends FileIdentifier {}
+
+class ETagIdentifier implements FileIdentifier {
+  final ETag etag;
+
+  ETagIdentifier(this.etag);
+
+  @override
+  String get key => etag.key;
+}
 
 class TrackCacheRepository extends FileCacheRepository {
   TrackCacheRepository({required super.directory});
+
+  Future<void> removeByETag(ETag etag) {
+    return remove(ETagIdentifier(etag));
+  }
 }

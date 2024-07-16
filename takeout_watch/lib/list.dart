@@ -61,10 +61,8 @@ class _RotaryListState<T> extends State<RotaryList<T>> {
     }
     // add some padding at the bottom
     const footer = SizedBox.square(dimension: 8);
-    return RotaryScrollWrapper(
-      rotaryScrollbar: RotaryScrollbar(
-        controller: scrollController,
-      ),
+    return RotaryScrollbar(
+      controller: scrollController,
       child: ListView.builder(
           controller: scrollController,
           itemBuilder: (context, index) {
