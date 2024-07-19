@@ -1,6 +1,6 @@
 name: takeout_lib
 description: TakeoutFM Library
-version: 0.18.0 # #version#
+version: 0.18.1 # #version#
 publish_to: 'none'
 
 environment:
@@ -10,8 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  audio_service: ^0.18.13
-  audio_session: ^0.1.19
+  audio_service: ^0.18.15
+  audio_session: ^0.1.21
   cached_network_image: ^3.3.1
   chewie: ^1.8.1
   connectivity_plus: ^5.0.2

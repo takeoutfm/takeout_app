@@ -36,6 +36,7 @@ import 'home.dart';
 import 'login.dart';
 import 'radio.dart';
 import 'search.dart';
+import 'nav.dart';
 
 void main() async {
   // setup the logger
@@ -52,6 +53,7 @@ void main() async {
   runApp(const TakeoutApp());
 }
 
+
 class TakeoutApp extends StatelessWidget {
   const TakeoutApp({super.key});
 
@@ -59,38 +61,39 @@ class TakeoutApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppBloc().init(context, child: DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-      final light = ThemeData.light(useMaterial3: true);
-      final dark = ThemeData.dark(useMaterial3: true);
-      return MaterialApp(
-          onGenerateTitle: (context) => context.strings.takeoutTitle,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''),
-          ],
-          home: const _TakeoutWidget(),
-          theme: light.copyWith(
-              colorScheme: lightDynamic,
-              // appBarTheme:
-              //     light.appBarTheme.copyWith(iconTheme: light.iconTheme),
-              // iconButtonTheme: IconButtonThemeData(
-              //     style: IconButton.styleFrom(
-              //         foregroundColor: light.iconTheme.color)),
-              listTileTheme: light.listTileTheme
-                  .copyWith(iconColor: light.iconTheme.color)),
-          darkTheme: dark.copyWith(
-              colorScheme: darkDynamic,
-              // appBarTheme: dark.appBarTheme.copyWith(iconTheme: dark.iconTheme),
-              // iconButtonTheme: IconButtonThemeData(
-              //     style: IconButton.styleFrom(
-              //         foregroundColor: dark.iconTheme.color)),
-              listTileTheme: dark.listTileTheme
-                  .copyWith(iconColor: dark.iconTheme.color)));
-    }));
+          final light = ThemeData.light(useMaterial3: true);
+          final dark = ThemeData.dark(useMaterial3: true);
+          return MaterialApp(
+              key: globalAppKey,
+              onGenerateTitle: (context) => context.strings.takeoutTitle,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en', ''),
+              ],
+              home: const _TakeoutWidget(),
+              theme: light.copyWith(
+                  colorScheme: lightDynamic,
+                  // appBarTheme:
+                  //     light.appBarTheme.copyWith(iconTheme: light.iconTheme),
+                  // iconButtonTheme: IconButtonThemeData(
+                  //     style: IconButton.styleFrom(
+                  //         foregroundColor: light.iconTheme.color)),
+                  listTileTheme: light.listTileTheme
+                      .copyWith(iconColor: light.iconTheme.color)),
+              darkTheme: dark.copyWith(
+                  colorScheme: darkDynamic,
+                  // appBarTheme: dark.appBarTheme.copyWith(iconTheme: dark.iconTheme),
+                  // iconButtonTheme: IconButtonThemeData(
+                  //     style: IconButton.styleFrom(
+                  //         foregroundColor: dark.iconTheme.color)),
+                  listTileTheme: dark.listTileTheme
+                      .copyWith(iconColor: dark.iconTheme.color)));
+        }));
   }
 }
 
@@ -268,7 +271,7 @@ class _TakeoutState extends State<_TakeoutWidget>
       return Stack(alignment: Alignment.center, children: [
         FloatingActionButton(
             onPressed: () =>
-                playing ? context.player.pause() : context.player.play(),
+            playing ? context.player.pause() : context.player.play(),
             shape: const CircleBorder(),
             child: playing
                 ? const Icon(Icons.pause)
@@ -321,10 +324,13 @@ class _TakeoutState extends State<_TakeoutWidget>
 
   Map<String, WidgetBuilder> _pageBuilders() {
     final builders = {
-      '/home': (_) => HomeWidget(
-          (ctx) => Navigator.push(
-              ctx, MaterialPageRoute<void>(builder: (_) => SearchWidget())),
-          key: _navigatorKeys[NavigationIndex.home]),
+      '/home': (_) =>
+          HomeWidget(
+                  (ctx) =>
+                  Navigator.push(
+                      ctx,
+                      MaterialPageRoute<void>(builder: (_) => SearchWidget())),
+              key: _navigatorKeys[NavigationIndex.home]),
       '/artists': (_) =>
           ArtistsWidget(key: _navigatorKeys[NavigationIndex.artists]),
       '/history': (_) =>

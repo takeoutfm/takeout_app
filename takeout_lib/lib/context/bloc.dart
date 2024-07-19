@@ -122,6 +122,7 @@ class TakeoutBloc {
       spiffCacheRepository: spiffCacheRepository,
       mediaTypeRepository: mediaTypeRepository,
       subscribedRepository: subscribedRepository,
+      offsetCacheRepository: offsetCacheRepository,
     );
 
     final listenRepository = ListenRepository(
@@ -161,7 +162,9 @@ class TakeoutBloc {
           lazy: false,
           create: (context) {
             final nowPlaying = NowPlayingCubit();
-            context.read<MediaRepository>().init(createMediaPlayer(nowPlaying));
+            context
+                .read<MediaRepository>()
+                .init(createMediaPlayer(nowPlaying, context));
             return nowPlaying;
           }),
       BlocProvider(
@@ -318,8 +321,10 @@ class TakeoutBloc {
         mediaRepository: context.read<MediaRepository>());
   }
 
-  MediaPlayer createMediaPlayer(NowPlayingCubit nowPlaying) {
-    return BaseMediaPlayer(nowPlaying);
+  MediaPlayer createMediaPlayer(
+      NowPlayingCubit nowPlaying, BuildContext context) {
+    final settingsRepository = context.read<SettingsRepository>();
+    return BaseMediaPlayer(nowPlaying, settingsRepository);
   }
 
   /// Process start intent
@@ -508,12 +513,15 @@ class TakeoutBloc {
 
 class BaseMediaPlayer implements MediaPlayer {
   final NowPlayingCubit player;
+  final SettingsRepository settingsRepository;
 
-  BaseMediaPlayer(this.player);
+  BaseMediaPlayer(this.player, this.settingsRepository);
 
   @override
   void playSpiff(Spiff spiff) {
-    player.add(spiff, autoPlay: true);
+    player.add(spiff,
+        autoCache: settingsRepository.settings?.autoCache,
+        autoPlay: settingsRepository.settings?.autoPlay);
   }
 
   @override

@@ -18,6 +18,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/browser/provider.dart';
+import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/repository.dart';
@@ -44,18 +45,25 @@ class MediaRepository {
       required SpiffCacheRepository spiffCacheRepository,
       required MediaTypeRepository mediaTypeRepository,
       required SubscribedRepository subscribedRepository,
+      required OffsetCacheRepository offsetCacheRepository,
       MediaProvider? provider})
       : _provider = provider ??
             DefaultMediaProvider(
-                clientRepository,
-                historyRepository,
-                settingsRepository,
-                spiffCacheRepository,
-                mediaTypeRepository,
-                subscribedRepository);
+              clientRepository,
+              historyRepository,
+              settingsRepository,
+              spiffCacheRepository,
+              mediaTypeRepository,
+              subscribedRepository,
+              offsetCacheRepository,
+            );
 
   void init(MediaPlayer player) {
     _player = player;
+  }
+
+  bool getSearchSupported() {
+    return true;
   }
 
   Future<List<MediaItem>> getRoot() async {
@@ -78,6 +86,11 @@ class MediaRepository {
     final spiff = await _provider.spiffFromMediaId(mediaId);
     if (spiff != null) {
       _player?.playSpiff(spiff);
+    } else {
+      final movie = await _provider.movieFromMediaId(mediaId);
+      if (movie != null) {
+        _player?.playMovie(movie);
+      }
     }
   }
 
@@ -92,8 +105,8 @@ class MediaRepository {
         }
       }
     } else {
-      final spiff = await _provider.spiffFromSearch(
-          query, mediaType: mediaType);
+      final spiff =
+          await _provider.spiffFromSearch(query, mediaType: mediaType);
       if (spiff != null) {
         _player?.playSpiff(spiff);
       }

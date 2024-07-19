@@ -127,6 +127,12 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     Duration? minPositionPeriod,
     Duration? maxPositionPeriod,
   }) async {
+    Map<String, dynamic>? rootExtras;
+    if (mediaRepository.getSearchSupported()) {
+      rootExtras = {
+        'android.media.browse.SEARCH_SUPPORTED': true,
+      };
+    }
     return await AudioService.init(
         builder: () => TakeoutPlayerHandler._(
               onPlay: onPlay,
@@ -153,6 +159,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           androidNotificationChannelId: 'com.defsub.takeout.channel.audio',
           androidNotificationChannelName: 'Audio playback',
           androidNotificationOngoing: true,
+          androidBrowsableRootExtras: rootExtras,
           fastForwardInterval:
               fastForwardInterval ?? const Duration(seconds: 30),
           rewindInterval: rewindInterval ?? const Duration(seconds: 10),

@@ -67,13 +67,7 @@ class OffsetCacheState {
 
   double? value(OffsetIdentifier id) {
     final offset = offsets[id.etag];
-    final pos = offset?.offset;
-    final end = offset?.duration;
-    if (pos != null && end != null) {
-      final value = pos.toDouble() / end.toDouble();
-      return value;
-    }
-    return null;
+    return offset?.value();
   }
 }
 

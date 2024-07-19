@@ -1174,6 +1174,13 @@ class Offset implements OffsetIdentifier {
     return Duration(seconds: offset);
   }
 
+  double? value() {
+    if (duration == 0) {
+      return null;
+    }
+    return offset.toDouble() / duration.toDouble();
+  }
+
   factory Offset.now(
       {required String etag, required Duration offset, Duration? duration}) {
     final date = _offsetDate();

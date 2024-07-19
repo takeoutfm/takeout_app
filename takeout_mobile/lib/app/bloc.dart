@@ -25,6 +25,7 @@ import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/cache/prune.dart';
 import 'package:takeout_lib/client/repository.dart';
+import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_lib/intent/intent.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
@@ -32,6 +33,8 @@ import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_mobile/nav.dart';
+import 'package:takeout_mobile/video.dart';
 
 import 'app.dart';
 import 'context.dart';
@@ -85,8 +88,16 @@ class AppBloc extends TakeoutBloc {
   }
 
   @override
-  MediaPlayer createMediaPlayer(NowPlayingCubit nowPlaying) {
-    return DefaultMediaPlayer(nowPlaying);
+  MediaPlayer createMediaPlayer(
+      NowPlayingCubit nowPlaying, BuildContext context) {
+    final settingsRepository = context.read<SettingsRepository>();
+    final clientRepository = context.read<ClientRepository>();
+    final mediaTrackResolver = context.read<MediaTrackResolver>();
+    final tokenRepository = context.read<TokenRepository>();
+    return DefaultMediaPlayer(nowPlaying, settingsRepository,
+        clientRepository: clientRepository,
+        mediaTrackResolver: mediaTrackResolver,
+        tokenRepository: tokenRepository);
   }
 
   @override
@@ -190,11 +201,23 @@ mixin AppBlocState {
 }
 
 class DefaultMediaPlayer extends BaseMediaPlayer {
-  DefaultMediaPlayer(super.player);
+  final ClientRepository clientRepository;
+  final MediaTrackResolver mediaTrackResolver;
+  final TokenRepository tokenRepository;
+
+  DefaultMediaPlayer(super.player, super.settingsRepository,
+      {required this.clientRepository,
+      required this.mediaTrackResolver,
+      required this.tokenRepository});
 
   @override
   void playMovie(Movie movie) {
-    // TODO
-    throw UnimplementedError;
+    clientRepository.movie(movie.id).then((view) {
+      globalPush(
+          builder: (_) => MoviePlayer(MovieMediaTrack(view),
+              mediaTrackResolver: mediaTrackResolver,
+              tokenRepository: tokenRepository,
+              settingsRepository: settingsRepository));
+    });
   }
 }

@@ -37,6 +37,9 @@ DEBUG_APK = ./build/app/outputs/flutter-apk/app-debug.apk
 
 all: apk
 
+pubspec.lock: ../takeout_lib/pubspec.yaml pubspec.yaml
+	${FLUTTER} pub get
+
 release: clean update apk
 
 apk: ${RELEASE_APK}
@@ -56,12 +59,12 @@ analyze:
 generate:
 	${FLUTTER} pub run build_runner build --delete-conflicting-outputs
 
-${RELEASE_APK}: ${SOURCES} ${RESOURCES}
+${RELEASE_APK}: pubspec.lock ${SOURCES} ${RESOURCES}
 	${FLUTTER} build apk --release --target-platform ${TARGET_PLATFORM}
 
 debug: ${DEBUG_APK}
 
-${DEBUG_APK}: ${SOURCES} ${RESOURCES}
+${DEBUG_APK}: pubspec.lock ${SOURCES} ${RESOURCES}
 	${FLUTTER} build apk --debug --target-platform ${TARGET_PLATFORM}
 
 bundle: release

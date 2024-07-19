@@ -1,6 +1,6 @@
 name: takeout_mobile
 description: TakeoutFM
-publish_to: 'none'
+publish_to: 'xnone'
 
 environment:
   sdk: ">=3.0.0 <4.0.0"

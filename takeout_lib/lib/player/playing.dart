@@ -71,8 +71,9 @@ class NowPlayingListenChange extends NowPlayingState {
 class NowPlayingCubit extends HydratedCubit<NowPlayingState> {
   NowPlayingCubit() : super(NowPlayingState.initial());
 
-  void add(Spiff spiff, {bool autoPlay = false, bool autoCache = false}) =>
-      emit(NowPlayingChange(spiff, autoPlay: autoPlay, autoCache: autoCache));
+  void add(Spiff spiff, {bool? autoPlay, bool? autoCache}) =>
+      emit(NowPlayingChange(spiff,
+          autoPlay: autoPlay ?? false, autoCache: autoCache ?? false));
 
   void index(int index) {
     final started =

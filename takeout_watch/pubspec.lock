@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: audio_session
-      sha256: "4012d798e25a0ebfd4ad7203fefe7e386fdfedd2243afc52fa700b8bde6a3a4f"
+      sha256: "343e83bc7809fbda2591a49e525d6b63213ade10c76f15813be9aed6657b3261"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.20"
+    version: "0.1.21"
   bloc:
     dependency: "direct main"
     description:

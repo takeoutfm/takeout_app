@@ -18,6 +18,12 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_mobile/spiff/widget.dart';
 
+final globalAppKey = GlobalKey<NavigatorState>();
+
+void globalPush({required WidgetBuilder builder}) {
+  globalAppKey.currentState?.push(MaterialPageRoute<void>(builder: builder));
+}
+
 void push(BuildContext context, {required WidgetBuilder builder}) {
   Navigator.push(context, MaterialPageRoute<void>(builder: builder));
 }

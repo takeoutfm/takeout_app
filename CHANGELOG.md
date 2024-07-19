@@ -1,3 +1,11 @@
+## 0.18.1
+
+- Use autoCache and autoPlay settings in media browser (for Android Auto)
+- Use grid and completion in Android Auto
+- Added playlists in Android Auto
+- Added movies in Android Auto but no idea now to play video yet
+- Enable search in Android Auto
+
 ## 0.18.0
 
 - Added support for automatic caching of tracks during playback

@@ -228,7 +228,7 @@ class MovieWidget extends ClientPage<MovieView> {
   }
 
   void _onPlay(BuildContext context, MovieView view, Duration startOffset) {
-    playMovie(context, _MovieMediaTrack(view), startOffset: startOffset);
+    playMovie(context, MovieMediaTrack(view), startOffset: startOffset);
   }
 
   void _onDownload(BuildContext context) {
@@ -435,10 +435,10 @@ class MoviePlayer extends StatefulWidget {
 }
 
 // TODO add location back to movie to avoid this hassle?
-class _MovieMediaTrack implements MediaTrack {
+class MovieMediaTrack implements MediaTrack {
   MovieView view;
 
-  _MovieMediaTrack(this.view);
+  MovieMediaTrack(this.view);
 
   @override
   String get creator => '';
