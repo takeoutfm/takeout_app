@@ -40,11 +40,11 @@ and non-playable. Podcasts items include progress details.
 Support for movie playback is TBD. Not sure right now if it's even possible.
 
 +---------+---------------------------+--------+
-|Recent   |/history                   |List    |
+|Recent   |/history                   |Grid    |
 +---------+---------------------------+--------+
 |         |/history/spiffs/{id}       |Playable|
 +---------+---------------------------+--------+
-|Music    |/music                     |List    |
+|Music    |/music                     |Grid    |
 +---------+---------------------------+--------+
 |         |/music/releases/{id}/tracks|Playable|
 +---------+---------------------------+--------+
@@ -64,7 +64,7 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 +---------+---------------------------+--------+
 |         |/radio/other               |List    |
 +---------+---------------------------+--------+
-|         |/radio/stream              |List    |
+|         |/radio/stream              |Grid    |
 +---------+---------------------------+--------+
 |Artists  |/artists                   |List    |
 +---------+---------------------------+--------+
@@ -74,7 +74,7 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 +---------+---------------------------+--------+
 |         |/playlists/{id}            |Playable|
 +---------+---------------------------+--------+
-|Downloads|/downloads                 |List    |
+|Downloads|/downloads                 |Grid    |
 +---------+---------------------------+--------+
 |         |/downloads/spiffs/{id}     |Playable|
 +---------+---------------------------+--------+
@@ -107,6 +107,15 @@ const extrasValueContentStyleListItem = 1;
 const extrasValueContentStyleGridItem = 2;
 const extrasValueContentStyleCategoryListItem = 3;
 const extrasValueContentStyleCategoryGridItem = 4;
+
+const extrasGridStyle = {
+  extrasKeyContentBrowsableStyle: extrasValueContentStyleGridItem,
+  extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
+};
+
+const extrasGridPlayableStyle = {
+  extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
+};
 
 abstract class MediaProvider {
   Future<List<MediaItem>> getRoot();
@@ -152,12 +161,14 @@ class DefaultMediaProvider implements MediaProvider {
       id: '/history',
       title: 'Recent',
       playable: false,
+      extras: extrasGridStyle,
     ));
     if (index.hasMusic) {
       items.add(const MediaItem(
         id: '/music',
         title: 'Music',
         playable: false,
+        extras: extrasGridStyle,
       ));
     }
     if (index.hasPodcasts) {
@@ -165,10 +176,7 @@ class DefaultMediaProvider implements MediaProvider {
         id: '/podcasts',
         title: 'Podcasts',
         playable: false,
-        extras: {
-          extrasKeyContentBrowsableStyle: extrasValueContentStyleGridItem,
-          extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
-        },
+        extras: extrasGridStyle,
       ));
     }
     if (index.hasMusic) {
@@ -196,6 +204,7 @@ class DefaultMediaProvider implements MediaProvider {
         id: '/downloads',
         title: 'Downloads',
         playable: false,
+        extras: extrasGridStyle,
       ));
     }
     if (index.hasMovies) {
@@ -203,10 +212,7 @@ class DefaultMediaProvider implements MediaProvider {
         id: '/movies',
         title: 'Movies',
         playable: false,
-        extras: {
-          extrasKeyContentBrowsableStyle: extrasValueContentStyleGridItem,
-          extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
-        },
+        extras: extrasGridStyle,
       ));
     }
     return items;
@@ -551,8 +557,18 @@ class DefaultMediaProvider implements MediaProvider {
   }
 
   MediaItem _station(Station s) {
+    Map<String, dynamic>? extras;
+    if (s.type == 'stream') {
+      extras = extrasGridPlayableStyle;
+    }
     return MediaItem(
-        id: '/music/radio/stations/${s.id}', title: s.name, playable: true);
+      id: '/music/radio/stations/${s.id}',
+      title: s.name,
+      artist: s.creator.isNotEmpty ? s.creator : null,
+      artUri: s.image.isNotEmpty ? _img(s.image) : null,
+      playable: true,
+      extras: extras,
+    );
   }
 
   MediaItem _series(Series s) {

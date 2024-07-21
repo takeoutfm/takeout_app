@@ -1,3 +1,8 @@
+## 0.18.2
+
+- Use more grid style in Android Auto
+- Include images for radio streams in Android Auto
+
 ## 0.18.1
 
 - Use autoCache and autoPlay settings in media browser (for Android Auto)

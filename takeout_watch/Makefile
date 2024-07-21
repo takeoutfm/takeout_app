@@ -23,7 +23,7 @@ APKSIGNER = apksigner
 
 GIT_VERSION ?= $(shell git log --format="%h" -n 1)
 
-SOURCES = $(wildcard lib/*.dart lib/*/*.dart)
+SOURCES = $(wildcard lib/*.dart lib/*/*.dart ../takeout_lib/lib/*/*.dart ../takeout_lib/lib/*.dart)
 
 RESOURCES = $(wildcard lib/l10n/*.arb)
 
@@ -33,7 +33,7 @@ RELEASE_APK = ./build/app/outputs/flutter-apk/app-release.apk
 
 DEBUG_APK = ./build/app/outputs/flutter-apk/app-debug.apk
 
-.PHONY: build
+.PHONY: build apk
 
 all: apk
 
