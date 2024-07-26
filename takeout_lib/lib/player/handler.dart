@@ -568,13 +568,15 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   @override
   Future<void> playFromSearch(String query,
       [Map<String, dynamic>? extras]) async {
-    return mediaRepository.playFromSearch(query, mediaType: MediaType.music);
+    return mediaRepository.playFromSearch(query,
+        mediaType: MediaType.music, extras: extras);
   }
 
   @override
   Future<List<MediaItem>> search(String query,
       [Map<String, dynamic>? extras]) async {
-    return mediaRepository.search(query, mediaType: MediaType.music);
+    return mediaRepository.search(query,
+        mediaType: MediaType.music, extras: extras);
   }
 
   Duration _seekCheck(Duration pos) {

@@ -123,6 +123,7 @@ class TakeoutBloc {
       mediaTypeRepository: mediaTypeRepository,
       subscribedRepository: subscribedRepository,
       offsetCacheRepository: offsetCacheRepository,
+      trackCacheRepository: trackCacheRepository,
     );
 
     final listenRepository = ListenRepository(

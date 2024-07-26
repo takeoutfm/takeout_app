@@ -151,6 +151,10 @@ class ClientCubit extends Cubit<ClientState> {
       ({Duration? ttl}) => repository.releasePlaylist(id, ttl: ttl),
       ttl: ttl);
 
+  void trackPlaylist(String id, {Duration? ttl}) =>
+      _doit<Spiff>(({Duration? ttl}) => repository.trackPlaylist(id, ttl: ttl),
+          ttl: ttl);
+
   void search(String query, {Duration? ttl}) =>
       _doit<SearchView>(({Duration? ttl}) => repository.search(query, ttl: ttl),
           ttl: ttl);

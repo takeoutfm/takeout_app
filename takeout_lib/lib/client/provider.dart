@@ -74,6 +74,8 @@ abstract class ClientProvider {
 
   Future<Spiff> releasePlaylist(String id, {Duration? ttl});
 
+  Future<Spiff> trackPlaylist(String id, {Duration? ttl});
+
   Future<SeriesView> series(int id, {Duration? ttl});
 
   Future<void> seriesSubscribe(int id);

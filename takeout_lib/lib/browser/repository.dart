@@ -20,6 +20,7 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/browser/provider.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/cache/spiff.dart';
+import 'package:takeout_lib/cache/track_repository.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
@@ -46,6 +47,7 @@ class MediaRepository {
       required MediaTypeRepository mediaTypeRepository,
       required SubscribedRepository subscribedRepository,
       required OffsetCacheRepository offsetCacheRepository,
+      required TrackCacheRepository trackCacheRepository,
       MediaProvider? provider})
       : _provider = provider ??
             DefaultMediaProvider(
@@ -56,6 +58,7 @@ class MediaRepository {
               mediaTypeRepository,
               subscribedRepository,
               offsetCacheRepository,
+              trackCacheRepository,
             );
 
   void init(MediaPlayer player) {
@@ -78,8 +81,9 @@ class MediaRepository {
     return _provider.getChildren(parentId);
   }
 
-  Future<List<MediaItem>> search(String query, {MediaType? mediaType}) async {
-    return _provider.search(query, mediaType: mediaType);
+  Future<List<MediaItem>> search(String query,
+      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
+    return _provider.search(query, mediaType: mediaType, extras: extras);
   }
 
   Future<void> playFromMediaId(String mediaId) async {
@@ -94,7 +98,8 @@ class MediaRepository {
     }
   }
 
-  Future<void> playFromSearch(String query, {MediaType? mediaType}) async {
+  Future<void> playFromSearch(String query,
+      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
     if (mediaType == MediaType.video) {
       final results = await _provider.search(query, mediaType: mediaType);
       if (results.isNotEmpty) {
@@ -105,8 +110,8 @@ class MediaRepository {
         }
       }
     } else {
-      final spiff =
-          await _provider.spiffFromSearch(query, mediaType: mediaType);
+      final spiff = await _provider.spiffFromSearch(query,
+          mediaType: mediaType, extras: extras);
       if (spiff != null) {
         _player?.playSpiff(spiff);
       }

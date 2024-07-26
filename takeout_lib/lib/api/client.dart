@@ -579,6 +579,11 @@ class TakeoutClient implements ClientProvider {
   Future<Spiff> releasePlaylist(String id, {Duration? ttl}) async =>
       spiff('/api/releases/$id/playlist', ttl: ttl);
 
+  /// GET /api/tracks/1/playlist
+  @override
+  Future<Spiff> trackPlaylist(String id, {Duration? ttl}) async =>
+      spiff('/api/tracks/$id/playlist', ttl: ttl);
+
   /// GET /api/playlist
   /// GET /api/playlists/1/playlist
   /// GET /api/playlists/name/playlist

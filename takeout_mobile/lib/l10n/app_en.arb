@@ -88,6 +88,7 @@
   "playlistName": "Name",
   "playlistAdd": "Add to playlist",
   "playlistCreate": "New playlist",
+  "trackPlaylist": "Tracks Like This",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

@@ -199,6 +199,18 @@ class _ReleaseTracksWidget extends StatelessWidget {
         title: _view.release.name);
   }
 
+  void _onLongPress(BuildContext context, Track t, RelativeRect pos) {
+    showPopupMenu(context, pos, [
+      PopupItem.trackPlaylist(context, (_) {
+        pushSpiff(
+            ref: '/music/tracks/${t.id}/playlist',
+            context,
+            (client, {Duration? ttl}) =>
+                client.trackPlaylist('${t.id}', ttl: Duration.zero));
+      }),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
@@ -217,10 +229,21 @@ class _ReleaseTracksWidget extends StatelessWidget {
               context, context.strings.discLabel(e.discNum, discs)));
           d = e.discNum;
         }
-        children.add(NumberedTrackListTile(e,
-            onTap: () => _onPlay(context, i),
-            trailing:
-                _trailing(context, downloads.state, trackCache.state, e)));
+        children.add(GestureDetector(
+            onDoubleTapDown: (d) {
+              final offset = d.globalPosition;
+              final pos = RelativeRect.fromLTRB(
+                offset.dx,
+                offset.dy,
+                MediaQuery.of(context).size.width - offset.dx,
+                MediaQuery.of(context).size.height - offset.dy,
+              );
+              _onLongPress(context, e, pos);
+            },
+            child: NumberedTrackListTile(e,
+                onTap: () => _onPlay(context, i),
+                trailing:
+                    _trailing(context, downloads.state, trackCache.state, e))));
       }
       return Column(children: children);
     });

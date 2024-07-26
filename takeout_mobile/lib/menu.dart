@@ -133,6 +133,10 @@ class PopupItem {
   PopupItem.playlistAppend(BuildContext context, MenuCallback onSelected)
       : this(const Icon(Icons.playlist_add), context.strings.playlistAdd,
             onSelected);
+
+  PopupItem.trackPlaylist(BuildContext context, MenuCallback onSelected)
+      : this(const Icon(Icons.playlist_play), context.strings.trackPlaylist,
+            onSelected);
 }
 
 Widget popupMenu(BuildContext context, List<PopupItem> items) {
@@ -161,7 +165,6 @@ Widget popupMenu(BuildContext context, List<PopupItem> items) {
       });
 }
 
-// this isn't used
 void showPopupMenu(
     BuildContext context, RelativeRect position, List<PopupItem> items) async {
   List<PopupMenuEntry<int>> entries = [];

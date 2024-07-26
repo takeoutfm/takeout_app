@@ -680,7 +680,7 @@ packages:
       path: "../takeout_lib"
       relative: true
     source: path
-    version: "0.18.1"
+    version: "0.18.2"
   term_glyph:
     dependency: transitive
     description:

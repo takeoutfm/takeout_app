@@ -22,6 +22,9 @@ import 'package:crypto/crypto.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/cache/spiff.dart';
+import 'package:takeout_lib/cache/spiff_track.dart';
+import 'package:takeout_lib/cache/track.dart';
+import 'package:takeout_lib/cache/track_repository.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/history/repository.dart';
@@ -52,7 +55,7 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 +---------+---------------------------+--------+
 |Podcasts |/podcasts                  |Grid    |
 +---------+---------------------------+--------+
-|         |/podcasts/series/{id}      |Grid    |
+|         |/podcasts/series/{id}      |List    |
 +---------+---------------------------+--------+
 |         |/podcasts/episodes/{id}    |Playable|
 +---------+---------------------------+--------+
@@ -85,10 +88,13 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 
  */
 
-// TYPE: double, a value between 0.0 and 1.0, inclusive. 0.0 indicates no
-// completion progress (item is not started) and 1.0 indicates full completion
-// progress (item is fully played). Values in between indicate partial progress
-// (for example, 0.75 indicates the item is 75% complete).
+/*
+
+https://developer.android.com/training/cars/media
+
+ */
+
+// TYPE: double, a value between 0.0 and 1.0
 const extrasKeyCompletionPercentage =
     'androidx.media.MediaItem.Extras.COMPLETION_PERCENTAGE';
 
@@ -113,9 +119,41 @@ const extrasGridStyle = {
   extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
 };
 
-const extrasGridPlayableStyle = {
-  extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
+const extrasListStyle = {
+  extrasKeyContentBrowsableStyle: extrasValueContentStyleListItem,
+  extrasKeyContentPlayableStyle: extrasValueContentStyleListItem,
 };
+
+const extrasKeyContentStyleGroupTitle =
+    'android.media.browse.CONTENT_STYLE_GROUP_TITLE_HINT';
+
+const extrasKeyDownloadStatus = 'android.media.extra.DOWNLOAD_STATUS';
+const extrasValueStatusNotDownloaded = 0;
+const extrasValueStatusDownloading = 1;
+const extrasValueStatusDownloaded = 2;
+
+const extrasKeyMediaAlbum = 'android.intent.extra.album';
+const extrasKeyMediaArtist = 'android.intent.extra.artist';
+const extrasKeyMediaTitle = 'android.intent.extra.title';
+const extrasKeyMediaGenre = 'android.intent.extra.genre';
+
+// TODO need to localize these strings. Will need a repository for that since there's no context available here.
+const stringsRecent = 'Recent';
+const stringsMusic = 'Music';
+const stringsPodcasts = 'Podcasts';
+const stringsRadio = 'Radio';
+const stringsArtists = 'Artists';
+const stringsPlaylists = 'Playlists';
+const stringsDownloads = 'Downloads';
+const stringsMovies = 'Movies';
+const stringsGenres = 'Genres';
+const stringsDecades = 'Decades';
+const stringsOther = 'Other';
+const stringsStreams = 'Streams';
+const stringsGroupReleases = 'Releases';
+const stringsGroupTracks = 'Tracks';
+const stringsGroupArtists = 'Artists';
+const stringsGroupSimilarArtists = 'Similar Artists';
 
 abstract class MediaProvider {
   Future<List<MediaItem>> getRoot();
@@ -124,11 +162,13 @@ abstract class MediaProvider {
 
   Future<List<MediaItem>> getChildren(String parentId);
 
-  Future<List<MediaItem>> search(String query, {MediaType? mediaType});
+  Future<List<MediaItem>> search(String query,
+      {MediaType? mediaType, Map<String, dynamic>? extras});
 
   Future<Spiff?> spiffFromMediaId(String mediaId);
 
-  Future<Spiff?> spiffFromSearch(String query, {MediaType? mediaType});
+  Future<Spiff?> spiffFromSearch(String query,
+      {MediaType? mediaType, Map<String, dynamic>? extras});
 
   Future<Movie?> movieFromMediaId(String mediaId);
 }
@@ -141,6 +181,7 @@ class DefaultMediaProvider implements MediaProvider {
   final MediaTypeRepository mediaTypeRepository;
   final SubscribedRepository subscribedRepository;
   final OffsetCacheRepository offsetCacheRepository;
+  final TrackCacheRepository trackCacheRepository;
 
   DefaultMediaProvider(
       this.clientRepository,
@@ -149,24 +190,23 @@ class DefaultMediaProvider implements MediaProvider {
       this.spiffCacheRepository,
       this.mediaTypeRepository,
       this.subscribedRepository,
-      this.offsetCacheRepository);
+      this.offsetCacheRepository,
+      this.trackCacheRepository);
 
   @override
   Future<List<MediaItem>> getRoot() async {
     final items = <MediaItem>[];
     final index = await clientRepository.index();
-    // TODO need to localize these strings. Will need a repository for that
-    // since there's no context available here.
     items.add(const MediaItem(
       id: '/history',
-      title: 'Recent',
+      title: stringsRecent,
       playable: false,
       extras: extrasGridStyle,
     ));
     if (index.hasMusic) {
       items.add(const MediaItem(
         id: '/music',
-        title: 'Music',
+        title: stringsMusic,
         playable: false,
         extras: extrasGridStyle,
       ));
@@ -174,7 +214,7 @@ class DefaultMediaProvider implements MediaProvider {
     if (index.hasPodcasts) {
       items.add(const MediaItem(
         id: '/podcasts',
-        title: 'Podcasts',
+        title: stringsPodcasts,
         playable: false,
         extras: extrasGridStyle,
       ));
@@ -182,19 +222,19 @@ class DefaultMediaProvider implements MediaProvider {
     if (index.hasMusic) {
       items.add(const MediaItem(
         id: '/radio',
-        title: 'Radio',
+        title: stringsRadio,
         playable: false,
       ));
       items.add(const MediaItem(
         id: '/artists',
-        title: 'Artists',
+        title: stringsArtists,
         playable: false,
       ));
     }
     if (index.hasPlaylists) {
       items.add(const MediaItem(
         id: '/playlists',
-        title: 'Playlists',
+        title: stringsPlaylists,
         playable: false,
       ));
     }
@@ -202,7 +242,7 @@ class DefaultMediaProvider implements MediaProvider {
     if (downloads.isNotEmpty) {
       items.add(const MediaItem(
         id: '/downloads',
-        title: 'Downloads',
+        title: stringsDownloads,
         playable: false,
         extras: extrasGridStyle,
       ));
@@ -210,7 +250,7 @@ class DefaultMediaProvider implements MediaProvider {
     if (index.hasMovies) {
       items.add(const MediaItem(
         id: '/movies',
-        title: 'Movies',
+        title: stringsMovies,
         playable: false,
         extras: extrasGridStyle,
       ));
@@ -227,8 +267,10 @@ class DefaultMediaProvider implements MediaProvider {
   Future<List<MediaItem>> getChildren(String parentId) async {
     switch (parentId) {
       case '/':
+      case AudioService.browsableRootId:
         return getRoot();
       case '/history':
+      case AudioService.recentRootId:
         return _getHistory();
       case '/music':
         return _getMusic();
@@ -257,9 +299,11 @@ class DefaultMediaProvider implements MediaProvider {
   }
 
   @override
-  Future<List<MediaItem>> search(String query, {MediaType? mediaType}) async {
+  Future<List<MediaItem>> search(String query,
+      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
     final items = <MediaItem>[];
-    final results = await _search(query);
+    final results = await _search(query, extras: extras);
+    final cache = await cacheState();
 
     if (mediaType == MediaType.video) {
       for (var m in results.movies ?? <Movie>[]) {
@@ -276,13 +320,14 @@ class DefaultMediaProvider implements MediaProvider {
     } else {
       // default to music
       for (var a in results.artists ?? <Artist>[]) {
-        items.add(_artist(a));
+        items.add(_artist(a, group: stringsGroupArtists));
       }
       for (var r in results.releases ?? <Release>[]) {
-        items.add(_release(r));
+        items.add(_release(r,
+            group: stringsGroupReleases, isDownloaded: cache.isDownloaded(r)));
       }
       for (var t in results.tracks ?? <Track>[]) {
-        items.add(_track(t));
+        items.add(_track(t, group: stringsGroupTracks));
       }
     }
     return items;
@@ -333,8 +378,9 @@ class DefaultMediaProvider implements MediaProvider {
 
   // TODO search isn't tested yet. Not sure how to test with ADB/AA.
   @override
-  Future<Spiff?> spiffFromSearch(String query, {MediaType? mediaType}) async {
-    final results = await _search(query);
+  Future<Spiff?> spiffFromSearch(String query,
+      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
+    final results = await _search(query, extras: extras);
     if (results.hits == 0) {
       return null;
     }
@@ -351,6 +397,11 @@ class DefaultMediaProvider implements MediaProvider {
     if (releases.length == 1) {
       // play release
       return await clientRepository.releasePlaylist('${releases[0].id}');
+    }
+
+    final tracks = results.tracks ?? [];
+    if (tracks.length == 1) {
+      return await clientRepository.trackPlaylist('${tracks[0].id}');
     }
 
     // TODO add more later
@@ -411,8 +462,10 @@ class DefaultMediaProvider implements MediaProvider {
     // /artists/id
     final id = int.parse(parentId.split('/')[2]);
     final artist = await clientRepository.artist(id);
+    final cache = await cacheState();
     for (var r in artist.releases) {
-      items.add(_release(r));
+      items.add(_release(r,
+          group: stringsGroupReleases, isDownloaded: cache.isDownloaded(r)));
     }
     return items;
   }
@@ -422,19 +475,22 @@ class DefaultMediaProvider implements MediaProvider {
     final radio = await clientRepository.radio();
     if (radio.genre != null) {
       items.add(const MediaItem(
-          id: '/radio/genre', title: 'Genres', playable: false));
+          id: '/radio/genre', title: stringsGenres, playable: false));
     }
     if (radio.period != null) {
       items.add(const MediaItem(
-          id: '/radio/period', title: 'Decades', playable: false));
+          id: '/radio/period', title: stringsDecades, playable: false));
     }
     if (radio.other != null) {
-      items.add(
-          const MediaItem(id: '/radio/other', title: 'Other', playable: false));
+      items.add(const MediaItem(
+          id: '/radio/other', title: stringsOther, playable: false));
     }
     if (radio.stream != null) {
       items.add(const MediaItem(
-          id: '/radio/stream', title: 'Streams', playable: false));
+          id: '/radio/stream',
+          title: stringsStreams,
+          playable: false,
+          extras: extrasGridStyle));
     }
     return items;
   }
@@ -546,37 +602,47 @@ class DefaultMediaProvider implements MediaProvider {
     return null;
   }
 
-  MediaItem _release(Release r) {
+  MediaItem _release(Release r, {String? group, bool? isDownloaded}) {
+    Map<String, dynamic>? extras;
+    if (group != null || isDownloaded != null) {
+      extras = <String, dynamic>{};
+      if (group != null) {
+        extras[extrasKeyContentStyleGroupTitle] = group;
+      }
+      if (isDownloaded == true) {
+        extras[extrasKeyDownloadStatus] = extrasValueStatusDownloaded;
+      }
+    }
+
     return MediaItem(
         id: '/music/releases/${r.id}/tracks',
         title: r.album,
         artist: r.artist,
         album: r.album,
         artUri: _img(r.image),
+        extras: extras,
         playable: true);
   }
 
   MediaItem _station(Station s) {
-    Map<String, dynamic>? extras;
-    if (s.type == 'stream') {
-      extras = extrasGridPlayableStyle;
-    }
     return MediaItem(
       id: '/music/radio/stations/${s.id}',
       title: s.name,
       artist: s.creator.isNotEmpty ? s.creator : null,
       artUri: s.image.isNotEmpty ? _img(s.image) : null,
       playable: true,
-      extras: extras,
     );
   }
 
   MediaItem _series(Series s) {
     return MediaItem(
-        id: '/podcasts/series/${s.id}',
-        title: s.title,
-        artUri: _img(s.image),
-        playable: false);
+      id: '/podcasts/series/${s.id}',
+      title: s.title,
+      artist: s.creator,
+      artUri: _img(s.image),
+      playable: false,
+      extras: extrasListStyle,
+    );
   }
 
   Future<Map<String, dynamic>> _completionExtras(OffsetIdentifier id) async {
@@ -613,16 +679,18 @@ class DefaultMediaProvider implements MediaProvider {
     );
   }
 
-  MediaItem _artist(Artist a) {
+  MediaItem _artist(Artist a, {String? group}) {
+    Map<String, dynamic> extras = {
+      // use grid for artist releases
+      extrasKeyContentBrowsableStyle: extrasValueContentStyleGridItem,
+      extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
+      if (group != null) extrasKeyContentStyleGroupTitle: group,
+    };
     return MediaItem(
       id: '/artists/${a.id}',
       title: a.name,
       playable: false,
-      extras: {
-        // use grid for artist releases
-        extrasKeyContentBrowsableStyle: extrasValueContentStyleGridItem,
-        extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
-      },
+      extras: extras,
     );
   }
 
@@ -634,6 +702,13 @@ class DefaultMediaProvider implements MediaProvider {
       extras = await _completionExtras(episode);
     }
 
+    final downloaded =
+        await trackCacheRepository.containsAll(spiff.playlist.tracks);
+    if (downloaded) {
+      extras ??= <String, dynamic>{};
+      extras[extrasKeyDownloadStatus] = extrasValueStatusDownloaded;
+    }
+
     return extras;
   }
 
@@ -641,16 +716,26 @@ class DefaultMediaProvider implements MediaProvider {
     return MediaItem(
         id: '/history/spiffs/${h.dateTime.millisecondsSinceEpoch}',
         title: h.spiff.title,
+        artist: h.spiff.creator,
         artUri: _img(h.spiff.cover),
         playable: true,
         extras: await _spiffExtras(h.spiff));
   }
 
-  MediaItem _track(Track t) {
+  MediaItem _track(Track t, {String? group}) {
+    Map<String, dynamic>? extras;
+    if (group != null) {
+      extras = {
+        extrasKeyContentStyleGroupTitle: group,
+      };
+    }
     return MediaItem(
         id: '/music/releases/${t.reid}?index=${t.trackIndex}',
         title: t.title,
+        artist: t.creator,
+        album: t.album,
         artUri: _img(t.image),
+        extras: extras,
         playable: true);
   }
 
@@ -698,7 +783,39 @@ class DefaultMediaProvider implements MediaProvider {
     return Uri.parse(i);
   }
 
-  Future<SearchView> _search(String query) async {
+  Future<SearchView> _search(String query,
+      {Map<String, dynamic>? extras}) async {
+    if (extras != null) {
+      final artist = extras[extrasKeyMediaArtist];
+      final album = extras[extrasKeyMediaAlbum];
+      final title = extras[extrasKeyMediaTitle];
+      final genre = extras[extrasKeyMediaGenre];
+      query = ''; // TODO what about original query?
+      if (artist != null) {
+        query = '+artist:"$artist*"';
+      }
+      if (album != null) {
+        if (query.isNotEmpty) query += ' ';
+        query += '+release:"$album*"';
+      }
+      if (title != null) {
+        if (query.isNotEmpty) query += ' ';
+        query = '+title:"$title*"';
+      }
+      if (genre != null) {
+        query = '+title:"$genre*"';
+      }
+    }
+    if (query.isEmpty) {
+      // TODO pick something to play
+    }
     return await clientRepository.search(query);
+  }
+
+  Future<SpiffTrackCacheState> cacheState() async {
+    final spiffCacheState = SpiffCacheState(await spiffCacheRepository.entries);
+    final trackCacheState =
+        TrackCacheState(Set<String>.from(await trackCacheRepository.keys()));
+    return SpiffTrackCacheState(spiffCacheState, trackCacheState);
   }
 }

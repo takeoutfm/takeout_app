@@ -173,6 +173,10 @@ class ClientRepository {
     return _provider.releasePlaylist(id, ttl: ttl);
   }
 
+  Future<Spiff> trackPlaylist(String id, {Duration? ttl}) async {
+    return _provider.trackPlaylist(id, ttl: ttl);
+  }
+
   Future<Spiff> recentTracks({Duration? ttl}) async {
     return _provider.recentTracks(ttl: ttl);
   }

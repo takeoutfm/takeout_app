@@ -1,3 +1,13 @@
+## 0.18.3
+
+- Android Auto:
+  - radio streams use grid, episodes use list
+  - use groups and download status
+- Support track playlists
+  - use in Android Auto search
+  - double tap in release tracks
+- Flutter upgrade to 3.22.3
+
 ## 0.18.2
 
 - Use more grid style in Android Auto
