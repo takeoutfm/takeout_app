@@ -21,6 +21,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_watch/app/context.dart';
+import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/platform.dart';
 
 import 'about.dart';
@@ -54,7 +55,8 @@ class SettingsPage extends StatelessWidget {
       SettingEntry<VideoType>(context.strings.videoSortType, nextVideoType,
           icon: const Icon(Icons.sort),
           currentValue: (_) => context.selectedMediaType.state.videoType),
-      SettingEntry<PodcastType>(context.strings.podcastSortType, nextPodcastType,
+      SettingEntry<PodcastType>(
+          context.strings.podcastSortType, nextPodcastType,
           icon: const Icon(Icons.sort),
           currentValue: (_) => context.selectedMediaType.state.podcastType),
       SettingEntry<String>(
@@ -140,7 +142,7 @@ class SettingsPage extends StatelessWidget {
 
   void toggleTrackActivity(BuildContext context) {
     context.settings.enableTrackActivity =
-    !context.settings.state.settings.enableTrackActivity;
+        !context.settings.state.settings.enableTrackActivity;
   }
 
   void logout(BuildContext context) {
@@ -149,7 +151,10 @@ class SettingsPage extends StatelessWidget {
             body: context.strings.logoutLabel)
         .then((confirmed) {
       if (confirmed != null && confirmed) {
-        context.app.logout();
+        final context = globalAppKey.currentContext;
+        if (context != null && context.mounted) {
+          context.app.logout();
+        }
       }
     });
   }

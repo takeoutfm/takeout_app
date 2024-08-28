@@ -19,15 +19,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:takeout_lib/context/bloc.dart';
-import 'package:takeout_lib/empty.dart';
 import 'package:takeout_watch/app/app.dart';
 import 'package:takeout_watch/app/bloc.dart';
 import 'package:takeout_watch/app/context.dart';
-import 'package:wear/wear.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'connect.dart';
 import 'home.dart';
+import 'nav.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,29 +59,19 @@ class WatchApp extends StatelessWidget {
     // textTheme: appTheme.textTheme.apply(fontSizeFactor: 0.50));
 
     return AppBloc().init(context,
-        child: WatchShape(builder: (context, shape, child) {
-      //print('ambient shape is $shape');
-      return AmbientMode(
-        builder: (context, mode, child) {
-          //print('ambient mode is $mode');
-          return mode == WearMode.active
-              ? MaterialApp(
-                  theme: appTheme,
-                  localizationsDelegates: const [
-                    AppLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  supportedLocales: const [
-                    Locale('en', ''),
-                  ],
-                  home: const MainPage(),
-                )
-              : const EmptyWidget();
-        },
-      );
-    }));
+        child: MaterialApp(
+            key: globalAppKey,
+            theme: appTheme,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', ''),
+            ],
+            home: const MainPage()));
   }
 }
 

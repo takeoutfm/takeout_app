@@ -27,6 +27,7 @@ import 'package:takeout_lib/player/scaffold.dart';
 import 'package:takeout_lib/player/seekbar.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/menu.dart';
+import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/playlists.dart';
 import 'package:takeout_mobile/tiles.dart';
 
@@ -39,9 +40,16 @@ class PlayerWidget extends StatelessWidget {
 
   void _onPlaylists(BuildContext context) {
     showPlaylistSelect(context, (playlist) {
-      context.clientRepository
-          .playlist(id: playlist.id)
-          .then((spiff) => context.play(spiff));
+      // avoid async context twice - use context from globalAppKey
+      final context = globalAppKey.currentContext;
+      if (context != null && context.mounted) {
+        context.clientRepository.playlist(id: playlist.id).then((spiff) {
+          final context = globalAppKey.currentContext;
+          if (context != null && context.mounted) {
+            context.play(spiff);
+          }
+        });
+      }
     });
   }
 

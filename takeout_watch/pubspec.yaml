@@ -21,7 +21,7 @@ dependencies:
   percent_indicator: ^4.2.3
   rotary_scrollbar: ^1.0.0
   timeago: ^3.6.1
-  wear: ^1.1.0
+  wear_plus: ^1.2.0
   wearable_rotary: ^2.0.2
 
 dev_dependencies:

@@ -23,6 +23,7 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/download.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_watch/app/context.dart';
+import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/settings.dart';
 
 import 'dialog.dart';
@@ -51,8 +52,8 @@ class DownloadsPage extends StatelessWidget {
 
       final creator = spiff.playlist.creator;
       if (creator != null) {
-        children.add(Text(creator,
-            style: context.listTileTheme.subtitleTextStyle));
+        children
+            .add(Text(creator, style: context.listTileTheme.subtitleTextStyle));
       }
 
       final count = trackCache.state.count(spiff.playlist.tracks);
@@ -90,13 +91,16 @@ class DownloadsPage extends StatelessWidget {
       if (allowDownload(context)) {
         confirmDialog(context, title: context.strings.confirmDownload)
             .then((confirmed) {
-          if (confirmed != null && confirmed) {
-            // resume download
-            context.download(spiff);
-          } else {
-            // just play
-            context.play(spiff);
-            context.showPlayer(context);
+          final context = globalAppKey.currentContext;
+          if (context != null && context.mounted) {
+            if (confirmed != null && confirmed) {
+              // resume download
+              context.download(spiff);
+            } else {
+              // just play
+              context.play(spiff);
+              context.showPlayer(context);
+            }
           }
         });
       }
@@ -111,7 +115,10 @@ class DownloadsPage extends StatelessWidget {
             title: context.strings.confirmDelete, body: spiff.title)
         .then((confirmed) {
       if (confirmed != null && confirmed) {
-        context.remove(spiff);
+        final context = globalAppKey.currentContext;
+        if (context != null && context.mounted) {
+          context.remove(spiff);
+        }
       }
     });
   }

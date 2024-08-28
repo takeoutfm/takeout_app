@@ -1,3 +1,11 @@
+## 0.18.4
+
+- Flutter upgrade to 3.24.0 & pub upgrade
+- async context and other analyze fixes
+- Use `wear_plus` instead of wear
+- Remove unused ambient mode support
+- `receive_intent` has build issues - fix manually by changing their compileSdkVersion to 31
+
 ## 0.18.3
 
 - Android Auto:

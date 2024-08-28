@@ -44,7 +44,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 
     sourceSets {
@@ -54,9 +54,9 @@ android {
     defaultConfig {
         applicationId "com.takeoutfm.watch"
         minSdkVersion 23
-        targetSdkVersion 30 // Wear OS must be 30..33
-        versionCode 1803 // #versionCode#
-        versionName "0.18.3" // #version#
+        targetSdkVersion 31 // Wear OS must be 30..33
+        versionCode 1804 // #versionCode#
+        versionName "0.18.4" // #version#
     }
 
     signingConfigs {

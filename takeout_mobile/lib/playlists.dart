@@ -27,9 +27,10 @@ import 'nav.dart';
 import 'style.dart';
 
 void showPlaylistAppend(BuildContext context, String ref) {
+  final client = context.client;
   showPlaylistsBottomSheet(context).then((playlist) {
     if (playlist != null) {
-      context.client.playlistAppend(playlist, ref);
+      client.playlistAppend(playlist, ref);
     }
   });
 }
@@ -136,9 +137,10 @@ class PlaylistsWidget extends ClientPage<PlaylistsView> {
   }
 
   void _onCreatePlaylist(BuildContext context) {
+    final client = context.client;
     textDialog(context, context.strings.playlistName).then((name) {
       if (name != null) {
-        context.client.createPlaylist(Spiff.empty(title: name));
+        client.createPlaylist(Spiff.empty(title: name));
       }
     });
   }

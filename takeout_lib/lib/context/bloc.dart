@@ -392,8 +392,9 @@ class TakeoutBloc {
     final nowPlaying = context.nowPlaying.state;
     onNowPlayingChange(context, nowPlaying.spiff);
 
-    context.player.stream.timeout(const Duration(minutes: 1), onTimeout: (_) {
-      context.player.stop();
+    final player = context.player;
+    player.stream.timeout(const Duration(minutes: 1), onTimeout: (_) {
+      player.stop();
     }).listen((event) {});
   }
 

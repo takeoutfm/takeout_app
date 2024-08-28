@@ -27,6 +27,7 @@ import 'package:takeout_lib/util.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/list.dart';
 import 'package:takeout_watch/media.dart';
+import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/settings.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -106,7 +107,10 @@ class SeriesPage extends ClientPage<SeriesView> {
             title: context.strings.confirmDownload, body: episode.title)
         .then((confirmed) {
       if (confirmed != null && confirmed) {
-        context.downloadEpisode(episode);
+        final context = globalAppKey.currentContext;
+        if (context != null && context.mounted) {
+          context.downloadEpisode(episode);
+        }
       }
     });
   }

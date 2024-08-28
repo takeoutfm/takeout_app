@@ -56,15 +56,19 @@ class CodePage extends ClientPage<AccessCode> {
 
   void check(BuildContext context, AccessCode state) {
     context.clientRepository.checkCode(state).then((success) {
-      if (success) {
-        Navigator.pop(context);
-      } else {
-        snackBar(context, context.strings.codeNotLinked);
+      if (context.mounted) {
+        if (success) {
+          Navigator.pop(context);
+        } else {
+          snackBar(context, context.strings.codeNotLinked);
+        }
       }
     }).onError((error, stackTrace) {
-      if (error is InvalidCodeError) {
-        snackBar(context, context.strings.codeInvalid);
-        reload(context);
+      if (context.mounted) {
+        if (error is InvalidCodeError) {
+          snackBar(context, context.strings.codeInvalid);
+          reload(context);
+        }
       }
     });
   }

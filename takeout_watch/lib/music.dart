@@ -24,6 +24,7 @@ import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/dialog.dart';
 import 'package:takeout_watch/list.dart';
 import 'package:takeout_watch/media.dart';
+import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/settings.dart';
 
 class MusicPage extends StatelessWidget {
@@ -155,7 +156,10 @@ void _onDownload(BuildContext context, Release release) {
             title: context.strings.confirmDownload, body: release.name)
         .then((confirmed) {
       if (confirmed != null && confirmed) {
-        context.downloadRelease(release);
+        final context = globalAppKey.currentContext;
+        if (context != null && context.mounted) {
+          context.downloadRelease(release);
+        }
       }
     });
   }
