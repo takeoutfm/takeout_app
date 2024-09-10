@@ -16,22 +16,26 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:takeout_lib/spiff/model.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:takeout_lib/spiff/model.dart';
+
+import 'repeat.dart';
 
 part 'playing.g.dart';
 
 @JsonSerializable()
-class NowPlayingState {
+class NowPlaying {
   final Spiff spiff;
   @JsonKey(includeFromJson: false, includeToJson: false)
   final bool autoPlay;
   final bool autoCache;
   final List<DateTime?>? started;
   final List<DateTime?>? listened;
+  final RepeatMode? repeat;
 
-  NowPlayingState(this.spiff,
-      {this.autoPlay = false,
+  NowPlaying(this.spiff,
+      {this.repeat,
+      this.autoPlay = false,
       this.autoCache = false,
       this.started,
       this.listened});
@@ -48,7 +52,36 @@ class NowPlayingState {
     return started?[index];
   }
 
-  factory NowPlayingState.initial() => NowPlayingState(Spiff.empty());
+  factory NowPlaying.initial() =>
+      NowPlaying(Spiff.empty(), repeat: RepeatMode.none);
+
+  factory NowPlaying.fromJson(Map<String, dynamic> json) =>
+      _$NowPlayingFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NowPlayingToJson(this);
+
+  NowPlaying copyWith(
+          {Spiff? spiff,
+          RepeatMode? repeat,
+          bool? autoPlay,
+          bool? autoCache,
+          List<DateTime?>? started,
+          List<DateTime?>? listened}) =>
+      NowPlaying(spiff ?? this.spiff,
+          repeat: repeat ?? this.repeat,
+          autoPlay: autoPlay ?? this.autoPlay,
+          autoCache: autoCache ?? this.autoCache,
+          started: started ?? this.started,
+          listened: listened ?? this.listened);
+}
+
+@JsonSerializable()
+class NowPlayingState {
+  final NowPlaying nowPlaying;
+
+  NowPlayingState(this.nowPlaying);
+
+  factory NowPlayingState.initial() => NowPlayingState(NowPlaying.initial());
 
   factory NowPlayingState.fromJson(Map<String, dynamic> json) =>
       _$NowPlayingStateFromJson(json);
@@ -56,44 +89,75 @@ class NowPlayingState {
   Map<String, dynamic> toJson() => _$NowPlayingStateToJson(this);
 }
 
+class NowPlayingInit extends NowPlayingState {
+  NowPlayingInit(super.nowPlaying);
+}
+
 class NowPlayingChange extends NowPlayingState {
-  NowPlayingChange(super.spiff, {super.autoPlay, super.autoCache});
+  NowPlayingChange(super.nowPlaying);
 }
 
 class NowPlayingIndexChange extends NowPlayingState {
-  NowPlayingIndexChange(super.spiff, {super.started});
+  NowPlayingIndexChange(super.nowPlaying);
 }
 
 class NowPlayingListenChange extends NowPlayingState {
-  NowPlayingListenChange(super.spiff, {super.listened});
+  NowPlayingListenChange(super.nowPlaying);
+}
+
+class NowPlayingRepeatChange extends NowPlayingState {
+  NowPlayingRepeatChange(super.nowPlaying);
 }
 
 class NowPlayingCubit extends HydratedCubit<NowPlayingState> {
   NowPlayingCubit() : super(NowPlayingState.initial());
 
-  void add(Spiff spiff, {bool? autoPlay, bool? autoCache}) =>
-      emit(NowPlayingChange(spiff,
-          autoPlay: autoPlay ?? false, autoCache: autoCache ?? false));
+  void restore() {
+    emit(NowPlayingChange(state.nowPlaying));
+  }
+
+  void add(Spiff spiff,
+          {bool? autoPlay, bool? autoCache, RepeatMode? repeat}) =>
+      emit(NowPlayingChange(state.nowPlaying.copyWith(
+        spiff: spiff,
+        // clear started & listen state
+        started: null,
+        listened: null,
+        autoCache: autoCache,
+        autoPlay: autoPlay,
+        repeat: repeat,
+      )));
 
   void index(int index) {
-    final started =
-        state.started ?? List<DateTime?>.filled(state.spiff.length, null);
+    final started = state.nowPlaying.started ??
+        List<DateTime?>.filled(state.nowPlaying.spiff.length, null);
     started[index] = DateTime.now();
-    emit(NowPlayingIndexChange(state.spiff.copyWith(index: index),
-        started: started));
+    emit(NowPlayingIndexChange(state.nowPlaying.copyWith(
+      spiff: state.nowPlaying.spiff.copyWith(index: index),
+      started: started,
+    )));
   }
 
   void listened(int index, DateTime listenedAt) {
-    final listened =
-        state.listened ?? List<DateTime?>.filled(state.spiff.length, null);
+    final listened = state.nowPlaying.listened ??
+        List<DateTime?>.filled(state.nowPlaying.spiff.length, null);
     listened[index] = listenedAt;
-    emit(NowPlayingListenChange(state.spiff.copyWith(index: index),
-        listened: listened));
+    emit(NowPlayingListenChange(state.nowPlaying.copyWith(
+      spiff: state.nowPlaying.spiff.copyWith(index: index),
+      listened: listened,
+    )));
+  }
+
+  void repeatMode(RepeatMode repeat) {
+    emit(NowPlayingRepeatChange(state.nowPlaying.copyWith(repeat: repeat)));
   }
 
   @override
-  NowPlayingState fromJson(Map<String, dynamic> json) =>
-      NowPlayingState.fromJson(json['nowPlaying'] as Map<String, dynamic>);
+  NowPlayingState fromJson(Map<String, dynamic> json) {
+    final state =
+        NowPlayingState.fromJson(json['nowPlaying'] as Map<String, dynamic>);
+    return NowPlayingInit(state.nowPlaying);
+  }
 
   @override
   Map<String, dynamic>? toJson(NowPlayingState state) =>

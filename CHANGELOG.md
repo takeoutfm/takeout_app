@@ -1,3 +1,8 @@
+## 0.19.x
+
+- Added repeat mode (none, all, one) support
+- Repeat button is available in app, notification, and Android Auto
+
 ## 0.18.4
 
 - Flutter upgrade to 3.24.0 & pub upgrade

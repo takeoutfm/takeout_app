@@ -23,6 +23,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/player/player.dart';
+import 'package:takeout_lib/player/playing.dart';
+import 'package:takeout_lib/player/repeat.dart';
 import 'package:takeout_lib/player/scaffold.dart';
 import 'package:takeout_lib/player/seekbar.dart';
 import 'package:takeout_mobile/app/context.dart';
@@ -233,6 +235,7 @@ class PlayerWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (!isStream) _invisibleButton(),
             if (!isStream)
               IconButton(
                 icon: const Icon(Icons.skip_previous),
@@ -275,8 +278,36 @@ class PlayerWidget extends StatelessWidget {
                 icon: const Icon(Icons.skip_next),
                 onPressed: state.hasNext ? () => player.skipToNext() : null,
               ),
+            if (!isStream) _repeatButton(),
           ],
         ));
+  }
+
+  Widget _invisibleButton() {
+    return const SizedBox.square(dimension: 36+16);
+  }
+
+  Widget _repeatButton() {
+    return Builder(builder: (context) {
+      final state = context.watch<NowPlayingCubit>().state;
+      final nowPlaying = context.nowPlaying;
+      switch (state.nowPlaying.repeat) {
+        case RepeatMode.none || null:
+          return IconButton(
+              icon: const Icon(Icons.repeat),
+              onPressed: () => nowPlaying.repeatMode(RepeatMode.all));
+        case RepeatMode.all:
+          return IconButton(
+              icon: const Icon(Icons.repeat),
+              isSelected: true,
+              onPressed: () => nowPlaying.repeatMode(RepeatMode.one));
+        case RepeatMode.one:
+          return IconButton(
+              icon: const Icon(Icons.repeat_one),
+              isSelected: true,
+              onPressed: () => nowPlaying.repeatMode(RepeatMode.none));
+      }
+    });
   }
 
   void _onArtist(BuildContext context, String artist) {

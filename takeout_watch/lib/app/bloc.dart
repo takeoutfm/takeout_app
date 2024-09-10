@@ -28,7 +28,6 @@ import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
-import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
 
@@ -80,13 +79,11 @@ class AppBloc extends TakeoutBloc {
   }
 
   @override
-  void onNowPlayingChange(BuildContext context, Spiff spiff,
-      {bool autoPlay = false, bool autoCache = false}) {
-    super.onNowPlayingChange(context, spiff,
-        autoPlay: autoPlay, autoCache: autoCache);
-    addSpiffHistory(context, spiff);
-    if (spiff.isNotEmpty) {
-      context.app.nowPlaying(spiff);
+  void onNowPlayingChange(BuildContext context, NowPlayingChange state) {
+    super.onNowPlayingChange(context, state);
+    addSpiffHistory(context, state.nowPlaying.spiff);
+    if (state.nowPlaying.spiff.isNotEmpty) {
+      context.app.nowPlaying(state.nowPlaying.spiff);
     }
   }
 

@@ -67,4 +67,4 @@ assets:
 version:
 	scripts/version.sh && git commit -a
 
-publish: clean version tag release assets
+publish: clean analyze version tag release assets

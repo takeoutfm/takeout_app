@@ -23,6 +23,7 @@ import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 
 import 'handler.dart';
+import 'repeat.dart';
 
 typedef LoadCallback = void Function(Spiff, Duration, bool, bool);
 typedef PlayCallback = void Function(Spiff, Duration, Duration, bool);
@@ -34,6 +35,7 @@ typedef StoppedCallback = void Function(Spiff);
 typedef TrackChangeCallback = void Function(Spiff, int index, {String? title});
 typedef TrackEndCallback = void Function(
     Spiff, int index, Duration, Duration, bool);
+typedef RepeatModeChangeCallback = void Function(Spiff, RepeatMode);
 
 class PositionInterval {
   final int steps;
@@ -66,10 +68,12 @@ abstract class PlayerProvider {
     required ListenCallback onListen,
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
+    required RepeatModeChangeCallback onRepeatModeChange,
     PositionInterval? positionInterval,
   });
 
-  void load(Spiff spiff, {LoadCallback? onLoad, bool? autoCache});
+  void load(Spiff spiff,
+      {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat});
 
   void play();
 
@@ -90,6 +94,8 @@ abstract class PlayerProvider {
   void skipToNext();
 
   void skipToPrevious();
+
+  void repeatMode(RepeatMode repeat);
 }
 
 class DefaultPlayerProvider implements PlayerProvider {
@@ -111,6 +117,7 @@ class DefaultPlayerProvider implements PlayerProvider {
     required ListenCallback onListen,
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
+    required RepeatModeChangeCallback onRepeatModeChange,
     PositionInterval? positionInterval,
   }) async {
     handler = await TakeoutPlayerHandler.create(
@@ -130,12 +137,14 @@ class DefaultPlayerProvider implements PlayerProvider {
         onDurationChange: onDurationChange,
         onListen: onListen,
         onTrackChange: onTrackChange,
-        onTrackEnd: onTrackEnd);
+        onTrackEnd: onTrackEnd,
+        onRepeatModeChange: onRepeatModeChange);
   }
 
   @override
-  void load(Spiff spiff, {LoadCallback? onLoad, bool? autoCache}) {
-    handler.load(spiff, onLoad: onLoad, autoCache: autoCache);
+  void load(Spiff spiff,
+      {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat}) {
+    handler.load(spiff, onLoad: onLoad, autoCache: autoCache, repeat: repeat);
   }
 
   @override
@@ -167,4 +176,7 @@ class DefaultPlayerProvider implements PlayerProvider {
 
   @override
   void skipToPrevious() => handler.skipToPrevious();
+
+  @override
+  void repeatMode(RepeatMode repeat) => handler.repeatMode(repeat);
 }

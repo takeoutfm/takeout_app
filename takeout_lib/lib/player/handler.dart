@@ -35,6 +35,7 @@ import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
 
 import 'provider.dart';
+import 'repeat.dart';
 
 extension TakeoutMediaItem on MediaItem {
   bool isLocalFile() => id.startsWith(RegExp(r'^file'));
@@ -61,6 +62,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final ListenCallback onListen;
   final TrackChangeCallback onTrackChange;
   final TrackEndCallback onTrackEnd;
+  final RepeatModeChangeCallback onRepeatModeChange;
 
   final _subscriptions = <StreamSubscription<dynamic>>[];
   final _listens = ExpiringSet<String>(const Duration(minutes: 15));
@@ -84,6 +86,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required this.onListen,
     required this.onTrackChange,
     required this.onTrackEnd,
+    required this.onRepeatModeChange,
     required this.trackResolver,
     required this.tokenRepository,
     required this.settingsRepository,
@@ -120,6 +123,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required ListenCallback onListen,
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
+    required RepeatModeChangeCallback onRepeatModeChange,
     Duration? skipBeginningInterval,
     Duration? fastForwardInterval,
     Duration? rewindInterval,
@@ -144,6 +148,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
               onListen: onListen,
               onTrackChange: onTrackChange,
               onTrackEnd: onTrackEnd,
+              onRepeatModeChange: onRepeatModeChange,
               trackResolver: trackResolver,
               tokenRepository: tokenRepository,
               settingsRepository: settingsRepository,
@@ -415,7 +420,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   }
 
   Future<void> load(Spiff spiff,
-      {LoadCallback? onLoad, bool? autoCache}) async {
+      {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat}) async {
     if (spiff.isEmpty) {
       return;
     }
@@ -457,12 +462,24 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
     await skipToQueueItem(index);
 
+    if (repeat != null) {
+      await repeatMode(repeat);
+    }
+
     onLoad?.call(
         _spiff,
         _player.position,
         _player.playing,
         _player.processingState == ProcessingState.loading ||
             _player.processingState == ProcessingState.buffering);
+  }
+
+  Future<void> repeatMode(RepeatMode repeat) async {
+    await switch (repeat) {
+      RepeatMode.none => setRepeatMode(AudioServiceRepeatMode.none),
+      RepeatMode.one => setRepeatMode(AudioServiceRepeatMode.one),
+      RepeatMode.all => setRepeatMode(AudioServiceRepeatMode.all)
+    };
   }
 
   @override
@@ -579,6 +596,19 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         mediaType: MediaType.music, extras: extras);
   }
 
+  @override
+  Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    return switch (repeatMode) {
+      AudioServiceRepeatMode.none => _player.setLoopMode(LoopMode.off),
+      AudioServiceRepeatMode.one => _player.setLoopMode(LoopMode.one),
+      AudioServiceRepeatMode.group ||
+      AudioServiceRepeatMode.all =>
+        _player.setLoopMode(LoopMode.all)
+    }
+        // update external state with new repeat mode
+        .whenComplete(() => _broadcastState(_player.playbackEvent));
+  }
+
   Duration _seekCheck(Duration pos) {
     if (pos < Duration.zero) {
       return Duration.zero;
@@ -592,9 +622,55 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     return pos;
   }
 
+  MediaControl _loopControl(LoopMode loopMode) {
+    // below code a little more complex to allow for const usage
+    return switch (loopMode) {
+      LoopMode.off => const MediaControl(
+          androidIcon: 'drawable/repeat_24dp',
+          label: 'Repeat Mode',
+          action: MediaAction.custom,
+          customAction: CustomMediaAction(
+            name: 'setRepeatMode',
+            extras: {'mode': 'all'},
+          )),
+      LoopMode.all => const MediaControl(
+          androidIcon: 'drawable/repeat_on_24dp',
+          label: 'Repeat Mode',
+          action: MediaAction.custom,
+          customAction: CustomMediaAction(
+            name: 'setRepeatMode',
+            extras: {'mode': 'one'},
+          )),
+      LoopMode.one => const MediaControl(
+          androidIcon: 'drawable/repeat_one_one_24dp',
+          label: 'Repeat Mode',
+          action: MediaAction.custom,
+          customAction: CustomMediaAction(
+            name: 'setRepeatMode',
+            extras: {'mode': 'none'},
+          )),
+    };
+  }
+
+  @override
+  Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
+    if (name == 'setRepeatMode') {
+      final mode = extras?['mode'] ?? 'none';
+      for (var m in RepeatMode.values) {
+        if (m.name == mode) {
+          // invoke the callback to pass along this request to change
+          // the repeat mode. the actual mode change is performed externally.
+          onRepeatModeChange(_spiff, m);
+        }
+      }
+    }
+    return super.customAction(name, extras);
+  }
+
   /// Broadcasts the current state to all clients.
   void _broadcastState(PlaybackEvent event) {
     final playing = _player.playing;
+    final loopMode = _player.loopMode;
     List<MediaControl> controls;
     List<MediaAction> systemActions;
 
@@ -634,6 +710,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         MediaControl.skipToPrevious,
         if (playing) MediaControl.pause else MediaControl.play,
         MediaControl.skipToNext,
+        _loopControl(loopMode),
       ];
       systemActions = const [
         MediaAction.skipToPrevious,
@@ -642,6 +719,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         MediaAction.seek,
         MediaAction.seekForward,
         MediaAction.seekBackward,
+        MediaAction.setRepeatMode,
       ];
     }
 

@@ -31,7 +31,6 @@ import 'package:takeout_lib/intent/intent.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
-import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/video.dart';
@@ -47,12 +46,10 @@ class AppBloc extends TakeoutBloc {
   }
 
   @override
-  void onNowPlayingChange(BuildContext context, Spiff spiff,
-      {bool autoPlay = false, bool autoCache = false}) {
-    super.onNowPlayingChange(context, spiff,
-        autoPlay: autoPlay, autoCache: autoCache);
-    addSpiffHistory(context, spiff);
-    if (spiff.isNotEmpty) {
+  void onNowPlayingChange(BuildContext context, NowPlayingChange state) {
+    super.onNowPlayingChange(context, state);
+    addSpiffHistory(context, state.nowPlaying.spiff);
+    if (state.nowPlaying.spiff.isNotEmpty) {
       context.app.showPlayer();
     }
   }

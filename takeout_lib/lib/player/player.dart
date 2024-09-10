@@ -16,6 +16,7 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:bloc/bloc.dart';
+import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/model.dart';
@@ -23,7 +24,8 @@ import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
-import 'package:takeout_lib/browser/repository.dart';
+
+import 'repeat.dart';
 
 abstract class PlayerState {
   final Spiff spiff;
@@ -176,6 +178,12 @@ class PlayerTrackEnd extends PlayerPositionState {
         required super.playing});
 }
 
+class PlayerRepeatModeChange extends PlayerState {
+  final RepeatMode repeat;
+
+  PlayerRepeatModeChange(super.spiff, this.repeat);
+}
+
 class Player extends Cubit<PlayerState> {
   final PlayerProvider _provider;
   final MediaTrackResolver trackResolver;
@@ -236,14 +244,17 @@ class Player extends Cubit<PlayerState> {
             emit(
                 PlayerTrackEnd(spiff, index, duration: duration,
                     position: position,
-                    playing: playing)))
+                    playing: playing)),
+        onRepeatModeChange: (spiff, repeat) =>
+            emit(PlayerRepeatModeChange(spiff, repeat)))
         .whenComplete(() => emit(PlayerReady()));
   }
 
-
-  void load(Spiff spiff, {bool autoPlay = false, bool autoCache = false}) {
+  void load(Spiff spiff,
+      {bool autoPlay = false, bool autoCache = false, RepeatMode? repeat}) {
     _provider.load(spiff,
         autoCache: autoCache,
+        repeat: repeat,
         onLoad: (spiff, position, playing, buffering) =>
             emit(PlayerLoad(
                 spiff, autoPlay: autoPlay, autoCache: autoCache,
@@ -269,4 +280,6 @@ class Player extends Cubit<PlayerState> {
   void skipToNext() => _provider.skipToNext();
 
   void skipToPrevious() => _provider.skipToPrevious();
+
+  void repeatMode(RepeatMode repeat) => _provider.repeatMode(repeat);
 }

@@ -225,15 +225,17 @@ class TakeoutBloc {
           listenWhen: (_, state) =>
               state is NowPlayingChange ||
               state is NowPlayingIndexChange ||
-              state is NowPlayingListenChange,
+              state is NowPlayingListenChange ||
+              state is NowPlayingRepeatChange,
           listener: (context, state) {
             if (state is NowPlayingChange) {
-              onNowPlayingChange(context, state.spiff,
-                  autoPlay: state.autoPlay, autoCache: state.autoCache);
+              onNowPlayingChange(context, state);
             } else if (state is NowPlayingIndexChange) {
               onNowPlayingIndexChange(context, state);
             } else if (state is NowPlayingListenChange) {
               onNowPlayingListenChange(context, state);
+            } else if (state is NowPlayingRepeatChange) {
+              onNowPlayingRepeatChange(context, state);
             }
           }),
       BlocListener<Player, PlayerState>(
@@ -244,7 +246,8 @@ class TakeoutBloc {
               state is PlayerPause ||
               state is PlayerTrackListen ||
               state is PlayerIndexChange ||
-              state is PlayerTrackEnd,
+              state is PlayerTrackEnd ||
+              state is PlayerRepeatModeChange,
           listener: (context, state) {
             if (state is PlayerReady) {
               _onPlayerReady(context, state);
@@ -260,6 +263,8 @@ class TakeoutBloc {
               _onPlayerIndexChange(context, state);
             } else if (state is PlayerTrackEnd) {
               _onPlayerTrackEnd(context, state);
+            } else if (state is PlayerRepeatModeChange) {
+              _onPlayerRepeatModeChange(context, state);
             }
           }),
       BlocListener<PlaylistCubit, PlaylistState>(
@@ -269,7 +274,7 @@ class TakeoutBloc {
             if (state is PlaylistChange) {
               _onPlaylistChange(context, state);
             } else if (state is PlaylistSync) {
-              if (state.spiff != context.nowPlaying.state.spiff) {
+              if (state.spiff != context.nowPlaying.state.nowPlaying.spiff) {
                 _onPlaylistSyncChange(context, state);
               }
             }
@@ -335,14 +340,18 @@ class TakeoutBloc {
   void onIntentReceive(BuildContext context, IntentReceive intent) {}
 
   /// NowPlaying manages the playlist that should be playing.
-  void onNowPlayingChange(BuildContext context, Spiff spiff,
-      {bool autoPlay = false, bool autoCache = false}) {
-    if (autoCache) {
+  void onNowPlayingChange(BuildContext context, NowPlayingChange state) {
+    if (state.nowPlaying.autoCache) {
       // add spiff to downloads. tracks will be downloaded during playback
-      context.spiffCache.add(spiff);
+      context.spiffCache.add(state.nowPlaying.spiff);
     }
     // load now playing playlist into player
-    context.player.load(spiff, autoPlay: autoPlay, autoCache: autoCache);
+    context.player.load(
+      state.nowPlaying.spiff,
+      autoPlay: state.nowPlaying.autoPlay,
+      autoCache: state.nowPlaying.autoCache,
+      repeat: state.nowPlaying.repeat,
+    );
   }
 
   /// NowPlaying playlist index change event
@@ -353,9 +362,10 @@ class TakeoutBloc {
 
   void _onNowPlayingIndexChange(
       BuildContext context, NowPlayingIndexChange state) {
-    final startedAt = state.startedAt(state.spiff.index);
+    final startedAt = state.nowPlaying.startedAt(state.nowPlaying.spiff.index);
     if (startedAt != null) {
-      final track = state.spiff.playlist.tracks[state.spiff.index];
+      final track =
+          state.nowPlaying.spiff.playlist.tracks[state.nowPlaying.spiff.index];
       context.listenRepository.playingNow(track);
     }
   }
@@ -368,14 +378,24 @@ class TakeoutBloc {
 
   void _onNowPlayingListenChange(
       BuildContext context, NowPlayingListenChange state) {
-    final listenedAt = state.listenedAt(state.spiff.index);
+    final listenedAt =
+        state.nowPlaying.listenedAt(state.nowPlaying.spiff.index);
     if (listenedAt != null) {
-      final track = state.spiff.playlist.tracks[state.spiff.index];
+      final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
       // submit takeout activity
       _updateTrackActivity(context, track);
 
       // submit listen to listenbrainz
       context.listenRepository.listenedAt(track, listenedAt);
+    }
+  }
+
+  /// NowPlaying repeat mode change
+  void onNowPlayingRepeatChange(
+      BuildContext context, NowPlayingRepeatChange state) {
+    final repeat = state.nowPlaying.repeat;
+    if (repeat != null) {
+      context.player.repeatMode(repeat);
     }
   }
 
@@ -389,8 +409,9 @@ class TakeoutBloc {
 
   /// Restore playlist once the player is ready.
   void _onPlayerReady(BuildContext context, PlayerReady state) {
-    final nowPlaying = context.nowPlaying.state;
-    onNowPlayingChange(context, nowPlaying.spiff);
+    // nowPlaying synchronously rehydrated so it's safe here to assume
+    // that nowPlaying is ready to be played once the player is ready.
+    context.nowPlaying.restore();
 
     final player = context.player;
     player.stream.timeout(const Duration(minutes: 1), onTimeout: (_) {
@@ -421,11 +442,16 @@ class TakeoutBloc {
   void _onPlayerTrackListen(BuildContext context, PlayerTrackListen state) {
     if (state.spiff.isMusic()) {
       final index = state.currentIndex;
-      if (context.nowPlaying.state.listenedTo(index) == false) {
+      if (context.nowPlaying.state.nowPlaying.listenedTo(index) == false) {
         final listenedAt = DateTime.now(); // TODO is now ok?
         context.nowPlaying.listened(index, listenedAt);
       }
     }
+  }
+
+  void _onPlayerRepeatModeChange(
+      BuildContext context, PlayerRepeatModeChange state) {
+    context.nowPlaying.repeatMode(state.repeat);
   }
 
   void _onDownloadComplete(BuildContext context, DownloadComplete state) {
@@ -497,7 +523,7 @@ class TakeoutBloc {
 
   // update spiff history with index
   void updateSpiffHistory(BuildContext context, NowPlayingIndexChange state) {
-    final spiff = state.spiff;
+    final spiff = state.nowPlaying.spiff;
     if (spiff.isNotEmpty) {
       context.history.add(spiff: Spiff.cleanup(spiff));
     }
@@ -505,9 +531,10 @@ class TakeoutBloc {
 
   // add to local track history
   void addTrackHistory(BuildContext context, NowPlayingListenChange state) {
-    final listenedAt = state.listenedAt(state.spiff.index);
+    final listenedAt =
+        state.nowPlaying.listenedAt(state.nowPlaying.spiff.index);
     if (listenedAt != null) {
-      final track = state.spiff.playlist.tracks[state.spiff.index];
+      final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
       context.history.add(track: track, dateTime: listenedAt);
     }
   }
