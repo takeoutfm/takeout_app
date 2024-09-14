@@ -1362,6 +1362,10 @@ class TrackEvent {
     return TrackEvent(etag: etag, date: date);
   }
 
+  factory TrackEvent.from(String etag, DateTime dateTime) {
+    return TrackEvent(etag: etag, date: Events._eventDate(dateTime));
+  }
+
   factory TrackEvent.fromJson(Map<String, dynamic> json) =>
       _$TrackEventFromJson(json);
 
@@ -1384,9 +1388,10 @@ class Events {
 
   Map<String, dynamic> toJson() => _$EventsToJson(this);
 
-  static String _eventDate() {
+  static String _eventDate([DateTime? date]) {
     // server expects 2006-01-02T15:04:05Z07:00
-    return DateTime.now().toUtc().toIso8601String();
+    date ??= DateTime.now();
+    return date.toUtc().toIso8601String();
   }
 }
 

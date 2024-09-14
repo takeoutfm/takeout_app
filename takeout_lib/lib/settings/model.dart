@@ -31,6 +31,7 @@ class Settings {
   final String? listenBrainzToken;
   final bool enableListenBrainz;
   final bool enableTrackActivity;
+  final int cacheUsageThreshold;
 
   Settings({
     required this.user,
@@ -43,6 +44,7 @@ class Settings {
     this.listenBrainzToken,
     this.enableListenBrainz = true,
     this.enableTrackActivity = true,
+    this.cacheUsageThreshold = 80,
   });
 
   factory Settings.initial() => Settings(
@@ -51,9 +53,6 @@ class Settings {
         allowMobileArtistArtwork: true,
         allowMobileDownload: true,
         allowMobileStreaming: true,
-        autoPlay: true,
-        autoCache: false,
-        enableListenBrainz: true,
       );
 
   String get endpoint {
@@ -77,6 +76,7 @@ class Settings {
     String? listenBrainzToken,
     bool? enableListenBrainz,
     bool? enableTrackActivity,
+    int? cacheUsageThreshold,
   }) =>
       Settings(
         user: user ?? this.user,
@@ -90,6 +90,7 @@ class Settings {
         listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
         enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
         enableTrackActivity: enableTrackActivity ?? this.enableTrackActivity,
+        cacheUsageThreshold: cacheUsageThreshold ?? this.cacheUsageThreshold,
       );
 
   factory Settings.fromJson(Map<String, dynamic> json) =>

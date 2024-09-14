@@ -191,7 +191,11 @@ mixin AppBlocState {
     }
 
     // prune incomplete/partial downloads
-    pruneCache(context.spiffCache.repository, context.trackCache.repository);
+    pruneCache(
+      spiffCache: context.spiffCache,
+      trackCache: context.trackCache,
+      settings: context.settings,
+    );
   }
 
   void appDispose() {}

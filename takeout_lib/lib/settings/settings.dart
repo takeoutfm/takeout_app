@@ -112,6 +112,10 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
     emit(SettingsState(state.settings.copyWith(enableTrackActivity: value)));
   }
 
+  // set maximumCacheSize(int value) {
+  //   emit(SettingsState(state.settings.copyWith(maximumCacheSize: value)));
+  // }
+
   @override
   SettingsState fromJson(Map<String, dynamic> json) =>
       SettingsState.fromJson(json['settings'] as Map<String, dynamic>);

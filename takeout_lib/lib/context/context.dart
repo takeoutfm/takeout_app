@@ -176,4 +176,20 @@ extension TakeoutContext on BuildContext {
   MediaRepository get mediaRepository => read<MediaRepository>();
 
   ListenRepository get listenRepository => read<ListenRepository>();
+
+  bool get allowMobileDownload {
+    return settings.state.settings.allowMobileDownload;
+  }
+
+  bool get allowMobileStreaming {
+    return settings.state.settings.allowMobileStreaming;
+  }
+
+  bool get enableTrackActivity {
+    return settings.state.settings.enableTrackActivity;
+  }
+
+  bool get enableListenBrainz {
+    return settings.state.settings.enableListenBrainz;
+  }
 }

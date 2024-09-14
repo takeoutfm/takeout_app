@@ -60,19 +60,35 @@ class NowPlaying {
 
   Map<String, dynamic> toJson() => _$NowPlayingToJson(this);
 
-  NowPlaying copyWith(
-          {Spiff? spiff,
-          RepeatMode? repeat,
-          bool? autoPlay,
-          bool? autoCache,
-          List<DateTime?>? started,
-          List<DateTime?>? listened}) =>
+  NowPlaying copyWith({
+    Spiff? spiff,
+    RepeatMode? repeat,
+    bool? autoPlay,
+    bool? autoCache,
+    List<DateTime?>? started,
+    List<DateTime?>? listened,
+  }) =>
       NowPlaying(spiff ?? this.spiff,
           repeat: repeat ?? this.repeat,
           autoPlay: autoPlay ?? this.autoPlay,
           autoCache: autoCache ?? this.autoCache,
           started: started ?? this.started,
           listened: listened ?? this.listened);
+
+  // a version of copyWith that does not copy started or listened state
+  // use when starting a new playlist
+  NowPlaying startWith({
+    Spiff? spiff,
+    RepeatMode? repeat,
+    bool? autoPlay,
+    bool? autoCache,
+  }) =>
+      NowPlaying(spiff ?? this.spiff,
+          repeat: repeat ?? this.repeat,
+          autoPlay: autoPlay ?? this.autoPlay,
+          autoCache: autoCache ?? this.autoCache,
+          started: null,
+          listened: null);
 }
 
 @JsonSerializable()
@@ -116,13 +132,14 @@ class NowPlayingCubit extends HydratedCubit<NowPlayingState> {
     emit(NowPlayingChange(state.nowPlaying));
   }
 
-  void add(Spiff spiff,
-          {bool? autoPlay, bool? autoCache, RepeatMode? repeat}) =>
-      emit(NowPlayingChange(state.nowPlaying.copyWith(
+  void add(
+    Spiff spiff, {
+    bool? autoPlay,
+    bool? autoCache,
+    RepeatMode? repeat,
+  }) =>
+      emit(NowPlayingChange(state.nowPlaying.startWith(
         spiff: spiff,
-        // clear started & listen state
-        started: null,
-        listened: null,
         autoCache: autoCache,
         autoPlay: autoPlay,
         repeat: repeat,

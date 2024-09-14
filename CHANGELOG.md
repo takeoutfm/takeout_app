@@ -1,4 +1,13 @@
-## 0.19.x
+## 0.19.1
+
+- Fixed duplicate entries in downloads (spiff cache) - use hash of tracks etags in _cacheKey
+- Remove downloaded spiffs + tracks when relative device usage percentage is exceeded
+  - new setting cacheUsageThreshold (0-100) specifies the % of total usage allowed
+  - example: with 10GB total usage and cacheUsageThreshold=80%, only 8GB will be used by Takeout
+- `storage_space` has build issues - fix manually by changing their compileSdkVersion to 31
+- Fixed bug with NowPlaying incorrectly retaining started & listened state with new playlists
+
+## 0.19.0
 
 - Added repeat mode (none, all, one) support
 - Repeat button is available in app, notification, and Android Auto

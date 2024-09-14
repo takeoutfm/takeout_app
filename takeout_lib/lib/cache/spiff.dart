@@ -141,12 +141,15 @@ class DirectorySpiffCache implements SpiffCache {
     return File('${directory.path}/$key.json');
   }
 
-  String _md5(String input) {
-    return md5.convert(utf8.encode(input)).toString();
-  }
-
   String _cacheKey(Spiff spiff) {
-    return _md5('${spiff.title}${spiff.location}${spiff.date}');
+    final list = <int>[];
+    for (var t in spiff.playlist.tracks) {
+      list.addAll(utf8.encode(t.etag));
+    }
+    if (list.isEmpty) {
+      list.addAll(utf8.encode('${spiff.title}${spiff.location}${spiff.date}'));
+    }
+    return md5.convert(list).toString();
   }
 
   Future<File?> _save(String key, Spiff spiff) async {

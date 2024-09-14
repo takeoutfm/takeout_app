@@ -35,6 +35,7 @@ dependencies:
   rxdart: ^0.27.7
   video_player: ^2.9.1
   listenbrainz_dart: ^0.0.4
+  storage_space: ^1.1.0
 
 dev_dependencies:
   flutter_test:

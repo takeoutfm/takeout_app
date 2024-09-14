@@ -382,8 +382,9 @@ class TakeoutBloc {
         state.nowPlaying.listenedAt(state.nowPlaying.spiff.index);
     if (listenedAt != null) {
       final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
+
       // submit takeout activity
-      _updateTrackActivity(context, track);
+      _updateTrackActivity(context, track, listenedAt);
 
       // submit listen to listenbrainz
       context.listenRepository.listenedAt(track, listenedAt);
@@ -469,17 +470,18 @@ class TakeoutBloc {
     // the current one will continue if network switched from to mobile
     // during the download.
     if (context.connectivity.state.mobile
-        ? context.settings.state.settings.allowMobileDownload
+        ? context.allowMobileDownload
         : true) {
       context.downloads.check();
     }
   }
 
-  void _updateTrackActivity(BuildContext context, Entry track) {
-    if (context.settings.state.settings.enableTrackActivity) {
+  void _updateTrackActivity(
+      BuildContext context, Entry track, DateTime listenedAt) {
+    if (context.enableTrackActivity) {
       final events = Events(
         trackEvents: [
-          TrackEvent.now(track.etag),
+          TrackEvent.from(track.etag, listenedAt),
         ],
       );
       context.clientRepository.updateActivity(events);

@@ -105,7 +105,7 @@ void downloadsSort(DownloadSortType sortType, List<Spiff> entries) {
     case DownloadSortType.oldest:
       entries.sort((a, b) => _compare(a.lastModified, b.lastModified));
     case DownloadSortType.newest:
-      entries.sort((a, b) => _compare(a.lastModified, b.lastModified));
+      entries.sort((a, b) => _compare(b.lastModified, a.lastModified));
     case DownloadSortType.name:
       entries.sort((a, b) => a.title.compareTo(b.title));
     case DownloadSortType.size:
