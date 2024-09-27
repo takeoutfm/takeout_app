@@ -1,4 +1,4 @@
-## 0.19.x
+## 0.19.2
 
 - Fixed bug with empty extras from Android Audio search
 - Fixed exception when server has no radio stations + allow refresh
