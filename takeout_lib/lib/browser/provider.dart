@@ -785,12 +785,13 @@ class DefaultMediaProvider implements MediaProvider {
 
   Future<SearchView> _search(String query,
       {Map<String, dynamic>? extras}) async {
-    if (extras != null) {
+    if (extras != null && extras.isNotEmpty) {
       final artist = extras[extrasKeyMediaArtist];
       final album = extras[extrasKeyMediaAlbum];
       final title = extras[extrasKeyMediaTitle];
       final genre = extras[extrasKeyMediaGenre];
-      query = ''; // TODO what about original query?
+      final originalQuery = query;
+      query = '';
       if (artist != null) {
         query = '+artist:"$artist*"';
       }
@@ -803,11 +804,11 @@ class DefaultMediaProvider implements MediaProvider {
         query = '+title:"$title*"';
       }
       if (genre != null) {
-        query = '+title:"$genre*"';
+        query = '+genre:"$genre*"';
       }
-    }
-    if (query.isEmpty) {
-      // TODO pick something to play
+      if (query.isEmpty) {
+        query = originalQuery;
+      }
     }
     return await clientRepository.search(query);
   }

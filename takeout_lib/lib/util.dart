@@ -57,6 +57,32 @@ bool isNullOrEmpty(String? s) => s?.trim().isEmpty ?? true;
 
 bool isNotNullOrEmpty(String? s) => s?.trim().isNotEmpty ?? false;
 
+bool isEmpty(dynamic value) {
+  if (value is List) {
+    return value.isEmpty;
+  } else if (value is String) {
+    return value.isEmpty;
+  } else if (value is Map) {
+    return value.isEmpty;
+  } else if (value == null) {
+    return true;
+  }
+  throw UnimplementedError;
+}
+
+bool isNotEmpty(dynamic value) {
+  if (value is List) {
+    return value.isNotEmpty;
+  } else if (value is String) {
+    return value.isNotEmpty;
+  } else if (value is Map) {
+    return value.isNotEmpty;
+  } else if (value == null) {
+    return false;
+  }
+  throw UnimplementedError;
+}
+
 const kilobyte = 1024;
 const megabyte = kilobyte * 1024;
 const gigabyte = megabyte * 1024;

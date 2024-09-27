@@ -1,3 +1,9 @@
+## 0.19.x
+
+- Fixed bug with empty extras from Android Audio search
+- Fixed exception when server has no radio stations + allow refresh
+- Flutter upgrade to 3.24.3
+
 ## 0.19.1
 
 - Fixed duplicate entries in downloads (spiff cache) - use hash of tracks etags in _cacheKey

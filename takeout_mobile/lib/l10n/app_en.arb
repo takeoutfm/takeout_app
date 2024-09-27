@@ -89,6 +89,7 @@
   "playlistAdd": "Add to playlist",
   "playlistCreate": "New playlist",
   "trackPlaylist": "Tracks Like This",
+  "radioEmpty": "No Radio Stations",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

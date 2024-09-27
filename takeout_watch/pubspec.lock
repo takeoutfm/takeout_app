@@ -650,6 +650,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  storage_space:
+    dependency: transitive
+    description:
+      name: storage_space
+      sha256: fb9945e2fc239f54eae1147dfe0793b5198769c0f87d0e78a472b58b4385b932
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   stream_channel:
     dependency: transitive
     description:
@@ -680,7 +688,7 @@ packages:
       path: "../takeout_lib"
       relative: true
     source: path
-    version: "0.19.0"
+    version: "0.19.1"
   term_glyph:
     dependency: transitive
     description:

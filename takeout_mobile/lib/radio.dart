@@ -49,19 +49,43 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
     context.client.radio(ttl: ttl);
   }
 
-  bool _notEmpty(final List<dynamic>? l) {
-    return l != null && l.isNotEmpty;
-  }
-
   @override
   Widget page(BuildContext context, RadioView state) {
     return BlocBuilder<SpiffCacheCubit, SpiffCacheState>(
         builder: (context, cacheState) {
       final entries = _radioFilter(cacheState.spiffs ?? <Spiff>[]);
-      bool haveDownloads = entries.isNotEmpty;
-      // haveDownloads = false;
+      bool hasDownloads = entries.isNotEmpty;
+
+      final hasGenre = isNotEmpty(state.genre);
+      final hasPeriod = isNotEmpty(state.period);
+      final hasSeries = isNotEmpty(state.series);
+      final hasOther = isNotEmpty(state.other);
+      final hasStream = isNotEmpty(state.stream);
+
+      final empty =
+          !hasGenre && !hasPeriod && !hasSeries && !hasOther && !hasStream;
+
+      if (empty) {
+        return RefreshIndicator(
+            child: Scaffold(
+              appBar: AppBar(
+                title: header(context.strings.radioEmpty),
+                actions: [
+                  popupMenu(context, [
+                    PopupItem.reload(context, (_) => reloadPage(context)),
+                  ]),
+                ],
+              ),
+              body: Center(
+                  child: TextButton(
+                      child: Text(context.strings.refreshLabel),
+                      onPressed: () => reloadPage(context))),
+            ),
+            onRefresh: () => reloadPage(context));
+      }
+
       return DefaultTabController(
-          length: haveDownloads ? 5 : 4, // TODO FIXME
+          length: hasDownloads ? 5 : 4, // TODO FIXME
           child: RefreshIndicator(
               onRefresh: () => reloadPage(context),
               child: Scaffold(
@@ -74,29 +98,27 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
                       ],
                       bottom: TabBar(
                         tabs: [
-                          if (_notEmpty(state.genre))
-                            Tab(text: context.strings.genresLabel),
-                          if (_notEmpty(state.period))
+                          if (hasGenre) Tab(text: context.strings.genresLabel),
+                          if (hasPeriod)
                             Tab(text: context.strings.decadesLabel),
-                          if (_notEmpty(state.series) || _notEmpty(state.other))
+                          if (hasSeries || hasOther)
                             Tab(text: context.strings.otherLabel),
-                          if (_notEmpty(state.stream))
+                          if (hasStream)
                             Tab(text: context.strings.streamsLabel),
-                          if (haveDownloads)
+                          if (hasDownloads)
                             Tab(text: context.strings.downloadsLabel)
                         ],
                       )),
                   body: TabBarView(
                     children: [
-                      if (_notEmpty(state.genre)) _stations(state.genre!),
-                      if (_notEmpty(state.period)) _stations(state.period!),
-                      if (_notEmpty(state.series) || _notEmpty(state.other))
+                      if (hasGenre) _stations(state.genre!),
+                      if (hasPeriod) _stations(state.period!),
+                      if (hasSeries || hasOther)
                         _stations(_merge(
                             state.series != null ? state.series! : [],
                             state.other != null ? state.other! : [])),
-                      if (_notEmpty(state.stream)) _stations(state.stream!),
-                      if (haveDownloads)
-                        DownloadListWidget(filter: _radioFilter)
+                      if (hasStream) _stations(state.stream!),
+                      if (hasDownloads) DownloadListWidget(filter: _radioFilter)
                     ],
                   ))));
     });
