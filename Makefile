@@ -65,6 +65,6 @@ assets:
 	@cp takeout_watch/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.watch-${VERSION}.aab || true
 
 version:
-	scripts/version.sh && git commit -a
+	scripts/version.sh
 
 publish: clean analyze version tag release assets

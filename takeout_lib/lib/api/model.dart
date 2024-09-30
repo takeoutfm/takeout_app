@@ -1255,11 +1255,24 @@ class ActivityMovie {
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
+class ActivityTracks {
+  final List<ActivityTrack> tracks;
+
+  ActivityTracks({required this.tracks});
+
+  factory ActivityTracks.fromJson(Map<String, dynamic> json) =>
+      _$ActivityTracksFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ActivityTracksToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
 class ActivityTrack {
   final String date;
   final Track track;
+  final int count;
 
-  ActivityTrack({required this.date, required this.track});
+  ActivityTrack({required this.date, required this.track, this.count = 0});
 
   factory ActivityTrack.fromJson(Map<String, dynamic> json) =>
       _$ActivityTrackFromJson(json);

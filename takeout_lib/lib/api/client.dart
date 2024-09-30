@@ -794,14 +794,28 @@ class TakeoutClient implements ClientProvider {
     }
   }
 
+  /// GET /api/activity/tracks/recent
+  @override
+  Future<ActivityTracks> recentTracks({Duration? ttl}) async =>
+      _getJson('/api/activity/tracks/recent', ttl: ttl)
+          .then((j) => ActivityTracks.fromJson(j))
+          .catchError((Object e) => Future<ActivityTracks>.error(e));
+
   /// GET /api/activity/tracks/recent/playlist
   @override
-  Future<Spiff> recentTracks({Duration? ttl}) async =>
+  Future<Spiff> recentTracksPlaylist({Duration? ttl}) async =>
       spiff('/api/activity/tracks/recent/playlist', ttl: ttl);
+
+  /// GET /api/activity/tracks/popular
+  @override
+  Future<ActivityTracks> popularTracks({Duration? ttl}) async =>
+      _getJson('/api/activity/tracks/popular', ttl: ttl)
+          .then((j) => ActivityTracks.fromJson(j))
+          .catchError((Object e) => Future<ActivityTracks>.error(e));
 
   /// GET /api/activity/tracks/popular/playlist
   @override
-  Future<Spiff> popularTracks({Duration? ttl}) async =>
+  Future<Spiff> popularTracksPlaylist({Duration? ttl}) async =>
       spiff('/api/activity/tracks/popular/playlist', ttl: ttl);
 
   /// Download uri to a file with optional retries.

@@ -189,11 +189,11 @@ class ClientCubit extends Cubit<ClientState> {
       _doit<HomeView>(({Duration? ttl}) => repository.home(ttl: ttl), ttl: ttl);
 
   void recentTracks({Duration? ttl}) =>
-      _doit<Spiff>(({Duration? ttl}) => repository.recentTracks(ttl: ttl),
+      _doit<ActivityTracks>(({Duration? ttl}) => repository.recentTracks(ttl: ttl),
           ttl: ttl);
 
   void popularTracks({Duration? ttl}) =>
-      _doit<Spiff>(({Duration? ttl}) => repository.popularTracks(ttl: ttl),
+      _doit<ActivityTracks>(({Duration? ttl}) => repository.popularTracks(ttl: ttl),
           ttl: ttl);
 
   void patch(List<Map<String, dynamic>> body) =>

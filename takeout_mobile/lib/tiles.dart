@@ -65,7 +65,7 @@ class AlbumListTile extends StatelessWidget {
   }
 }
 
-class TrackListTile extends StatelessWidget {
+class _TrackListTile extends StatelessWidget {
   final String artist;
   final String album;
   final String title;
@@ -75,7 +75,7 @@ class TrackListTile extends StatelessWidget {
   final Widget? trailing;
   final bool selected;
 
-  const TrackListTile(this.artist, this.album, this.title,
+  const _TrackListTile(this.artist, this.album, this.title,
       {super.key,
       this.leading,
       this.onTap,
@@ -109,23 +109,26 @@ class NumberedTrackListTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final Widget? trailing;
   final bool selected;
+  final num? number;
 
   const NumberedTrackListTile(this.track,
       {super.key,
       this.onTap,
       this.onLongPress,
       this.trailing,
+      this.number,
       this.selected = false});
 
   @override
   Widget build(BuildContext context) {
     final trackNumStyle = Theme.of(context).textTheme.bodySmall;
+    final trackNum = number ?? track.trackNum;
     final leading = Container(
         padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
-        child: Text('${track.trackNum}', style: trackNumStyle));
+        child: Text('$trackNum', style: trackNumStyle));
     // only show artist if different from album artist
     final artist = track.trackArtist != track.artist ? track.trackArtist : '';
-    return TrackListTile(artist, track.releaseTitle, track.title,
+    return _TrackListTile(artist, track.releaseTitle, track.title,
         leading: leading,
         trailing: trailing,
         onTap: onTap,
@@ -134,7 +137,7 @@ class NumberedTrackListTile extends StatelessWidget {
   }
 }
 
-class CoverTrackListTile extends TrackListTile {
+class CoverTrackListTile extends _TrackListTile {
   CoverTrackListTile(BuildContext context, super.artist, super.album,
       super.title, String? cover,
       {super.key,

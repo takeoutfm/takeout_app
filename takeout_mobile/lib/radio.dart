@@ -69,7 +69,7 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
         return RefreshIndicator(
             child: Scaffold(
               appBar: AppBar(
-                title: header(context.strings.radioEmpty),
+                title: header(context.strings.radioLabel),
                 actions: [
                   popupMenu(context, [
                     PopupItem.reload(context, (_) => reloadPage(context)),
@@ -78,7 +78,7 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
               ),
               body: Center(
                   child: TextButton(
-                      child: Text(context.strings.refreshLabel),
+                      child: Text(context.strings.radioEmpty),
                       onPressed: () => reloadPage(context))),
             ),
             onRefresh: () => reloadPage(context));

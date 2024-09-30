@@ -1,3 +1,8 @@
+## 0.20.0
+
+- Fixed empty radio labels
+- New popular & recent tracks screens
+
 ## 0.19.2
 
 - Fixed bug with empty extras from Android Audio search

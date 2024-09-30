@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
+import 'package:takeout_mobile/activity.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/downloads.dart';
@@ -242,19 +243,11 @@ class HomeWidget extends StatelessWidget {
   }
 
   void _onRecentTracks(BuildContext context) {
-    pushSpiff(
-        ref: '/api/activity/tracks/recent/playlist',
-        context,
-        (ClientCubit client, {Duration? ttl}) =>
-            client.recentTracks(ttl: Duration.zero));
+    push(context, builder: (_) => RecentTracksWidget());
   }
 
   void _onPopularTracks(BuildContext context) {
-    pushSpiff(
-        ref: '/api/activity/tracks/popular/playlist',
-        context,
-        (ClientCubit client, {Duration? ttl}) =>
-            client.popularTracks(ttl: Duration.zero));
+    push(context, builder: (_) => PopularTracksWidget());
   }
 
   void _onPlaylists(BuildContext context) {

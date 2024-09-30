@@ -86,9 +86,13 @@ abstract class ClientProvider {
 
   Future<Spiff> episodePlaylist(int id, {Duration? ttl});
 
-  Future<Spiff> recentTracks({Duration? ttl});
+  Future<ActivityTracks> recentTracks({Duration? ttl});
 
-  Future<Spiff> popularTracks({Duration? ttl});
+  Future<Spiff> recentTracksPlaylist({Duration? ttl});
+
+  Future<ActivityTracks> popularTracks({Duration? ttl});
+
+  Future<Spiff> popularTracksPlaylist({Duration? ttl});
 
   Future<int> download(Uri uri, File file, int size, {Sink<int>? progress});
 

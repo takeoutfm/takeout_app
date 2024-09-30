@@ -177,11 +177,11 @@ class ClientRepository {
     return _provider.trackPlaylist(id, ttl: ttl);
   }
 
-  Future<Spiff> recentTracks({Duration? ttl}) async {
+  Future<ActivityTracks> recentTracks({Duration? ttl}) async {
     return _provider.recentTracks(ttl: ttl);
   }
 
-  Future<Spiff> popularTracks({Duration? ttl}) async {
+  Future<ActivityTracks> popularTracks({Duration? ttl}) async {
     return _provider.popularTracks(ttl: ttl);
   }
 
