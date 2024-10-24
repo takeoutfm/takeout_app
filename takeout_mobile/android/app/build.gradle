@@ -31,22 +31,23 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "com.takeoutfm.mobile"
     compileSdkVersion 34
+    ndkVersion = "25.1.8937393"
 
     lintOptions {
         disable 'InvalidPackage'
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
         applicationId "com.takeoutfm.mobile"
         minSdkVersion 23
         targetSdkVersion 33 // Must target 33 (Android 13) or higher
-        versionCode 2000 // #versionCode#
-        versionName "0.20.0" // #version#
+        versionCode 2001 // #versionCode#
+        versionName "0.20.1" // #version#
     }
 
     signingConfigs {

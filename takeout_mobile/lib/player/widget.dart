@@ -187,9 +187,11 @@ class PlayerWidget extends StatelessWidget {
             return const EmptyWidget();
           }
           if (state is PlayerIndexChange) {
-            return _seekBar(player, Duration.zero, Duration.zero);
+            return _seekBar(
+                player, Duration.zero, Duration.zero, state.playing);
           } else if (state is PlayerPositionState) {
-            return _seekBar(player, state.duration, state.position);
+            return _seekBar(
+                player, state.duration, state.position, state.playing);
           }
           return const EmptyWidget();
         });
@@ -215,10 +217,12 @@ class PlayerWidget extends StatelessWidget {
         });
   }
 
-  Widget _seekBar(Player player, Duration duration, Duration position) {
+  Widget _seekBar(
+      Player player, Duration duration, Duration position, bool playing) {
     return Container(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
         child: SeekBar(
+            playing: playing,
             duration: duration,
             position: position,
             onChangeEnd: (newPosition) => player.seek(newPosition)));
@@ -284,7 +288,7 @@ class PlayerWidget extends StatelessWidget {
   }
 
   Widget _invisibleButton() {
-    return const SizedBox.square(dimension: 36+16);
+    return const SizedBox.square(dimension: 36 + 16);
   }
 
   Widget _repeatButton() {

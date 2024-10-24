@@ -1,6 +1,6 @@
 name: takeout_lib
 description: TakeoutFM Library
-version: 0.20.0 # #version#
+version: 0.20.1 # #version#
 publish_to: 'none'
 
 environment:
@@ -36,6 +36,7 @@ dependencies:
   video_player: ^2.9.1
   listenbrainz_dart: ^0.0.4
   storage_space: ^1.1.0
+  squiggly_slider: ^1.0.5
 
 dev_dependencies:
   flutter_test:

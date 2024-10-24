@@ -36,11 +36,11 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "com.takeoutfm.watch"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    ndkVersion = "25.1.8937393"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
@@ -55,8 +55,8 @@ android {
         applicationId "com.takeoutfm.watch"
         minSdkVersion 23
         targetSdkVersion 31 // Wear OS must be 30..33
-        versionCode 2000 // #versionCode#
-        versionName "0.20.0" // #version#
+        versionCode 2001 // #versionCode#
+        versionName "0.20.1" // #version#
     }
 
     signingConfigs {

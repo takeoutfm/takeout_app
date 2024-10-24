@@ -1,3 +1,23 @@
+## 0.20.1
+
+- Fixed repeat icons
+- Changed duration update handling
+- Flutter pub upgrade
+- Added squiggle slider
+- Upgrade to Gradle 8.10.2
+- Upgrade to Android Studio Ladybug 2024.2.1 Patch 1
+- Fixes needed in android/build.gradle for `wear_plus`, `storage_space` and `receive_intent`:
+```
+    compileSdkVersion 31
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+```
+
 ## 0.20.0
 
 - Fixed empty radio labels
@@ -149,4 +169,3 @@
 
 - Fixed restore playlist state
 - Build updates
-

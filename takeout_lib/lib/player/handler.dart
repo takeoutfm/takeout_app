@@ -197,18 +197,16 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     _subscriptions.add(_player.durationStream.listen((duration) {
       if (duration != null) {
         final index = _spiff.index;
-        var item = _queue[index];
+        final item = _queue[index].copyWith(duration: duration);
+        _queue[index] = item;
 
         // update the current media item
-        item = item.copyWith(duration: duration);
         mediaItem.add(item);
 
         // update the media queue
-        _queue[index] = item;
         queue.add(_queue);
 
-        onDurationChange(_spiff, _player.duration ?? Duration.zero,
-            _player.position, _player.playing);
+        onDurationChange(_spiff, duration, _player.position, _player.playing);
       }
     }));
 
@@ -623,11 +621,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   }
 
   MediaControl _loopControl(LoopMode loopMode) {
-    // below code a little more complex to allow for const usage
+    // below code is a little more complex to allow for const usage
     return switch (loopMode) {
       LoopMode.off => const MediaControl(
           androidIcon: 'drawable/repeat_24dp',
-          label: 'Repeat Mode',
+          label: 'Repeat Off',
           action: MediaAction.custom,
           customAction: CustomMediaAction(
             name: 'setRepeatMode',
@@ -635,15 +633,15 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           )),
       LoopMode.all => const MediaControl(
           androidIcon: 'drawable/repeat_on_24dp',
-          label: 'Repeat Mode',
+          label: 'Repeat On',
           action: MediaAction.custom,
           customAction: CustomMediaAction(
             name: 'setRepeatMode',
             extras: {'mode': 'one'},
           )),
       LoopMode.one => const MediaControl(
-          androidIcon: 'drawable/repeat_one_one_24dp',
-          label: 'Repeat Mode',
+          androidIcon: 'drawable/repeat_one_on_24dp',
+          label: 'Repeat One',
           action: MediaAction.custom,
           customAction: CustomMediaAction(
             name: 'setRepeatMode',
