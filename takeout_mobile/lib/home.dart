@@ -19,7 +19,6 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/client/provider.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_mobile/activity.dart';
