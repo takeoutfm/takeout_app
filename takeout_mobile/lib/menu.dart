@@ -90,8 +90,12 @@ class PopupItem {
             context.strings.singlesLabel, onSelected);
 
   PopupItem.popular(BuildContext context, MenuCallback onSelected)
-      : this(const Icon(Icons.audiotrack_outlined),
-            context.strings.popularLabel, onSelected);
+      : this(const Icon(Icons.music_note), context.strings.popularLabel,
+            onSelected);
+
+  PopupItem.activity(BuildContext context, MenuCallback onSelected)
+      : this(const Icon(Icons.calendar_month), context.strings.activityLabel,
+            onSelected);
 
   PopupItem.genre(BuildContext context, String genre, MenuCallback onSelected)
       : this(const Icon(Icons.people), genre, onSelected);

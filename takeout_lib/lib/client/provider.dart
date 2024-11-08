@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:http/http.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/stats/stats.dart';
 
 abstract class ClientProvider {
   Client get client;
@@ -86,11 +87,11 @@ abstract class ClientProvider {
 
   Future<Spiff> episodePlaylist(int id, {Duration? ttl});
 
-  Future<ActivityTracks> recentTracks({Duration? ttl});
+  Future<TrackHistoryView> recentTracks({Duration? ttl});
 
   Future<Spiff> recentTracksPlaylist({Duration? ttl});
 
-  Future<ActivityTracks> popularTracks({Duration? ttl});
+  Future<TrackStatsView> popularTracks({Duration? ttl});
 
   Future<Spiff> popularTracksPlaylist({Duration? ttl});
 
@@ -112,7 +113,7 @@ abstract class ClientProvider {
 
   Future<int> updateProgress(Offsets offsets);
 
-  Future<ActivityView> activity({Duration? ttl});
+  Future<TrackStatsView> trackStats({Duration? ttl, IntervalType? interval});
 
   Future<int> updateActivity(Events events);
 

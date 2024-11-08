@@ -22,10 +22,11 @@ import 'package:takeout_lib/api/client.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
+import 'package:takeout_lib/patch.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/stats/stats.dart';
 import 'package:takeout_lib/tokens/repository.dart';
-import 'package:takeout_lib/patch.dart';
 
 import 'provider.dart';
 
@@ -177,11 +178,11 @@ class ClientRepository {
     return _provider.trackPlaylist(id, ttl: ttl);
   }
 
-  Future<ActivityTracks> recentTracks({Duration? ttl}) async {
+  Future<TrackHistoryView> recentTracks({Duration? ttl}) async {
     return _provider.recentTracks(ttl: ttl);
   }
 
-  Future<ActivityTracks> popularTracks({Duration? ttl}) async {
+  Future<TrackStatsView> popularTracks({Duration? ttl}) async {
     return _provider.popularTracks(ttl: ttl);
   }
 
@@ -223,8 +224,9 @@ class ClientRepository {
     return _provider.updateProgress(offsets);
   }
 
-  Future<ActivityView> activity({Duration? ttl}) async {
-    return _provider.activity(ttl: ttl);
+  Future<TrackStatsView> trackStats(
+      {Duration? ttl, IntervalType? interval}) async {
+    return _provider.trackStats(ttl: ttl, interval: interval);
   }
 
   Future<int> updateActivity(Events events) async {

@@ -19,6 +19,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:takeout_lib/client/provider.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_mobile/activity.dart';
@@ -196,7 +197,7 @@ class HomeWidget extends StatelessWidget {
         ...iconBar,
         popupMenu(context, [
           PopupItem.playlist(context, (context) => _onRecentTracks(context)),
-          PopupItem.popular(context, (context) => _onPopularTracks(context)),
+          PopupItem.activity(context, (context) => _onTrackStats(context)),
           PopupItem.playlists(context, (context) => _onPlaylists(context)),
           PopupItem.divider(),
           PopupItem.settings(context, (context) => _onSettings(context)),
@@ -243,11 +244,11 @@ class HomeWidget extends StatelessWidget {
   }
 
   void _onRecentTracks(BuildContext context) {
-    push(context, builder: (_) => RecentTracksWidget());
+    push(context, builder: (_) => TrackHistoryWidget());
   }
 
-  void _onPopularTracks(BuildContext context) {
-    push(context, builder: (_) => PopularTracksWidget());
+  void _onTrackStats(BuildContext context) {
+    push(context, builder: (_) => TrackStatsWidget());
   }
 
   void _onPlaylists(BuildContext context) {

@@ -90,6 +90,15 @@
   "playlistCreate": "New playlist",
   "trackPlaylist": "Tracks Like This",
   "radioEmpty": "No Radio Stations",
+  "lastWeek": "Last Week",
+  "lastMonth": "Last Month",
+  "lastYear": "Last Year",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "thisYear": "This Year",
+  "allLabel": "All",
+  "recentLabel": "Recent",
+  "activityLabel": "Activity",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

@@ -27,6 +27,34 @@ import 'package:takeout_lib/util.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 
+class ArtistListTile extends StatelessWidget {
+  final String artist;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final Widget? leading;
+  final Widget? trailing;
+  final bool selected;
+
+  const ArtistListTile(BuildContext context, this.artist,
+      {super.key,
+      this.onTap,
+      this.onLongPress,
+      this.leading,
+      this.trailing,
+      this.selected = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+        selected: selected,
+        onTap: onTap,
+        onLongPress: onLongPress,
+        leading: leading,
+        trailing: trailing,
+        title: Text(artist));
+  }
+}
+
 class AlbumListTile extends StatelessWidget {
   final String? artist;
   final String album;

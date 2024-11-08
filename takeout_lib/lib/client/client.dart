@@ -19,6 +19,7 @@ import 'package:bloc/bloc.dart';
 import 'package:takeout_lib/api/client.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/stats/stats.dart';
 
 import 'repository.dart';
 
@@ -188,13 +189,13 @@ class ClientCubit extends Cubit<ClientState> {
   void home({Duration? ttl}) =>
       _doit<HomeView>(({Duration? ttl}) => repository.home(ttl: ttl), ttl: ttl);
 
-  void recentTracks({Duration? ttl}) =>
-      _doit<ActivityTracks>(({Duration? ttl}) => repository.recentTracks(ttl: ttl),
-          ttl: ttl);
+  void recentTracks({Duration? ttl}) => _doit<TrackHistoryView>(
+      ({Duration? ttl}) => repository.recentTracks(ttl: ttl),
+      ttl: ttl);
 
-  void popularTracks({Duration? ttl}) =>
-      _doit<ActivityTracks>(({Duration? ttl}) => repository.popularTracks(ttl: ttl),
-          ttl: ttl);
+  void popularTracks({Duration? ttl}) => _doit<TrackStatsView>(
+      ({Duration? ttl}) => repository.popularTracks(ttl: ttl),
+      ttl: ttl);
 
   void patch(List<Map<String, dynamic>> body) =>
       _doit<PatchResult>(({Duration? ttl}) => repository.patch(body));
@@ -226,8 +227,9 @@ class ClientCubit extends Cubit<ClientState> {
   void updateProgress(Offsets offsets) =>
       _doit<int>(({Duration? ttl}) => repository.updateProgress(offsets));
 
-  void activity({Duration? ttl}) =>
-      _doit<ActivityView>(({Duration? ttl}) => repository.activity(ttl: ttl),
+  void trackStats({Duration? ttl, IntervalType? interval}) =>
+      _doit<TrackStatsView>(
+          ({Duration? ttl}) => repository.trackStats(ttl: ttl, interval: interval),
           ttl: ttl);
 
   void updateActivity(Events events) =>

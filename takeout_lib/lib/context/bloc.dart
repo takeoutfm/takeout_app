@@ -51,6 +51,8 @@ import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/stats/repository.dart';
+import 'package:takeout_lib/stats/stats.dart';
 import 'package:takeout_lib/subscribed/repository.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
@@ -113,6 +115,8 @@ class TakeoutBloc {
 
     final mediaTypeRepository = MediaTypeRepository();
 
+    final statsRepository = StatsRepository();
+
     final subscribedRepository = SubscribedRepository();
 
     final mediaRepository = MediaRepository(
@@ -147,6 +151,7 @@ class TakeoutBloc {
       RepositoryProvider(create: (_) => listenRepository),
       RepositoryProvider(create: (_) => mediaTypeRepository),
       RepositoryProvider(create: (_) => subscribedRepository),
+      RepositoryProvider(create: (_) => statsRepository),
     ];
   }
 
@@ -216,6 +221,13 @@ class TakeoutBloc {
             return subscribed;
           }),
       BlocProvider(lazy: false, create: (context) => IntentCubit()),
+      BlocProvider(
+          lazy: false,
+          create: (context) {
+            final stats = StatsCubit();
+            context.read<StatsRepository>().init(stats);
+            return stats;
+          }),
     ];
   }
 

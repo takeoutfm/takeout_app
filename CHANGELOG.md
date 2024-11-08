@@ -1,3 +1,9 @@
+## 0.21.0
+
+- Flutter upgrade to 3.24.4
+- Added stats cubit & repo to maintain state
+- New activity view in main menu
+
 ## 0.20.1
 
 - Fixed repeat icons

@@ -1241,38 +1241,25 @@ class ProgressView {
   Map<String, dynamic> toJson() => _$ProgressViewToJson(this);
 }
 
-@JsonSerializable(fieldRename: FieldRename.pascal)
-class ActivityMovie {
-  final String date;
-  final Movie movie;
-
-  ActivityMovie({required this.date, required this.movie});
-
-  factory ActivityMovie.fromJson(Map<String, dynamic> json) =>
-      _$ActivityMovieFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ActivityMovieToJson(this);
-}
-
-@JsonSerializable(fieldRename: FieldRename.pascal)
-class ActivityTracks {
-  final List<ActivityTrack> tracks;
-
-  ActivityTracks({required this.tracks});
-
-  factory ActivityTracks.fromJson(Map<String, dynamic> json) =>
-      _$ActivityTracksFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ActivityTracksToJson(this);
-}
+// @JsonSerializable(fieldRename: FieldRename.pascal)
+// class ActivityMovie {
+//   final String date;
+//   final Movie movie;
+//
+//   ActivityMovie({required this.date, required this.movie});
+//
+//   factory ActivityMovie.fromJson(Map<String, dynamic> json) =>
+//       _$ActivityMovieFromJson(json);
+//
+//   Map<String, dynamic> toJson() => _$ActivityMovieToJson(this);
+// }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
 class ActivityTrack {
-  final String date;
   final Track track;
   final int count;
 
-  ActivityTrack({required this.date, required this.track, this.count = 0});
+  ActivityTrack({required this.track, this.count = 0});
 
   factory ActivityTrack.fromJson(Map<String, dynamic> json) =>
       _$ActivityTrackFromJson(json);
@@ -1282,10 +1269,10 @@ class ActivityTrack {
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
 class ActivityRelease {
-  final String date;
   final Release release;
+  final int count;
 
-  ActivityRelease({required this.date, required this.release});
+  ActivityRelease({required this.release, this.count = 0});
 
   factory ActivityRelease.fromJson(Map<String, dynamic> json) =>
       _$ActivityReleaseFromJson(json);
@@ -1294,21 +1281,46 @@ class ActivityRelease {
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
-class ActivityView {
-  final List<ActivityMovie> recentMovies;
-  final List<ActivityTrack> recentTracks;
-  final List<ActivityRelease> recentReleases;
+class ActivityArtist {
+  final Artist artist;
+  final int count;
 
-  ActivityView({
-    this.recentMovies = const [],
-    this.recentTracks = const [],
-    this.recentReleases = const [],
+  ActivityArtist({required this.artist, this.count = 0});
+
+  factory ActivityArtist.fromJson(Map<String, dynamic> json) =>
+      _$ActivityArtistFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ActivityArtistToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TrackStatsView {
+  final List<ActivityArtist> artists;
+  final List<ActivityRelease> releases;
+  final List<ActivityTrack> tracks;
+
+  TrackStatsView({
+    this.artists = const [],
+    this.tracks = const [],
+    this.releases = const [],
   });
 
-  factory ActivityView.fromJson(Map<String, dynamic> json) =>
-      _$ActivityViewFromJson(json);
+  factory TrackStatsView.fromJson(Map<String, dynamic> json) =>
+      _$TrackStatsViewFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ActivityViewToJson(this);
+  Map<String, dynamic> toJson() => _$TrackStatsViewToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TrackHistoryView {
+  final List<ActivityTrack> tracks;
+
+  TrackHistoryView({required this.tracks});
+
+  factory TrackHistoryView.fromJson(Map<String, dynamic> json) =>
+      _$TrackHistoryViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TrackHistoryViewToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -1387,8 +1399,8 @@ class TrackEvent {
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
 class Events {
-  final List<MovieEvent> movieEvents;
   final List<ReleaseEvent> releaseEvents;
+  final List<MovieEvent> movieEvents;
   final List<TrackEvent> trackEvents;
 
   Events({

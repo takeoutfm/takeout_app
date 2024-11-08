@@ -17,8 +17,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/art/provider.dart';
 import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/art/provider.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/spiff.dart';
@@ -29,6 +29,7 @@ import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/db/search.dart';
+import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/listen/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
@@ -37,10 +38,11 @@ import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/playlist.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/stats/repository.dart';
+import 'package:takeout_lib/stats/stats.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
-import 'package:takeout_lib/history/history.dart';
 
 extension TakeoutContext on BuildContext {
   void play(Spiff spiff, {bool? autoPlay, bool? autoCache}) {
@@ -176,6 +178,10 @@ extension TakeoutContext on BuildContext {
   MediaRepository get mediaRepository => read<MediaRepository>();
 
   ListenRepository get listenRepository => read<ListenRepository>();
+
+  StatsCubit get stats => read<StatsCubit>();
+
+  StatsRepository get statsRepository => read<StatsRepository>();
 
   bool get allowMobileDownload {
     return settings.state.settings.allowMobileDownload;

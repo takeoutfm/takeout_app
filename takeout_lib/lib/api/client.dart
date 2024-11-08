@@ -26,6 +26,7 @@ import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/client/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/stats/stats.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 
 import 'model.dart';
@@ -773,12 +774,18 @@ class TakeoutClient implements ClientProvider {
 //   return _retry(() => _delete('/api/progress/${offset.id}'));
 // }
 
-  /// GET /api/activity
+  /// GET /api/activity/tracks/interval
   @override
-  Future<ActivityView> activity({Duration? ttl}) async =>
-      _retry<ActivityView>(() => _getJson('/api/activity', ttl: ttl)
-          .then((j) => ActivityView.fromJson(j))
-          .catchError((Object e) => Future<ActivityView>.error(e)));
+  Future<TrackStatsView> trackStats({
+    Duration? ttl,
+    IntervalType? interval,
+  }) async =>
+      _retry<TrackStatsView>(() {
+        final i = interval ?? IntervalType.today;
+        return _getJson('/api/activity/tracks/${i.name}/stats', ttl: ttl)
+            .then((j) => TrackStatsView.fromJson(j))
+            .catchError((Object e) => Future<TrackStatsView>.error(e));
+      });
 
   /// POST /api/activity
   @override
@@ -796,10 +803,10 @@ class TakeoutClient implements ClientProvider {
 
   /// GET /api/activity/tracks/recent
   @override
-  Future<ActivityTracks> recentTracks({Duration? ttl}) async =>
+  Future<TrackHistoryView> recentTracks({Duration? ttl}) async =>
       _getJson('/api/activity/tracks/recent', ttl: ttl)
-          .then((j) => ActivityTracks.fromJson(j))
-          .catchError((Object e) => Future<ActivityTracks>.error(e));
+          .then((j) => TrackHistoryView.fromJson(j))
+          .catchError((Object e) => Future<TrackHistoryView>.error(e));
 
   /// GET /api/activity/tracks/recent/playlist
   @override
@@ -808,10 +815,10 @@ class TakeoutClient implements ClientProvider {
 
   /// GET /api/activity/tracks/popular
   @override
-  Future<ActivityTracks> popularTracks({Duration? ttl}) async =>
+  Future<TrackStatsView> popularTracks({Duration? ttl}) async =>
       _getJson('/api/activity/tracks/popular', ttl: ttl)
-          .then((j) => ActivityTracks.fromJson(j))
-          .catchError((Object e) => Future<ActivityTracks>.error(e));
+          .then((j) => TrackStatsView.fromJson(j))
+          .catchError((Object e) => Future<TrackStatsView>.error(e));
 
   /// GET /api/activity/tracks/popular/playlist
   @override
