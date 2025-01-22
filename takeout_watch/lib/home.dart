@@ -32,7 +32,7 @@ import 'package:takeout_watch/playlists.dart';
 import 'package:takeout_watch/podcasts.dart';
 import 'package:takeout_watch/radio.dart';
 import 'package:takeout_watch/settings.dart';
-import 'package:takeout_watch/video.dart';
+import 'package:takeout_watch/film.dart';
 
 import 'downloads.dart';
 import 'history.dart';
@@ -195,7 +195,7 @@ class HomePage extends ClientPage<HomeView> {
 
   void onMovies(BuildContext context, HomeView state) {
     Navigator.push(
-        context, CupertinoPageRoute<void>(builder: (_) => VideoPage(state)));
+        context, CupertinoPageRoute<void>(builder: (_) => FilmPage(state)));
   }
 
   void onDownloads(BuildContext context, HomeView _) {

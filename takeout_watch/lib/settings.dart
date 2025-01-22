@@ -52,9 +52,9 @@ class SettingsPage extends StatelessWidget {
       SettingEntry<MusicType>(context.strings.musicSortType, nextMusicType,
           icon: const Icon(Icons.sort),
           currentValue: (_) => context.selectedMediaType.state.musicType),
-      SettingEntry<VideoType>(context.strings.videoSortType, nextVideoType,
+      SettingEntry<FilmType>(context.strings.filmSortType, nextFilmType,
           icon: const Icon(Icons.sort),
-          currentValue: (_) => context.selectedMediaType.state.videoType),
+          currentValue: (_) => context.selectedMediaType.state.filmType),
       SettingEntry<PodcastType>(
           context.strings.podcastSortType, nextPodcastType,
           icon: const Icon(Icons.sort),
@@ -109,8 +109,8 @@ class SettingsPage extends StatelessWidget {
     context.selectedMediaType.nextMusicType();
   }
 
-  void nextVideoType(BuildContext context) {
-    context.selectedMediaType.nextVideoType();
+  void nextFilmType(BuildContext context) {
+    context.selectedMediaType.nextFilmType();
   }
 
   void nextPodcastType(BuildContext context) {
@@ -171,7 +171,7 @@ class SettingsPage extends StatelessWidget {
           subtitle = value.settingValue(context);
         } else if (value is MusicType) {
           subtitle = value.settingValue(mediaType);
-        } else if (value is VideoType) {
+        } else if (value is FilmType) {
           subtitle = value.settingValue(mediaType);
         } else if (value is PodcastType) {
           subtitle = value.settingValue(mediaType);
@@ -226,8 +226,8 @@ extension SettingMusicType on MusicType {
   String settingValue(MediaTypeState state) => state.musicType.name;
 }
 
-extension SettingVideoType on VideoType {
-  String settingValue(MediaTypeState state) => state.videoType.name;
+extension SettingFilmType on FilmType {
+  String settingValue(MediaTypeState state) => state.filmType.name;
 }
 
 extension SettingPodcastType on PodcastType {

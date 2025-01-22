@@ -13,8 +13,8 @@ dependencies:
   takeout_lib:
     path: ../takeout_lib/
   android_intent_plus: ^4.0.3
-  bloc: ^8.1.4
-  flutter_bloc: ^8.1.6
+  bloc: ^9.0.0
+  flutter_bloc: ^9.0.0
   cupertino_icons: ^1.0.8
   nested: ^1.0.0
   device_info_plus: ^9.1.2
@@ -27,7 +27,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true

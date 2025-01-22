@@ -52,7 +52,7 @@
   "writingLabel": "Writing",
   "directingLabel": "Directing",
   "musicSortType": "Music Sort",
-  "videoSortType": "Movie Sort",
+  "filmSortType": "Movie Sort",
   "podcastSortType": "Podcast Sort"
 }
 

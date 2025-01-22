@@ -30,7 +30,7 @@ import 'artists.dart';
 import 'nav.dart';
 import 'style.dart';
 import 'tracks.dart';
-import 'video.dart';
+import 'film.dart';
 
 class SearchWidget extends ClientPage<SearchView> {
   final _query = StringBuffer();

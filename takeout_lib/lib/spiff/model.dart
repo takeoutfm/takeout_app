@@ -100,28 +100,28 @@ class Spiff {
   }
 
   bool isMusic() {
-    return MediaType.of(type) == MediaType.music;
+    return type == MediaType.music.name;
   }
 
   bool isVideo() {
-    return MediaType.of(type) == MediaType.video;
+    return type == 'video'; // film or tv are video
   }
 
   bool isPodcast() {
-    return MediaType.of(type) == MediaType.podcast;
+    return type == MediaType.podcast.name;
   }
 
   bool isStream() {
-    return MediaType.of(type) == MediaType.stream;
+    return type == MediaType.stream.name;
   }
 
-  MediaType get mediaType {
-    if (type.isEmpty) {
-      // FIXME remove after transition to require type is done
-      return MediaType.music;
-    }
-    return MediaType.of(type);
-  }
+  // MediaType get mediaType {
+  //   if (type.isEmpty) {
+  //     FIXME remove after transition to require type is done
+      // return MediaType.music;
+    // }
+    // return MediaType.of(type);
+  // }
 
   factory Spiff.fromJson(Map<String, dynamic> json) {
     try {

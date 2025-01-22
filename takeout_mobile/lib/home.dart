@@ -19,15 +19,6 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/empty.dart';
-import 'package:takeout_lib/subscribed/subscribed.dart';
-import 'package:takeout_mobile/activity.dart';
-import 'package:takeout_mobile/app/app.dart';
-import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/downloads.dart';
-import 'package:takeout_mobile/link.dart';
-import 'package:takeout_mobile/playlists.dart';
-import 'package:takeout_mobile/settings/widget.dart';
 import 'package:takeout_lib/api/model.dart' hide Offset;
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
@@ -35,19 +26,29 @@ import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/spiff_track.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/client.dart';
+import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_mobile/activity.dart';
+import 'package:takeout_mobile/app/app.dart';
+import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/downloads.dart';
+import 'package:takeout_mobile/link.dart';
+import 'package:takeout_mobile/playlists.dart';
+import 'package:takeout_mobile/settings/widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'film.dart';
 import 'menu.dart';
 import 'nav.dart';
 import 'podcasts.dart';
 import 'release.dart';
 import 'style.dart';
-import 'video.dart';
+import 'tv.dart';
 
 class HomeWidget extends StatelessWidget {
   final VoidContextCallback _onSearch;
@@ -74,6 +75,10 @@ class HomeWidget extends StatelessWidget {
   void _onMovie(BuildContext context, Movie movie) => Navigator.of(context)
       .push(MaterialPageRoute<void>(builder: (_) => MovieWidget(movie)));
 
+  void _onTVSeries(BuildContext context, TVSeries series) =>
+      Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => TVSeriesWidget(series)));
+
   void _onRelease(BuildContext context, Release release) =>
       Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (_) => ReleaseWidget(release)));
@@ -99,9 +104,9 @@ class HomeWidget extends StatelessWidget {
           childAspectRatio: coverAspectRatio,
           maxCrossAxisExtent: coverGridWidth,
         );
-      case MediaType.video:
-        final videoType = mediaTypeState.videoType;
-        return videoType == VideoType.all
+      case MediaType.film:
+        final filmType = mediaTypeState.filmType;
+        return filmType == FilmType.all
             ? MoviesViewGrid(appBar,
                 onTap: (context, item) => _onMovie(context, item))
             : HomeViewGrid(
@@ -109,12 +114,12 @@ class HomeWidget extends StatelessWidget {
                 appBar,
                 itemsFunc: (view) {
                   List<Movie> result = [];
-                  switch (videoType) {
-                    case VideoType.recent:
+                  switch (filmType) {
+                    case FilmType.recent:
                       result = view.newMovies;
-                    case VideoType.added:
+                    case FilmType.added:
                       result = view.addedMovies;
-                    case VideoType.recommended:
+                    case FilmType.recommended:
                       final recommended = view.recommendMovies;
                       if (recommended != null && recommended.isNotEmpty) {
                         // TODO only takes first recommendation
@@ -130,6 +135,9 @@ class HomeWidget extends StatelessWidget {
                 childAspectRatio: posterAspectRatio,
                 maxCrossAxisExtent: posterGridWidth,
               );
+      case MediaType.tv:
+        return TVShowsViewGrid(appBar,
+            onTap: (context, item) => _onTVSeries(context, item)); // XXX TODO
       case MediaType.podcast:
         final podcastType = mediaTypeState.podcastType;
         switch (podcastType) {
@@ -170,11 +178,18 @@ class HomeWidget extends StatelessWidget {
           onPressed: () => _onMusicSelected(context));
     }
     if (state.movies) {
-      buttons[MediaType.video] = IconButton(
+      buttons[MediaType.film] = IconButton(
           iconSize: iconSize,
-          color: mediaType == MediaType.video ? selectedColor : null,
+          color: mediaType == MediaType.film ? selectedColor : null,
           icon: const Icon(Icons.movie),
-          onPressed: () => _onVideoSelected(context));
+          onPressed: () => _onFilmSelected(context));
+    }
+    if (state.shows) {
+      buttons[MediaType.tv] = IconButton(
+          iconSize: iconSize,
+          color: mediaType == MediaType.tv ? selectedColor : null,
+          icon: const Icon(Icons.tv),
+          onPressed: () => _onTVSelected(context));
     }
     if (state.podcasts) {
       buttons[MediaType.podcast] = IconButton(
@@ -210,12 +225,17 @@ class HomeWidget extends StatelessWidget {
     );
   }
 
-  void _onVideoSelected(BuildContext context) {
-    if (context.selectedMediaType.state.isVideo()) {
-      context.selectedMediaType.nextVideoType();
+  void _onFilmSelected(BuildContext context) {
+    if (context.selectedMediaType.state.isFilm()) {
+      context.selectedMediaType.nextFilmType();
     } else {
-      context.selectedMediaType.select(MediaType.video);
+      context.selectedMediaType.select(MediaType.film);
     }
+  }
+
+  void _onTVSelected(BuildContext context) {
+    // TODO no subtypes yet
+    context.selectedMediaType.select(MediaType.tv);
   }
 
   void _onMusicSelected(BuildContext context) {
@@ -416,6 +436,39 @@ class MoviesViewGrid extends ViewGrid<MoviesView> {
         mainAxisSpacing: 8,
         children: [
           ...state.movies.map((i) => GestureDetector(
+              onTap: () => onTap(context, i),
+              child: GridTile(
+                footer: _tile(i, cache),
+                child: gridPoster(context, i.image),
+              )))
+        ]);
+  }
+}
+
+class TVShowsViewGrid extends ViewGrid<TVShowsView> {
+  final void Function(BuildContext, TVSeries) onTap;
+
+  TVShowsViewGrid(
+    super.appBar, {
+    required this.onTap,
+    super.key,
+  });
+
+  @override
+  void load(BuildContext context, {Duration? ttl}) {
+    context.client.shows(ttl: ttl);
+  }
+
+  @override
+  Widget _grid(
+      BuildContext context, TVShowsView state, SpiffTrackCacheState cache) {
+    return SliverGrid.extent(
+        childAspectRatio: posterAspectRatio,
+        maxCrossAxisExtent: posterGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.series.map((i) => GestureDetector(
               onTap: () => onTap(context, i),
               child: GridTile(
                 footer: _tile(i, cache),

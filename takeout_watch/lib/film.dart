@@ -33,27 +33,27 @@ import 'package:takeout_watch/media.dart';
 import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/settings.dart';
 
-class VideoPage extends StatelessWidget {
+class FilmPage extends StatelessWidget {
   final HomeView state;
 
-  const VideoPage(this.state, {super.key});
+  const FilmPage(this.state, {super.key});
 
   @override
   Widget build(BuildContext context) {
     List<Movie> movies;
-    switch (context.selectedMediaType.state.videoType) {
-      case VideoType.added:
+    switch (context.selectedMediaType.state.filmType) {
+      case FilmType.added:
         movies = state.addedMovies;
-      case VideoType.recent:
+      case FilmType.recent:
         movies = state.newMovies;
-      case VideoType.recommended:
+      case FilmType.recommended:
         final recommended = state.recommendMovies;
         if (recommended != null && recommended.isNotEmpty) {
           movies = recommended.first.movies ?? [];
         } else {
           movies = [];
         }
-      case VideoType.all:
+      case FilmType.all:
         // TODO all not supported yet
         movies = [];
     }
@@ -324,8 +324,8 @@ class ProfilePage extends ClientPage<ProfileView> {
   @override
   Widget page(BuildContext context, ProfileView state) {
     final movies = <Movie>[];
-    if (state.starring != null) {
-      movies.addAll(state.starring ?? []);
+    if (state.movies.starring.isNotEmpty) {
+      movies.addAll(state.movies.starring);
     }
     return MediaPage(movies,
         title: state.person.name,

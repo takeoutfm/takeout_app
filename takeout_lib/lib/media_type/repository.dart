@@ -36,8 +36,8 @@ class MediaTypeRepository {
     return state.musicType;
   }
 
-  VideoType get videoType {
-    return state.videoType;
+  FilmType get filmType {
+    return state.filmType;
   }
 
   PodcastType get podcastType {

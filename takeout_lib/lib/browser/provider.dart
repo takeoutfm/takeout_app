@@ -305,7 +305,7 @@ class DefaultMediaProvider implements MediaProvider {
     final results = await _search(query, extras: extras);
     final cache = await cacheState();
 
-    if (mediaType == MediaType.video) {
+    if (mediaType == MediaType.film) {
       for (var m in results.movies ?? <Movie>[]) {
         items.add(await _movie(m));
       }
@@ -521,18 +521,18 @@ class DefaultMediaProvider implements MediaProvider {
     final home = await clientRepository.home();
 
     Iterable<Movie>? movies;
-    final videoType = mediaTypeRepository.videoType;
-    switch (videoType) {
-      case VideoType.added:
+    final filmType = mediaTypeRepository.filmType;
+    switch (filmType) {
+      case FilmType.added:
         movies = home.addedMovies;
-      case VideoType.recent:
+      case FilmType.recent:
         movies = home.newMovies;
-      case VideoType.recommended:
+      case FilmType.recommended:
         final recommended = home.recommendMovies;
         if (recommended != null) {
           movies = recommended.first.movies ?? [];
         }
-      case VideoType.all:
+      case FilmType.all:
         final view = await clientRepository.movies();
         movies = List<Movie>.from(view.movies);
     }

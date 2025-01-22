@@ -1,4 +1,4 @@
-// Copyright 2023 defsub
+// Copyright 2025 defsub
 //
 // This file is part of TakeoutFM.
 //
@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
@@ -34,32 +33,33 @@ import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'buttons.dart';
 import 'nav.dart';
+import 'people.dart';
 import 'style.dart';
 
-class MovieWidget extends ClientPage<MovieView> {
-  final Movie _movie;
+class TVSeriesWidget extends ClientPage<TVSeriesView> {
+  final TVSeries _series;
 
-  MovieWidget(this._movie, {super.key});
+  TVSeriesWidget(this._series, {super.key});
 
   @override
   void load(BuildContext context, {Duration? ttl}) {
-    context.client.movie(_movie.id, ttl: ttl);
+    context.client.tvSeries(_series.id, ttl: ttl);
   }
 
   @override
-  Widget page(BuildContext context, MovieView state) {
+  Widget page(BuildContext context, TVSeriesView state) {
     return scaffold(context,
-        image: _movie.image,
+        image: _series.image,
         body: (_) => RefreshIndicator(
             onRefresh: () => reloadPage(context),
             child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
                 builder: (context, cacheState) {
-              final isCached = cacheState.contains(_movie);
               final screen = MediaQuery.of(context).size;
               final expandedHeight = screen.height / 2;
               return CustomScrollView(slivers: [
@@ -75,7 +75,7 @@ class MovieWidget extends ClientPage<MovieView> {
                         StretchMode.fadeTitle
                       ],
                       background: Stack(fit: StackFit.expand, children: [
-                        releaseSmallCover(context, _movie.image),
+                        releaseSmallCover(context, _series.image),
                         const DecoratedBox(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -90,13 +90,13 @@ class MovieWidget extends ClientPage<MovieView> {
                         ),
                         Align(
                             alignment: Alignment.bottomLeft,
-                            child: _playButton(context, state, isCached)),
-                        Align(
-                            alignment: Alignment.bottomCenter,
-                            child: _progress(context)),
+                            child: _playButton(context, state, false)),
+                        // Align(
+                        //     alignment: Alignment.bottomCenter,
+                        //     child: _progress(context)),
                         Align(
                             alignment: Alignment.bottomRight,
-                            child: _downloadButton(context, isCached)),
+                            child: _downloadButton(context, false)),
                       ])),
                 ),
                 SliverToBoxAdapter(
@@ -104,85 +104,72 @@ class MovieWidget extends ClientPage<MovieView> {
                         padding: const EdgeInsets.fromLTRB(4, 16, 4, 4),
                         child: Column(children: [
                           _title(context),
-                          _tagline(context),
-                          _details(context),
+                          _tagline(context, state),
+                          _details(context, state),
                           if (state.hasGenres()) _genres(context, state),
                           // GestureDetector(
                           //     onTap: () => _onArtist(), child: _title()),
                           // GestureDetector(
                           //     onTap: () => _onArtist(), child: _artist()),
                         ]))),
-                if (state.hasCast())
-                  SliverToBoxAdapter(child: heading(context.strings.castLabel)),
-                if (state.hasCast())
-                  SliverToBoxAdapter(child: _CastListWidget(state)),
-                if (state.hasCrew())
-                  SliverToBoxAdapter(child: heading(context.strings.crewLabel)),
-                if (state.hasCrew())
-                  SliverToBoxAdapter(child: _CrewListWidget(state)),
-                if (state.hasRelated())
-                  SliverToBoxAdapter(
-                    child: heading(context.strings.relatedLabel),
-                  ),
-                if (state.hasRelated()) MovieGridWidget(state.other!),
+                // if (state.hasCast())
+                //   SliverToBoxAdapter(child: heading(context.strings.castLabel)),
+                // if (state.hasCast())
+                //   SliverToBoxAdapter(child: CastListWidget(state.cast ?? [])),
+                // if (state.hasCrew())
+                //   SliverToBoxAdapter(child: heading(context.strings.crewLabel)),
+                // if (state.hasCrew())
+                //   SliverToBoxAdapter(child: CrewListWidget(state.crew ?? [])),
+                // TVEpisodeGridWidget(state.episodes),
+                SliverToBoxAdapter(child: TVEpisodeListWidget(state.episodes)),
               ]);
             })));
   }
 
-  Widget _progress(BuildContext context) {
-    final value = context.offsets.state.value(_movie);
-    // print('progress for ${_movie.etag} is $value');
-    return value != null
-        ? LinearProgressIndicator(value: value)
-        : const EmptyWidget();
-  }
+  // Widget _progress(BuildContext context) {
+  //   final value = context.offsets.state.value(_movie);
+  //   // print('progress for ${_movie.etag} is $value');
+  //   return value != null
+  //       ? LinearProgressIndicator(value: value)
+  //       : const EmptyWidget();
+  // }
 
   Widget _title(BuildContext context) {
     return Container(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: Text(_movie.title,
+        child: Text(_series.name,
             style: Theme.of(context).textTheme.headlineSmall));
   }
 
-  Widget _rating(BuildContext context) {
+  Widget _rating(BuildContext context, TVSeriesView state) {
     final boxColor = Theme.of(context).textTheme.bodyLarge?.color ??
         Theme.of(context).colorScheme.outline;
     return Container(
       margin: const EdgeInsets.all(15.0),
       padding: const EdgeInsets.all(3.0),
       decoration: BoxDecoration(border: Border.all(color: boxColor)),
-      child: Text(_movie.rating),
+      child: Text(state.series.rating),
     );
   }
 
-  Widget _details(BuildContext context) {
+  Widget _details(BuildContext context, TVSeriesView state) {
     var list = <Widget>[];
-    if (_movie.rating.isNotEmpty) {
-      list.add(_rating(context));
+    if (state.series.rating.isNotEmpty) {
+      list.add(_rating(context, state));
     }
 
     final fields = <String>[];
 
-    // runtime
-    if (_movie.runtime > 0) {
-      var hours = (_movie.runtime / 60).floor();
-      var min = (_movie.runtime % 60).floor();
-      fields.add('${hours}h ${min}m');
-    }
-
     // year
-    if (_movie.year > 1) {
-      fields.add(_movie.year.toString());
+    if (state.series.year > 1) {
+      fields.add(state.series.year.toString());
     }
 
     // vote%
-    int vote = (10 * (_movie.voteAverage ?? 0)).round();
+    int vote = (10 * state.series.voteAverage).round();
     if (vote > 0) {
       fields.add('$vote%');
     }
-
-    // storage
-    fields.add(storage(_movie.size));
 
     list.add(
         Text(merge(fields), style: Theme.of(context).textTheme.titleSmall));
@@ -190,14 +177,14 @@ class MovieWidget extends ClientPage<MovieView> {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: list);
   }
 
-  Widget _tagline(BuildContext context) {
+  Widget _tagline(BuildContext context, TVSeriesView state) {
     return Container(
         padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-        child: Text(_movie.tagline,
+        child: Text(state.series.tagline,
             style: Theme.of(context).textTheme.titleMedium!));
   }
 
-  Widget _genres(BuildContext context, MovieView view) {
+  Widget _genres(BuildContext context, TVSeriesView view) {
     return Center(
         child: Wrap(
             direction: Axis.horizontal,
@@ -210,9 +197,271 @@ class MovieWidget extends ClientPage<MovieView> {
         ]));
   }
 
-  Widget _playButton(BuildContext context, MovieView view, bool isCached) {
+  Widget _playButton(BuildContext context, TVSeriesView view, bool isCached) {
+    // final offsetCache = context.offsets;
+    // final pos = offsetCache.state.position(_movie) ?? Duration.zero;
+    // return isCached
+    //     ? IconButton(
+    //     icon: const Icon(Icons.play_arrow, size: 32),
+    //     onPressed: () => _onPlay(context, view, pos))
+    //     : StreamingButton(onPressed: () => _onPlay(context, view, pos));
+    return EmptyWidget();
+  }
+
+  Widget _downloadButton(BuildContext context, bool isCached) {
+    // TODO show download progress
+    return isCached
+        ? IconButton(icon: const Icon(iconsDownloadDone), onPressed: () => {})
+        : DownloadButton(onPressed: () => _onDownload(context));
+  }
+
+  void _onPlay(BuildContext context, MovieView view, Duration startOffset) {
+    // playMovie(context, TV(view), startOffset: startOffset);
+  }
+
+  void _onDownload(BuildContext context) {
+    // context.downloadMovie(_movie);
+  }
+
+  void _onGenre(BuildContext context, String genre) {
+    // push(context, builder: (_) => GenreWidget(genre));
+  }
+}
+
+class TVSeriesGridWidget extends StatelessWidget {
+  final List<TVSeries> _series;
+
+  const TVSeriesGridWidget(this._series, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverGrid.extent(
+        maxCrossAxisExtent: posterGridWidth,
+        childAspectRatio: posterAspectRatio,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
+        children: [
+          ..._series.map((s) => GestureDetector(
+              onTap: () => _onTap(context, s),
+              child: GridTile(
+                footer: const Material(
+                    color: Colors.transparent,
+                    // shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.vertical(
+                    //         bottom: Radius.circular(4))),
+                    clipBehavior: Clip.antiAlias,
+                    child: GridTileBar(
+                      backgroundColor: Colors.black26,
+                      // title: Text('${m.rating}'),
+                      // trailing: Text('${m.year}'),
+                    )),
+                child: gridPoster(context, s.image),
+              )))
+        ]);
+  }
+
+  void _onTap(BuildContext context, TVSeries e) {
+    push(context, builder: (_) => TVSeriesWidget(e));
+  }
+}
+
+class TVEpisodeGridWidget extends StatelessWidget {
+  final List<TVEpisode> _episodes;
+
+  const TVEpisodeGridWidget(this._episodes, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverGrid.extent(
+        maxCrossAxisExtent: posterGridWidth,
+        childAspectRatio: posterAspectRatio,
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
+        children: [
+          ..._episodes.map((e) => GestureDetector(
+              onTap: () => _onTap(context, e),
+              child: GridTile(
+                footer: const Material(
+                    color: Colors.transparent,
+                    // shape: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.vertical(
+                    //         bottom: Radius.circular(4))),
+                    clipBehavior: Clip.antiAlias,
+                    child: GridTileBar(
+                      backgroundColor: Colors.black26,
+                      // title: Text('${m.rating}'),
+                      // trailing: Text('${m.year}'),
+                    )),
+                child: gridPoster(context, e.image),
+              )))
+        ]);
+  }
+
+  void _onTap(BuildContext context, TVEpisode e) {
+    push(context, builder: (_) => TVEpisodeWidget(e));
+  }
+}
+
+class TVEpisodeListWidget extends StatelessWidget {
+  final List<TVEpisode> _episodes;
+
+  const TVEpisodeListWidget(this._episodes, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      ..._episodes.map((e) => ListTile(
+          onTap: () => _onTap(context, e),
+          leading: tileStill(context, e.smallImage),
+          title: Text(e.title),
+          subtitle: Text(merge(['Episode ${e.episode}', ymd(e.date)]))))
+    ]);
+  }
+
+  void _onTap(BuildContext context, TVEpisode e) {
+    push(context, builder: (_) => TVEpisodeWidget(e));
+  }
+}
+
+class TVEpisodeWidget extends ClientPage<TVEpisodeView> {
+  final TVEpisode _episode;
+
+  TVEpisodeWidget(this._episode, {super.key});
+
+  @override
+  void load(BuildContext context, {Duration? ttl}) {
+    context.client.tvEpisode(_episode.id, ttl: ttl);
+  }
+
+  @override
+  Widget page(BuildContext context, TVEpisodeView state) {
+    return scaffold(context,
+        image: _episode.image,
+        body: (_) => RefreshIndicator(
+            onRefresh: () => reloadPage(context),
+            child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
+                builder: (context, cacheState) {
+              final screen = MediaQuery.of(context).size;
+              final expandedHeight = screen.height / 2;
+              return CustomScrollView(slivers: [
+                SliverAppBar(
+                  // actions: [ ],
+                  backgroundColor: Colors.black,
+                  expandedHeight: expandedHeight,
+                  flexibleSpace: FlexibleSpaceBar(
+                      // centerTitle: true,
+                      // title: Text(release.name, style: TextStyle(fontSize: 15)),
+                      stretchModes: const [
+                        StretchMode.zoomBackground,
+                        StretchMode.fadeTitle
+                      ],
+                      background: Stack(fit: StackFit.expand, children: [
+                        releaseSmallCover(context, _episode.image),
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment(0.0, 0.75),
+                              end: Alignment(0.0, 0.0),
+                              colors: <Color>[
+                                Color(0x60000000),
+                                Color(0x00000000),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Align(
+                            alignment: Alignment.bottomLeft,
+                            child: _playButton(context, state, false)),
+                        // Align(
+                        //     alignment: Alignment.bottomCenter,
+                        //     child: _progress(context)),
+                        Align(
+                            alignment: Alignment.bottomRight,
+                            child: _downloadButton(context, false)),
+                      ])),
+                ),
+                SliverToBoxAdapter(
+                    child: Container(
+                        padding: const EdgeInsets.fromLTRB(4, 16, 4, 4),
+                        child: Column(children: [
+                          _title(context),
+                          _details(context, state),
+                          _overview(context, state)
+                          // GestureDetector(
+                          //     onTap: () => _onArtist(), child: _title()),
+                          // GestureDetector(
+                          //     onTap: () => _onArtist(), child: _artist()),
+                        ]))),
+                if (state.hasCast())
+                  SliverToBoxAdapter(child: heading(context.strings.castLabel)),
+                if (state.hasCast())
+                  SliverToBoxAdapter(child: CastListWidget(state.cast ?? [])),
+                if (state.hasCrew())
+                  SliverToBoxAdapter(child: heading(context.strings.crewLabel)),
+                if (state.hasCrew())
+                  SliverToBoxAdapter(child: CrewListWidget(state.crew ?? [])),
+              ]);
+            })));
+  }
+
+  Widget _title(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+        child: Text(_episode.name,
+            style: Theme.of(context).textTheme.headlineSmall));
+  }
+
+  Widget _rating(BuildContext context, TVEpisodeView state) {
+    final boxColor = Theme.of(context).textTheme.bodyLarge?.color ??
+        Theme.of(context).colorScheme.outline;
+    return Container(
+      margin: const EdgeInsets.all(15.0),
+      padding: const EdgeInsets.all(3.0),
+      decoration: BoxDecoration(border: Border.all(color: boxColor)),
+      child: Text(state.series.rating),
+    );
+  }
+
+  Widget _overview(BuildContext context, TVEpisodeView state) {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+        child: Text(state.episode.overview));
+  }
+
+  Widget _details(BuildContext context, TVEpisodeView state) {
+    var list = <Widget>[];
+    if (state.series.rating.isNotEmpty) {
+      list.add(_rating(context, state));
+    }
+
+    final fields = <String>[];
+
+    // runtime
+    if (state.episode.episode > 0) {
+      var hours = (state.episode.runtime / 60).floor();
+      var min = (state.episode.runtime % 60).floor();
+      fields.add('${hours}h ${min}m');
+    }
+
+    fields.add('S${state.episode.season}E${state.episode.episode}');
+
+    fields.add(ymd(state.episode.date));
+
+    // vote%
+    int vote = (10 * state.episode.voteAverage).round();
+    if (vote > 0) {
+      fields.add('$vote%');
+    }
+
+    list.add(
+        Text(merge(fields), style: Theme.of(context).textTheme.titleSmall));
+
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: list);
+  }
+
+  Widget _playButton(BuildContext context, TVEpisodeView view, bool isCached) {
     final offsetCache = context.offsets;
-    final pos = offsetCache.state.position(_movie) ?? Duration.zero;
+    final pos = offsetCache.state.position(_episode) ?? Duration.zero;
     return isCached
         ? IconButton(
             icon: const Icon(Icons.play_arrow, size: 32),
@@ -227,190 +476,16 @@ class MovieWidget extends ClientPage<MovieView> {
         : DownloadButton(onPressed: () => _onDownload(context));
   }
 
-  void _onPlay(BuildContext context, MovieView view, Duration startOffset) {
-    playMovie(context, MovieMediaTrack(view), startOffset: startOffset);
+  void _onPlay(BuildContext context, TVEpisodeView view, Duration startOffset) {
+    playMovie(context, TVEpisodeMediaTrack(view), startOffset: startOffset);
   }
 
   void _onDownload(BuildContext context) {
-    context.downloadMovie(_movie);
+    context.downloadTVEpisode(_episode);
   }
 
   void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => GenreWidget(genre));
-  }
-}
-
-class _CastListWidget extends StatelessWidget {
-  final MovieView _view;
-
-  const _CastListWidget(this._view);
-
-  @override
-  Widget build(BuildContext context) {
-    final cast = _view.cast ?? [];
-    return Column(children: [
-      ...cast.map((c) => ListTile(
-          onTap: () => _onCast(context, c),
-          title: Text(c.person.name),
-          subtitle: Text(c.character)))
-    ]);
-  }
-
-  void _onCast(BuildContext context, Cast cast) {
-    push(context, builder: (_) => ProfileWidget(cast.person));
-  }
-}
-
-class _CrewListWidget extends StatelessWidget {
-  final MovieView _view;
-
-  const _CrewListWidget(this._view);
-
-  @override
-  Widget build(BuildContext context) {
-    final crew = _view.crew ?? [];
-    return Column(children: [
-      ...crew.map((c) => ListTile(
-          onTap: () => _onCrew(context, c),
-          title: Text(c.person.name),
-          subtitle: Text(c.job)))
-    ]);
-  }
-
-  void _onCrew(BuildContext context, Crew crew) {
-    push(context, builder: (_) => ProfileWidget(crew.person));
-  }
-}
-
-class ProfileWidget extends ClientPage<ProfileView> {
-  final Person _person;
-
-  ProfileWidget(this._person, {super.key});
-
-  @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.profile(_person.id, ttl: ttl);
-  }
-
-  @override
-  Widget page(BuildContext context, ProfileView state) {
-    return scaffold(context,
-        image: _person.image,
-        body: (_) => RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: CustomScrollView(slivers: [
-              SliverAppBar(
-                // actions: [ ],
-                expandedHeight: MediaQuery.of(context).size.height / 2,
-                flexibleSpace: FlexibleSpaceBar(
-                    // centerTitle: true,
-                    // title: Text(release.name, style: TextStyle(fontSize: 15)),
-                    stretchModes: const [
-                      StretchMode.zoomBackground,
-                      StretchMode.fadeTitle
-                    ],
-                    background: Stack(fit: StackFit.expand, children: [
-                      releaseSmallCover(context, _person.image),
-                      const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment(0.0, 0.75),
-                            end: Alignment(0.0, 0.0),
-                            colors: <Color>[
-                              Color(0x60000000),
-                              Color(0x00000000),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ])),
-              ),
-              SliverToBoxAdapter(
-                  child: Container(
-                      padding: const EdgeInsets.fromLTRB(0, 16, 0, 4),
-                      child: Column(children: [
-                        _title(context),
-                      ]))),
-              if (state.hasStarring())
-                SliverToBoxAdapter(
-                    child: heading(context.strings.starringLabel)),
-              if (state.hasStarring()) MovieGridWidget(state.starringMovies()),
-              if (state.hasDirecting())
-                SliverToBoxAdapter(
-                    child: heading(context.strings.directingLabel)),
-              if (state.hasDirecting())
-                MovieGridWidget(state.directingMovies()),
-              if (state.hasWriting())
-                SliverToBoxAdapter(
-                  child: heading(context.strings.writingLabel),
-                ),
-              if (state.hasWriting()) MovieGridWidget(state.writingMovies()),
-            ])));
-  }
-
-  Widget _title(BuildContext context) {
-    return Text(_person.name, style: Theme.of(context).textTheme.headlineSmall);
-  }
-}
-
-class GenreWidget extends ClientPage<GenreView> {
-  final String _genre;
-
-  GenreWidget(this._genre, {super.key});
-
-  @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.moviesGenre(_genre, ttl: ttl);
-  }
-
-  @override
-  Widget page(BuildContext context, GenreView state) {
-    return Scaffold(
-        body: RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: CustomScrollView(slivers: [
-              SliverAppBar(title: Text(_genre)),
-              if (state.movies.isNotEmpty)
-                MovieGridWidget(_sortByTitle(state.movies)),
-            ])));
-  }
-}
-
-class MovieGridWidget extends StatelessWidget {
-  final List<Movie> _movies;
-  final bool subtitle;
-
-  const MovieGridWidget(this._movies, {super.key, this.subtitle = true});
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverGrid.extent(
-        maxCrossAxisExtent: posterGridWidth,
-        childAspectRatio: posterAspectRatio,
-        crossAxisSpacing: 5,
-        mainAxisSpacing: 5,
-        children: [
-          ..._movies.map((m) => GestureDetector(
-              onTap: () => _onTap(context, m),
-              child: GridTile(
-                footer: const Material(
-                    color: Colors.transparent,
-                    // shape: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.vertical(
-                    //         bottom: Radius.circular(4))),
-                    clipBehavior: Clip.antiAlias,
-                    child: GridTileBar(
-                      backgroundColor: Colors.black26,
-                      // title: Text('${m.rating}'),
-                      // trailing: Text('${m.year}'),
-                    )),
-                child: gridPoster(context, m.image),
-              )))
-        ]);
-  }
-
-  void _onTap(BuildContext context, Movie movie) {
-    push(context, builder: (_) => MovieWidget(movie));
+    // push(context, builder: (_) => GenreWidget(genre
   }
 }
 
@@ -435,10 +510,10 @@ class MoviePlayer extends StatefulWidget {
 }
 
 // TODO add location back to movie to avoid this hassle?
-class MovieMediaTrack implements MediaTrack {
-  MovieView view;
+class TVEpisodeMediaTrack implements MediaTrack {
+  TVEpisodeView view;
 
-  MovieMediaTrack(this.view);
+  TVEpisodeMediaTrack(this.view);
 
   @override
   String get creator => '';
@@ -447,19 +522,19 @@ class MovieMediaTrack implements MediaTrack {
   String get album => '';
 
   @override
-  String get image => view.movie.image;
+  String get image => view.episode.image;
 
   @override
   int get year => 0;
 
   @override
-  String get title => view.movie.title;
+  String get title => view.episode.title;
 
   @override
-  String get etag => view.movie.etag;
+  String get etag => view.episode.etag;
 
   @override
-  int get size => view.movie.size;
+  int get size => view.episode.size;
 
   @override
   int get number => 0;
@@ -468,7 +543,7 @@ class MovieMediaTrack implements MediaTrack {
   int get disc => 0;
 
   @override
-  String get date => view.movie.date;
+  String get date => view.episode.date;
 
   @override
   String get location => view.location;
@@ -499,7 +574,8 @@ class MoviePlayerState extends State<MoviePlayer> {
       url = '${widget.settingsRepository.settings?.endpoint}$url';
     }
     final headers = widget.tokenRepository.addMediaToken();
-    final controller = VideoPlayerController.networkUrl(Uri.parse(url), httpHeaders: headers);
+    final controller =
+        VideoPlayerController.networkUrl(Uri.parse(url), httpHeaders: headers);
     // TODO not sure what this does
     unawaited(controller.initialize().then((_) => setState(() {})));
     // progress
@@ -650,27 +726,27 @@ class MoviePlayerState extends State<MoviePlayer> {
   }
 }
 
-class MovieListWidget extends StatelessWidget {
-  final List<Movie> _movies;
-
-  const MovieListWidget(this._movies, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: [
-      ..._movies.asMap().keys.toList().map((index) => ListTile(
-          onTap: () => _onTapped(context, _movies[index]),
-          leading: tilePoster(context, _movies[index].image),
-          subtitle: Text(
-              merge([_movies[index].year.toString(), _movies[index].rating])),
-          title: Text(_movies[index].title)))
-    ]);
-  }
-
-  void _onTapped(BuildContext context, Movie movie) {
-    push(context, builder: (_) => MovieWidget(movie));
-  }
-}
+// class MovieListWidget extends StatelessWidget {
+//   final List<Movie> _movies;
+//
+//   const MovieListWidget(this._movies, {super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(children: [
+//       ..._movies.asMap().keys.toList().map((index) => ListTile(
+//           onTap: () => _onTapped(context, _movies[index]),
+//           leading: tilePoster(context, _movies[index].image),
+//           subtitle: Text(
+//               merge([_movies[index].year.toString(), _movies[index].rating])),
+//           title: Text(_movies[index].title)))
+//     ]);
+//   }
+//
+//   void _onTapped(BuildContext context, Movie movie) {
+//     push(context, builder: (_) => MovieWidget(movie));
+//   }
+// }
 
 void playMovie(BuildContext context, MediaTrack movie,
     {Duration? startOffset}) {

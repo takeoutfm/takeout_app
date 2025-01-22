@@ -82,13 +82,15 @@ class IndexView {
   final bool hasMovies;
   final bool hasPodcasts;
   final bool hasPlaylists;
+  final bool hasShows;
 
   IndexView(
       {required this.time,
       required this.hasMusic,
       required this.hasMovies,
       required this.hasPodcasts,
-      this.hasPlaylists = false});
+      this.hasPlaylists = false,
+      this.hasShows = false});
 
   factory IndexView.fromJson(Map<String, dynamic> json) =>
       _$IndexViewFromJson(json);
@@ -107,6 +109,7 @@ class HomeView {
   final List<Recommend>? recommendMovies;
   final List<Episode>? newEpisodes;
   final List<Series>? newSeries;
+  final List<TVEpisode>? addedTVEpisodes;
 
   HomeView(
       {this.added = const [],
@@ -115,7 +118,8 @@ class HomeView {
       this.newMovies = const [],
       this.recommendMovies = const [],
       this.newEpisodes = const [],
-      this.newSeries = const []});
+      this.newSeries = const [],
+      this.addedTVEpisodes});
 
   factory HomeView.fromJson(Map<String, dynamic> json) =>
       _$HomeViewFromJson(json);
@@ -734,20 +738,33 @@ class Person {
   }
 }
 
+abstract class Role {
+  Person get person;
+
+  String get role;
+}
+
 @JsonSerializable(fieldRename: FieldRename.pascal)
-class Cast {
+class Cast implements Role {
   @JsonKey(name: 'ID')
   final int id;
   @JsonKey(name: 'TMID')
-  final int tmid;
+  int? tmid;
+  @JsonKey(name: 'TVID')
+  int? tvid;
+  @JsonKey(name: 'EID')
+  int? eid;
   @JsonKey(name: 'PEID')
   final int peid;
   final String character;
+  @override
   final Person person;
 
   Cast(
       {required this.id,
-      required this.tmid,
+      this.tmid,
+      this.tvid,
+      this.eid,
       required this.peid,
       required this.character,
       required this.person});
@@ -755,23 +772,33 @@ class Cast {
   factory Cast.fromJson(Map<String, dynamic> json) => _$CastFromJson(json);
 
   Map<String, dynamic> toJson() => _$CastToJson(this);
+
+  @override
+  String get role => character;
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
-class Crew {
+class Crew implements Role {
   @JsonKey(name: 'ID')
   final int id;
   @JsonKey(name: 'TMID')
-  final int tmid;
+  int? tmid;
+  @JsonKey(name: 'TVID')
+  int? tvid;
+  @JsonKey(name: 'EID')
+  int? eid;
   @JsonKey(name: 'PEID')
   final int peid;
   final String department;
   final String job;
+  @override
   final Person person;
 
   Crew(
       {required this.id,
-      required this.tmid,
+      this.tmid,
+      this.tvid,
+      this.eid,
       required this.peid,
       required this.department,
       required this.job,
@@ -780,6 +807,9 @@ class Crew {
   factory Crew.fromJson(Map<String, dynamic> json) => _$CrewFromJson(json);
 
   Map<String, dynamic> toJson() => _$CrewToJson(this);
+
+  @override
+  String get role => job;
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -804,45 +834,95 @@ class Collection {
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
+class MovieCredits {
+  final List<Movie> starring;
+  final List<Movie> directing;
+  final List<Movie> writing;
+
+  const MovieCredits({
+    this.starring = const [],
+    this.directing = const [],
+    this.writing = const [],
+  });
+
+  factory MovieCredits.fromJson(Map<String, dynamic> json) =>
+      _$MovieCreditsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MovieCreditsToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TVCredits {
+  final List<TVSeries> starring;
+  final List<TVSeries> directing;
+  final List<TVSeries> writing;
+
+  const TVCredits({
+    this.starring = const [],
+    this.directing = const [],
+    this.writing = const [],
+  });
+
+  factory TVCredits.fromJson(Map<String, dynamic> json) =>
+      _$TVCreditsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVCreditsToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
 class ProfileView {
   final Person person;
-  final List<Movie>? starring;
-  final List<Movie>? directing;
-  final List<Movie>? writing;
+  final MovieCredits movies;
+  final TVCredits shows;
 
   ProfileView(
       {required this.person,
-      this.starring = const [],
-      this.directing = const [],
-      this.writing = const []});
+      this.movies = const MovieCredits(),
+      this.shows = const TVCredits()});
 
   factory ProfileView.fromJson(Map<String, dynamic> json) =>
       _$ProfileViewFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileViewToJson(this);
 
-  bool hasStarring() {
-    return starring?.isNotEmpty ?? false;
+  bool hasStarringMovies() {
+    return movies.starring.isNotEmpty;
+  }
+
+  bool hasStarringShows() {
+    return shows.starring.isNotEmpty;
   }
 
   bool hasDirecting() {
-    return directing?.isNotEmpty ?? false;
+    return movies.directing.isNotEmpty || shows.directing.isNotEmpty;
   }
 
   bool hasWriting() {
-    return writing?.isNotEmpty ?? false;
+    return movies.writing.isNotEmpty || shows.writing.isNotEmpty;
   }
 
   List<Movie> starringMovies() {
-    return starring ?? [];
+    return movies.starring;
   }
 
   List<Movie> directingMovies() {
-    return directing ?? [];
+    return movies.directing;
   }
 
   List<Movie> writingMovies() {
-    return writing ?? [];
+    return movies.writing;
+  }
+
+  List<TVSeries> starringShows() {
+    return shows.starring;
+  }
+
+  List<TVSeries> directingShows() {
+    return shows.directing;
+  }
+
+  List<TVSeries> writingShows() {
+    return shows.writing;
   }
 }
 
@@ -948,6 +1028,312 @@ class Movie extends DownloadIdentifier
   }
 
   String get titleYear => '$title ($year)';
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TVSeries extends MediaAlbum {
+  @JsonKey(name: 'ID')
+  final int id;
+  @JsonKey(name: 'TVID')
+  final int tvid;
+  final String name;
+  final String sortName;
+  @override
+  final String date;
+  final String endDate;
+  final String tagline;
+  final String overview;
+  final double voteAverage;
+  final int voteCount;
+  final String backdropPath;
+  final String posterPath;
+  final int seasonCount;
+  final int episodeCount;
+  final String rating;
+  final int _year;
+
+  TVSeries({
+    required this.id,
+    required this.tvid,
+    required this.name,
+    required this.sortName,
+    required this.date,
+    required this.endDate,
+    required this.tagline,
+    required this.overview,
+    required this.voteAverage,
+    required this.voteCount,
+    required this.backdropPath,
+    required this.posterPath,
+    required this.seasonCount,
+    required this.episodeCount,
+    required this.rating,
+  }) : _year = parseYear(date);
+
+  factory TVSeries.fromJson(Map<String, dynamic> json) =>
+      _$TVSeriesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVSeriesToJson(this);
+
+  @override
+  int get year => _year;
+
+  @override
+  String get creator => 'TBD';
+
+  @override
+  String get album => name;
+
+  @override
+  String get image => _seriesPosterUrl();
+
+  String get reference => '/tv/series/$id';
+
+  String _seriesPosterUrl({String size = 'w342'}) {
+    return '/img/tm/$size$posterPath';
+  }
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TVEpisode extends DownloadIdentifier
+    implements MediaTrack, OffsetIdentifier {
+  @JsonKey(name: 'ID')
+  final int id;
+  @JsonKey(name: 'TVID')
+  final int tvid;
+  final String name;
+  final String overview;
+  @override
+  final String date;
+  final String stillPath;
+  final int runtime;
+  final int season;
+  final int episode;
+  final double voteAverage;
+  final int voteCount;
+  @JsonKey(name: 'ETag')
+  final String etag;
+  @override
+  final int size;
+  final int _year;
+
+  TVEpisode({
+    required this.id,
+    required this.tvid,
+    required this.name,
+    required this.overview,
+    required this.date,
+    required this.stillPath,
+    required this.runtime,
+    required this.season,
+    required this.episode,
+    required this.voteAverage,
+    required this.voteCount,
+    required this.etag,
+    required this.size,
+  }) : _year = parseYear(date);
+
+  factory TVEpisode.fromJson(Map<String, dynamic> json) =>
+      _$TVEpisodeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVEpisodeToJson(this);
+
+  @override
+  String get key {
+    return ETag(etag).key;
+  }
+
+  @override
+  String get location {
+    throw UnimplementedError;
+  }
+
+  @override
+  String get title => name;
+
+  @override
+  int get year => _year;
+
+  @override
+  String get creator => 'TBD';
+
+  @override
+  String get album => 'noalbum';
+
+  @override
+  int get disc => 1;
+
+  @override
+  int get number => 0;
+
+  @override
+  String get image => _stillImageUrl();
+
+  String _stillImageUrl({String size = 'w300'}) {
+    return '/img/tm/$size$stillPath';
+  }
+
+  String get smallImage => _stillImageUrl(size: 'w185');
+
+  String get reference => '/tv/episodes/$id';
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TVShowsView {
+  final List<TVSeries> series;
+
+  TVShowsView({required this.series});
+
+  factory TVShowsView.fromJson(Map<String, dynamic> json) =>
+      _$TVShowsViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVShowsViewToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TVSeriesView {
+  final TVSeries series;
+  final List<TVEpisode> episodes;
+  final List<Cast>? cast;
+  final List<Crew>? crew;
+  final List<Person>? starring;
+  final List<Person>? directing;
+  final List<Person>? writing;
+  final List<String>? genres;
+  final int vote;
+  final int voteCount;
+
+  TVSeriesView(
+      {required this.series,
+      required this.episodes,
+      this.cast = const [],
+      this.crew = const [],
+      this.starring = const [],
+      this.directing = const [],
+      this.writing = const [],
+      this.genres = const [],
+      required this.vote,
+      required this.voteCount});
+
+  factory TVSeriesView.fromJson(Map<String, dynamic> json) =>
+      _$TVSeriesViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVSeriesViewToJson(this);
+
+  bool hasGenres() {
+    return genres?.isNotEmpty ?? false;
+  }
+
+  bool hasCast() {
+    return cast?.isNotEmpty ?? false;
+  }
+
+  bool hasCrew() {
+    return crew?.isNotEmpty ?? false;
+  }
+
+  bool hasStarring() {
+    return starring?.isNotEmpty ?? false;
+  }
+
+  bool hasDirecting() {
+    return directing?.isNotEmpty ?? false;
+  }
+
+  bool hasWriting() {
+    return writing?.isNotEmpty ?? false;
+  }
+
+  List<Cast> castMembers() {
+    return cast ?? [];
+  }
+
+  List<Crew> crewMembers() {
+    return crew ?? [];
+  }
+
+  List<Person> starringPeople() {
+    return starring ?? [];
+  }
+
+  List<Person> directingPeople() {
+    return directing ?? [];
+  }
+
+  List<Person> writingPeople() {
+    return writing ?? [];
+  }
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class TVEpisodeView {
+  final TVSeries series;
+  final TVEpisode episode;
+  final String location;
+  final List<Cast>? cast;
+  final List<Crew>? crew;
+  final List<Person>? starring;
+  final List<Person>? directing;
+  final List<Person>? writing;
+  final int vote;
+  final int voteCount;
+
+  TVEpisodeView(
+      {required this.series,
+      required this.episode,
+      required this.location,
+      this.cast = const [],
+      this.crew = const [],
+      this.starring = const [],
+      this.directing = const [],
+      this.writing = const [],
+      required this.vote,
+      required this.voteCount});
+
+  factory TVEpisodeView.fromJson(Map<String, dynamic> json) =>
+      _$TVEpisodeViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVEpisodeViewToJson(this);
+
+  bool hasCast() {
+    return cast?.isNotEmpty ?? false;
+  }
+
+  bool hasCrew() {
+    return crew?.isNotEmpty ?? false;
+  }
+
+  bool hasStarring() {
+    return starring?.isNotEmpty ?? false;
+  }
+
+  bool hasDirecting() {
+    return directing?.isNotEmpty ?? false;
+  }
+
+  bool hasWriting() {
+    return writing?.isNotEmpty ?? false;
+  }
+
+  List<Cast> castMembers() {
+    return cast ?? [];
+  }
+
+  List<Crew> crewMembers() {
+    return crew ?? [];
+  }
+
+  List<Person> starringPeople() {
+    return starring ?? [];
+  }
+
+  List<Person> directingPeople() {
+    return directing ?? [];
+  }
+
+  List<Person> writingPeople() {
+    return writing ?? [];
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -1298,11 +1684,17 @@ class TrackStatsView {
   final List<ActivityArtist> artists;
   final List<ActivityRelease> releases;
   final List<ActivityTrack> tracks;
+  final int totalArtists;
+  final int totalReleases;
+  final int totalTracks;
 
   TrackStatsView({
     this.artists = const [],
-    this.tracks = const [],
     this.releases = const [],
+    this.tracks = const [],
+    this.totalArtists = 0,
+    this.totalReleases = 0,
+    this.totalTracks = 0,
   });
 
   factory TrackStatsView.fromJson(Map<String, dynamic> json) =>

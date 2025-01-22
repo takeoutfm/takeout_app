@@ -32,6 +32,10 @@ Widget? tilePoster(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.tilePoster(url)).build(context);
 }
 
+Widget? tileStill(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.tileStill(url)).build(context);
+}
+
 Widget releaseSmallCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.cover(url), hero: true).build(context);
 }

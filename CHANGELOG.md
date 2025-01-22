@@ -1,3 +1,14 @@
+## 0.23.0
+
+- Flutter upgrade to 3.27.3
+- Flutter pub upgrade
+- Support TV shows
+
+## 0.22.1
+
+- Flutter upgrade to 3.27.0
+- Target Android SDK 34
+
 ## 0.21.0
 
 - Flutter upgrade to 3.24.4

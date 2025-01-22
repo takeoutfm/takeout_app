@@ -113,6 +113,10 @@ extension TakeoutContext on BuildContext {
     clientRepository.moviePlaylist(movie.id).then((spiff) => download(spiff));
   }
 
+  void downloadTVEpisode(TVEpisode episode) {
+    clientRepository.tvEpisodePlaylist(episode.id).then((spiff) => download(spiff));
+  }
+
   void reload() {
     index.reload();
     search.reload();

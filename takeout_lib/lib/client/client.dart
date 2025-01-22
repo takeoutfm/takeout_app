@@ -136,8 +136,20 @@ class ClientCubit extends Cubit<ClientState> {
       ({Duration? ttl}) => repository.moviesGenre(genre, ttl: ttl),
       ttl: ttl);
 
-  void profile(int id, {Duration? ttl}) =>
-      _doit<ProfileView>(({Duration? ttl}) => repository.profile(id, ttl: ttl),
+  void shows({Duration? ttl}) =>
+      _doit<TVShowsView>(({Duration? ttl}) => repository.shows(ttl: ttl),
+          ttl: ttl);
+
+  void tvSeries(int id, {Duration? ttl}) =>
+      _doit<TVSeriesView>(({Duration? ttl}) => repository.tvSeries(id, ttl: ttl),
+          ttl: ttl);
+
+  void tvEpisode(int id, {Duration? ttl}) =>
+      _doit<TVEpisodeView>(({Duration? ttl}) => repository.tvEpisode(id, ttl: ttl),
+          ttl: ttl);
+
+  void profile(int peid, {Duration? ttl}) =>
+      _doit<ProfileView>(({Duration? ttl}) => repository.profile(peid, ttl: ttl),
           ttl: ttl);
 
   void radio({Duration? ttl}) =>

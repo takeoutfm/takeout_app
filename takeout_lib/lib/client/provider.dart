@@ -67,7 +67,17 @@ abstract class ClientProvider {
 
   Future<MoviesView> movies({Duration? ttl});
 
-  Future<ProfileView> profile(int id, {Duration? ttl});
+  Future<TVShowsView> shows({Duration? ttl});
+
+  Future<TVSeriesView> tvSeries(int id, {Duration? ttl});
+
+  Future<Spiff> tvSeriesPlaylist(int id, {Duration? ttl});
+
+  Future<TVEpisodeView> tvEpisode(int id, {Duration? ttl});
+
+  Future<Spiff> tvEpisodePlaylist(int id, {Duration? ttl});
+
+  Future<ProfileView> profile(int peid, {Duration? ttl});
 
   Future<RadioView> radio({Duration? ttl});
 

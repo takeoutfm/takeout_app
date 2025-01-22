@@ -693,10 +693,41 @@ class TakeoutClient implements ClientProvider {
   Future<Spiff> moviePlaylist(int id, {Duration? ttl}) async =>
       spiff('/api/movies/$id/playlist', ttl: ttl);
 
+  /// GET /api/tv
+  @override
+  Future<TVShowsView> shows({Duration? ttl}) async =>
+      _retry<TVShowsView>(() => _getJson('/api/tv', ttl: ttl)
+          .then((j) => TVShowsView.fromJson(j))
+          .catchError((Object e) => Future<TVShowsView>.error(e)));
+
+  /// GET /api/tv/series/1
+  @override
+  Future<TVSeriesView> tvSeries(int id, {Duration? ttl}) async =>
+      _retry<TVSeriesView>(() => _getJson('/api/tv/series/$id', ttl: ttl)
+          .then((j) => TVSeriesView.fromJson(j))
+          .catchError((Object e) => Future<TVSeriesView>.error(e)));
+
+  /// GET /api/tv/series/1/playlist
+  @override
+  Future<Spiff> tvSeriesPlaylist(int id, {Duration? ttl}) async =>
+      spiff('/api/tv/series/$id/playlist', ttl: ttl);
+
+  /// GET /api/tv/episodes/1
+  @override
+  Future<TVEpisodeView> tvEpisode(int id, {Duration? ttl}) async =>
+      _retry<TVEpisodeView>(() => _getJson('/api/tv/episodes/$id', ttl: ttl)
+          .then((j) => TVEpisodeView.fromJson(j))
+          .catchError((Object e) => Future<TVEpisodeView>.error(e)));
+
+  /// GET /api/tv/episodes/1/playlist
+  @override
+  Future<Spiff> tvEpisodePlaylist(int id, {Duration? ttl}) async =>
+      spiff('/api/tv/episodes/$id/playlist', ttl: ttl);
+
   /// GET /api/profiles/1
   @override
-  Future<ProfileView> profile(int id, {Duration? ttl}) async =>
-      _retry<ProfileView>(() => _getJson('/api/profiles/$id', ttl: ttl)
+  Future<ProfileView> profile(int peid, {Duration? ttl}) async =>
+      _retry<ProfileView>(() => _getJson('/api/profiles/$peid', ttl: ttl)
           .then((j) => ProfileView.fromJson(j))
           .catchError((Object e) => Future<ProfileView>.error(e)));
 

@@ -100,7 +100,7 @@ class MediaRepository {
 
   Future<void> playFromSearch(String query,
       {MediaType? mediaType, Map<String, dynamic>? extras}) async {
-    if (mediaType == MediaType.video) {
+    if (mediaType == MediaType.film) {
       final results = await _provider.search(query, mediaType: mediaType);
       if (results.isNotEmpty) {
         // TODO this plays first result

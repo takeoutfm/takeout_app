@@ -158,8 +158,28 @@ class ClientRepository {
     return _provider.movies(ttl: ttl);
   }
 
-  Future<ProfileView> profile(int id, {Duration? ttl = Duration.zero}) async {
-    return _provider.profile(id, ttl: ttl);
+  Future<TVShowsView> shows({Duration? ttl = Duration.zero}) async {
+    return _provider.shows(ttl: ttl);
+  }
+
+  Future<TVSeriesView> tvSeries(int id, {Duration? ttl = Duration.zero}) async {
+    return _provider.tvSeries(id, ttl: ttl);
+  }
+
+  Future<Spiff> tvSeriesPlaylist(int id, {Duration? ttl = Duration.zero}) async {
+    return _provider.tvSeriesPlaylist(id, ttl: ttl);
+  }
+
+  Future<TVEpisodeView> tvEpisode(int id, {Duration? ttl = Duration.zero}) async {
+    return _provider.tvEpisode(id, ttl: ttl);
+  }
+
+  Future<Spiff> tvEpisodePlaylist(int id, {Duration? ttl = Duration.zero}) async {
+    return _provider.tvEpisodePlaylist(id, ttl: ttl);
+  }
+
+  Future<ProfileView> profile(int peid, {Duration? ttl = Duration.zero}) async {
+    return _provider.profile(peid, ttl: ttl);
   }
 
   Future<RadioView> radio({Duration? ttl}) async {

@@ -65,7 +65,7 @@ class TakeoutBloc {
 
   static Future<void> initStorage() async {
     _appDir = await getApplicationDocumentsDirectory();
-    final storageDir = Directory('${_appDir.path}/state');
+    final storageDir = HydratedStorageDirectory('${_appDir.path}/state');
     HydratedBloc.storage =
         await HydratedStorage.build(storageDirectory: storageDir);
   }

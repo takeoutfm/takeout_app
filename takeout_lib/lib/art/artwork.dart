@@ -90,6 +90,10 @@ class Artwork {
       borderRadius: BorderRadius.circular(4),
       placeholder: const Icon(Icons.movie, size: listTileIconHeight));
 
+  factory Artwork.tileStill(String url) => Artwork(url, null, null, null,
+      borderRadius: BorderRadius.circular(4),
+      placeholder: const Icon(Icons.tv, size: listTileIconHeight));
+
   factory Artwork.background(String url) =>
       Artwork(url, 1920, 1080, BoxFit.cover);
 

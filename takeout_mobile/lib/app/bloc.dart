@@ -33,7 +33,7 @@ import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/video.dart';
+import 'package:takeout_mobile/film.dart';
 
 import 'app.dart';
 import 'context.dart';
@@ -177,7 +177,7 @@ class AppBloc extends TakeoutBloc {
         final title = intent.parameters?['title'] as String?;
         if (title != null) {
           context.mediaRepository
-              .playFromSearch(title, mediaType: MediaType.video);
+              .playFromSearch(title, mediaType: MediaType.film);
         }
     }
   }
