@@ -166,9 +166,7 @@ class MovieWidget extends ClientPage<MovieView> {
 
     // runtime
     if (_movie.runtime > 0) {
-      var hours = (_movie.runtime / 60).floor();
-      var min = (_movie.runtime % 60).floor();
-      fields.add('${hours}h ${min}m');
+      fields.add(Duration(minutes: _movie.runtime).inHoursMinutes);
     }
 
     // year
@@ -177,10 +175,7 @@ class MovieWidget extends ClientPage<MovieView> {
     }
 
     // vote%
-    int vote = (10 * (_movie.voteAverage ?? 0)).round();
-    if (vote > 0) {
-      fields.add('$vote%');
-    }
+    fields.add(_movie.vote);
 
     // storage
     fields.add(storage(_movie.size));

@@ -1,3 +1,7 @@
+## 0.23.1
+
+- Watch support for TV shows
+
 ## 0.23.0
 
 - Flutter upgrade to 3.27.3

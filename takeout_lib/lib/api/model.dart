@@ -1028,6 +1028,11 @@ class Movie extends DownloadIdentifier
   }
 
   String get titleYear => '$title ($year)';
+
+  String get vote {
+    int vote = (10 * (voteAverage ?? 0)).round();
+    return vote > 0 ? '$vote%' : '';
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -1079,7 +1084,7 @@ class TVSeries extends MediaAlbum {
   int get year => _year;
 
   @override
-  String get creator => 'TBD';
+  String get creator => '';
 
   @override
   String get album => name;
@@ -1091,6 +1096,11 @@ class TVSeries extends MediaAlbum {
 
   String _seriesPosterUrl({String size = 'w342'}) {
     return '/img/tm/$size$posterPath';
+  }
+
+  String get vote {
+    int vote = (10 * voteAverage).round();
+    return vote > 0 ? '$vote%' : '';
   }
 }
 
@@ -1155,7 +1165,7 @@ class TVEpisode extends DownloadIdentifier
   int get year => _year;
 
   @override
-  String get creator => 'TBD';
+  String get creator => '';
 
   @override
   String get album => 'noalbum';
@@ -1176,6 +1186,15 @@ class TVEpisode extends DownloadIdentifier
   String get smallImage => _stillImageUrl(size: 'w185');
 
   String get reference => '/tv/episodes/$id';
+
+  String get vote {
+    int vote = (10 * voteAverage).round();
+    return vote > 0 ? '$vote%' : '';
+  }
+
+  String get se {
+    return 'S${season}E$episode';
+  }
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)

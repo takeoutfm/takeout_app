@@ -27,17 +27,18 @@ import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_watch/app/context.dart';
+import 'package:takeout_watch/film.dart';
 import 'package:takeout_watch/music.dart';
 import 'package:takeout_watch/playlists.dart';
 import 'package:takeout_watch/podcasts.dart';
 import 'package:takeout_watch/radio.dart';
 import 'package:takeout_watch/settings.dart';
-import 'package:takeout_watch/film.dart';
 
 import 'downloads.dart';
 import 'history.dart';
 import 'list.dart';
 import 'player.dart';
+import 'tv.dart';
 
 class HomeEntry {
   final Widget title;
@@ -113,6 +114,10 @@ class HomePage extends ClientPage<HomeView> {
           HomeEntry(Text(context.strings.moviesLabel),
               icon: const Icon(Icons.movie),
               onSelected: (context, state) => onMovies(context, state)),
+        if (index.shows)
+          HomeEntry(Text(context.strings.showsLabel),
+              icon: const Icon(Icons.tv),
+              onSelected: (context, state) => onShows(context, state)),
         if (trackCache.isNotEmpty)
           HomeEntry(Text(context.strings.downloadsLabel),
               icon: const Icon(Icons.cloud_download_outlined),
@@ -164,8 +169,8 @@ class HomePage extends ClientPage<HomeView> {
   }
 
   void onPlaylists(BuildContext context, HomeView _) {
-    Navigator.push(context,
-        CupertinoPageRoute<void>(builder: (_) => PlaylistsPage()));
+    Navigator.push(
+        context, CupertinoPageRoute<void>(builder: (_) => PlaylistsPage()));
   }
 
   void onMusic(BuildContext context, HomeView state) {
@@ -196,6 +201,11 @@ class HomePage extends ClientPage<HomeView> {
   void onMovies(BuildContext context, HomeView state) {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => FilmPage(state)));
+  }
+
+  void onShows(BuildContext context, HomeView state) {
+    Navigator.push(
+        context, CupertinoPageRoute<void>(builder: (_) => ShowsPage()));
   }
 
   void onDownloads(BuildContext context, HomeView _) {

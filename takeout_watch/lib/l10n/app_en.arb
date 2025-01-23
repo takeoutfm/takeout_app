@@ -53,6 +53,7 @@
   "directingLabel": "Directing",
   "musicSortType": "Music Sort",
   "filmSortType": "Movie Sort",
-  "podcastSortType": "Podcast Sort"
+  "podcastSortType": "Podcast Sort",
+  "showsLabel": "TV Shows"
 }
 

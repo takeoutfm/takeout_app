@@ -32,6 +32,7 @@ import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:video_player/video_player.dart';
@@ -166,10 +167,7 @@ class TVSeriesWidget extends ClientPage<TVSeriesView> {
     }
 
     // vote%
-    int vote = (10 * state.series.voteAverage).round();
-    if (vote > 0) {
-      fields.add('$vote%');
-    }
+    fields.add(state.series.vote);
 
     list.add(
         Text(merge(fields), style: Theme.of(context).textTheme.titleSmall));
@@ -314,7 +312,7 @@ class TVEpisodeListWidget extends StatelessWidget {
           onTap: () => _onTap(context, e),
           leading: tileStill(context, e.smallImage),
           title: Text(e.title),
-          subtitle: Text(merge(['Episode ${e.episode}', ymd(e.date)]))))
+          subtitle: Text(merge(['Episode ${e.episode}', ymd(e.date), e.vote]))))
     ]);
   }
 
@@ -437,21 +435,15 @@ class TVEpisodeWidget extends ClientPage<TVEpisodeView> {
     final fields = <String>[];
 
     // runtime
-    if (state.episode.episode > 0) {
-      var hours = (state.episode.runtime / 60).floor();
-      var min = (state.episode.runtime % 60).floor();
-      fields.add('${hours}h ${min}m');
+    if (state.episode.runtime > 0) {
+      fields.add(Duration(minutes: state.episode.runtime).inHoursMinutes);
     }
 
-    fields.add('S${state.episode.season}E${state.episode.episode}');
+    fields.add(state.episode.se);
 
     fields.add(ymd(state.episode.date));
 
-    // vote%
-    int vote = (10 * state.episode.voteAverage).round();
-    if (vote > 0) {
-      fields.add('$vote%');
-    }
+    fields.add(state.episode.vote);
 
     list.add(
         Text(merge(fields), style: Theme.of(context).textTheme.titleSmall));
@@ -507,46 +499,6 @@ class MoviePlayer extends StatefulWidget {
 
   @override
   MoviePlayerState createState() => MoviePlayerState();
-}
-
-// TODO add location back to movie to avoid this hassle?
-class TVEpisodeMediaTrack implements MediaTrack {
-  TVEpisodeView view;
-
-  TVEpisodeMediaTrack(this.view);
-
-  @override
-  String get creator => '';
-
-  @override
-  String get album => '';
-
-  @override
-  String get image => view.episode.image;
-
-  @override
-  int get year => 0;
-
-  @override
-  String get title => view.episode.title;
-
-  @override
-  String get etag => view.episode.etag;
-
-  @override
-  int get size => view.episode.size;
-
-  @override
-  int get number => 0;
-
-  @override
-  int get disc => 0;
-
-  @override
-  String get date => view.episode.date;
-
-  @override
-  String get location => view.location;
 }
 
 class MoviePlayerState extends State<MoviePlayer> {

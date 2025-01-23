@@ -26,11 +26,13 @@ import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/player.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/dialog.dart';
 import 'package:takeout_watch/list.dart';
 import 'package:takeout_watch/media.dart';
 import 'package:takeout_watch/nav.dart';
+import 'package:takeout_watch/people.dart';
 import 'package:takeout_watch/settings.dart';
 
 class FilmPage extends StatelessWidget {
@@ -108,9 +110,9 @@ class MoviePage extends ClientPage<MovieView> {
             onSelected: onRelated),
       if (state.hasStarring())
         MovieEntry(
-          icon: const Icon(Icons.people),
-          title: context.strings.starringLabel,
-          onSelected: onStarring),
+            icon: const Icon(Icons.people),
+            title: context.strings.starringLabel,
+            onSelected: onStarring),
     ];
     return Scaffold(
         body: RefreshIndicator(
@@ -137,7 +139,7 @@ class MoviePage extends ClientPage<MovieView> {
 
   void onPlay(BuildContext context, MovieView state) {
     Navigator.push(context,
-        CupertinoPageRoute<void>(builder: (_) => VideoPlayerPage(state)));
+        CupertinoPageRoute<void>(builder: (_) => _VideoPlayerPage(state)));
   }
 
   void onResume(BuildContext context, MovieView state) {
@@ -147,7 +149,7 @@ class MoviePage extends ClientPage<MovieView> {
     Navigator.push(
         context,
         CupertinoPageRoute<void>(
-            builder: (_) => VideoPlayerPage(state, startOffset: startOffset)));
+            builder: (_) => _VideoPlayerPage(state, startOffset: startOffset)));
   }
 
   void onGenres(BuildContext context, MovieView state) {
@@ -170,7 +172,9 @@ class MoviePage extends ClientPage<MovieView> {
         context,
         CupertinoPageRoute<void>(
             builder: (_) => PeoplePage(
-                context.strings.starringLabel, state.starringPeople())));
+                context.strings.starringLabel,
+                state.starringPeople(),
+                (context, media) => _onDownload(context, media as Movie))));
   }
 }
 
@@ -200,16 +204,16 @@ class MoviesPage extends StatelessWidget {
   }
 }
 
-class VideoPlayerPage extends StatelessWidget {
+class _VideoPlayerPage extends StatelessWidget {
   final MovieView state;
   final Duration? startOffset;
 
-  const VideoPlayerPage(this.state, {this.startOffset, super.key});
+  const _VideoPlayerPage(this.state, {this.startOffset});
 
   @override
   Widget build(BuildContext context) {
     return VideoPlayer(
-      state,
+      MovieMediaTrack(state),
       startOffset: startOffset,
       mediaTrackResolver: context.read<MediaTrackResolver>(),
       tokenRepository: context.read<TokenRepository>(),
@@ -282,54 +286,5 @@ void _onDownload(BuildContext context, Movie movie) {
         }
       }
     });
-  }
-}
-
-class PeoplePage extends StatelessWidget {
-  final String title;
-  final List<Person> people;
-
-  const PeoplePage(this.title, this.people, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: RotaryList<Person>(people,
-            title: title, tileBuilder: personTile));
-  }
-
-  Widget personTile(BuildContext context, Person person) {
-    return ListTile(
-        leading: const Icon(Icons.person),
-        title: Text(person.name),
-        onTap: () => onPerson(context, person));
-  }
-
-  void onPerson(BuildContext context, Person person) {
-    Navigator.push(
-        context, CupertinoPageRoute<void>(builder: (_) => ProfilePage(person)));
-  }
-}
-
-class ProfilePage extends ClientPage<ProfileView> {
-  final Person person;
-
-  ProfilePage(this.person, {super.key});
-
-  @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.profile(person.id, ttl: ttl);
-  }
-
-  @override
-  Widget page(BuildContext context, ProfileView state) {
-    final movies = <Movie>[];
-    if (state.movies.starring.isNotEmpty) {
-      movies.addAll(state.movies.starring);
-    }
-    return MediaPage(movies,
-        title: state.person.name,
-        onLongPress: (context, entry) => _onDownload(context, entry as Movie),
-        onTap: (context, entry) => _onMovie(context, entry as Movie));
   }
 }

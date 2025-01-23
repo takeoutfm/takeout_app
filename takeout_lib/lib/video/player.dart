@@ -17,7 +17,6 @@
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -25,8 +24,7 @@ import 'package:takeout_lib/tokens/repository.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayer extends StatefulWidget {
-  final MovieView state;
-  final MediaTrack movie;
+  final MediaTrack media;
   final MediaTrackResolver mediaTrackResolver;
   final TokenRepository tokenRepository;
   final SettingsRepository settingsRepository;
@@ -36,7 +34,7 @@ class VideoPlayer extends StatefulWidget {
   final bool fullScreenByDefault;
   final void Function(Duration, Duration)? onPause;
 
-  VideoPlayer(this.state,
+  const VideoPlayer(this.media,
       {required this.mediaTrackResolver,
       required this.tokenRepository,
       required this.settingsRepository,
@@ -45,8 +43,7 @@ class VideoPlayer extends StatefulWidget {
       this.allowedScreenSleep = false,
       this.fullScreenByDefault = true,
       this.onPause,
-      super.key})
-      : movie = _MovieMediaTrack(state);
+      super.key});
 
   @override
   State<VideoPlayer> createState() => VideoPlayerState();
@@ -70,13 +67,14 @@ class VideoPlayerState extends State<VideoPlayer> {
   }
 
   Future<void> prepareController() async {
-    final uri = await widget.mediaTrackResolver.resolve(widget.movie);
+    final uri = await widget.mediaTrackResolver.resolve(widget.media);
     String url = uri.toString();
     if (url.startsWith('/api/')) {
       url = '${widget.settingsRepository.settings?.endpoint}$url';
     }
     final headers = widget.tokenRepository.addMediaToken();
-    final controller = VideoPlayerController.networkUrl(Uri.parse(url), httpHeaders: headers);
+    final controller =
+        VideoPlayerController.networkUrl(Uri.parse(url), httpHeaders: headers);
     await controller.initialize();
     controller.addListener(() {
       final value = controller.value;
@@ -105,44 +103,4 @@ class VideoPlayerState extends State<VideoPlayer> {
     chewieController = controller;
     return Chewie(controller: controller);
   }
-}
-
-// TODO add location back to movie to avoid this hassle?
-class _MovieMediaTrack implements MediaTrack {
-  MovieView view;
-
-  _MovieMediaTrack(this.view);
-
-  @override
-  String get creator => '';
-
-  @override
-  String get album => '';
-
-  @override
-  String get image => view.movie.image;
-
-  @override
-  int get year => 0;
-
-  @override
-  String get title => view.movie.title;
-
-  @override
-  String get etag => view.movie.etag;
-
-  @override
-  int get size => view.movie.size;
-
-  @override
-  int get number => 0;
-
-  @override
-  int get disc => 0;
-
-  @override
-  String get date => view.movie.date;
-
-  @override
-  String get location => view.location;
 }
