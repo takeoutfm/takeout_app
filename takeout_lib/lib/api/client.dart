@@ -695,8 +695,15 @@ class TakeoutClient implements ClientProvider {
 
   /// GET /api/tv
   @override
+  Future<TVListView> tvList({Duration? ttl}) async =>
+      _retry<TVListView>(() => _getJson('/api/tv', ttl: ttl)
+          .then((j) => TVListView.fromJson(j))
+          .catchError((Object e) => Future<TVListView>.error(e)));
+
+  /// GET /api/tv/series
+  @override
   Future<TVShowsView> shows({Duration? ttl}) async =>
-      _retry<TVShowsView>(() => _getJson('/api/tv', ttl: ttl)
+      _retry<TVShowsView>(() => _getJson('/api/tv/series', ttl: ttl)
           .then((j) => TVShowsView.fromJson(j))
           .catchError((Object e) => Future<TVShowsView>.error(e)));
 

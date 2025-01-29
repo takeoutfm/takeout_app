@@ -140,6 +140,10 @@ class ClientCubit extends Cubit<ClientState> {
       _doit<TVShowsView>(({Duration? ttl}) => repository.shows(ttl: ttl),
           ttl: ttl);
 
+  void tvList({Duration? ttl}) =>
+      _doit<TVListView>(({Duration? ttl}) => repository.tvList(ttl: ttl),
+          ttl: ttl);
+
   void tvSeries(int id, {Duration? ttl}) =>
       _doit<TVSeriesView>(({Duration? ttl}) => repository.tvSeries(id, ttl: ttl),
           ttl: ttl);

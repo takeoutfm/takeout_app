@@ -162,6 +162,10 @@ class ClientRepository {
     return _provider.shows(ttl: ttl);
   }
 
+  Future<TVListView> tvList({Duration? ttl = Duration.zero}) async {
+    return _provider.tvList(ttl: ttl);
+  }
+
   Future<TVSeriesView> tvSeries(int id, {Duration? ttl = Duration.zero}) async {
     return _provider.tvSeries(id, ttl: ttl);
   }

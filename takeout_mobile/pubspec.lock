@@ -957,7 +957,7 @@ packages:
       path: "../takeout_lib"
       relative: true
     source: path
-    version: "0.23.0"
+    version: "0.23.2"
   term_glyph:
     dependency: transitive
     description:

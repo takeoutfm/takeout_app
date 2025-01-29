@@ -1,3 +1,7 @@
+## 0.23.2
+
+- Updates for tvList vs tvSeries 
+
 ## 0.23.1
 
 - Watch support for TV shows

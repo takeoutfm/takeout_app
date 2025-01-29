@@ -69,6 +69,8 @@ abstract class ClientProvider {
 
   Future<TVShowsView> shows({Duration? ttl});
 
+  Future<TVListView> tvList({Duration? ttl});
+
   Future<TVSeriesView> tvSeries(int id, {Duration? ttl});
 
   Future<Spiff> tvSeriesPlaylist(int id, {Duration? ttl});

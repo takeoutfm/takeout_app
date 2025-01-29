@@ -1198,6 +1198,19 @@ class TVEpisode extends DownloadIdentifier
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
+class TVListView {
+  final List<TVSeries> series;
+  final List<TVEpisode> episodes;
+
+  TVListView({required this.series, required this.episodes});
+
+  factory TVListView.fromJson(Map<String, dynamic> json) =>
+      _$TVListViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TVListViewToJson(this);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
 class TVShowsView {
   final List<TVSeries> series;
 
