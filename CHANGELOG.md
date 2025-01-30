@@ -1,3 +1,7 @@
+## 0.23.3
+
+- Add season divider
+
 ## 0.23.2
 
 - Updates for tvList vs tvSeries 

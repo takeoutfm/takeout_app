@@ -32,8 +32,8 @@ import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
-import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -307,13 +307,29 @@ class TVEpisodeListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      ..._episodes.map((e) => ListTile(
+    return Column(children: _tiles(context));
+  }
+
+  List<Widget> _tiles(BuildContext context) {
+    final list = <Widget>[];
+    var season = 0;
+    for (var e in _episodes) {
+      final tile = ListTile(
           onTap: () => _onTap(context, e),
           leading: tileStill(context, e.smallImage),
           title: Text(e.title),
-          subtitle: Text(merge(['Episode ${e.episode}', ymd(e.date), e.vote]))))
-    ]);
+          subtitle: Text(merge([
+            context.strings.episodeLabel(e.episode),
+            ymd(e.date),
+            e.vote,
+          ])));
+      if (e.season != season) {
+        season = e.season;
+        list.add(largeHeading(context, context.strings.seasonLabel(season)));
+      }
+      list.add(tile);
+    }
+    return list;
   }
 
   void _onTap(BuildContext context, TVEpisode e) {

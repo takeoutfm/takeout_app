@@ -61,11 +61,23 @@ Widget headingButton(String text, VoidCallback onPressed) {
 }
 
 Widget smallHeading(BuildContext context, String text) {
+  return textHeading(context, text, Theme.of(context).textTheme.bodySmall);
+}
+
+Widget mediumHeading(BuildContext context, String text) {
+  return textHeading(context, text, Theme.of(context).textTheme.bodyMedium);
+}
+
+Widget largeHeading(BuildContext context, String text) {
+  return textHeading(context, text, Theme.of(context).textTheme.bodyLarge);
+}
+
+Widget textHeading(BuildContext context, String text, TextStyle? style) {
   return SizedBox(
       width: double.infinity,
       child: Container(
           padding: const EdgeInsets.fromLTRB(17, 11, 0, 11),
           child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(text, style: Theme.of(context).textTheme.bodySmall))));
+              child: Text(text, style: style))));
 }

@@ -183,6 +183,26 @@
     "placeholders": {
       "count": {}
     }
+  },
+  "episodeLabel": "Episode {num}",
+  "@episodeLabel": {
+    "placeholders": {
+      "num": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
+  "seasonLabel": "Season {num}",
+  "@seasonLabel": {
+    "placeholders": {
+      "num": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
   }
 }
 

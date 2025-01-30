@@ -46,8 +46,8 @@ android {
         applicationId "com.takeoutfm.mobile"
         minSdkVersion 23
         targetSdkVersion 34
-        versionCode 2302 // #versionCode#
-        versionName "0.23.2" // #version#
+        versionCode 2303 // #versionCode#
+        versionName "0.23.3" // #version#
     }
 
     signingConfigs {
