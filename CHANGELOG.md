@@ -1,3 +1,7 @@
+## 0.23.4
+
+- Fix notification and manifest/AudioService config
+
 ## 0.23.3
 
 - Add season divider

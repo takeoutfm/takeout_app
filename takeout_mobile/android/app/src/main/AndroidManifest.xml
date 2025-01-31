@@ -1,8 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -45,35 +47,35 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAY_ALBUM"/>
+                <action android:name="com.takeoutfm.action.PLAY_ALBUM" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAY_SONG"/>
+                <action android:name="com.takeoutfm.action.PLAY_SONG" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAY_RADIO"/>
+                <action android:name="com.takeoutfm.action.PLAY_RADIO" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAY_SEARCH"/>
+                <action android:name="com.takeoutfm.action.PLAY_SEARCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAYER_PLAY"/>
+                <action android:name="com.takeoutfm.action.PLAYER_PLAY" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAYER_PAUSE"/>
+                <action android:name="com.takeoutfm.action.PLAYER_PAUSE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAYER_NEXT"/>
+                <action android:name="com.takeoutfm.action.PLAYER_NEXT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.takeoutfm.action.PLAY_MOVIE"/>
+                <action android:name="com.takeoutfm.action.PLAY_MOVIE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -81,7 +83,8 @@
         <service
             android:name="com.ryanheise.audioservice.AudioService"
             android:exported="true"
-            android:foregroundServiceType="mediaPlayback">
+            android:foregroundServiceType="mediaPlayback"
+            tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>

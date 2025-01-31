@@ -55,6 +55,7 @@ clean:
 
 tag:
 	git tag --list | grep -q v${VERSION} || git tag v${VERSION}
+	git push origin
 	git push origin v${VERSION}
 
 assets:

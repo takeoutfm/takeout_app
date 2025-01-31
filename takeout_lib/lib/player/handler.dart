@@ -163,7 +163,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           androidNotificationIcon: 'drawable/ic_stat_name',
           androidNotificationChannelId: 'com.defsub.takeout.channel.audio',
           androidNotificationChannelName: 'Audio playback',
-          androidNotificationOngoing: true,
+          androidNotificationOngoing: false,
+          androidStopForegroundOnPause: false,
           androidBrowsableRootExtras: rootExtras,
           fastForwardInterval:
               fastForwardInterval ?? const Duration(seconds: 30),
