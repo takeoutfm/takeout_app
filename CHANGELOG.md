@@ -1,3 +1,9 @@
+## 0.23.5
+
+- Update foreground service
+- Update just\_audio
+- Fix icy streams to not route through cache
+
 ## 0.23.4
 
 - Fix notification and manifest/AudioService config

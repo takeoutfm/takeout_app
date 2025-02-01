@@ -25,7 +25,7 @@ dependencies:
   hydrated_bloc: ^10.0.0
   logging: ^1.2.0
   json_annotation: ^4.9.0
-  just_audio: ^0.9.40
+  just_audio: ^0.9.44
   nested: ^1.0.0
   octo_image: ^2.0.0
   palette_generator: ^0.3.3+3

@@ -161,10 +161,10 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
             ),
         config: AudioServiceConfig(
           androidNotificationIcon: 'drawable/ic_stat_name',
-          androidNotificationChannelId: 'com.defsub.takeout.channel.audio',
-          androidNotificationChannelName: 'Audio playback',
-          androidNotificationOngoing: false,
-          androidStopForegroundOnPause: false,
+          androidNotificationChannelId: 'com.takeoutfm.channel.audio',
+          androidNotificationChannelName: 'Takeout Audio',
+          androidNotificationOngoing: true,
+          androidStopForegroundOnPause: true,
           androidBrowsableRootExtras: rootExtras,
           fastForwardInterval:
               fastForwardInterval ?? const Duration(seconds: 30),
@@ -393,7 +393,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     final entry = _mapped[item.id];
     IndexedAudioSource? audioSource;
 
-    if (entry != null) {
+    if (entry != null && entry.size > 0) {
       File? cacheFile = _checkPlaybackCache(item, entry, autoCache ?? false);
       if (cacheFile != null) {
         // only create a caching audio source to create a new cache file
