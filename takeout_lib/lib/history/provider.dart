@@ -25,7 +25,11 @@ import 'model.dart';
 
 abstract class HistoryProvider {
   Future<History> add(
-      {String? search, Spiff? spiff, MediaTrack? track, DateTime? dateTime});
+      {String? search,
+      Spiff? spiff,
+      MediaTrack? track,
+      StreamTrack? streamTrack,
+      DateTime? dateTime});
 
   Future<History> get();
 
@@ -45,6 +49,7 @@ class JsonHistoryProvider implements HistoryProvider {
     String? search,
     Spiff? spiff,
     MediaTrack? track,
+    StreamTrack? streamTrack,
     DateTime? dateTime,
   }) async {
     dateTime ??= DateTime.now();
@@ -78,6 +83,16 @@ class JsonHistoryProvider implements HistoryProvider {
               track.etag, 1, dateTime)
           : entry.copyWith(count: entry.count + 1, dateTime: dateTime);
     }
+    if (streamTrack != null) {
+      final last = history.lastStreamHistory;
+      if (last != null && last.name == streamTrack.name && last.title == streamTrack.title) {
+        final entry = last.copyWith(dateTime);
+        history.stream[history.stream.length - 1] = entry;
+      } else {
+        final entry = StreamHistory.fromTrack(streamTrack, dateTime);
+        history.stream.add(entry);
+      }
+    }
     _prune(history);
     await _save(_file, history);
     return history;
@@ -95,7 +110,7 @@ class JsonHistoryProvider implements HistoryProvider {
 
   Future<History> _load(File file) async {
     if (file.existsSync() == false || file.lengthSync() == 0) {
-      return History(spiffs: [], searches: [], tracks: {});
+      return History(spiffs: [], searches: [], tracks: {}, stream: []);
     }
 
     final json = await file
@@ -105,17 +120,23 @@ class JsonHistoryProvider implements HistoryProvider {
     if (json.containsKey('Tracks') == false) {
       json['Tracks'] = <String, TrackHistory>{};
     }
+    // Allow for older version w/o radio
+    if (json.containsKey('Stream') == false) {
+      json['Stream'] = <StreamHistory>[];
+    }
 
     final history = History.fromJson(json);
     // load with oldest first
     history.searches.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     history.spiffs.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    history.stream.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     return history;
   }
 
   static const maxSearchHistory = 25;
   static const maxSpiffHistory = 25;
   static const maxTrackHistory = 500;
+  static const maxRadioHistory = 100;
 
   void _prune(History history) {
     if (history.searches.length > maxSearchHistory) {
@@ -138,6 +159,10 @@ class JsonHistoryProvider implements HistoryProvider {
         }
       }
     }
+    if (history.stream.length > maxRadioHistory) {
+      // remove oldest first
+      history.stream.removeRange(0, history.stream.length - maxRadioHistory);
+    }
   }
 
   Future<void> _save(File file, History history) async {
@@ -155,6 +180,7 @@ class JsonHistoryProvider implements HistoryProvider {
     history.searches.clear();
     history.spiffs.clear();
     history.tracks.clear();
+    history.stream.clear();
     await _save(_file, history);
     return history;
   }

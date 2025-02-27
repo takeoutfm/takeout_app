@@ -15,22 +15,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/db/artist.dart';
 
 class Search {
   final ClientRepository clientRepository;
-  final ArtistRepository _artistRepository;
+  final ArtistRepository artistRepository;
 
   Search({required this.clientRepository, ArtistRepository? artistRepository})
-      : _artistRepository = artistRepository ??
+      : artistRepository = artistRepository ??
             ArtistRepository(clientRepository: clientRepository);
 
   Iterable<String> findArtistsByName(String query) {
-    return _artistRepository.findByName(query);
+    return artistRepository.findByName(query);
+  }
+
+  Artist? findArtist(String name) {
+    return artistRepository.findArtist(name);
   }
 
   void reload() {
-    _artistRepository.reload();
+    artistRepository.reload();
   }
 }

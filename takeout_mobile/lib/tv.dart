@@ -302,8 +302,9 @@ class TVEpisodeGridWidget extends StatelessWidget {
 
 class TVEpisodeListWidget extends StatelessWidget {
   final List<TVEpisode> _episodes;
+  final bool showSeasons;
 
-  const TVEpisodeListWidget(this._episodes, {super.key});
+  const TVEpisodeListWidget(this._episodes, {super.key, this.showSeasons = true});
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +324,7 @@ class TVEpisodeListWidget extends StatelessWidget {
             ymd(e.date),
             e.vote,
           ])));
-      if (e.season != season) {
+      if (showSeasons && e.season != season) {
         season = e.season;
         list.add(largeHeading(context, context.strings.seasonLabel(season)));
       }

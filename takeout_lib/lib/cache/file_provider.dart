@@ -17,7 +17,7 @@
 
 import 'dart:io';
 
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 
 abstract class FileIdentifier {
@@ -45,7 +45,7 @@ abstract class FileCacheProvider {
 }
 
 class DirectoryFileCache implements FileCacheProvider {
-  static final log = Logger('DirectoryFileCache');
+  static final log = Logger();
 
   final Directory directory;
   final Map<String, File> _entries = {};
@@ -57,7 +57,7 @@ class DirectoryFileCache implements FileCacheProvider {
         directory.createSync(recursive: true);
       }
     } catch (e, stack) {
-      log.warning(directory, e, stack);
+      log.e('create failed: ${directory.path}', error: e, stackTrace: stack);
     }
     _initialized = _initialize();
   }
@@ -113,7 +113,7 @@ class DirectoryFileCache implements FileCacheProvider {
   void _remove(String key, {bool delete = true}) {
     final file = _entries.remove(key);
     if (delete) {
-      log.fine('removing $file');
+      log.i('removing $file');
       file?.deleteSync();
     }
   }

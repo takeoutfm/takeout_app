@@ -21,7 +21,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:crypto/crypto.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
 class SpiffCacheState {
@@ -95,7 +95,7 @@ abstract class SpiffCache {
 }
 
 class DirectorySpiffCache implements SpiffCache {
-  static final log = Logger('DirectorySpiffCache');
+  static final log = Logger();
 
   final Directory directory;
   final Map<String, Spiff> _cache = {};
@@ -107,7 +107,7 @@ class DirectorySpiffCache implements SpiffCache {
         directory.createSync(recursive: true);
       }
     } catch (e, stack) {
-      log.warning(directory, e, stack);
+      log.e('create failed: ${directory.path}', error: e, stackTrace: stack);
     }
     _initialized = _initialize();
   }
@@ -120,7 +120,7 @@ class DirectorySpiffCache implements SpiffCache {
         await _add(spiff);
       } else {
         // corrupt? delete it
-        log.warning('spiff deleting $file');
+        log.w('spiff deleting $file');
         file.deleteSync();
       }
     });
@@ -131,8 +131,8 @@ class DirectorySpiffCache implements SpiffCache {
       return Spiff.fromJson(
               jsonDecode(file.readAsStringSync()) as Map<String, dynamic>)
           .copyWith(lastModified: file.lastModifiedSync());
-    } on FormatException {
-      log.warning('failed parsing $file with "${file.readAsStringSync()}"');
+    } on FormatException catch (e) {
+      log.e('parse failed: $file', error: e);
       return null;
     }
   }
@@ -154,12 +154,12 @@ class DirectorySpiffCache implements SpiffCache {
 
   Future<File?> _save(String key, Spiff spiff) async {
     final data = jsonEncode(spiff.toJson());
+    final file = _cacheFile(key);
     try {
-      File file = _cacheFile(key);
       await file.writeAsString(data);
       return file;
     } catch (e) {
-      log.warning(e);
+      log.e('save failed: ${file.path}', error: e);
       return Future.error(e);
     }
   }

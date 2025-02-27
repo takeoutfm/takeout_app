@@ -22,6 +22,7 @@ import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/track_repository.dart';
 import 'package:takeout_lib/client/repository.dart';
+import 'package:takeout_lib/db/search.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/media_type/repository.dart';
@@ -48,6 +49,7 @@ class MediaRepository {
       required SubscribedRepository subscribedRepository,
       required OffsetCacheRepository offsetCacheRepository,
       required TrackCacheRepository trackCacheRepository,
+      required Search searchRepository,
       MediaProvider? provider})
       : _provider = provider ??
             DefaultMediaProvider(
@@ -59,6 +61,7 @@ class MediaRepository {
               subscribedRepository,
               offsetCacheRepository,
               trackCacheRepository,
+              searchRepository,
             );
 
   void init(MediaPlayer player) {

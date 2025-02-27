@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
-import 'package:storage_space/storage_space.dart';
+import 'package:logger/logger.dart';
+import 'package:storage_space_fork/storage_space_fork.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';
@@ -48,6 +49,8 @@ Future<void> _pruneSpiffs(
   required SpiffCacheCubit spiffCache,
   required TrackCacheCubit trackCache,
 }) async {
+  final log = Logger();
+
   int spiffsTotal = spiffs.fold(0, (total, spiff) => spiff.size + total);
 
   final list = List<Spiff>.from(spiffs);
@@ -55,23 +58,25 @@ Future<void> _pruneSpiffs(
   list.sort(
       (a, b) => (a.lastModified ?? epoch).compareTo(b.lastModified ?? epoch));
 
-  final storage = await getStorageSpace(
+  final space = await getStorageSpace(
       lowOnSpaceThreshold: 500 * megabyte, fractionDigits: 1);
+  log.i('spiff cache is ${storage(spiffsTotal)}, device using ${storage(space.used)} of ${storage(space.total)}');
 
   // walk through the oldest spiffs first and remove until the threshold is met
   //
   // keep the track cache usage to be no more than 80% of the total usage.
   // if this is exceeded, full spiffs + tracks are removed until
   // the usage drops below 80%. The actual percentage is a user setting.
-  var purgeAmount = spiffsTotal - ((cacheUsageThreshold / 100) * storage.used);
+  var purgeAmount = spiffsTotal - ((cacheUsageThreshold / 100) * space.used);
+  if (purgeAmount > 0) {
+    log.i('need to purge ${storage(purgeAmount.toInt())}');
+  }
   while (purgeAmount > 0 && list.isNotEmpty) {
     final spiff = list.first;
-
     // TODO not all tracks may be cached so the actual amount removed could be incorrect
     purgeAmount -= spiff.size;
     trackCache.removeIds(spiff.playlist.tracks);
     spiffCache.remove(spiff);
-
     list.removeAt(0);
   }
 }

@@ -25,6 +25,7 @@ import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_mobile/tv.dart';
 
 import 'artists.dart';
 import 'nav.dart';
@@ -126,6 +127,11 @@ class SearchWidget extends ClientPage<SearchView> {
                 Column(children: [
                   heading(context.strings.moviesLabel),
                   MovieListWidget(state.movies!),
+                ]),
+              if (state.tvEpisodes != null && state.tvEpisodes!.isNotEmpty)
+                Column(children: [
+                  heading(context.strings.tvEpisodesLabel),
+                  TVEpisodeListWidget(state.tvEpisodes!, showSeasons: false),
                 ]),
               if (state.series != null && state.series!.isNotEmpty)
                 Column(children: [

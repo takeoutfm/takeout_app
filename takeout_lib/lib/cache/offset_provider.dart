@@ -18,7 +18,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:takeout_lib/api/model.dart';
 
 import 'offset_repository.dart';
@@ -45,7 +45,7 @@ abstract class OffsetCache {
 }
 
 class OffsetFileCache implements OffsetCache {
-  static final log = Logger('OffsetFileCache');
+  static final log = Logger();
 
   final Directory directory;
   final Map<String, Offset> _entries = {};
@@ -57,7 +57,7 @@ class OffsetFileCache implements OffsetCache {
         directory.createSync(recursive: true);
       }
     } catch (e, stack) {
-      log.warning(directory, e, stack);
+      log.e('create failed: ${directory.path}', error: e, stackTrace: stack);
     }
     _initialized = _initialize();
   }
@@ -70,7 +70,7 @@ class OffsetFileCache implements OffsetCache {
         await _put(offset);
       } else {
         // corrupt? delete it
-        log.warning('offset deleting $file');
+        log.w('offset deleting $file');
         file.deleteSync();
       }
     });
@@ -87,17 +87,16 @@ class OffsetFileCache implements OffsetCache {
     try {
       return Offset.fromJson(
           jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
-    } on FormatException {
-      log.warning(
-          '_decode failed to parse $file with "${file.readAsStringSync()}"');
+    } on FormatException catch (e) {
+      log.e('parse failed: ${file.path}', error: e);
       return null;
     }
   }
 
   Future<File> _save(Offset offset) async {
     File file = _cacheFile(offset.etag);
-    log.fine(
-        'saving ${offset.etag} ${offset.position()} ${offset.duration} to $file');
+    log.d(
+        'offset ${offset.etag} ${offset.position()} ${offset.duration}');
     final data = jsonEncode(offset.toJson());
     return file.writeAsString(data);
   }
@@ -124,7 +123,7 @@ class OffsetFileCache implements OffsetCache {
       final exists = file.existsSync();
       if (exists) {
         if (file.isExpired(ttl)) {
-          log.fine('deleting expired offset $file');
+          log.d('offset expired ${file.path}');
           _remove(key);
         } else {
           return _entries[key];

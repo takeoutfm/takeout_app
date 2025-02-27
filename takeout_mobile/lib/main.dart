@@ -21,30 +21,29 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
+import 'package:takeout_lib/context/bloc.dart';
+import 'package:takeout_lib/empty.dart';
+import 'package:takeout_lib/log/basic_printer.dart';
+import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/history/widget.dart';
 import 'package:takeout_mobile/player/widget.dart';
-import 'package:takeout_lib/context/bloc.dart';
-import 'package:takeout_lib/empty.dart';
-import 'package:takeout_lib/player/player.dart';
 
 import 'artists.dart';
 import 'home.dart';
 import 'login.dart';
+import 'nav.dart';
 import 'radio.dart';
 import 'search.dart';
-import 'nav.dart';
 
 void main() async {
   // setup the logger
-  Logger.root.level = Level.FINE;
-  Logger.root.onRecord.listen((record) {
-    // ignore: avoid_print
-    print('${record.loggerName}: ${record.message}');
-  });
+  Logger.level = Level.debug;
+  Logger.defaultFilter = () => ProductionFilter();
+  Logger.defaultPrinter = () => BasicPrinter();
 
   WidgetsFlutterBinding.ensureInitialized();
 

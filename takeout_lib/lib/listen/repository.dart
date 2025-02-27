@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:takeout_lib/connectivity/repository.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -25,13 +26,16 @@ class ListenRepository {
   final ListenProvider _provider;
   final SettingsRepository settingsRepository;
   final ClientRepository clientRepository;
+  final ConnectivityRepository connectivityRepository;
 
   ListenRepository({
     required this.settingsRepository,
     required this.clientRepository,
+    required this.connectivityRepository,
     ListenProvider? provider,
   }) : _provider = provider ??
-            DefaultListenProvider(settingsRepository, clientRepository);
+            DefaultListenProvider(
+                settingsRepository, clientRepository, connectivityRepository);
 
   Future<void> playingNow(MediaTrack track) async {
     return _provider.playingNow(track);

@@ -44,10 +44,10 @@ class RadioPage extends ClientPage<RadioView> {
   @override
   Widget page(BuildContext context, RadioView state) {
     final entries = [
+      RadioEntry(context.strings.streamsLabel, () => state.stream ?? []),
       RadioEntry(context.strings.genresLabel, () => state.genre ?? []),
       RadioEntry(context.strings.decadesLabel, () => state.period ?? []),
       RadioEntry(context.strings.otherLabel, () => state.other ?? []),
-      RadioEntry(context.strings.streamsLabel, () => state.stream ?? []),
     ];
     return Scaffold(
         body: RefreshIndicator(

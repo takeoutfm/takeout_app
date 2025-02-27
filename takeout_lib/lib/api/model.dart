@@ -211,6 +211,8 @@ class SearchView {
   final List<Series>? series;
   final List<Episode>? episodes;
   final List<Station>? stations;
+  @JsonKey(name: 'TVEpisodes')
+  final List<TVEpisode>? tvEpisodes;
   final String query;
   final int hits;
 
@@ -222,6 +224,7 @@ class SearchView {
       this.series = const [],
       this.episodes = const [],
       this.stations = const [],
+      this.tvEpisodes = const [],
       required this.query,
       required this.hits});
 
@@ -534,7 +537,7 @@ class Station {
 
   Map<String, dynamic> toJson() => _$StationToJson(this);
 
-  String get reference => '/music/radio/stations/$id';
+  String get reference => '/music/stations/$id';
 }
 
 abstract class ArtistTracksView {

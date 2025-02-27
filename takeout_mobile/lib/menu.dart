@@ -141,6 +141,9 @@ class PopupItem {
   PopupItem.trackPlaylist(BuildContext context, MenuCallback onSelected)
       : this(const Icon(Icons.playlist_play), context.strings.trackPlaylist,
             onSelected);
+
+  PopupItem.streamHistory(BuildContext context, MenuCallback onSelected)
+      : this(const Icon(Icons.radio), context.strings.streamHistory, onSelected);
 }
 
 Widget popupMenu(BuildContext context, List<PopupItem> items) {

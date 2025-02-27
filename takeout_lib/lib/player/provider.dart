@@ -18,6 +18,7 @@
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
@@ -32,10 +33,12 @@ typedef IndexCallback = void Function(Spiff, bool);
 typedef PositionCallback = void Function(Spiff, Duration, Duration, bool);
 typedef ListenCallback = void Function(Spiff, Duration, Duration, bool);
 typedef StoppedCallback = void Function(Spiff);
-typedef TrackChangeCallback = void Function(Spiff, int index, {String? title});
+typedef TrackChangeCallback = void Function(Spiff, int index,
+    {String? title, String? image});
 typedef TrackEndCallback = void Function(
     Spiff, int index, Duration, Duration, bool);
 typedef RepeatModeChangeCallback = void Function(Spiff, RepeatMode);
+typedef StreamTrackChangeCallback = void Function(Spiff, StreamTrack);
 
 class PositionInterval {
   final int steps;
@@ -69,6 +72,7 @@ abstract class PlayerProvider {
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
+    required StreamTrackChangeCallback onStreamTrackChange,
     PositionInterval? positionInterval,
   });
 
@@ -118,27 +122,30 @@ class DefaultPlayerProvider implements PlayerProvider {
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
+    required StreamTrackChangeCallback onStreamTrackChange,
     PositionInterval? positionInterval,
   }) async {
     handler = await TakeoutPlayerHandler.create(
-        trackResolver: trackResolver,
-        tokenRepository: tokenRepository,
-        settingsRepository: settingsRepository,
-        offsetRepository: offsetRepository,
-        mediaRepository: mediaRepository,
-        positionSteps: positionInterval?.steps,
-        minPositionPeriod: positionInterval?.minPeriod,
-        maxPositionPeriod: positionInterval?.maxPeriod,
-        onPlay: onPlay,
-        onPause: onPause,
-        onStop: onStop,
-        onIndexChange: onIndexChange,
-        onPositionChange: onPositionChange,
-        onDurationChange: onDurationChange,
-        onListen: onListen,
-        onTrackChange: onTrackChange,
-        onTrackEnd: onTrackEnd,
-        onRepeatModeChange: onRepeatModeChange);
+      trackResolver: trackResolver,
+      tokenRepository: tokenRepository,
+      settingsRepository: settingsRepository,
+      offsetRepository: offsetRepository,
+      mediaRepository: mediaRepository,
+      positionSteps: positionInterval?.steps,
+      minPositionPeriod: positionInterval?.minPeriod,
+      maxPositionPeriod: positionInterval?.maxPeriod,
+      onPlay: onPlay,
+      onPause: onPause,
+      onStop: onStop,
+      onIndexChange: onIndexChange,
+      onPositionChange: onPositionChange,
+      onDurationChange: onDurationChange,
+      onListen: onListen,
+      onTrackChange: onTrackChange,
+      onTrackEnd: onTrackEnd,
+      onRepeatModeChange: onRepeatModeChange,
+      onStreamTrackChange: onStreamTrackChange,
+    );
   }
 
   @override

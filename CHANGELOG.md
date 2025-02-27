@@ -1,3 +1,18 @@
+## 0.24.0
+
+- Use Icy cover images if available
+- Keep history if Icy stream tracks
+- Show stream track history when playing Icy streams
+- Added stream history in menu of history/recent screen
+- Include TV Episodes in search results
+- Put streams first in radio lists
+- Add recent artists to Android Auto artists
+- Queue and retry ListenBrainz and Activity posts
+- Move player repeat button from last to first; only show for music
+- Fixed launcher icons
+- Use storage\_place\_fork
+- Fixe watch radio playback
+
 ## 0.23.5
 
 - Update foreground service

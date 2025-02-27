@@ -29,6 +29,10 @@ class ArtistRepository {
     return _provider.findByName(query);
   }
 
+  Artist? findArtist(String name) {
+    return _provider.findArtist(name);
+  }
+
   void reload() {
     _provider.reload();
   }
@@ -37,12 +41,14 @@ class ArtistRepository {
 abstract class ArtistProvider {
   Iterable<String> findByName(String query);
 
+  Artist? findArtist(String name);
+
   void reload();
 }
 
 class DefaultArtistProvider extends ArtistProvider {
   final ClientRepository clientRepository;
-  final artists = <Artist>[];
+  final artists = <String, Artist>{};
   final names = <String>[];
   final genres = <String, List<Artist>>{};
   final countries = <String, List<Artist>>{};
@@ -63,7 +69,7 @@ class DefaultArtistProvider extends ArtistProvider {
       genres.clear();
       countries.clear();
       for (var artist in view.artists) {
-        artists.add(artist);
+        artists[artist.name.toLowerCase()] = artist;
         names.add(artist.name);
         _updateMap(artist.genre, genres, artist);
         _updateMap(artist.country, countries, artist);
@@ -88,5 +94,10 @@ class DefaultArtistProvider extends ArtistProvider {
     query = query.toLowerCase();
     result.addAll(names.where((name) => name.toLowerCase().contains(query)));
     return result;
+  }
+
+  @override
+  Artist? findArtist(String name) {
+    return artists[name.toLowerCase()];
   }
 }

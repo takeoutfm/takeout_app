@@ -22,6 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/empty.dart';
+import 'package:takeout_lib/history/history.dart';
+import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/repeat.dart';
@@ -107,9 +109,13 @@ class PlayerWidget extends StatelessWidget {
   Widget playerImage(BuildContext context) {
     return BlocBuilder<Player, PlayerState>(
         buildWhen: (_, state) =>
-            state is PlayerLoad || state is PlayerIndexChange,
+            state is PlayerLoad ||
+            state is PlayerIndexChange ||
+            state is PlayerTrackChange,
         builder: (context, state) {
-          if (state is PlayerLoad || state is PlayerIndexChange) {
+          if (state is PlayerLoad ||
+              state is PlayerIndexChange ||
+              state is PlayerTrackChange) {
             final image = state.currentTrack?.image;
             return image != null
                 ? playerCover(context, image)
@@ -204,7 +210,10 @@ class PlayerWidget extends StatelessWidget {
         buildWhen: (_, state) =>
             state is PlayerLoad || state is PlayerIndexChange,
         builder: (context, state) {
-          if (state.spiff.isStream() || state.spiff.length == 1) {
+          if (state.spiff.isStream()) {
+            return _streamTrackList(context);
+          }
+          if (state.spiff.length == 1) {
             // hide track list
             return const EmptyWidget();
           }
@@ -232,6 +241,7 @@ class PlayerWidget extends StatelessWidget {
     final player = context.player;
     final isPodcast = state.spiff.isPodcast();
     final isStream = state.spiff.isStream();
+    final isMusic = state.spiff.isMusic();
     final playing = state.playing;
     final buffering = state.buffering;
     return Container(
@@ -239,7 +249,7 @@ class PlayerWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (!isStream) _invisibleButton(),
+            if (isMusic) _repeatButton(),
             if (!isStream)
               IconButton(
                 icon: const Icon(Icons.skip_previous),
@@ -282,7 +292,7 @@ class PlayerWidget extends StatelessWidget {
                 icon: const Icon(Icons.skip_next),
                 onPressed: state.hasNext ? () => player.skipToNext() : null,
               ),
-            if (!isStream) _repeatButton(),
+            if (isMusic) _invisibleButton(),
           ],
         ));
   }
@@ -334,6 +344,28 @@ class PlayerWidget extends StatelessWidget {
                 _onArtist(context, tracks[index].creator);
               }))
     ]);
+  }
+
+  Widget _streamTrackList(BuildContext context) {
+    return Builder(builder: (context) {
+      final history = context.watch<HistoryCubit>();
+      final player = context.watch<Player>();
+      final tracks = List<StreamHistory>.from(history.state.history.stream);
+      tracks.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+      final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
+      return Column(children: [
+        ...List.generate(
+            tracks.length,
+            (index) => CoverTrackListTile.streamTrack(
+                  context,
+                  tracks[index],
+                  showCover: !sameArtwork,
+                  selected:
+                      player.state.currentTrack?.title == tracks[index].title,
+                  dateTime: tracks[index].dateTime,
+                ))
+      ]);
+    });
   }
 
   Widget? _cachedIcon() {

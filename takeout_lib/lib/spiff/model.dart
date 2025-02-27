@@ -118,9 +118,9 @@ class Spiff {
   // MediaType get mediaType {
   //   if (type.isEmpty) {
   //     FIXME remove after transition to require type is done
-      // return MediaType.music;
-    // }
-    // return MediaType.of(type);
+  // return MediaType.music;
+  // }
+  // return MediaType.of(type);
   // }
 
   factory Spiff.fromJson(Map<String, dynamic> json) {
@@ -236,13 +236,14 @@ class Entry extends DownloadIdentifier implements MediaTrack, OffsetIdentifier {
 
   Entry copyWith({
     String? title,
+    String? image,
     // List<String>? locations,
   }) =>
       Entry(
           creator: creator,
           album: album,
           title: title ?? this.title,
-          image: image,
+          image: image ?? this.image,
           date: date,
           locations: locations,
           identifiers: identifiers,
@@ -346,6 +347,16 @@ class Playlist {
     if (index >= 0 && index < tracks.length) {
       final newTracks = List<Entry>.from(tracks);
       newTracks[index] = entry;
+      return copyWith(tracks: newTracks);
+    } else {
+      throw IndexError.withLength(index, tracks.length);
+    }
+  }
+
+  Playlist insertAt(int index, Entry entry) {
+    if (index >= 0 && index < tracks.length) {
+      final newTracks = List<Entry>.from(tracks, growable: true);
+      newTracks.insert(index, entry);
       return copyWith(tracks: newTracks);
     } else {
       throw IndexError.withLength(index, tracks.length);

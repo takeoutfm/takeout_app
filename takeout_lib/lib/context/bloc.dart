@@ -39,6 +39,7 @@ import 'package:takeout_lib/connectivity/repository.dart';
 import 'package:takeout_lib/db/search.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/repository.dart';
+import 'package:takeout_lib/hive/adapters.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/intent/intent.dart';
 import 'package:takeout_lib/listen/repository.dart';
@@ -57,6 +58,7 @@ import 'package:takeout_lib/subscribed/repository.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
+import 'package:hive_ce/hive.dart';
 
 import 'context.dart';
 
@@ -65,7 +67,12 @@ class TakeoutBloc {
 
   static Future<void> initStorage() async {
     _appDir = await getApplicationDocumentsDirectory();
-    final storageDir = HydratedStorageDirectory('${_appDir.path}/state');
+    final path = '${_appDir.path}/state';
+
+    Hive.init(path);
+    Hive.registerAdapter(ListenAdapter());
+
+    final storageDir = HydratedStorageDirectory(path);
     HydratedBloc.storage =
         await HydratedStorage.build(storageDirectory: storageDir);
   }
@@ -128,11 +135,14 @@ class TakeoutBloc {
       subscribedRepository: subscribedRepository,
       offsetCacheRepository: offsetCacheRepository,
       trackCacheRepository: trackCacheRepository,
+      searchRepository: search,
     );
 
     final listenRepository = ListenRepository(
-        settingsRepository: settingsRepository,
-        clientRepository: clientRepository);
+      settingsRepository: settingsRepository,
+      clientRepository: clientRepository,
+      connectivityRepository: connectivityRepository,
+    );
 
     return [
       RepositoryProvider(create: (_) => search),
@@ -259,24 +269,28 @@ class TakeoutBloc {
               state is PlayerTrackListen ||
               state is PlayerIndexChange ||
               state is PlayerTrackEnd ||
-              state is PlayerRepeatModeChange,
+              state is PlayerRepeatModeChange ||
+              state is PlayerStreamTrackChange,
           listener: (context, state) {
-            if (state is PlayerReady) {
-              _onPlayerReady(context, state);
-            } else if (state is PlayerLoad) {
-              _onPlayerLoad(context, state);
-            } else if (state is PlayerPlay) {
-              _onPlayerPlay(context, state);
-            } else if (state is PlayerPause) {
-              _onPlayerPause(context, state);
-            } else if (state is PlayerTrackListen) {
-              _onPlayerTrackListen(context, state);
-            } else if (state is PlayerIndexChange) {
-              _onPlayerIndexChange(context, state);
-            } else if (state is PlayerTrackEnd) {
-              _onPlayerTrackEnd(context, state);
-            } else if (state is PlayerRepeatModeChange) {
-              _onPlayerRepeatModeChange(context, state);
+            switch (state) {
+              case PlayerReady():
+                _onPlayerReady(context, state);
+              case PlayerLoad():
+                _onPlayerLoad(context, state);
+              case PlayerPlay():
+                _onPlayerPlay(context, state);
+              case PlayerPause():
+                _onPlayerPause(context, state);
+              case PlayerTrackListen():
+                _onPlayerTrackListen(context, state);
+              case PlayerIndexChange():
+                _onPlayerIndexChange(context, state);
+              case PlayerTrackEnd():
+                _onPlayerTrackEnd(context, state);
+              case PlayerRepeatModeChange():
+                _onPlayerRepeatModeChange(context, state);
+              case PlayerStreamTrackChange():
+                _onPlayerStreamTrackChange(context, state);
             }
           }),
       BlocListener<PlaylistCubit, PlaylistState>(
@@ -378,6 +392,7 @@ class TakeoutBloc {
     if (startedAt != null) {
       final track =
           state.nowPlaying.spiff.playlist.tracks[state.nowPlaying.spiff.index];
+      print('xxx calling playingNow');
       context.listenRepository.playingNow(track);
     }
   }
@@ -395,10 +410,8 @@ class TakeoutBloc {
     if (listenedAt != null) {
       final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
 
-      // submit takeout activity
-      _updateTrackActivity(context, track, listenedAt);
-
-      // submit listen to listenbrainz
+      // submit listen to listenbrainz and takeout
+      print('xxx calling listenedAt');
       context.listenRepository.listenedAt(track, listenedAt);
     }
   }
@@ -467,6 +480,11 @@ class TakeoutBloc {
     context.nowPlaying.repeatMode(state.repeat);
   }
 
+  void _onPlayerStreamTrackChange(
+      BuildContext context, PlayerStreamTrackChange state) {
+    context.history.add(streamTrack: state.track);
+  }
+
   void _onDownloadComplete(BuildContext context, DownloadComplete state) {
     // add completed download to TrackCache
     final download = state.get(state.id);
@@ -485,18 +503,6 @@ class TakeoutBloc {
         ? context.allowMobileDownload
         : true) {
       context.downloads.check();
-    }
-  }
-
-  void _updateTrackActivity(
-      BuildContext context, Entry track, DateTime listenedAt) {
-    if (context.enableTrackActivity) {
-      final events = Events(
-        trackEvents: [
-          TrackEvent.from(track.etag, listenedAt),
-        ],
-      );
-      context.clientRepository.updateActivity(events);
     }
   }
 

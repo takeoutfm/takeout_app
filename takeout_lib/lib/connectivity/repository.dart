@@ -17,6 +17,8 @@
 
 import 'dart:async';
 
+import 'package:rxdart/rxdart.dart';
+
 import 'provider.dart';
 
 class ConnectivityRepository {
@@ -48,4 +50,17 @@ class ConnectivityRepository {
   Stream<ConnectivityType> get stream => _provider.stream;
 
   ConnectivityType? get connectivity => _connectivityType;
+
+  bool get isConnected => connectivity?.isConnected ?? false;
+
+  // Return a connectivity stream that emits current status no more than
+  // throttle duration and no less than timeout duration.
+  Stream<ConnectivityType> streamWithTimeout({
+    required Duration timeout,
+    Duration throttle = const Duration(minutes: 1),
+  }) =>
+      stream.throttleTime(throttle).timeout(timeout, onTimeout: (sink) {
+        // (re)emit the current status after timeout
+        sink.add(_connectivityType ?? ConnectivityType.none);
+      });
 }

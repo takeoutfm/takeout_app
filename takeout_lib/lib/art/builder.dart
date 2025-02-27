@@ -16,7 +16,7 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:octo_image/octo_image.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:rxdart/rxdart.dart';
@@ -26,7 +26,7 @@ import 'package:takeout_lib/util.dart';
 import 'artwork.dart';
 
 class ArtworkBuilder {
-  static final log = Logger('ArtworkBuilder');
+  static final log = Logger();
 
   final Artwork? primary;
   final Artwork? secondary;
@@ -74,7 +74,7 @@ class ArtworkBuilder {
         fit: artwork.fit,
         placeholderBuilder: (_) => artwork.placeholder ?? placeholder,
         errorBuilder: (context, error, stack) {
-          log.warning(error);
+          log.w('OctoImage error', error: error);
           artworkErrors.add(imageProvider.url);
           if (imageProvider.url == primary?.url && secondary != null) {
             // primary failed, forget it and use secondary

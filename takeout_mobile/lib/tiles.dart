@@ -101,6 +101,7 @@ class _TrackListTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final Widget? leading;
   final Widget? trailing;
+  final DateTime? dateTime;
   final bool selected;
 
   const _TrackListTile(this.artist, this.album, this.title,
@@ -109,14 +110,17 @@ class _TrackListTile extends StatelessWidget {
       this.onTap,
       this.onLongPress,
       this.trailing,
+      this.dateTime,
       this.selected = false});
 
   @override
   Widget build(BuildContext context) {
+    final t = dateTime;
     final subtitle =
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       if (artist.isNotEmpty) Text(artist, overflow: TextOverflow.ellipsis),
-      Text(album, overflow: TextOverflow.ellipsis)
+      if (album.isNotEmpty) Text(album, overflow: TextOverflow.ellipsis),
+      if (t != null) RelativeDateWidget(t),
     ]);
 
     return ListTile(
@@ -172,7 +176,8 @@ class CoverTrackListTile extends _TrackListTile {
       super.onTap,
       super.onLongPress,
       super.trailing,
-      super.selected})
+      super.selected,
+      super.dateTime})
       : super(leading: cover != null ? tileCover(context, cover) : null);
 
   factory CoverTrackListTile.mediaTrack(BuildContext context, MediaTrack track,
@@ -191,6 +196,20 @@ class CoverTrackListTile extends _TrackListTile {
       onLongPress: onLongPress,
       trailing: trailing,
       selected: selected,
+    );
+  }
+
+  factory CoverTrackListTile.streamTrack(
+      BuildContext context, StreamTrack track,
+      {bool showCover = true, bool selected = false, DateTime? dateTime}) {
+    return CoverTrackListTile(
+      context,
+      track.name,
+      '',
+      track.title,
+      showCover ? track.image : null,
+      selected: selected,
+      dateTime: dateTime,
     );
   }
 

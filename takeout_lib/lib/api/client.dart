@@ -21,7 +21,7 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
 import 'package:takeout_lib/client/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -65,7 +65,7 @@ class CodeError extends Error {}
 class InvalidCodeError extends CodeError {}
 
 class _ClientWithUserAgent extends http.BaseClient {
-  static final log = Logger('HttpClient');
+  static final log = Logger();
 
   final http.Client _client;
   final String _userAgent;
@@ -74,8 +74,8 @@ class _ClientWithUserAgent extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    log.finest('${request.method} ${request.url.toString()}');
-    request.headers['User-Agent'] = _userAgent;
+    log.d('${request.method} ${request.url.toString()}');
+    request.headers[HttpHeaders.userAgentHeader] = _userAgent;
     return _client.send(request);
   }
 }
@@ -83,7 +83,7 @@ class _ClientWithUserAgent extends http.BaseClient {
 typedef FutureGenerator<T> = Future<T> Function();
 
 class TakeoutClient implements ClientProvider {
-  static final log = Logger('Client');
+  static final log = Logger();
 
   static const fieldAccessToken = 'AccessToken';
   static const fieldRefreshToken = 'RefreshToken';
@@ -155,12 +155,12 @@ class TakeoutClient implements ClientProvider {
     if (cacheable) {
       final result = await jsonCacheRepository.get(uri, ttl: ttl);
       if (result.exists) {
-        log.fine('cached $uri expired is ${result.expired}');
+        log.d('cached $uri expired is ${result.expired}');
         try {
           cachedJson = await result.read();
         } catch (e) {
           // can't parse cached json, will try to replace it
-          log.warning(e);
+          log.w('parse failed', error: e);
         }
         if (cachedJson != null && result.expired == false) {
           // not expired so use the cached value
@@ -170,11 +170,10 @@ class TakeoutClient implements ClientProvider {
     }
 
     try {
-      log.fine('GET $endpoint$uri');
       final response = await _client
           .get(Uri.parse('$endpoint$uri'), headers: _headersWithAccessToken())
           .timeout(defaultTimeout);
-      log.fine('got ${response.statusCode}');
+      log.d('got ${response.statusCode}');
       if (response.statusCode != HttpStatus.ok) {
         if (response.statusCode >= HttpStatus.internalServerError &&
             cachedJson != null) {
@@ -184,7 +183,7 @@ class TakeoutClient implements ClientProvider {
             statusCode: response.statusCode,
             url: response.request?.url.toString());
       }
-      log.finest('got response ${response.body}');
+      log.t('got response ${response.body}');
       if (cacheable) {
         await jsonCacheRepository.put(uri, response.bodyBytes);
       }
@@ -193,7 +192,7 @@ class TakeoutClient implements ClientProvider {
     } catch (e, stackTrace) {
       if (e is SocketException || e is TimeoutException || e is TlsException) {
         if (cachedJson != null) {
-          log.warning('got error $e; using cached json');
+          log.w('using cached json', error: e);
           return cachedJson;
         }
       }
@@ -219,7 +218,6 @@ class TakeoutClient implements ClientProvider {
     }
 
     try {
-      log.fine('$method $endpoint$uri');
       http.Response response;
       if (method == 'DELETE') {
         response = await _client.delete(Uri.parse('$endpoint$uri'),
@@ -230,7 +228,7 @@ class TakeoutClient implements ClientProvider {
       } else {
         throw const ClientException(statusCode: HttpStatus.badRequest);
       }
-      log.fine('got ${response.statusCode}');
+      log.d('got ${response.statusCode}');
       switch (response.statusCode) {
         case HttpStatus.accepted:
         case HttpStatus.noContent:
@@ -266,13 +264,13 @@ class TakeoutClient implements ClientProvider {
       headers.addAll(_headersWithAccessToken());
     }
 
-    log.fine('$endpoint$uri');
-    log.finer(jsonEncode(json));
-    return _client
-        .post(Uri.parse('$endpoint$uri'),
-            headers: headers, body: jsonEncode(json))
-        .then((response) {
-      log.fine('response ${response.statusCode}');
+    log.t(jsonEncode(json));
+    try {
+      final response = await _client
+          .post(Uri.parse('$endpoint$uri'),
+              headers: headers, body: jsonEncode(json))
+          .timeout(defaultTimeout);
+      log.d('response ${response.statusCode}');
       if (response.statusCode != HttpStatus.ok &&
           response.statusCode != HttpStatus.noContent) {
         throw ClientException(
@@ -288,7 +286,9 @@ class TakeoutClient implements ClientProvider {
         return jsonDecode(utf8.decode(response.bodyBytes))
             as Map<String, dynamic>;
       }
-    });
+    } catch (e, stackTrace) {
+      return Future<Map<String, dynamic>>.error(e, stackTrace);
+    }
   }
 
   /// no caching
@@ -301,15 +301,14 @@ class TakeoutClient implements ClientProvider {
       ));
     }
 
-    log.fine('$endpoint$uri');
-    log.finer(jsonEncode(json));
+    log.t(jsonEncode(json));
     final headers = _headersWithAccessToken();
     headers[HttpHeaders.contentTypeHeader] = 'application/json-patch+json';
     return _client
         .patch(Uri.parse('$endpoint$uri'),
             headers: headers, body: jsonEncode(json))
         .then((response) {
-      log.fine('response ${response.statusCode}');
+      log.d('response ${response.statusCode}');
       if (response.statusCode == HttpStatus.ok) {
         jsonCacheRepository.invalidate(uri); // async
         return PatchResult(
@@ -336,7 +335,7 @@ class TakeoutClient implements ClientProvider {
     }
     try {
       final result = await _postJson('/api/token', json);
-      log.fine(result);
+      log.t(result);
       if (result.containsKey(fieldAccessToken) &&
           result.containsKey(fieldMediaToken) &&
           result.containsKey(fieldRefreshToken)) {
@@ -368,7 +367,7 @@ class TakeoutClient implements ClientProvider {
     }
     try {
       final result = await _postJson(uri, json);
-      log.fine(result);
+      log.d(result);
       if (result['statusCode'] == HttpStatus.noContent) {
         success = true;
       }
@@ -385,9 +384,8 @@ class TakeoutClient implements ClientProvider {
   Future<AccessCode> code() async {
     const uri = '/api/code';
     try {
-      log.fine('GET $endpoint$uri');
       final response = await _client.get(Uri.parse('$endpoint$uri'));
-      log.fine('got ${response.statusCode}');
+      log.d('got ${response.statusCode}');
       if (response.statusCode == 200) {
         final result =
             jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
@@ -409,7 +407,6 @@ class TakeoutClient implements ClientProvider {
     const uri = '/api/code';
     bool success = false;
     try {
-      log.fine('POST $endpoint$uri');
       final headers = {
         HttpHeaders.contentTypeHeader: ContentType.json.toString(),
         HttpHeaders.authorizationHeader: 'Bearer ${accessCode.accessToken}',
@@ -420,11 +417,11 @@ class TakeoutClient implements ClientProvider {
         body: body,
         headers: headers,
       );
-      log.fine('got ${response.statusCode}');
+      log.d('got ${response.statusCode}');
       if (response.statusCode == 200) {
         final result =
             jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
-        log.fine(result);
+        log.t(result);
         if (result.containsKey(fieldAccessToken) &&
             result.containsKey(fieldMediaToken) &&
             result.containsKey(fieldRefreshToken)) {
@@ -452,14 +449,13 @@ class TakeoutClient implements ClientProvider {
     const uri = '/api/token';
     bool success = false;
     try {
-      log.fine('GET $endpoint$uri');
       final response = await _client.get(Uri.parse('$endpoint$uri'),
           headers: _headersWithRefreshToken());
-      log.fine('got ${response.statusCode}');
+      log.d('got ${response.statusCode}');
       if (response.statusCode == 200) {
         final result =
             jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
-        log.fine(result);
+        log.t(result);
         if (result.containsKey(fieldAccessToken) &&
             result.containsKey(fieldRefreshToken)) {
           tokenRepository.add(
@@ -481,12 +477,12 @@ class TakeoutClient implements ClientProvider {
       if (e is ClientException && e.authenticationFailed && _haveTokens()) {
         // have refresh token, try to refresh access token
         final result = await _refreshAccessToken();
-        log.fine('in retry result is $result');
+        log.d('in retry result is $result');
         if (result == true) {
           return await aFuture();
         }
       }
-      log.warning('in retry got $stackTrace', e, stackTrace);
+      log.w('retry error', error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -612,14 +608,14 @@ class TakeoutClient implements ClientProvider {
   @override
   Future<PlaylistView> createPlaylist(Spiff spiff) async {
     try {
-      log.fine('createPlaylist $spiff');
+      log.t('createPlaylist $spiff');
       final result = await _retry(
           () => _postJson('/api/playlists', spiff.toJson(), requireAuth: true));
-      log.fine('createPlaylist got $result');
+      log.t('createPlaylist got $result');
       await jsonCacheRepository.invalidate('/api/playlists');
       return PlaylistView.fromJson(result);
     } on ClientException {
-      return Future.error(HttpStatus.badRequest);
+      return Future.error(HttpStatus.badRequest); // TODO should this throw instead?
     }
   }
 
@@ -798,13 +794,13 @@ class TakeoutClient implements ClientProvider {
   @override
   Future<int> updateProgress(Offsets offsets) async {
     try {
-      log.fine('updateProgress $offsets');
+      log.t('updateProgress $offsets');
       final result = await _retry(() =>
           _postJson('/api/progress', offsets.toJson(), requireAuth: true));
-      log.fine('updateProgress got $result');
+      log.t('updateProgress got $result');
       return result['statusCode'] as int;
     } on ClientException {
-      return HttpStatus.badRequest;
+      return HttpStatus.badRequest; // TODO should this throw instead?
     }
   }
 
@@ -828,15 +824,11 @@ class TakeoutClient implements ClientProvider {
   /// POST /api/activity
   @override
   Future<int> updateActivity(Events events) async {
-    try {
-      log.fine('updateActivity $events');
-      final result = await _retry(
-          () => _postJson('/api/activity', events.toJson(), requireAuth: true));
-      log.fine('updateActivity got $result');
-      return result['statusCode'] as int;
-    } on ClientException {
-      return HttpStatus.badRequest;
-    }
+    log.t('updateActivity $events');
+    final result = await _retry(
+        () => _postJson('/api/activity', events.toJson(), requireAuth: true));
+    log.t('updateActivity got $result');
+    return result['statusCode'] as int;
   }
 
   /// GET /api/activity/tracks/recent
@@ -871,8 +863,8 @@ class TakeoutClient implements ClientProvider {
       try {
         return await _retry<int>(
             () => _download(uri, file, size, progress: progress));
-      } catch (err) {
-        log.warning(err);
+      } catch (e) {
+        log.w('download failed', error: e);
         if (retries > 0) {
           // try again
           retries--;
@@ -887,7 +879,7 @@ class TakeoutClient implements ClientProvider {
   Future<int> _download(Uri uri, File file, int size,
       {Sink<int>? progress}) async {
     final completer = Completer<int>();
-    log.fine('download file is $file');
+    log.d('download file is $file');
 
     if (uri.hasScheme == false) {
       uri = Uri.parse('$endpoint${uri.toString()}');

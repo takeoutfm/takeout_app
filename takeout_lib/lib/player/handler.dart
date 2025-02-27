@@ -24,11 +24,11 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:logging/logging.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
+import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/tokens/repository.dart';
@@ -44,8 +44,6 @@ extension TakeoutMediaItem on MediaItem {
 }
 
 class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
-  static final log = Logger('AudioPlayerHandler');
-
   final MediaTrackResolver trackResolver;
   final TokenRepository tokenRepository;
   final SettingsRepository settingsRepository;
@@ -63,6 +61,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final TrackChangeCallback onTrackChange;
   final TrackEndCallback onTrackEnd;
   final RepeatModeChangeCallback onRepeatModeChange;
+  final StreamTrackChangeCallback onStreamTrackChange;
 
   final _subscriptions = <StreamSubscription<dynamic>>[];
   final _listens = ExpiringSet<String>(const Duration(minutes: 15));
@@ -87,6 +86,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required this.onTrackChange,
     required this.onTrackEnd,
     required this.onRepeatModeChange,
+    required this.onStreamTrackChange,
     required this.trackResolver,
     required this.tokenRepository,
     required this.settingsRepository,
@@ -124,6 +124,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
+    required StreamTrackChangeCallback onStreamTrackChange,
     Duration? skipBeginningInterval,
     Duration? fastForwardInterval,
     Duration? rewindInterval,
@@ -149,6 +150,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
               onTrackChange: onTrackChange,
               onTrackEnd: onTrackEnd,
               onRepeatModeChange: onRepeatModeChange,
+              onStreamTrackChange: onStreamTrackChange,
               trackResolver: trackResolver,
               tokenRepository: tokenRepository,
               settingsRepository: settingsRepository,
@@ -257,12 +259,23 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     _subscriptions.add(_player.icyMetadataStream.listen((event) {
       // TODO icy events are sometimes sent for regular media so ignore them.
       if (_spiff.isStream() && event != null) {
-        final index = _spiff.index;
-        var item = _queue[index];
+        final title = event.info?.title;
+        if (title == null || title == mediaItem.value?.title) {
+          // only proceed if there's a new title
+          // just_audio can send title as null and then the previous
+          // value again so check against the latest mediaItem title also
+          return;
+        }
 
-        // update the current media item
-        final title = event.info?.title ?? item.title;
-        item = item.copyWith(title: title);
+        // use event image if possible, fallback to spiff
+        final index = _spiff.index;
+        final image = event.info?.url ?? _spiff[index].image;
+        final icyTrack = IcyTrack(_spiff.creator ?? '', title, image);
+
+        // update the current media item title and image
+        var item = _queue[index];
+        item = item.copyWith(
+            title: icyTrack.title, artUri: Uri.parse(icyTrack.image));
         mediaItem.add(item);
 
         // update the media queue
@@ -270,8 +283,21 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         queue.add(_queue);
 
         // update the current spiff
-        _spiff = _spiff.updateAt(index, _spiff[index].copyWith(title: title));
-        onTrackChange(_spiff, index, title: event.info?.title);
+        _spiff = _spiff.updateAt(
+            index,
+            _spiff[index].copyWith(
+              title: icyTrack.title,
+              image: icyTrack.image,
+            ));
+        onTrackChange(
+          _spiff,
+          index,
+          title: icyTrack.title,
+          image: icyTrack.image,
+        );
+
+        // update StreamTrack change
+        onStreamTrackChange(_spiff, icyTrack);
       }
     }));
 

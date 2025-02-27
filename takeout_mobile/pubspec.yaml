@@ -1,6 +1,6 @@
 name: takeout_mobile
 description: TakeoutFM
-publish_to: 'xnone'
+publish_to: 'none'
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -18,7 +18,7 @@ dependencies:
   bloc: ^9.0.0
   flutter_bloc: ^9.0.0
   json_annotation: ^4.9.0
-  logging: ^1.2.0
+  logger: ^2.5.0
   nested: ^1.0.0
   recase: ^4.1.0
   receive_intent: ^0.2.5

@@ -27,7 +27,7 @@ abstract class MediaEntry {
   int get year;
 }
 
-abstract class MediaAlbum implements MediaEntry { }
+abstract class MediaAlbum implements MediaEntry {}
 
 abstract class MediaTrack implements MediaEntry {
   String get title;
@@ -45,4 +45,23 @@ abstract class MediaTrack implements MediaEntry {
   // String get date;
 
   String get location;
+}
+
+abstract class StreamTrack {
+  String get name; // name of radio stream
+
+  String get title; // track title (StreamTitle)
+
+  String get image; // track image (StreamUrl)
+}
+
+class IcyTrack implements StreamTrack {
+  @override
+  final String name;
+  @override
+  final String title;
+  @override
+  final String image;
+
+  IcyTrack(this.name, this.title, this.image);
 }

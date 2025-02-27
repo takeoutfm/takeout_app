@@ -99,6 +99,8 @@
   "allLabel": "All",
   "recentLabel": "Recent",
   "activityLabel": "Activity",
+  "streamHistory": "Stream History",
+  "tvEpisodesLabel": "TV Episodes",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

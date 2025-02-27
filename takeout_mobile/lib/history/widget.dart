@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/menu.dart';
+import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/spiff/widget.dart';
 import 'package:takeout_mobile/style.dart';
 import 'package:takeout_mobile/tiles.dart';
@@ -42,6 +43,8 @@ class HistoryListWidget extends StatelessWidget {
             title: header(context.strings.historyLabel),
             actions: [
               popupMenu(context, [
+                PopupItem.streamHistory(
+                    context, (ctx) => _onStreamHistory(ctx)),
                 PopupItem.delete(context, context.strings.deleteAll,
                     (ctx) => _onDelete(ctx)),
               ])
@@ -92,6 +95,49 @@ class HistoryListWidget extends StatelessWidget {
 
   Future<void> _onDeleteConfirmed(BuildContext context) async {
     context.history.remove();
+  }
+
+  void _onStreamHistory(BuildContext context) {
+    push(context, builder: (_) => StreamTrackHistoryWidget());
+  }
+}
+
+Widget _streamTrackList(BuildContext context) {
+  return Builder(builder: (context) {
+    final history = context.watch<HistoryCubit>();
+    final tracks = List<StreamHistory>.from(history.state.history.stream);
+    tracks.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
+
+    return Column(children: [
+      Expanded(
+
+
+
+          child: ListView.builder(
+              itemCount: tracks.length,
+              itemBuilder: (buildContext, index) {
+                return CoverTrackListTile.streamTrack(
+                  context,
+                  tracks[index],
+                  showCover: !sameArtwork,
+                  dateTime: tracks[index].dateTime,
+                );
+              })),
+    ]);
+  });
+}
+
+class StreamTrackHistoryWidget extends StatelessWidget {
+  const StreamTrackHistoryWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: header(context.strings.streamHistory),
+        ),
+        body: _streamTrackList(context));
   }
 }
 

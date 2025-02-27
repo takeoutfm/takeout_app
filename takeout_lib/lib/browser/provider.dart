@@ -26,6 +26,7 @@ import 'package:takeout_lib/cache/spiff_track.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/cache/track_repository.dart';
 import 'package:takeout_lib/client/repository.dart';
+import 'package:takeout_lib/db/search.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
@@ -69,7 +70,9 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 +---------+---------------------------+--------+
 |         |/radio/stream              |Grid    |
 +---------+---------------------------+--------+
-|Artists  |/artists                   |List    |
+|Artists  |/history/artists           |List    |
++---------+---------------------------+--------+
+|         |/artists                   |List    |
 +---------+---------------------------+--------+
 |         |/artists/{id}              |Grid    |
 +---------+---------------------------+--------+
@@ -143,6 +146,7 @@ const stringsMusic = 'Music';
 const stringsPodcasts = 'Podcasts';
 const stringsRadio = 'Radio';
 const stringsArtists = 'Artists';
+const stringsAllArtists = 'More Artists';
 const stringsPlaylists = 'Playlists';
 const stringsDownloads = 'Downloads';
 const stringsMovies = 'Movies';
@@ -182,6 +186,7 @@ class DefaultMediaProvider implements MediaProvider {
   final SubscribedRepository subscribedRepository;
   final OffsetCacheRepository offsetCacheRepository;
   final TrackCacheRepository trackCacheRepository;
+  final Search searchRepository;
 
   DefaultMediaProvider(
       this.clientRepository,
@@ -191,7 +196,8 @@ class DefaultMediaProvider implements MediaProvider {
       this.mediaTypeRepository,
       this.subscribedRepository,
       this.offsetCacheRepository,
-      this.trackCacheRepository);
+      this.trackCacheRepository,
+      this.searchRepository);
 
   @override
   Future<List<MediaItem>> getRoot() async {
@@ -221,13 +227,13 @@ class DefaultMediaProvider implements MediaProvider {
     }
     if (index.hasMusic) {
       items.add(const MediaItem(
-        id: '/radio',
-        title: stringsRadio,
+        id: '/history/artists',
+        title: stringsArtists,
         playable: false,
       ));
       items.add(const MediaItem(
-        id: '/artists',
-        title: stringsArtists,
+        id: '/radio',
+        title: stringsRadio,
         playable: false,
       ));
     }
@@ -247,14 +253,14 @@ class DefaultMediaProvider implements MediaProvider {
         extras: extrasGridStyle,
       ));
     }
-    if (index.hasMovies) {
-      items.add(const MediaItem(
-        id: '/movies',
-        title: stringsMovies,
-        playable: false,
-        extras: extrasGridStyle,
-      ));
-    }
+    // if (index.hasMovies) {
+    //   items.add(const MediaItem(
+    //     id: '/movies',
+    //     title: stringsMovies,
+    //     playable: false,
+    //     extras: extrasGridStyle,
+    //   ));
+    // }
     return items;
   }
 
@@ -278,6 +284,8 @@ class DefaultMediaProvider implements MediaProvider {
         return _getPodcasts();
       case '/radio':
         return _getRadio();
+      case '/history/artists':
+        return _getHistoryArtists();
       case '/artists':
         return _getArtists();
       case '/playlists':
@@ -457,6 +465,28 @@ class DefaultMediaProvider implements MediaProvider {
     return items;
   }
 
+  Future<List<MediaItem>> _getHistoryArtists() async {
+    final history = await historyRepository.get();
+    final recentArtists = List<String>.from(history.recentArtists(limit: 5));
+    if (recentArtists.isEmpty) {
+      // no history just, return all artists
+      return _getArtists();
+    }
+    final items = <MediaItem>[];
+    for (final name in recentArtists) {
+      final a = searchRepository.findArtist(name);
+      if (a != null) {
+        items.add(_artist(a));
+      }
+    }
+    items.add(const MediaItem(
+      id: '/artists',
+      title: stringsAllArtists,
+      playable: false,
+    ));
+    return items;
+  }
+
   Future<List<MediaItem>> _getArtist(String parentId) async {
     final items = <MediaItem>[];
     // /artists/id
@@ -473,6 +503,13 @@ class DefaultMediaProvider implements MediaProvider {
   Future<List<MediaItem>> _getRadio() async {
     final items = <MediaItem>[];
     final radio = await clientRepository.radio();
+    if (radio.stream != null) {
+      items.add(const MediaItem(
+          id: '/radio/stream',
+          title: stringsStreams,
+          playable: false,
+          extras: extrasGridStyle));
+    }
     if (radio.genre != null) {
       items.add(const MediaItem(
           id: '/radio/genre', title: stringsGenres, playable: false));
@@ -484,13 +521,6 @@ class DefaultMediaProvider implements MediaProvider {
     if (radio.other != null) {
       items.add(const MediaItem(
           id: '/radio/other', title: stringsOther, playable: false));
-    }
-    if (radio.stream != null) {
-      items.add(const MediaItem(
-          id: '/radio/stream',
-          title: stringsStreams,
-          playable: false,
-          extras: extrasGridStyle));
     }
     return items;
   }

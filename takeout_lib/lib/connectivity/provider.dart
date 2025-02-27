@@ -17,7 +17,16 @@
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-enum ConnectivityType { bluetooth, wifi, ethernet, mobile, none, vpn }
+enum ConnectivityType {
+  bluetooth,
+  wifi,
+  ethernet,
+  mobile,
+  none,
+  vpn;
+
+  bool get isConnected => this != none;
+}
 
 abstract class ConnectivityProvider {
   Future<ConnectivityType> check();

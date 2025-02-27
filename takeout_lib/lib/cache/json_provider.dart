@@ -20,7 +20,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:logging/logging.dart';
+import 'package:logger/logger.dart';
 
 import 'json_repository.dart';
 
@@ -52,7 +52,7 @@ class JsonCacheEntry extends JsonCacheResult {
 }
 
 class DirectoryJsonCache implements JsonCacheProvider {
-  static final log = Logger('JsonCache');
+  static final log = Logger();
 
   final Directory directory;
 
@@ -62,7 +62,7 @@ class DirectoryJsonCache implements JsonCacheProvider {
         directory.createSync(recursive: true);
       }
     } catch (e, stack) {
-      log.warning(directory, e, stack);
+      log.e('create failed: ${directory.path}', error: e, stackTrace: stack);
     }
   }
 
@@ -83,7 +83,7 @@ class DirectoryJsonCache implements JsonCacheProvider {
     try {
       await file.writeAsBytes(body);
     } catch (e) {
-      log.warning(e);
+      log.e('put failed: ${file.path}', error: e);
       success = false;
     }
     return success;

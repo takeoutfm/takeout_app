@@ -16,6 +16,7 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
 part 'model.g.dart';
@@ -26,30 +27,46 @@ class History {
   final List<SearchHistory> searches;
   final List<SpiffHistory> spiffs;
   final Map<String, TrackHistory> tracks;
+  final List<StreamHistory> stream;
 
   History(
       {this.searches = const [],
       this.spiffs = const [],
-      this.tracks = const {}});
+      this.tracks = const {},
+      this.stream = const []});
 
   factory History.empty() => History();
 
   History unmodifiableCopy() => History(
       searches: List.unmodifiable(searches),
       spiffs: List.unmodifiable(spiffs),
-      tracks: Map.unmodifiable(tracks));
+      tracks: Map.unmodifiable(tracks),
+      stream: List.unmodifiable(stream));
 
   History copy() => History(
       searches: List.from(searches),
       spiffs: List.from(spiffs),
-      tracks: Map.from(tracks));
+      tracks: Map.from(tracks),
+      stream: List.from(stream));
 
   SpiffHistory? get lastSpiff => spiffs.isNotEmpty ? spiffs.last : null;
 
-  Iterable<String> recentArtists() {
-    final recent = List<SpiffHistory>.from(spiffs);
+  StreamHistory? get lastStreamHistory =>
+      stream.isNotEmpty ? stream.last : null;
+
+  Iterable<String> recentArtists({int? limit}) {
+    final recent =
+        List<SpiffHistory>.from(spiffs.where((spiff) => spiff.spiff.isMusic()));
     recent.sort((a, b) => b.dateTime.compareTo(a.dateTime));
-    return recent.toSet().toList().map((e) => e.spiff.creator ?? '');
+    final artists = recent.map((spiff) => spiff.spiff.creator);
+    final seen = <String>{};
+    final result = <String>[];
+    for (final a in artists) {
+      if (a != null && seen.add(a)) {
+        result.add(a);
+      }
+    }
+    return limit != null && result.length > limit ? result.sublist(0, limit) : result;
   }
 
   // Map<String, TrackHistory> trackKeyMap() {
@@ -127,4 +144,33 @@ class TrackHistory {
 
   TrackHistory copyWith({required int count, required DateTime dateTime}) =>
       TrackHistory(creator, album, title, image, etag, count, dateTime);
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class StreamHistory implements StreamTrack {
+  @override
+  final String name; // stream name
+  @override
+  final String title;
+  @override
+  final String image;
+  final DateTime dateTime;
+
+  const StreamHistory(this.name, this.title, this.image, this.dateTime);
+
+  factory StreamHistory.fromTrack(StreamTrack track, DateTime dateTime) =>
+      StreamHistory(
+        track.name,
+        track.title,
+        track.image,
+        dateTime,
+      );
+
+  StreamHistory copyWith(DateTime newTime) =>
+      StreamHistory(name, title, image, newTime);
+
+  factory StreamHistory.fromJson(Map<String, dynamic> json) =>
+      _$StreamHistoryFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StreamHistoryToJson(this);
 }

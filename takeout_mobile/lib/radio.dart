@@ -98,26 +98,26 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
                       ],
                       bottom: TabBar(
                         tabs: [
+                          if (hasStream)
+                            Tab(text: context.strings.streamsLabel),
                           if (hasGenre) Tab(text: context.strings.genresLabel),
                           if (hasPeriod)
                             Tab(text: context.strings.decadesLabel),
                           if (hasSeries || hasOther)
                             Tab(text: context.strings.otherLabel),
-                          if (hasStream)
-                            Tab(text: context.strings.streamsLabel),
                           if (hasDownloads)
                             Tab(text: context.strings.downloadsLabel)
                         ],
                       )),
                   body: TabBarView(
                     children: [
+                      if (hasStream) _stations(state.stream!),
                       if (hasGenre) _stations(state.genre!),
                       if (hasPeriod) _stations(state.period!),
                       if (hasSeries || hasOther)
                         _stations(_merge(
                             state.series != null ? state.series! : [],
                             state.other != null ? state.other! : [])),
-                      if (hasStream) _stations(state.stream!),
                       if (hasDownloads) DownloadListWidget(filter: _radioFilter)
                     ],
                   ))));
