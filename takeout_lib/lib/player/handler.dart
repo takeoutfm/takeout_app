@@ -50,7 +50,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final OffsetCacheRepository offsetRepository;
   final MediaRepository mediaRepository;
 
-  final AudioPlayer _player = AudioPlayer();
+  final AudioPlayer _player = AudioPlayer(maxSkipsOnError: 1);
   final PlayCallback onPlay;
   final PauseCallback onPause;
   final StoppedCallback onStop;
@@ -164,7 +164,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         config: AudioServiceConfig(
           androidNotificationIcon: 'drawable/ic_stat_name',
           androidNotificationChannelId: 'com.takeoutfm.channel.audio',
-          androidNotificationChannelName: 'Takeout Audio',
+          androidNotificationChannelName: 'TakeoutFM Audio',
           androidNotificationOngoing: true,
           androidStopForegroundOnPause: true,
           androidBrowsableRootExtras: rootExtras,
@@ -470,8 +470,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         .map((item) => toAudioSource(item,
             autoCache: autoCache, headers: item.isRemote() ? headers : null))
         .toList();
-    final source = ConcatenatingAudioSource(children: []);
-    await source.addAll(sources);
 
     // Note: this initialPosition doesn't actually work since the player
     // goes back to zero. skipToQueue below is where restoring position needs
@@ -482,7 +480,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     // setAudioSource triggers events so use the correct index and position even though
     // skipToQueueItem does the same thing next.
     // also ensure _spiff is correct since events are triggered
-    await _player.setAudioSource(source,
+    await _player.setAudioSources(sources,
         initialIndex: index, initialPosition: position);
 
     await skipToQueueItem(index);

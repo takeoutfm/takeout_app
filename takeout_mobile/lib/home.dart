@@ -291,14 +291,6 @@ class HomeWidget extends StatelessWidget {
         children: <Widget>[
           InkWell(
               child: const Text(
-                appSource,
-                style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blueAccent),
-              ),
-              onTap: () => launchUrl(Uri.parse(appSource))),
-          InkWell(
-              child: const Text(
                 appHome,
                 style: TextStyle(
                     decoration: TextDecoration.underline,

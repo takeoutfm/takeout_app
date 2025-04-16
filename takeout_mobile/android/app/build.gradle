@@ -30,7 +30,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.takeoutfm.mobile"
-    compileSdkVersion 34
+    compileSdkVersion 35
     ndkVersion = "25.1.8937393"
 
     lintOptions {
@@ -45,9 +45,9 @@ android {
     defaultConfig {
         applicationId "com.takeoutfm.mobile"
         minSdkVersion 23
-        targetSdkVersion 34
-        versionCode 2400 // #versionCode#
-        versionName "0.24.0" // #version#
+        targetSdkVersion 35
+        versionCode 2401 // #versionCode#
+        versionName "0.24.1" // #version#
     }
 
     signingConfigs {

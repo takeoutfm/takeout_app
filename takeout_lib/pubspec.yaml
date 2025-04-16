@@ -1,6 +1,6 @@
 name: takeout_lib
 description: TakeoutFM Library
-version: 0.24.0 # #version#
+version: 0.24.1 # #version#
 publish_to: 'none'
 
 environment:
@@ -26,7 +26,7 @@ dependencies:
   hydrated_bloc: ^10.0.0
   logger: ^2.5.0
   json_annotation: ^4.9.0
-  just_audio: ^0.9.46
+  just_audio: ^0.10.0
   nested: ^1.0.0
   octo_image: ^2.0.0
   palette_generator: ^0.3.3+3
@@ -48,6 +48,11 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   test: ^1.25.8
   hive_ce_generator: ^1.8.2
+
+# need this since 7.4.0 is broken
+# https://github.com/google/json_serializable.dart/issues/1485
+dependency_overrides:
+  analyzer: 7.3.0
 
 flutter:
   uses-material-design: true

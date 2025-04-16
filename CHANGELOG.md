@@ -1,3 +1,10 @@
+## 0.24.1
+
+- Flutter upgrade to 3.29.2
+- Use Android compileSdkVersion 35
+- Update just\_audio deprecated APIs
+- Set player maxSkipsOnError to 1
+
 ## 0.24.0
 
 - Use Icy cover images if available
@@ -11,7 +18,7 @@
 - Move player repeat button from last to first; only show for music
 - Fixed launcher icons
 - Use storage\_place\_fork
-- Fixe watch radio playback
+- Fix watch radio playback
 
 ## 0.23.5
 
@@ -29,7 +36,7 @@
 
 ## 0.23.2
 
-- Updates for tvList vs tvSeries 
+- Updates for tvList vs tvSeries
 
 ## 0.23.1
 
