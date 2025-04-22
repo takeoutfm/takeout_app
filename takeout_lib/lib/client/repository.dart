@@ -265,6 +265,10 @@ class ClientRepository {
     return _provider.podcastsSubscribed(ttl: ttl);
   }
 
+  Future<void> updatePosition(int index, double position) async {
+    await patch(patchPosition(index, position));
+  }
+
   Future<Spiff?> replace(
     String ref, {
     int index = 0,

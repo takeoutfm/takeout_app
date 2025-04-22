@@ -17,6 +17,7 @@
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:takeout_lib/api/client.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
 import 'repeat.dart';
@@ -96,6 +97,10 @@ class NowPlayingState {
   final NowPlaying nowPlaying;
 
   NowPlayingState(this.nowPlaying);
+
+  bool isDefaultPlaylist() {
+    return nowPlaying.spiff.location == defaultPlaylist;
+  }
 
   factory NowPlayingState.initial() => NowPlayingState(NowPlaying.initial());
 

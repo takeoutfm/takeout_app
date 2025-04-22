@@ -139,6 +139,10 @@ extension TakeoutContext on BuildContext {
     }
   }
 
+  Future<void> updatePosition(int index, double position) async {
+    await clientRepository.updatePosition(index, position);
+  }
+
   ArtProvider get imageProvider => read<ArtProvider>();
 
   ClientCubit get client => read<ClientCubit>();

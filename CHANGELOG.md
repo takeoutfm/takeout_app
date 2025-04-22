@@ -1,3 +1,10 @@
+## 0.24.2
+
+- Flutter upgrade to 3.29.3
+- Update /api/playlist with index & position on track change
+- Revert back to just\_audio 0.9.46 - not sure yet why 0.10.0 streams aren't working well
+- Player sync playlist will also since track index when playlist unchanged
+
 ## 0.24.1
 
 - Flutter upgrade to 3.29.2

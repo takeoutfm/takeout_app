@@ -31,6 +31,8 @@ import 'package:takeout_lib/tokens/repository.dart';
 
 import 'model.dart';
 
+const defaultPlaylist = '/api/playlist';
+
 class ClientException implements Exception {
   final int statusCode;
   final String? url;
@@ -593,7 +595,7 @@ class TakeoutClient implements ClientProvider {
       return spiff('/api/playlists/${Uri.encodeComponent(name)}/playlist',
           ttl: ttl);
     } else {
-      return spiff('/api/playlist', ttl: ttl);
+      return spiff(defaultPlaylist, ttl: ttl);
     }
   }
 
@@ -660,7 +662,7 @@ class TakeoutClient implements ClientProvider {
 
   @override
   Future<PatchResult> patch(List<Map<String, dynamic>> body) async =>
-      _retry<PatchResult>(() => _patchJson('/api/playlist', body));
+      _retry<PatchResult>(() => _patchJson(defaultPlaylist, body));
 
   /// GET /api/movies
   @override

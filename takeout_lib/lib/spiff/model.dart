@@ -115,6 +115,10 @@ class Spiff {
     return type == MediaType.stream.name;
   }
 
+  bool isNotStream() {
+    return type != MediaType.stream.name;
+  }
+
   // MediaType get mediaType {
   //   if (type.isEmpty) {
   //     FIXME remove after transition to require type is done

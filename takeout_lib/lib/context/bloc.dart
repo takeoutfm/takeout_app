@@ -300,8 +300,12 @@ class TakeoutBloc {
             if (state is PlaylistChange) {
               _onPlaylistChange(context, state);
             } else if (state is PlaylistSync) {
-              if (state.spiff != context.nowPlaying.state.nowPlaying.spiff) {
+              final nowPlaying = context.nowPlaying.state.nowPlaying;
+              if (state.spiff != nowPlaying.spiff) {
                 _onPlaylistSyncChange(context, state);
+              } else if (state.spiff.index != nowPlaying.spiff.index) {
+                // TODO consider position also
+                context.player.skipToIndex(state.spiff.index);
               }
             }
           }),
@@ -392,8 +396,12 @@ class TakeoutBloc {
     if (startedAt != null) {
       final track =
           state.nowPlaying.spiff.playlist.tracks[state.nowPlaying.spiff.index];
-      print('xxx calling playingNow');
       context.listenRepository.playingNow(track);
+    }
+
+    if (state.isDefaultPlaylist() && state.nowPlaying.spiff.isNotStream()) {
+      // keep server playlist updated
+      context.updatePosition(state.nowPlaying.spiff.index, 0);
     }
   }
 
@@ -409,9 +417,7 @@ class TakeoutBloc {
         state.nowPlaying.listenedAt(state.nowPlaying.spiff.index);
     if (listenedAt != null) {
       final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
-
       // submit listen to listenbrainz and takeout
-      print('xxx calling listenedAt');
       context.listenRepository.listenedAt(track, listenedAt);
     }
   }
@@ -508,8 +514,11 @@ class TakeoutBloc {
 
   // override this to change behavior
   void saveProgress(BuildContext context, PlayerPositionState state) {
+    _saveProgress(context, state);
+  }
+
+  void _saveProgress(BuildContext context, PlayerPositionState state) {
     if (state.buffering == false) {
-      // print('saveProgress $state ${state.position} ${state.buffering}');
       if (state.spiff.isPodcast()) {
         // save podcast progress at server
         final currentTrack = state.currentTrack;
@@ -518,18 +527,18 @@ class TakeoutBloc {
               position: state.position, duration: state.duration);
         }
       }
-      if (state.spiff.isStream() == false) {
+      if (state.spiff.isNotStream()) {
         // save progress in history for quick restore
-        updateSpiffHistoryPosition(context, state);
+        _updateSpiffHistoryPosition(context, state);
       }
     }
   }
 
-  void updateSpiffHistoryPosition(
+  void _updateSpiffHistoryPosition(
       BuildContext context, PlayerPositionState state) {
     final spiff =
         state.spiff.copyWith(position: state.position.inSeconds.toDouble());
-    if (spiff.isNotEmpty && spiff.isStream() == false) {
+    if (spiff.isNotEmpty && spiff.isNotStream()) {
       context.history.add(spiff: Spiff.cleanup(spiff));
     }
   }
