@@ -35,7 +35,7 @@ class Search {
     return artistRepository.findArtist(name);
   }
 
-  void reload() {
-    artistRepository.reload();
+  Future<void> reload() {
+    return artistRepository.reload();
   }
 }

@@ -58,8 +58,8 @@ class ProfilePage extends ClientPage<ProfileView> {
   ProfilePage(this.person, this.onTap, {super.key, this.onLongPress});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.profile(person.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.profile(person.id, ttl: ttl);
   }
 
   @override

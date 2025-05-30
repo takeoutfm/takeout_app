@@ -17,9 +17,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/empty.dart';
+import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_mobile/app/context.dart';
 
 class LoginWidget extends ClientPage<bool> {
   final TextEditingController _hostText = TextEditingController();
@@ -30,7 +30,7 @@ class LoginWidget extends ClientPage<bool> {
   LoginWidget({super.key}) : super(value: false);
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
+  Future<void> load(BuildContext context, {Duration? ttl}) async {
     final host = _hostText.text.trim();
     if (host.isNotEmpty) {
       context.settings.host = host;
@@ -42,7 +42,7 @@ class LoginWidget extends ClientPage<bool> {
     final password = _passwordText.text.trim();
     final passcode = _passcodeText.text.trim();
     if (user.isNotEmpty && password.isNotEmpty) {
-      context.client.login(user, password,
+      await context.client.login(user, password,
           passcode: passcode.isNotEmpty ? passcode : null);
     }
   }

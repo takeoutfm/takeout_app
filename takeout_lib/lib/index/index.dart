@@ -47,8 +47,8 @@ class IndexCubit extends Cubit<IndexState> {
     _load();
   }
 
-  void _load({Duration? ttl}) {
-    clientRepository.index(ttl: ttl).then((view) {
+  Future<void> _load({Duration? ttl}) async {
+    await clientRepository.index(ttl: ttl).then((view) {
       emit(IndexState(
           movies: view.hasMovies,
           music: view.hasMusic,
@@ -60,7 +60,5 @@ class IndexCubit extends Cubit<IndexState> {
     });
   }
 
-  void reload() {
-    _load(ttl: Duration.zero);
-  }
+  Future<void> reload() => _load(ttl: Duration.zero);
 }

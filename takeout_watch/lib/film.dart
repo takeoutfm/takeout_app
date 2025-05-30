@@ -81,8 +81,8 @@ class MoviePage extends ClientPage<MovieView> {
   MoviePage(this.movie, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.movie(movie.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.movie(movie.id, ttl: ttl);
   }
 
   @override
@@ -259,8 +259,8 @@ class GenrePage extends ClientPage<GenreView> {
   GenrePage(this.genre, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.moviesGenre(genre, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.moviesGenre(genre, ttl: ttl);
   }
 
   @override

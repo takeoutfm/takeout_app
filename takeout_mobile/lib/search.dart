@@ -55,9 +55,9 @@ class SearchWidget extends ClientPage<SearchView> {
   }
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
+  Future<void> load(BuildContext context, {Duration? ttl}) async {
     if (_query.isNotEmpty) {
-      context.client.search(_query.toString(), ttl: ttl ?? Duration.zero);
+      await context.client.search(_query.toString(), ttl: ttl ?? Duration.zero);
     }
   }
 

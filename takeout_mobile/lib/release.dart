@@ -42,8 +42,8 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
   ReleaseWidget(this._release, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.release(_release.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.release(_release.id, ttl: ttl);
   }
 
   void _onArtist(BuildContext context, ReleaseView view) {

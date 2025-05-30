@@ -1,3 +1,14 @@
+## 0.24.3
+
+- Flutter upgrade to 3.32.0
+- Optimized main navbar and navigators (mobile)
+- Updated nav and media icons (mobile)
+- just\_audio 0.10.3 looks stable now
+- Changed skipToPrevious on first track to restart instead of doing nothing
+- Fixed duplicate events on index changes
+- Put back regular player slider; squiggle was causing excessive repaints
+- Refactored some async future usage
+
 ## 0.24.2
 
 - Flutter upgrade to 3.29.3

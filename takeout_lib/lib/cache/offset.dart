@@ -85,20 +85,20 @@ class OffsetCacheCubit extends Cubit<OffsetCacheState> {
     emit(OffsetCacheState(await repository.entries));
   }
 
-  void add(Offset offset) {
-    repository.put(offset).whenComplete(() => _emitState());
+  Future<void> add(Offset offset) {
+    return repository.put(offset).whenComplete(() => _emitState());
   }
 
-  void remove(Offset offset) {
-    repository.remove(offset).whenComplete(() => _emitState());
+  Future<void> remove(Offset offset) {
+    return repository.remove(offset).whenComplete(() => _emitState());
   }
 
-  void reload() {
+  Future<void> reload() async {
     // get server offsets
     // merge with local offsets
     // update server with newer offsets (async)
     // emit current state
-    clientRepository
+    await clientRepository
         .progress(ttl: Duration.zero)
         .then((view) => repository.merge(view.offsets))
         .then((newer) {

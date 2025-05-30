@@ -60,8 +60,8 @@ class _SelectPlaylistWidget extends ClientPage<PlaylistsView> {
   _SelectPlaylistWidget({required this.onSelected});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.playlists(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.playlists(ttl: ttl);
   }
 
   @override
@@ -95,8 +95,8 @@ class PlaylistsWidget extends ClientPage<PlaylistsView> {
   PlaylistsWidget({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.playlists(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.playlists(ttl: ttl);
   }
 
   @override

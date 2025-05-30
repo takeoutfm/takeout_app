@@ -33,8 +33,8 @@ class ProfileWidget extends ClientPage<ProfileView> {
   ProfileWidget(this._person, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.profile(_person.peid, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.profile(_person.peid, ttl: ttl);
   }
 
   @override

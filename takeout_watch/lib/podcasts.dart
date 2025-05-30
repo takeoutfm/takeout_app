@@ -67,15 +67,17 @@ class SeriesPage extends ClientPage<SeriesView> {
   SeriesPage(this.series, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.series(series.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.series(series.id, ttl: ttl);
   }
 
   @override
-  void reload(BuildContext context) {
-    super.reload(context);
-    // force reload offsets
-    context.offsets.reload();
+  Future<void> reload(BuildContext context) async {
+    await super.reload(context);
+    if (context.mounted) {
+      // force reload offsets
+      await context.offsets.reload();
+    }
   }
 
   @override

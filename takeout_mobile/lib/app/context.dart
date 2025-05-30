@@ -17,10 +17,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_mobile/film.dart';
+import 'package:takeout_mobile/l10n/app_localizations.dart';
 
 import 'app.dart';
 

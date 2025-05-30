@@ -17,16 +17,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/history/history.dart';
+import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/menu.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/spiff/widget.dart';
 import 'package:takeout_mobile/style.dart';
 import 'package:takeout_mobile/tiles.dart';
-import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/history/history.dart';
-import 'package:takeout_lib/history/model.dart';
-import 'package:takeout_lib/util.dart';
 
 class HistoryListWidget extends StatelessWidget {
   const HistoryListWidget({super.key});
@@ -34,38 +33,28 @@ class HistoryListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final historyCubit = context.watch<HistoryCubit>();
-    final builder = (_) {
-      final history = historyCubit.state.history;
-      final spiffs = List<SpiffHistory>.from(history.spiffs);
-      spiffs.sort((a, b) => b.dateTime.compareTo(a.dateTime));
-      return Scaffold(
-          appBar: AppBar(
-            title: header(context.strings.historyLabel),
-            actions: [
-              popupMenu(context, [
-                PopupItem.streamHistory(
-                    context, (ctx) => _onStreamHistory(ctx)),
-                PopupItem.delete(context, context.strings.deleteAll,
-                    (ctx) => _onDelete(ctx)),
-              ])
-            ],
-          ),
-          body: Column(children: [
-            Expanded(
-                child: ListView.builder(
-                    itemCount: spiffs.length,
-                    itemBuilder: (buildContext, index) {
-                      return SpiffHistoryTile(spiffs[index]);
-                    }))
-          ]));
-    };
-    return Navigator(
-        key: key,
-        initialRoute: '/',
-        observers: [heroController()],
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute<void>(builder: builder, settings: settings);
-        });
+    final history = historyCubit.state.history;
+    final spiffs = List<SpiffHistory>.from(history.spiffs);
+    spiffs.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return Scaffold(
+        appBar: AppBar(
+          title: header(context.strings.historyLabel),
+          actions: [
+            popupMenu(context, [
+              PopupItem.streamHistory(context, (ctx) => _onStreamHistory(ctx)),
+              PopupItem.delete(
+                  context, context.strings.deleteAll, (ctx) => _onDelete(ctx)),
+            ])
+          ],
+        ),
+        body: Column(children: [
+          Expanded(
+              child: ListView.builder(
+                  itemCount: spiffs.length,
+                  itemBuilder: (buildContext, index) {
+                    return SpiffHistoryTile(spiffs[index]);
+                  }))
+        ]));
   }
 
   void _onDelete(BuildContext context) {
@@ -111,9 +100,6 @@ Widget _streamTrackList(BuildContext context) {
 
     return Column(children: [
       Expanded(
-
-
-
           child: ListView.builder(
               itemCount: tracks.length,
               itemBuilder: (buildContext, index) {

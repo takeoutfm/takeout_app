@@ -37,8 +37,8 @@ class RadioPage extends ClientPage<RadioView> {
   RadioPage({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.radio(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.radio(ttl: ttl);
   }
 
   @override

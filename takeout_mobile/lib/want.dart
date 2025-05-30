@@ -31,8 +31,8 @@ class ArtistWantListWidget extends ClientPage<WantListView> {
   ArtistWantListWidget(this._artist, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.artistWantList(_artist.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.artistWantList(_artist.id, ttl: ttl);
   }
 
   @override

@@ -117,10 +117,10 @@ extension TakeoutContext on BuildContext {
     clientRepository.tvEpisodePlaylist(episode.id).then((spiff) => download(spiff));
   }
 
-  void reload() {
-    index.reload();
-    search.reload();
-    offsets.reload();
+  Future<void> reload() async {
+    await index.reload();
+    await search.reload();
+    await offsets.reload();
   }
 
   void removeDownloads() {

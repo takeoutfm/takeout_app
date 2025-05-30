@@ -48,23 +48,23 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     load();
   }
 
-  void load({Duration? ttl}) {
-    clientRepository.playlist(ttl: ttl).then((spiff) {
+  Future<void> load({Duration? ttl}) async {
+    await clientRepository.playlist(ttl: ttl).then((spiff) {
       emit(PlaylistLoad(spiff));
     }).onError((error, stackTrace) {});
   }
 
-  void reload() {
-    load(ttl: Duration.zero);
+  Future<void> reload() {
+    return load(ttl: Duration.zero);
   }
 
-  void sync() {
-    clientRepository.playlist(ttl: Duration.zero).then((spiff) {
+  Future<void> sync() async {
+    return clientRepository.playlist(ttl: Duration.zero).then((spiff) {
       emit(PlaylistSync(spiff));
     }).onError((error, stackTrace) {});
   }
 
-  void replace(
+  Future<void> replace(
     String ref, {
     int index = 0,
     double position = 0.0,
@@ -72,8 +72,8 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     String? creator = '',
     String? title = '',
     bool shuffle = false,
-  }) {
-    clientRepository
+  }) async {
+    await clientRepository
         .replace(ref,
             index: index,
             position: position,
@@ -101,9 +101,9 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     });
   }
 
-  void update({int index = 0, double position = 0.0}) {
+  Future<void> update({int index = 0, double position = 0.0}) async {
     final body = patchPosition(index, position);
-    clientRepository.patch(body).then((result) {
+    await clientRepository.patch(body).then((result) {
       // TODO
     }).onError((error, stackTrace) {
       // TODO

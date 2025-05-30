@@ -35,15 +35,15 @@ import 'release.dart';
 import 'style.dart';
 import 'want.dart';
 
-class ArtistsWidget extends NavigatorClientPage<ArtistsView> {
+class ArtistsWidget extends ClientPage<ArtistsView> {
   final String? genre;
   final String? area;
 
   ArtistsWidget({this.genre, this.area, super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.artists(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.artists(ttl: ttl);
   }
 
   @override
@@ -132,8 +132,8 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
   ArtistWidget(this._artist, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.artist(_artist.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.artist(_artist.id, ttl: ttl);
   }
 
   @override

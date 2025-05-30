@@ -17,15 +17,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/cache/spiff.dart';
+import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/buttons.dart';
 import 'package:takeout_mobile/tiles.dart';
-import 'package:takeout_lib/api/model.dart';
-import 'package:takeout_lib/cache/spiff.dart';
-import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/spiff/model.dart';
 
 import 'downloads.dart';
 import 'menu.dart';
@@ -35,7 +35,7 @@ import 'style.dart';
 const radioCreator = 'Radio';
 const radioStream = 'stream';
 
-class RadioWidget extends NavigatorClientPage<RadioView> {
+class RadioWidget extends ClientPage<RadioView> {
   RadioWidget({super.key});
 
   List<Spiff> _radioFilter(Iterable<Spiff> entries) {
@@ -45,8 +45,8 @@ class RadioWidget extends NavigatorClientPage<RadioView> {
   }
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.radio(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.radio(ttl: ttl);
   }
 
   @override

@@ -22,7 +22,7 @@ import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_watch/app/app.dart';
 import 'package:takeout_watch/app/bloc.dart';
 import 'package:takeout_watch/app/context.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:takeout_watch/l10n/app_localizations.dart';
 
 import 'connect.dart';
 import 'home.dart';

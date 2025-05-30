@@ -27,18 +27,16 @@ import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/player.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_watch/app/context.dart';
-import 'package:takeout_watch/dialog.dart';
 import 'package:takeout_watch/list.dart';
 import 'package:takeout_watch/media.dart';
-import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/settings.dart';
 
 class ShowsPage extends ClientPage<TVShowsView> {
   ShowsPage({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.shows(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.shows(ttl: ttl);
   }
 
   @override
@@ -60,8 +58,8 @@ class TVSeriesPage extends ClientPage<TVSeriesView> {
   TVSeriesPage(this.series, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.tvSeries(series.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.tvSeries(series.id, ttl: ttl);
   }
 
   @override
@@ -119,8 +117,8 @@ class TVEpisodePage extends ClientPage<TVEpisodeView> {
   TVEpisodePage(this.episode, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.tvEpisode(episode.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.tvEpisode(episode.id, ttl: ttl);
   }
 
   @override

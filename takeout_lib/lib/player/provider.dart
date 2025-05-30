@@ -76,30 +76,32 @@ abstract class PlayerProvider {
     PositionInterval? positionInterval,
   });
 
-  void load(Spiff spiff,
+  Future<void> load(Spiff spiff,
       {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat});
 
-  void play();
+  Future<void> play();
 
-  void playIndex(int index);
+  Future<void> playIndex(int index);
 
-  void pause();
+  Future<void> pause();
 
-  void stop();
+  Future<void> stop();
 
-  void seek(Duration position);
+  Future<void> seek(Duration position);
 
-  void skipForward();
+  Future<void> skipForward();
 
-  void skipBackward();
+  Future<void> skipBackward();
 
-  void skipToIndex(int index);
+  Future<void> skipToIndex(int index);
 
-  void skipToNext();
+  Future<void> skipToNext();
 
-  void skipToPrevious();
+  Future<void> skipToPrevious();
 
-  void repeatMode(RepeatMode repeat);
+  Future<void> repeatMode(RepeatMode repeat);
+
+  Future<void> dispose();
 }
 
 class DefaultPlayerProvider implements PlayerProvider {
@@ -149,41 +151,43 @@ class DefaultPlayerProvider implements PlayerProvider {
   }
 
   @override
-  void load(Spiff spiff,
-      {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat}) {
-    handler.load(spiff, onLoad: onLoad, autoCache: autoCache, repeat: repeat);
-  }
+  Future<void> load(Spiff spiff,
+          {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat}) =>
+      handler.load(spiff, onLoad: onLoad, autoCache: autoCache, repeat: repeat);
 
   @override
-  void play() => handler.play();
+  Future<void> play() => handler.play();
 
   @override
-  void playIndex(int index) => handler.playIndex(index);
+  Future<void> playIndex(int index) => handler.playIndex(index);
 
   @override
-  void pause() => handler.pause();
+  Future<void> pause() => handler.pause();
 
   @override
-  void stop() => handler.stop();
+  Future<void> stop() => handler.stop();
 
   @override
-  void seek(Duration position) => handler.seek(position);
+  Future<void> seek(Duration position) => handler.seek(position);
 
   @override
-  void skipForward() => handler.fastForward();
+  Future<void> skipForward() => handler.fastForward();
 
   @override
-  void skipBackward() => handler.rewind();
+  Future<void> skipBackward() => handler.rewind();
 
   @override
-  void skipToIndex(int index) => handler.skipToQueueItem(index);
+  Future<void> skipToIndex(int index) => handler.skipToQueueItem(index);
 
   @override
-  void skipToNext() => handler.skipToNext();
+  Future<void> skipToNext() => handler.skipToNext();
 
   @override
-  void skipToPrevious() => handler.skipToPrevious();
+  Future<void> skipToPrevious() => handler.skipToPrevious();
 
   @override
-  void repeatMode(RepeatMode repeat) => handler.repeatMode(repeat);
+  Future<void> repeatMode(RepeatMode repeat) => handler.repeatMode(repeat);
+
+  @override
+  Future<void> dispose() => handler.dispose();
 }

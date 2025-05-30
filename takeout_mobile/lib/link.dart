@@ -17,9 +17,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/empty.dart';
+import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/dialog.dart';
 
 class LinkWidget extends ClientPage<bool> {
@@ -31,13 +31,13 @@ class LinkWidget extends ClientPage<bool> {
   LinkWidget({super.key}) : super(value: false);
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
+  Future<void> load(BuildContext context, {Duration? ttl}) async {
     final user = _userText.text.trim();
     final password = _passwordText.text.trim();
     final passcode = _passcodeText.text.trim();
     final code = _codeText.text.trim();
     if (user.isNotEmpty && password.isNotEmpty && code.isNotEmpty) {
-      context.client.link(
+      await context.client.link(
         code: code,
         user: user,
         password: password,

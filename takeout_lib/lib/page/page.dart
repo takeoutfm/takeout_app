@@ -57,14 +57,14 @@ abstract mixin class ClientPageBuilder<T> {
             onPressed: () => reloadPage(context)));
   }
 
-  Future<void> reloadPage(BuildContext context) async {
-    reload(context);
+  Future<void> reloadPage(BuildContext context) {
+    return reload(context);
   }
 
-  void load(BuildContext context, {Duration? ttl});
+  Future<void> load(BuildContext context, {Duration? ttl});
 
-  void reload(BuildContext context) {
-    load(context, ttl: Duration.zero);
+  Future<void> reload(BuildContext context) {
+    return load(context, ttl: Duration.zero);
   }
 }
 
@@ -76,21 +76,5 @@ abstract class ClientPage<T> extends StatelessWidget with ClientPageBuilder<T> {
   @override
   Widget build(BuildContext context) {
     return builder(context, value: value)(context);
-  }
-}
-
-abstract class NavigatorClientPage<T> extends ClientPage<T> {
-  NavigatorClientPage({super.key, super.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Navigator(
-        key: key,
-        initialRoute: '/',
-        observers: [heroController()],
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(
-              builder: builder(context, value: value), settings: settings);
-        });
   }
 }

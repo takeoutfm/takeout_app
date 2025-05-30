@@ -110,7 +110,6 @@ class AppBloc extends TakeoutBloc {
   }
 
   void _handleIntent(BuildContext context, IntentAction intent) {
-    //print('got ${intent.action}');
     switch (intent.action) {
       case 'com.takeoutfm.action.PLAY_ARTIST':
         final artist = intent.parameters?['artist'];

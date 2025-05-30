@@ -57,19 +57,9 @@ class HomeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final builder = Builder(builder: (context) {
-      final indexState = context.watch<IndexCubit>().state;
-      final mediaTypeState = context.watch<MediaTypeCubit>().state;
-      return _grid(context, indexState, mediaTypeState);
-    });
-    return Navigator(
-        key: key,
-        initialRoute: '/',
-        observers: [heroController()],
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(
-              builder: (context) => builder.build(context), settings: settings);
-        });
+    final indexState = context.watch<IndexCubit>().state;
+    final mediaTypeState = context.watch<MediaTypeCubit>().state;
+    return _grid(context, indexState, mediaTypeState);
   }
 
   void _onMovie(BuildContext context, Movie movie) => Navigator.of(context)
@@ -167,35 +157,38 @@ class HomeWidget extends StatelessWidget {
 
   Widget _appBar(BuildContext context, IndexState state, MediaType mediaType) {
     const iconSize = 22.0;
-    final selectedColor = Theme.of(context).indicatorColor;
-    final buttons = SplayTreeMap<MediaType, IconButton>(
-        (a, b) => a.index.compareTo(b.index));
+    final buttons =
+        SplayTreeMap<MediaType, Widget>((a, b) => a.index.compareTo(b.index));
     if (state.music) {
       buttons[MediaType.music] = IconButton(
           iconSize: iconSize,
-          color: mediaType == MediaType.music ? selectedColor : null,
-          icon: const Icon(Icons.audiotrack),
+          icon: mediaType == MediaType.music
+              ? const Icon(Icons.audiotrack)
+              : const Icon(Icons.audiotrack_outlined),
           onPressed: () => _onMusicSelected(context));
     }
     if (state.movies) {
       buttons[MediaType.film] = IconButton(
           iconSize: iconSize,
-          color: mediaType == MediaType.film ? selectedColor : null,
-          icon: const Icon(Icons.movie),
+          icon: mediaType == MediaType.film
+              ? const Icon(Icons.movie)
+              : const Icon(Icons.movie_outlined),
           onPressed: () => _onFilmSelected(context));
     }
     if (state.shows) {
       buttons[MediaType.tv] = IconButton(
           iconSize: iconSize,
-          color: mediaType == MediaType.tv ? selectedColor : null,
-          icon: const Icon(Icons.tv),
+          icon: mediaType == MediaType.tv
+              ? const Icon(Icons.tv)
+              : const Icon(Icons.tv_outlined),
           onPressed: () => _onTVSelected(context));
     }
     if (state.podcasts) {
       buttons[MediaType.podcast] = IconButton(
           iconSize: iconSize,
-          color: mediaType == MediaType.podcast ? selectedColor : null,
-          icon: const Icon(Icons.podcasts),
+          icon: mediaType == MediaType.podcast
+              ? const Icon(Icons.podcasts)
+              : const Icon(Icons.podcasts_outlined),
           onPressed: () => _onPodcastsSelected(context));
     }
     final iconBar = <Widget>[];
@@ -329,9 +322,11 @@ abstract class ViewGrid<T> extends ClientPage<T> with _GridTile<T> {
   ViewGrid(this.appBar, {super.key});
 
   @override
-  void reload(BuildContext context) {
-    super.reload(context);
-    context.reload();
+  Future<void> reload(BuildContext context) async {
+    await super.reload(context);
+    if (context.mounted) {
+      await context.reload();
+    }
   }
 
   @override
@@ -380,8 +375,8 @@ class HomeViewGrid extends ViewGrid<HomeView> {
   });
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.home(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.home(ttl: ttl);
   }
 
   @override
@@ -414,8 +409,8 @@ class MoviesViewGrid extends ViewGrid<MoviesView> {
   });
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.movies(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.movies(ttl: ttl);
   }
 
   @override
@@ -447,8 +442,8 @@ class TVShowsViewGrid extends ViewGrid<TVShowsView> {
   });
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.shows(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.shows(ttl: ttl);
   }
 
   @override
@@ -482,8 +477,8 @@ class PodcastsViewGrid extends ViewGrid<PodcastsView> {
   });
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.podcasts(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.podcasts(ttl: ttl);
   }
 
   @override

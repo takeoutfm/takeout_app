@@ -33,8 +33,8 @@ class ArtistRepository {
     return _provider.findArtist(name);
   }
 
-  void reload() {
-    _provider.reload();
+  Future<void> reload() {
+    return _provider.reload();
   }
 }
 
@@ -43,7 +43,7 @@ abstract class ArtistProvider {
 
   Artist? findArtist(String name);
 
-  void reload();
+  Future<void> reload();
 }
 
 class DefaultArtistProvider extends ArtistProvider {
@@ -58,12 +58,12 @@ class DefaultArtistProvider extends ArtistProvider {
   }
 
   @override
-  void reload() {
-    _load(ttl: Duration.zero);
+  Future<void> reload() {
+    return _load(ttl: Duration.zero);
   }
 
-  void _load({Duration? ttl}) {
-    clientRepository.artists(ttl: ttl).then((view) {
+  Future<void> _load({Duration? ttl}) async {
+    return clientRepository.artists(ttl: ttl).then((view) {
       artists.clear();
       names.clear();
       genres.clear();

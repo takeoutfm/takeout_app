@@ -35,7 +35,7 @@ import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/util.dart';
 
-typedef FetchSpiff = void Function(ClientCubit, {Duration? ttl});
+typedef FetchSpiff = Future<void> Function(ClientCubit, {Duration? ttl});
 
 Icon _spiffPlayIcon(Spiff spiff) {
   return spiff.index > 0 ? resumeIcon : playIcon;
@@ -48,8 +48,8 @@ class SpiffWidget extends ClientPage<Spiff> {
   SpiffWidget({super.key, super.value, this.fetch, this.ref});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    fetch?.call(context.client, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) async {
+    await fetch?.call(context.client, ttl: ttl);
   }
 
   List<Widget>? actions(

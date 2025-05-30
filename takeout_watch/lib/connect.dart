@@ -50,8 +50,8 @@ class CodePage extends ClientPage<AccessCode> {
   CodePage({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.code();
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.code();
   }
 
   void check(BuildContext context, AccessCode state) {

@@ -50,7 +50,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final OffsetCacheRepository offsetRepository;
   final MediaRepository mediaRepository;
 
-  final AudioPlayer _player = AudioPlayer(); //AudioPlayer(maxSkipsOnError: 1);
+  final AudioPlayer _player = AudioPlayer(maxSkipsOnError: 1);
   final PlayCallback onPlay;
   final PauseCallback onPause;
   final StoppedCallback onStop;
@@ -369,11 +369,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     return duration > Duration.zero && position >= d;
   }
 
-  void dispose() {
-    for (var subscription in _subscriptions) {
-      subscription.cancel();
-    }
-  }
+  // void dispose() {
+  //   for (var subscription in _subscriptions) {
+  //     subscription.cancel();
+  //   }
+  // }
 
   Future<MediaItem> _map(Entry entry) async {
     final endpoint = settingsRepository.settings?.endpoint;
@@ -480,12 +480,12 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     // setAudioSource triggers events so use the correct index and position even though
     // skipToQueueItem does the same thing next.
     // also ensure _spiff is correct since events are triggered
-    // await _player.setAudioSources(sources,
-    //     initialIndex: index, initialPosition: position);
-    final source = ConcatenatingAudioSource(children: []);
-    await source.addAll(sources);
-    await _player.setAudioSource(source,
+    await _player.setAudioSources(sources,
         initialIndex: index, initialPosition: position);
+    // final source = ConcatenatingAudioSource(children: []);
+    // await source.addAll(sources);
+    // await _player.setAudioSource(source,
+    //     initialIndex: index, initialPosition: position);
 
     await skipToQueueItem(index);
 
@@ -513,6 +513,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   Future<void> skipToQueueItem(int index) async {
     Duration? position;
 
+    if (index == -1) {
+      // audio_service will send -1 if the current index is 0
+      index = 0;
+    }
+
     // restore position from server saved offset
     final offset = await offsetRepository.get(_spiff.playlist.tracks[index]);
     position = offset?.position();
@@ -537,12 +542,16 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     }
 
     if (index != currentIndex) {
+      // TODO - the below is also in the currentIndexStream listener
+      // and happening twice. comment for now to see if this is ok.
+
       // keep the spiff updated
-      _spiff = _spiff.copyWith(index: index);
-      onIndexChange(_spiff, _player.playing);
+      // _spiff = _spiff.copyWith(index: index);
+      // onIndexChange(_spiff, _player.playing);
 
       // update the current media item
-      mediaItem.add(_queue[index]);
+      // mediaItem.add(_queue[index]);
+
       playbackState.add(playbackState.value.copyWith(queueIndex: index));
     }
 
@@ -590,6 +599,10 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     playbackState.add(playbackState.value.copyWith(
       processingState: AudioProcessingState.idle,
     ));
+  }
+
+  Future<void> dispose() {
+    return _player.dispose();
   }
 
   @override

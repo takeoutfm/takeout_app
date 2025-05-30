@@ -62,49 +62,40 @@ class PlayerWidget extends StatelessWidget {
       popupMenu(context, [
         PopupItem.syncPlaylist(context, _onSyncPlaylist),
         PopupItem.playlists(context, _onPlaylists),
+        PopupItem.delete(context, 'Stop', (context) {
+          context.player.stop();
+        }),
       ])
     ];
   }
 
   @override
-  Widget build(BuildContext context) {
-    final builder = (BuildContext context) => PlayerScaffold(
-        body: (backgroundColor) => CustomScrollView(slivers: [
-              SliverAppBar(
-                  automaticallyImplyLeading: false,
-                  expandedHeight: MediaQuery.of(context).size.height / 3,
-                  actions: actions(context),
-                  backgroundColor: backgroundColor,
-                  flexibleSpace: FlexibleSpaceBar(
-                    stretchModes: const [
-                      // StretchMode.zoomBackground,
-                      StretchMode.fadeTitle
-                    ],
-                    background: Container(
-                        padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
-                        child: playerImage(context)),
-                    // background: Stack(fit: StackFit.expand, children: [
-                    //   playerImage(context),
-                    // ]),
-                  )),
-              SliverToBoxAdapter(
-                  child: Container(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                      child: Column(children: [
-                        playerTitle(context),
-                        playerArtist(context),
-                        playerControls(context),
-                        playerSeekBar(context),
-                      ]))),
-              SliverToBoxAdapter(child: playerQueue(context)),
-            ]));
-    return Navigator(
-        key: key,
-        initialRoute: '/',
-        onGenerateRoute: (RouteSettings settings) {
-          return MaterialPageRoute(builder: builder, settings: settings);
-        });
-  }
+  Widget build(BuildContext context) => PlayerScaffold(
+      body: (backgroundColor) => CustomScrollView(slivers: [
+            SliverAppBar(
+                automaticallyImplyLeading: false,
+                expandedHeight: MediaQuery.of(context).size.height / 3,
+                actions: actions(context),
+                backgroundColor: backgroundColor,
+                flexibleSpace: FlexibleSpaceBar(
+                  stretchModes: const [
+                    StretchMode.fadeTitle
+                  ],
+                  background: Container(
+                      padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
+                      child: playerImage(context)),
+                )),
+            SliverToBoxAdapter(
+                child: Container(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Column(children: [
+                      playerTitle(context),
+                      playerArtist(context),
+                      playerControls(context),
+                      playerSeekBar(context),
+                    ]))),
+            SliverToBoxAdapter(child: playerQueue(context)),
+          ]));
 
   Widget playerImage(BuildContext context) {
     return BlocBuilder<Player, PlayerState>(
@@ -228,13 +219,13 @@ class PlayerWidget extends StatelessWidget {
 
   Widget _seekBar(
       Player player, Duration duration, Duration position, bool playing) {
-    return Container(
+    return RepaintBoundary(child: Container(
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
         child: SeekBar(
             playing: playing,
             duration: duration,
             position: position,
-            onChangeEnd: (newPosition) => player.seek(newPosition)));
+            onChangeEnd: (newPosition) => player.seek(newPosition))));
   }
 
   Widget _controlButtons(BuildContext context, PlayerPositionState state) {

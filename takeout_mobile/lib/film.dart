@@ -48,8 +48,8 @@ class MovieWidget extends ClientPage<MovieView> {
   MovieWidget(this._movie, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.movie(_movie.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.movie(_movie.id, ttl: ttl);
   }
 
   @override
@@ -242,8 +242,8 @@ class GenreWidget extends ClientPage<GenreView> {
   GenreWidget(this._genre, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.moviesGenre(_genre, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.moviesGenre(_genre, ttl: ttl);
   }
 
   @override

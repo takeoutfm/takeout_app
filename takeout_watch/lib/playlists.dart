@@ -28,8 +28,8 @@ class PlaylistsPage extends ClientPage<PlaylistsView> {
   PlaylistsPage({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.playlists(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.playlists(ttl: ttl);
   }
 
   @override

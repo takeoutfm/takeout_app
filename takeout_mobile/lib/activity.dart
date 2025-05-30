@@ -34,8 +34,8 @@ class TrackStatsWidget extends ClientPage<TrackStatsView> {
   TrackStatsWidget({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.trackStats(ttl: ttl, interval: context.stats.state.interval);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.trackStats(ttl: ttl, interval: context.stats.state.interval);
   }
 
   @override
@@ -123,8 +123,8 @@ class TrackHistoryWidget extends ClientPage<TrackHistoryView> {
   TrackHistoryWidget({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.recentTracks(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.recentTracks(ttl: ttl);
   }
 
   @override

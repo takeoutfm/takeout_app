@@ -49,8 +49,8 @@ class TVSeriesWidget extends ClientPage<TVSeriesView> {
   TVSeriesWidget(this._series, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.tvSeries(_series.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.tvSeries(_series.id, ttl: ttl);
   }
 
   @override
@@ -213,10 +213,6 @@ class TVSeriesWidget extends ClientPage<TVSeriesView> {
         : DownloadButton(onPressed: () => _onDownload(context));
   }
 
-  void _onPlay(BuildContext context, MovieView view, Duration startOffset) {
-    // playMovie(context, TV(view), startOffset: startOffset);
-  }
-
   void _onDownload(BuildContext context) {
     // context.downloadMovie(_movie);
   }
@@ -344,8 +340,8 @@ class TVEpisodeWidget extends ClientPage<TVEpisodeView> {
   TVEpisodeWidget(this._episode, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.tvEpisode(_episode.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.tvEpisode(_episode.id, ttl: ttl);
   }
 
   @override
@@ -491,10 +487,6 @@ class TVEpisodeWidget extends ClientPage<TVEpisodeView> {
 
   void _onDownload(BuildContext context) {
     context.downloadTVEpisode(_episode);
-  }
-
-  void _onGenre(BuildContext context, String genre) {
-    // push(context, builder: (_) => GenreWidget(genre
   }
 }
 

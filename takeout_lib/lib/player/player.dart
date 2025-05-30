@@ -253,37 +253,41 @@ class Player extends Cubit<PlayerState> {
         .whenComplete(() => emit(PlayerReady()));
   }
 
-  void load(Spiff spiff,
-      {bool autoPlay = false, bool autoCache = false, RepeatMode? repeat}) {
-    _provider.load(spiff,
-        autoCache: autoCache,
-        repeat: repeat,
-        onLoad: (spiff, position, playing, buffering) => emit(PlayerLoad(spiff,
-            autoPlay: autoPlay,
-            autoCache: autoCache,
-            buffering: buffering,
-            playing: playing)));
-  }
+  Future<void> load(Spiff spiff,
+          {bool autoPlay = false,
+          bool autoCache = false,
+          RepeatMode? repeat}) =>
+      _provider.load(spiff,
+          autoCache: autoCache,
+          repeat: repeat,
+          onLoad: (spiff, position, playing, buffering) => emit(PlayerLoad(
+              spiff,
+              autoPlay: autoPlay,
+              autoCache: autoCache,
+              buffering: buffering,
+              playing: playing)));
 
-  void play() => _provider.play();
+  Future<void> play() => _provider.play();
 
-  void playIndex(int index) => _provider.playIndex(index);
+  Future<void> playIndex(int index) => _provider.playIndex(index);
 
-  void pause() => _provider.pause();
+  Future<void> pause() => _provider.pause();
 
-  void stop() => _provider.stop();
+  Future<void> stop() => _provider.stop();
 
-  void seek(Duration position) => _provider.seek(position);
+  Future<void> seek(Duration position) => _provider.seek(position);
 
-  void skipForward() => _provider.skipForward();
+  Future<void> skipForward() => _provider.skipForward();
 
-  void skipBackward() => _provider.skipBackward();
+  Future<void> skipBackward() => _provider.skipBackward();
 
-  void skipToIndex(int index) => _provider.skipToIndex(index);
+  Future<void> skipToIndex(int index) => _provider.skipToIndex(index);
 
-  void skipToNext() => _provider.skipToNext();
+  Future<void> skipToNext() => _provider.skipToNext();
 
-  void skipToPrevious() => _provider.skipToPrevious();
+  Future<void> skipToPrevious() => _provider.skipToPrevious();
 
-  void repeatMode(RepeatMode repeat) => _provider.repeatMode(repeat);
+  Future<void> repeatMode(RepeatMode repeat) => _provider.repeatMode(repeat);
+
+  Future<void> dispose() => _provider.dispose();
 }

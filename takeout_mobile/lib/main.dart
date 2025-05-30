@@ -19,17 +19,18 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
 import 'package:takeout_lib/context/bloc.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/log/basic_printer.dart';
 import 'package:takeout_lib/player/player.dart';
+import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/history/widget.dart';
+import 'package:takeout_mobile/l10n/app_localizations.dart';
 import 'package:takeout_mobile/player/widget.dart';
 
 import 'artists.dart';
@@ -57,6 +58,7 @@ class TakeoutApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('app build');
     return AppBloc().init(context, child: DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
       final light = ThemeData.light(useMaterial3: true);
@@ -104,9 +106,37 @@ class _TakeoutWidget extends StatefulWidget {
 
 class _TakeoutState extends State<_TakeoutWidget>
     with AppBlocState, WidgetsBindingObserver {
+  static final _navigators = {
+    NavigationIndex.home: GlobalKey<NavigatorState>(),
+    NavigationIndex.artists: GlobalKey<NavigatorState>(),
+    NavigationIndex.history: GlobalKey<NavigatorState>(),
+    NavigationIndex.radio: GlobalKey<NavigatorState>(),
+    NavigationIndex.player: GlobalKey<NavigatorState>(),
+  };
+
+  NavigatorState? _navigatorState(NavigationIndex index) =>
+      _navigators[index]?.currentState;
+
+  List<Widget> pages = [];
+
   @override
   void initState() {
     super.initState();
+
+    pages = [
+      navigatorPage(
+          HomeWidget(
+            (context) => Navigator.push(context,
+                MaterialPageRoute<void>(builder: (_) => SearchWidget())),
+          ),
+          key: _navigators[NavigationIndex.home]),
+      navigatorPage(ArtistsWidget(), key: _navigators[NavigationIndex.artists]),
+      navigatorPage(HistoryListWidget(),
+          key: _navigators[NavigationIndex.history]),
+      navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),
+      navigatorPage(PlayerWidget(), key: _navigators[NavigationIndex.player]),
+    ];
+
     WidgetsBinding.instance.addObserver(this);
     appInitState(context);
   }
@@ -125,76 +155,15 @@ class _TakeoutState extends State<_TakeoutWidget>
     }
   }
 
-  // This will auto-pause playback for remote media when streaming is disabled.
-  // void _onMediaItem(MediaItem? mediaItem) {
-  //   if (audioHandler.playbackState.hasValue &&
-  //       audioHandler.playbackState.value == true) {
-  //     final streaming = mediaItem?.isRemote() ?? false;
-  //     if (streaming && allowStreaming(connectivityStream.value) == false) {
-  //       log.finer('mediaItem pause due to loss of wifi');
-  //       audioHandler.pause();
-  //     }
-  //   }
-  // }
-
-  // Future<LiveClient> _createLiveClient(Client client) async {
-  //   final token = await client.getAccessToken();
-  //   final url = await client.getEndpoint();
-  //   final uri = Uri.parse(url);
-  //   return LiveClient('${uri.host}:${uri.port}', token!);
-  // }
-  //
-  // LiveFollow? _liveFollow;
-  // LiveShare? _liveShare;
-  //
-  // void _onLiveChange(LiveType liveType) async {
-  //   _liveFollow?.stop();
-  //   _liveFollow = null;
-  //   _liveShare?.stop();
-  //   _liveShare = null;
-  //   if (liveType == LiveType.none) {
-  //     return;
-  //   }
-  //   final client = Client();
-  //   final live = await _createLiveClient(client);
-  //   if (liveType == LiveType.follow) {
-  //     _liveFollow = LiveFollow(live, audioHandler);
-  //     _liveFollow!.start();
-  //   } else if (settingsLiveType() == LiveType.share) {
-  //     _liveShare = LiveShare(live, audioHandler);
-  //     _liveShare!.start();
-  //   }
-  // }
-  //
-  // void _live() async {
-  //   // start with the current value
-  //   _onLiveChange(settingsLiveType());
-  //   // listen for changes
-  //   settingsChangeSubject.listen((setting) {
-  //     if (setting == settingLiveMode) {
-  //       _onLiveChange(settingsLiveType());
-  //     }
-  //   });
-  // }
-
-  static final _routes = [
-    '/home',
-    '/artists',
-    '/history',
-    '/radio',
-    '/player',
-  ];
-
-  static final _navigatorKeys = {
-    NavigationIndex.home: GlobalKey<NavigatorState>(),
-    NavigationIndex.artists: GlobalKey<NavigatorState>(),
-    NavigationIndex.history: GlobalKey<NavigatorState>(),
-    NavigationIndex.radio: GlobalKey<NavigatorState>(),
-    NavigationIndex.player: GlobalKey<NavigatorState>(),
-  };
-
-  NavigatorState? _navigatorState(NavigationIndex index) =>
-      _navigatorKeys[index]?.currentState;
+  Widget navigatorPage(Widget page, {Key? key}) {
+    return Navigator(
+      key: key,
+      observers: [heroController()],
+      onGenerateRoute: (settings) {
+        return MaterialPageRoute(builder: (_) => page, settings: settings);
+      },
+    );
+  }
 
   void _onNavTapped(BuildContext context, int index) {
     final currentIndex = context.app.state.navigationBarIndex;
@@ -216,9 +185,6 @@ class _TakeoutState extends State<_TakeoutWidget>
       if (state.authenticated == false) {
         return LoginWidget();
       }
-      final builders = _pageBuilders();
-      final pages = List.generate(
-          _routes.length, (index) => builders[_routes[index]]!(context));
       final navIndex = context.app.state.index;
       return PopScope(
           canPop: false,
@@ -293,23 +259,33 @@ class _TakeoutState extends State<_TakeoutWidget>
           type: BottomNavigationBarType.fixed,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: const Icon(Icons.home),
+              icon: index == NavigationIndex.home.index
+                  ? const Icon(Icons.home)
+                  : const Icon(Icons.home_outlined),
               label: context.strings.navHome,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.people_alt),
+              icon: index == NavigationIndex.artists.index
+                  ? const Icon(Icons.people_alt)
+                  : const Icon(Icons.people_alt_outlined),
               label: context.strings.navArtists,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.history),
+              icon: index == NavigationIndex.history.index
+                  ? const Icon(Icons.history)
+                  : const Icon(Icons.history_outlined),
               label: context.strings.navHistory,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.radio),
+              icon: index == NavigationIndex.radio.index
+                  ? const Icon(Icons.radio)
+                  : const Icon(Icons.radio_outlined),
               label: context.strings.navRadio,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.queue_music),
+              icon: index == NavigationIndex.player.index
+                  ? const Icon(Icons.queue_music)
+                  : const Icon(Icons.queue_music_outlined),
               label: context.strings.navPlayer,
             ),
           ],
@@ -318,22 +294,5 @@ class _TakeoutState extends State<_TakeoutWidget>
         );
       }),
     ]);
-  }
-
-  Map<String, WidgetBuilder> _pageBuilders() {
-    final builders = {
-      '/home': (_) => HomeWidget(
-          (ctx) => Navigator.push(
-              ctx, MaterialPageRoute<void>(builder: (_) => SearchWidget())),
-          key: _navigatorKeys[NavigationIndex.home]),
-      '/artists': (_) =>
-          ArtistsWidget(key: _navigatorKeys[NavigationIndex.artists]),
-      '/history': (_) =>
-          HistoryListWidget(key: _navigatorKeys[NavigationIndex.history]),
-      '/radio': (_) => RadioWidget(key: _navigatorKeys[NavigationIndex.radio]),
-      '/player': (_) =>
-          PlayerWidget(key: _navigatorKeys[NavigationIndex.player])
-    };
-    return builders;
   }
 }

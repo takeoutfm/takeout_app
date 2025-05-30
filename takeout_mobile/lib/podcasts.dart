@@ -42,8 +42,8 @@ class SeriesWidget extends ClientPage<SeriesView> {
   SeriesWidget(this._series, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.series(_series.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.series(_series.id, ttl: ttl);
   }
 
   @override

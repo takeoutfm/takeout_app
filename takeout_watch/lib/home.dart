@@ -53,14 +53,16 @@ class HomePage extends ClientPage<HomeView> {
   HomePage({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.home(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.home(ttl: ttl);
   }
 
   @override
-  void reload(BuildContext context) {
-    super.reload(context);
-    context.reload();
+  Future<void> reload(BuildContext context) async {
+    await super.reload(context);
+    if (context.mounted) {
+      await context.reload();
+    }
   }
 
   @override

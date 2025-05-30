@@ -52,8 +52,8 @@ class ArtistsPage extends ClientPage<ArtistsView> {
   ArtistsPage({super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.artists(ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.artists(ttl: ttl);
   }
 
   @override
@@ -83,8 +83,8 @@ class ArtistPage extends ClientPage<ArtistView> {
   ArtistPage(this.artist, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.artist(artist.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.artist(artist.id, ttl: ttl);
   }
 
   @override
@@ -103,8 +103,8 @@ class ReleasePage extends ClientPage<ReleaseView> {
   ReleasePage(this.release, {super.key});
 
   @override
-  void load(BuildContext context, {Duration? ttl}) {
-    context.client.release(release.id, ttl: ttl);
+  Future<void> load(BuildContext context, {Duration? ttl}) {
+    return context.client.release(release.id, ttl: ttl);
   }
 
   @override
