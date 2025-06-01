@@ -75,6 +75,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final Duration _minPositionPeriod;
   final Duration _maxPositionPeriod;
 
+  AudioServiceRepeatMode _repeatMode = AudioServiceRepeatMode.none;
+
   TakeoutPlayerHandler._({
     required this.onPlay,
     required this.onPause,
@@ -179,39 +181,41 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     await session.configure(const AudioSessionConfiguration.music());
 
     // index changes
-    _subscriptions.add(_player.currentIndexStream.listen((index) {
-      if (index == null) {
-        // player sends index as null at startup
-        return;
-      }
-      if (index >= 0 && index < _spiff.length) {
-        // update the current media item
-        mediaItem.add(_queue[index]);
-
-        // update the spiff
-        if (index != _spiff.index) {
-          _spiff = _spiff.copyWith(index: index);
-          onIndexChange(_spiff, _player.playing);
-        }
-      }
-    }));
+    // _subscriptions.add(_player.currentIndexStream.listen((index) {
+    //   if (index == null) {
+    //     // player sends index as null at startup
+    //     return;
+    //   }
+    //   print('indexChange $index (${_spiff.index})');
+    //   if (index >= 0 && index < _spiff.length) {
+    //     // update the current media item
+    //     mediaItem.add(_queue[index]);
+    //
+    //     // update the spiff
+    //     if (index != _spiff.index) {
+    //       _spiff = _spiff.copyWith(index: index);
+    //       onIndexChange(_spiff, _player.playing);
+    //     }
+    //   }
+    // }));
 
     // media duration changes
-    _subscriptions.add(_player.durationStream.listen((duration) {
-      if (duration != null) {
-        final index = _spiff.index;
-        final item = _queue[index].copyWith(duration: duration);
-        _queue[index] = item;
-
-        // update the current media item
-        mediaItem.add(item);
-
-        // update the media queue
-        queue.add(_queue);
-
-        onDurationChange(_spiff, duration, _player.position, _player.playing);
-      }
-    }));
+    // _subscriptions.add(_player.durationStream.listen((duration) {
+    //   print('got duration ${_spiff.index} $duration');
+    //   if (duration != null) {
+    //     final index = _spiff.index;
+    //     final item = _queue[index].copyWith(duration: duration);
+    //     _queue[index] = item;
+    //
+    //     // update the current media item
+    //     mediaItem.add(item);
+    //
+    //     // update the media queue
+    //     queue.add(_queue);
+    //
+    //     onDurationChange(_spiff, duration, _player.position, _player.playing);
+    //   }
+    // }));
 
     // player position changes
     _subscriptions.add(_player
@@ -303,6 +307,15 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
     // send state from the audio player to AudioService clients.
     _subscriptions.add(_player.playbackEventStream.listen((state) {
+      final index = state.currentIndex;
+      if (index != null) {
+        if (index != _spiff.index) {
+          _indexChange(index);
+        }
+        if (_queue[index].duration != state.duration) {
+          _durationChange(state.duration);
+        }
+      }
       _broadcastState(state);
     }));
 
@@ -354,6 +367,35 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         }
       }
     }));
+  }
+
+  void _durationChange(Duration? duration) {
+    if (duration != null) {
+      final index = _spiff.index;
+      final item = _queue[index].copyWith(duration: duration);
+      _queue[index] = item;
+
+      // update the current media item
+      mediaItem.add(item);
+
+      // update the media queue
+      queue.add(_queue);
+
+      onDurationChange(_spiff, duration, _player.position, _player.playing);
+    }
+  }
+
+  void _indexChange(int index) {
+    if (index >= 0 && index < _spiff.length) {
+      // update the current media item
+      mediaItem.add(_queue[index]);
+
+      // update the spiff
+      if (index != _spiff.index) {
+        _spiff = _spiff.copyWith(index: index);
+        onIndexChange(_spiff, _player.playing);
+      }
+    }
   }
 
   bool considerListened(Duration position, Duration duration) {
@@ -638,6 +680,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    _repeatMode = repeatMode;
     return switch (repeatMode) {
       AudioServiceRepeatMode.none => _player.setLoopMode(LoopMode.off),
       AudioServiceRepeatMode.one => _player.setLoopMode(LoopMode.one),
@@ -763,7 +806,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       ];
     }
 
-    playbackState.add(playbackState.value.copyWith(
+    playbackState.add(PlaybackState(
       controls: controls,
       systemActions: Set<MediaAction>.from(systemActions),
       processingState: const {
@@ -778,6 +821,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
       queueIndex: event.currentIndex,
+      repeatMode: _repeatMode,
     ));
   }
 }

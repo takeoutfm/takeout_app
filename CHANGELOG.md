@@ -1,3 +1,8 @@
+## 0.24.4
+
+- Use playback event stream for duration and index changes
+- Include repeat mode in broadcast state
+
 ## 0.24.3
 
 - Flutter upgrade to 3.32.0

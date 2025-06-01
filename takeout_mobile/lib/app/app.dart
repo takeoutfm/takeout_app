@@ -17,7 +17,7 @@
 
 import 'package:bloc/bloc.dart';
 
-const appVersion = '0.24.3'; // #version#
+const appVersion = '0.24.4'; // #version#
 const appSource = 'https://takeoutfm.dev/';
 const appHome = 'https://takeoutfm.com/';
 
