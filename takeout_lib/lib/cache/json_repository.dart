@@ -38,7 +38,7 @@ class JsonCacheRepository {
   final JsonCacheProvider _cache;
 
   JsonCacheRepository({required this.directory, JsonCacheProvider? cache})
-      : _cache = cache ?? DirectoryJsonCache(directory);
+    : _cache = cache ?? DirectoryJsonCache(directory);
 
   Future<bool> put(String uri, Uint8List body) {
     return _cache.put(uri, body);
@@ -51,5 +51,4 @@ class JsonCacheRepository {
   Future<void> invalidate(String uri) async {
     return _cache.invalidate(uri);
   }
-
 }

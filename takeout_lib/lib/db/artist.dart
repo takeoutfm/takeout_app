@@ -21,9 +21,10 @@ import 'package:takeout_lib/client/repository.dart';
 class ArtistRepository {
   final ArtistProvider _provider;
 
-  ArtistRepository(
-      {required ClientRepository clientRepository, ArtistProvider? provider})
-      : _provider = provider ?? DefaultArtistProvider(clientRepository);
+  ArtistRepository({
+    required ClientRepository clientRepository,
+    ArtistProvider? provider,
+  }) : _provider = provider ?? DefaultArtistProvider(clientRepository);
 
   Iterable<String> findByName(String query) {
     return _provider.findByName(query);
@@ -63,20 +64,23 @@ class DefaultArtistProvider extends ArtistProvider {
   }
 
   Future<void> _load({Duration? ttl}) async {
-    return clientRepository.artists(ttl: ttl).then((view) {
-      artists.clear();
-      names.clear();
-      genres.clear();
-      countries.clear();
-      for (var artist in view.artists) {
-        artists[artist.name.toLowerCase()] = artist;
-        names.add(artist.name);
-        _updateMap(artist.genre, genres, artist);
-        _updateMap(artist.country, countries, artist);
-      }
-    }).onError((error, stackTrace) {
-      Future.delayed(const Duration(minutes: 3), () => _load());
-    });
+    return clientRepository
+        .artists(ttl: ttl)
+        .then((view) {
+          artists.clear();
+          names.clear();
+          genres.clear();
+          countries.clear();
+          for (var artist in view.artists) {
+            artists[artist.name.toLowerCase()] = artist;
+            names.add(artist.name);
+            _updateMap(artist.genre, genres, artist);
+            _updateMap(artist.country, countries, artist);
+          }
+        })
+        .onError((error, stackTrace) {
+          Future.delayed(const Duration(minutes: 3), () => _load());
+        });
   }
 
   void _updateMap(String? key, Map<String, List<Artist>> map, Artist artist) {

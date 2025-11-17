@@ -37,12 +37,7 @@ enum MediaType {
 
 enum PodcastType { all, recent, subscribed }
 
-enum FilmType {
-  all,
-  recent,
-  added,
-  recommended,
-}
+enum FilmType { all, recent, added, recommended }
 
 enum MusicType { recent, added }
 
@@ -53,31 +48,35 @@ class MediaTypeState {
   final FilmType filmType;
   final MusicType musicType;
 
-  factory MediaTypeState.initial() => MediaTypeState(MediaType.music,
-      podcastType: PodcastType.recent,
-      filmType: FilmType.added,
-      musicType: MusicType.added);
+  factory MediaTypeState.initial() => MediaTypeState(
+    MediaType.music,
+    podcastType: .recent,
+    filmType: .added,
+    musicType: .added,
+  );
 
   // provide defaults for older state w/o all types
-  MediaTypeState(this.mediaType,
-      {this.podcastType = PodcastType.recent,
-      this.filmType = FilmType.added,
-      this.musicType = MusicType.added});
+  MediaTypeState(
+    this.mediaType, {
+    this.podcastType = .recent,
+    this.filmType = .added,
+    this.musicType = .added,
+  });
 
   bool isMusic() {
-    return mediaType == MediaType.music;
+    return mediaType == .music;
   }
 
   bool isPodcast() {
-    return mediaType == MediaType.podcast;
+    return mediaType == .podcast;
   }
 
   bool isFilm() {
-    return mediaType == MediaType.film;
+    return mediaType == .film;
   }
 
   bool isTV() {
-    return mediaType == MediaType.tv;
+    return mediaType == .tv;
   }
 
   MediaTypeState copyWith({
@@ -85,11 +84,12 @@ class MediaTypeState {
     PodcastType? podcastType,
     FilmType? filmType,
     MusicType? musicType,
-  }) =>
-      MediaTypeState(mediaType ?? this.mediaType,
-          podcastType: podcastType ?? this.podcastType,
-          filmType: filmType ?? this.filmType,
-          musicType: musicType ?? this.musicType);
+  }) => MediaTypeState(
+    mediaType ?? this.mediaType,
+    podcastType: podcastType ?? this.podcastType,
+    filmType: filmType ?? this.filmType,
+    musicType: musicType ?? this.musicType,
+  );
 
   factory MediaTypeState.fromJson(Map<String, dynamic> json) =>
       _$MediaTypeStateFromJson(json);
@@ -103,78 +103,85 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
   // music -> film -> tv -> podcast
   void next() {
     switch (state.mediaType) {
-      case MediaType.music:
-        emit(state.copyWith(mediaType: MediaType.film));
-      case MediaType.film:
-        emit(state.copyWith(mediaType: MediaType.tv));
-      case MediaType.tv:
-        emit(state.copyWith(mediaType: MediaType.podcast));
-      case MediaType.podcast:
-        emit(state.copyWith(mediaType: MediaType.music));
+      case .music:
+        emit(state.copyWith(mediaType: .film));
+      case .film:
+        emit(state.copyWith(mediaType: .tv));
+      case .tv:
+        emit(state.copyWith(mediaType: .podcast));
+      case .podcast:
+        emit(state.copyWith(mediaType: .music));
       default:
-        emit(state.copyWith(mediaType: MediaType.music));
+        emit(state.copyWith(mediaType: .music));
     }
   }
 
   // music <- film <- tv <- podcast
   void previous() {
     switch (state.mediaType) {
-      case MediaType.music:
-        emit(state.copyWith(mediaType: MediaType.podcast));
-      case MediaType.film:
-        emit(state.copyWith(mediaType: MediaType.music));
-      case MediaType.tv:
-        emit(state.copyWith(mediaType: MediaType.film));
-      case MediaType.podcast:
-        emit(state.copyWith(mediaType: MediaType.tv));
+      case .music:
+        emit(state.copyWith(mediaType: .podcast));
+      case .film:
+        emit(state.copyWith(mediaType: .music));
+      case .tv:
+        emit(state.copyWith(mediaType: .film));
+      case .podcast:
+        emit(state.copyWith(mediaType: .tv));
       default:
-        emit(state.copyWith(mediaType: MediaType.music));
+        emit(state.copyWith(mediaType: .music));
     }
   }
 
   // all -> recent -> subscribed
   void nextPodcastType() {
     switch (state.podcastType) {
-      case PodcastType.all:
-        emit(state.copyWith(podcastType: PodcastType.recent));
-      case PodcastType.recent:
-        emit(state.copyWith(podcastType: PodcastType.subscribed));
-      case PodcastType.subscribed:
-        emit(state.copyWith(podcastType: PodcastType.all));
+      case .all:
+        emit(state.copyWith(podcastType: .recent));
+      case .recent:
+        emit(state.copyWith(podcastType: .subscribed));
+      case .subscribed:
+        emit(state.copyWith(podcastType: .all));
     }
   }
 
   // all -> recent -> added -> recommended
   void nextFilmType() {
     switch (state.filmType) {
-      case FilmType.all:
-        emit(state.copyWith(filmType: FilmType.recent));
-      case FilmType.recent:
-        emit(state.copyWith(filmType: FilmType.added));
-      case FilmType.added:
-        emit(state.copyWith(filmType: FilmType.recommended));
-      case FilmType.recommended:
-        emit(state.copyWith(filmType: FilmType.all));
+      case .all:
+        emit(state.copyWith(filmType: .recent));
+      case .recent:
+        emit(state.copyWith(filmType: .added));
+      case .added:
+        emit(state.copyWith(filmType: .recommended));
+      case .recommended:
+        emit(state.copyWith(filmType: .all));
     }
   }
 
   // recent -> added
   void nextMusicType() {
     switch (state.musicType) {
-      case MusicType.recent:
-        emit(state.copyWith(musicType: MusicType.added));
-      case MusicType.added:
-        emit(state.copyWith(musicType: MusicType.recent));
+      case .recent:
+        emit(state.copyWith(musicType: .added));
+      case .added:
+        emit(state.copyWith(musicType: .recent));
     }
   }
 
-  void select(MediaType mediaType,
-      {PodcastType? podcastType, FilmType? filmType, MusicType? musicType}) {
-    emit(state.copyWith(
+  void select(
+    MediaType mediaType, {
+    PodcastType? podcastType,
+    FilmType? filmType,
+    MusicType? musicType,
+  }) {
+    emit(
+      state.copyWith(
         mediaType: mediaType,
         podcastType: podcastType,
         filmType: filmType,
-        musicType: musicType));
+        musicType: musicType,
+      ),
+    );
   }
 
   @override
@@ -182,6 +189,7 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
       MediaTypeState.fromJson(json['mediaType'] as Map<String, dynamic>);
 
   @override
-  Map<String, dynamic>? toJson(MediaTypeState state) =>
-      {'mediaType': state.toJson()};
+  Map<String, dynamic>? toJson(MediaTypeState state) => {
+    'mediaType': state.toJson(),
+  };
 }

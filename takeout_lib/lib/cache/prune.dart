@@ -27,10 +27,11 @@ import 'track_repository.dart';
 
 // TODO prune will currently delete all tracks not found in a spiff.
 // podcasts can download an episode w/o a spiff
-Future<void> pruneCache(
-    {required SpiffCacheCubit spiffCache,
-    required TrackCacheCubit trackCache,
-    required SettingsCubit settings}) async {
+Future<void> pruneCache({
+  required SpiffCacheCubit spiffCache,
+  required TrackCacheCubit trackCache,
+  required SettingsCubit settings,
+}) async {
   final spiffs = await spiffCache.repository.entries;
 
   await _pruneTracks(spiffs, trackCache.repository);
@@ -56,11 +57,16 @@ Future<void> _pruneSpiffs(
   final list = List<Spiff>.from(spiffs);
   final epoch = DateTime.fromMillisecondsSinceEpoch(0);
   list.sort(
-      (a, b) => (a.lastModified ?? epoch).compareTo(b.lastModified ?? epoch));
+    (a, b) => (a.lastModified ?? epoch).compareTo(b.lastModified ?? epoch),
+  );
 
   final space = await getStorageSpace(
-      lowOnSpaceThreshold: 500 * megabyte, fractionDigits: 1);
-  log.i('spiff cache is ${storage(spiffsTotal)}, device using ${storage(space.used)} of ${storage(space.total)}');
+    lowOnSpaceThreshold: 500 * megabyte,
+    fractionDigits: 1,
+  );
+  log.i(
+    'spiff cache is ${storage(spiffsTotal)}, device using ${storage(space.used)} of ${storage(space.total)}',
+  );
 
   // walk through the oldest spiffs first and remove until the threshold is met
   //
@@ -82,7 +88,9 @@ Future<void> _pruneSpiffs(
 }
 
 Future<void> _pruneTracks(
-    Iterable<Spiff> spiffs, TrackCacheRepository trackCache) async {
+  Iterable<Spiff> spiffs,
+  TrackCacheRepository trackCache,
+) async {
   final keep = <TrackIdentifier>[];
   await Future.forEach<Spiff>(spiffs, (spiff) async {
     final tracks = spiff.playlist.tracks;

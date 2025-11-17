@@ -58,42 +58,48 @@ class TakeoutApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('app build');
-    return AppBloc().init(context, child: DynamicColorBuilder(
+    return AppBloc().init(
+      context,
+      child: DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-      final light = ThemeData.light(useMaterial3: true);
-      final dark = ThemeData.dark(useMaterial3: true);
-      return MaterialApp(
-          key: globalAppKey,
-          onGenerateTitle: (context) => context.strings.takeoutTitle,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en', ''),
-          ],
-          home: const _TakeoutWidget(),
-          theme: light.copyWith(
+          final light = ThemeData.light(useMaterial3: true);
+          final dark = ThemeData.dark(useMaterial3: true);
+          return MaterialApp(
+            key: globalAppKey,
+            onGenerateTitle: (context) => context.strings.takeoutTitle,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en', '')],
+            home: const _TakeoutWidget(),
+            theme: light.copyWith(
               colorScheme: lightDynamic,
               // appBarTheme:
               //     light.appBarTheme.copyWith(iconTheme: light.iconTheme),
               // iconButtonTheme: IconButtonThemeData(
               //     style: IconButton.styleFrom(
               //         foregroundColor: light.iconTheme.color)),
-              listTileTheme: light.listTileTheme
-                  .copyWith(iconColor: light.iconTheme.color)),
-          darkTheme: dark.copyWith(
+              listTileTheme: light.listTileTheme.copyWith(
+                iconColor: light.iconTheme.color,
+              ),
+            ),
+            darkTheme: dark.copyWith(
               colorScheme: darkDynamic,
               // appBarTheme: dark.appBarTheme.copyWith(iconTheme: dark.iconTheme),
               // iconButtonTheme: IconButtonThemeData(
               //     style: IconButton.styleFrom(
               //         foregroundColor: dark.iconTheme.color)),
-              listTileTheme: dark.listTileTheme
-                  .copyWith(iconColor: dark.iconTheme.color)));
-    }));
+              listTileTheme: dark.listTileTheme.copyWith(
+                iconColor: dark.iconTheme.color,
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -125,14 +131,19 @@ class _TakeoutState extends State<_TakeoutWidget>
 
     pages = [
       navigatorPage(
-          HomeWidget(
-            (context) => Navigator.push(context,
-                MaterialPageRoute<void>(builder: (_) => SearchWidget())),
+        HomeWidget(
+          (context) => Navigator.push(
+            context,
+            MaterialPageRoute<void>(builder: (_) => SearchWidget()),
           ),
-          key: _navigators[NavigationIndex.home]),
+        ),
+        key: _navigators[NavigationIndex.home],
+      ),
       navigatorPage(ArtistsWidget(), key: _navigators[NavigationIndex.artists]),
-      navigatorPage(HistoryListWidget(),
-          key: _navigators[NavigationIndex.history]),
+      navigatorPage(
+        HistoryListWidget(),
+        key: _navigators[NavigationIndex.history],
+      ),
       navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),
       navigatorPage(PlayerWidget(), key: _navigators[NavigationIndex.player]),
     ];
@@ -181,12 +192,13 @@ class _TakeoutState extends State<_TakeoutWidget>
 
   @override
   Widget build(final BuildContext context) {
-    return BlocBuilder<AppCubit, AppState>(builder: (context, state) {
-      if (state.authenticated == false) {
-        return LoginWidget();
-      }
-      final navIndex = context.app.state.index;
-      return PopScope(
+    return BlocBuilder<AppCubit, AppState>(
+      builder: (context, state) {
+        if (state.authenticated == false) {
+          return LoginWidget();
+        }
+        final navIndex = context.app.state.index;
+        return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) async {
             if (didPop) {
@@ -202,97 +214,112 @@ class _TakeoutState extends State<_TakeoutWidget>
             }
           },
           child: Scaffold(
-              floatingActionButton: _fab(context),
-              body: IndexedStack(
-                  index: state.navigationBarIndex, children: pages),
-              bottomNavigationBar: _bottomNavigation()));
-    });
+            floatingActionButton: _fab(context),
+            body: IndexedStack(
+              index: state.navigationBarIndex,
+              children: pages,
+            ),
+            bottomNavigationBar: _bottomNavigation(),
+          ),
+        );
+      },
+    );
   }
 
   Widget _fab(BuildContext context) {
-    return BlocBuilder<Player, PlayerState>(builder: (context, state) {
-      bool playing = false;
-      double? progress;
+    return BlocBuilder<Player, PlayerEvent>(
+      builder: (context, state) {
+        bool playing = false;
+        double? progress;
 
-      if (context.app.state.index == NavigationIndex.player) {
-        // hide fab on player page
-        return const EmptyWidget();
-      }
-      if (state is PlayerInit ||
-          state is PlayerReady ||
-          state is PlayerLoad ||
-          state is PlayerStop) {
-        // hide fab
-        return const EmptyWidget();
-      }
-      if (state is PlayerPositionState) {
-        playing = state.playing;
-        progress = state.progress;
-        if (state.buffering) {
-          progress = null;
+        if (context.app.state.index == NavigationIndex.player) {
+          // hide fab on player page
+          return const EmptyWidget();
         }
-      }
-      return Stack(alignment: Alignment.center, children: [
-        FloatingActionButton(
-            onPressed: () =>
-                playing ? context.player.pause() : context.player.play(),
-            shape: const CircleBorder(),
-            child: playing
-                ? const Icon(Icons.pause)
-                : const Icon(Icons.play_arrow)),
-        IgnorePointer(
-            child: SizedBox(
+        if (state is PlayerInit ||
+            state is PlayerReady ||
+            state is PlayerLoad ||
+            state is PlayerStop) {
+          // hide fab
+          return const EmptyWidget();
+        }
+        if (state is PlayerPositionEvent) {
+          playing = state.playing;
+          progress = state.progress;
+          if (state.buffering) {
+            progress = null;
+          }
+        }
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            FloatingActionButton(
+              onPressed: () =>
+                  playing ? context.player.pause() : context.player.play(),
+              shape: const CircleBorder(),
+              child: playing
+                  ? const Icon(Icons.pause)
+                  : const Icon(Icons.play_arrow),
+            ),
+            IgnorePointer(
+              child: SizedBox(
                 width: 52, // non-mini FAB is 56, progress is 4
                 height: 52,
-                child: CircularProgressIndicator(value: progress))),
-      ]);
-    });
+                child: CircularProgressIndicator(value: progress),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _bottomNavigation() {
-    return Stack(children: [
-      BlocBuilder<AppCubit, AppState>(builder: (context, state) {
-        final index = state.navigationBarIndex;
-        return BottomNavigationBar(
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          type: BottomNavigationBarType.fixed,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: index == NavigationIndex.home.index
-                  ? const Icon(Icons.home)
-                  : const Icon(Icons.home_outlined),
-              label: context.strings.navHome,
-            ),
-            BottomNavigationBarItem(
-              icon: index == NavigationIndex.artists.index
-                  ? const Icon(Icons.people_alt)
-                  : const Icon(Icons.people_alt_outlined),
-              label: context.strings.navArtists,
-            ),
-            BottomNavigationBarItem(
-              icon: index == NavigationIndex.history.index
-                  ? const Icon(Icons.history)
-                  : const Icon(Icons.history_outlined),
-              label: context.strings.navHistory,
-            ),
-            BottomNavigationBarItem(
-              icon: index == NavigationIndex.radio.index
-                  ? const Icon(Icons.radio)
-                  : const Icon(Icons.radio_outlined),
-              label: context.strings.navRadio,
-            ),
-            BottomNavigationBarItem(
-              icon: index == NavigationIndex.player.index
-                  ? const Icon(Icons.queue_music)
-                  : const Icon(Icons.queue_music_outlined),
-              label: context.strings.navPlayer,
-            ),
-          ],
-          currentIndex: index,
-          onTap: (index) => _onNavTapped(context, index),
-        );
-      }),
-    ]);
+    return Stack(
+      children: [
+        BlocBuilder<AppCubit, AppState>(
+          builder: (context, state) {
+            final index = state.navigationBarIndex;
+            return NavigationBar(
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+              destinations: [
+                NavigationDestination(
+                  icon: index == NavigationIndex.home.index
+                      ? const Icon(Icons.home)
+                      : const Icon(Icons.home_outlined),
+                  label: context.strings.navHome,
+                ),
+                NavigationDestination(
+                  icon: index == NavigationIndex.artists.index
+                      ? const Icon(Icons.people_alt)
+                      : const Icon(Icons.people_alt_outlined),
+                  label: context.strings.navArtists,
+                ),
+                NavigationDestination(
+                  icon: index == NavigationIndex.history.index
+                      ? const Icon(Icons.history)
+                      : const Icon(Icons.history_outlined),
+                  label: context.strings.navHistory,
+                ),
+                NavigationDestination(
+                  icon: index == NavigationIndex.radio.index
+                      ? const Icon(Icons.radio)
+                      : const Icon(Icons.radio_outlined),
+                  label: context.strings.navRadio,
+                ),
+                NavigationDestination(
+                  icon: index == NavigationIndex.player.index
+                      ? const Icon(Icons.queue_music)
+                      : const Icon(Icons.queue_music_outlined),
+                  label: context.strings.navPlayer,
+                ),
+              ],
+              selectedIndex: index,
+              onDestinationSelected: (index) => _onNavTapped(context, index),
+            );
+          },
+        ),
+      ],
+    );
   }
 }

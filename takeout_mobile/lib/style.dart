@@ -23,41 +23,51 @@ const iconsCached = Icons.download_done_outlined;
 
 Widget header(String text) {
   return Container(
-      padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
-      child: Text(text.toUpperCase(),
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15)));
+    padding: const EdgeInsets.fromLTRB(0, 11, 0, 11),
+    child: Text(
+      text.toUpperCase(),
+      style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+    ),
+  );
 }
 
 Widget heading(String text) {
   return SizedBox(
-      width: double.infinity,
-      child: Container(
-          padding: const EdgeInsets.fromLTRB(11, 22, 0, 11),
-          child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(text.toUpperCase(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.w500, fontSize: 15)))));
+    width: double.infinity,
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(11, 22, 0, 11),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          text.toUpperCase(),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+        ),
+      ),
+    ),
+  );
 }
 
 Widget headingButton(String text, VoidCallback onPressed) {
   return SizedBox(
-      width: double.infinity,
-      child: TextButton(
-        onPressed: onPressed,
-        child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(text.toUpperCase(),
-                    textAlign: TextAlign.justify,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w500, fontSize: 15)),
-                const Icon(Icons.chevron_right)
-              ],
-            )),
-      ));
+    width: double.infinity,
+    child: TextButton(
+      onPressed: onPressed,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              text.toUpperCase(),
+              textAlign: TextAlign.justify,
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+            ),
+            const Icon(Icons.chevron_right),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 Widget smallHeading(BuildContext context, String text) {
@@ -74,10 +84,13 @@ Widget largeHeading(BuildContext context, String text) {
 
 Widget textHeading(BuildContext context, String text, TextStyle? style) {
   return SizedBox(
-      width: double.infinity,
-      child: Container(
-          padding: const EdgeInsets.fromLTRB(17, 11, 0, 11),
-          child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(text, style: style))));
+    width: double.infinity,
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(17, 11, 0, 11),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(text, style: style),
+      ),
+    ),
+  );
 }

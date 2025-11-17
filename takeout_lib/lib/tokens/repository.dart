@@ -31,9 +31,10 @@ class TokenRepository {
 
   void add({String? accessToken, String? refreshToken, String? mediaToken}) {
     _provider?.add(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        mediaToken: mediaToken);
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      mediaToken: mediaToken,
+    );
   }
 
   String? get accessToken => _provider?.accessToken;
@@ -52,7 +53,9 @@ class TokenRepository {
       _addAuthToken(headers, mediaToken);
 
   Map<String, String> _addAuthToken(
-      Map<String, String>? headers, String? token) {
+    Map<String, String>? headers,
+    String? token,
+  ) {
     headers = headers ?? <String, String>{};
     if (token != null) {
       headers[HttpHeaders.authorizationHeader] = 'Bearer $token';

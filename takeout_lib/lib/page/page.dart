@@ -17,16 +17,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/client/client.dart';
+import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/empty.dart';
-import 'package:takeout_lib/util.dart';
 
 abstract mixin class ClientPageBuilder<T> {
   WidgetBuilder builder(BuildContext context, {T? value}) {
     final builder = (context) => BlocProvider(
-        create: (context) => ClientCubit(context.clientRepository),
-        child: BlocBuilder<ClientCubit, ClientState>(builder: (context, state) {
+      create: (context) => ClientCubit(context.clientRepository),
+      child: BlocBuilder<ClientCubit, ClientState>(
+        builder: (context, state) {
           if (state is ClientReady) {
             if (value != null) {
               return page(context, value);
@@ -44,7 +44,9 @@ abstract mixin class ClientPageBuilder<T> {
             return errorPage(context, state);
           }
           return const EmptyWidget();
-        }));
+        },
+      ),
+    );
     return builder;
   }
 
@@ -52,9 +54,11 @@ abstract mixin class ClientPageBuilder<T> {
 
   Widget errorPage(BuildContext context, ClientError error) {
     return Center(
-        child: TextButton(
-            child: Text('Try Again (${error.error})'),
-            onPressed: () => reloadPage(context)));
+      child: TextButton(
+        child: Text('Try Again (${error.error})'),
+        onPressed: () => reloadPage(context),
+      ),
+    );
   }
 
   Future<void> reloadPage(BuildContext context) {

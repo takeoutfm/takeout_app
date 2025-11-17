@@ -35,86 +35,98 @@ class TrackStatsWidget extends ClientPage<TrackStatsView> {
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
-    return context.client.trackStats(ttl: ttl, interval: context.stats.state.interval);
+    return context.client.trackStats(
+      ttl: ttl,
+      interval: context.stats.state.interval,
+    );
   }
 
   @override
   Widget page(BuildContext context, TrackStatsView state) {
     final selected = context.watch<StatsCubit>().state;
 
-    final types = SegmentedButton<StatsType>(segments: [
-      ButtonSegment<StatsType>(
-        value: StatsType.artist,
-        label: Text(context.strings.artistsLabel),
-      ),
-      ButtonSegment<StatsType>(
-        value: StatsType.release,
-        label: Text(context.strings.releasesLabel),
-      ),
-      ButtonSegment<StatsType>(
-        value: StatsType.track,
-        label: Text(context.strings.tracksLabel),
-      ),
-    ], selected: {
-      selected.type
-    }, onSelectionChanged: (selected) => context.stats.type(selected.first));
+    final types = SegmentedButton<StatsType>(
+      segments: [
+        ButtonSegment<StatsType>(
+          value: StatsType.artist,
+          label: Text(context.strings.artistsLabel),
+        ),
+        ButtonSegment<StatsType>(
+          value: StatsType.release,
+          label: Text(context.strings.releasesLabel),
+        ),
+        ButtonSegment<StatsType>(
+          value: StatsType.track,
+          label: Text(context.strings.tracksLabel),
+        ),
+      ],
+      selected: {selected.type},
+      onSelectionChanged: (selected) => context.stats.type(selected.first),
+    );
 
     final intervals = SegmentedButton<IntervalType>(
-        segments: [
-          ButtonSegment<IntervalType>(
-            value: IntervalType.recent,
-            label: Text(context.strings.recentLabel),
-          ),
-          ButtonSegment<IntervalType>(
-            value: IntervalType.lastweek,
-            label: Text(context.strings.lastWeek),
-          ),
-          ButtonSegment<IntervalType>(
-            value: IntervalType.lastmonth,
-            label: Text(context.strings.lastMonth),
-          ),
-          ButtonSegment<IntervalType>(
-            value: IntervalType.month,
-            label: Text(context.strings.thisMonth),
-          ),
-        ],
-        selected: {
-          selected.interval
-        },
-        onSelectionChanged: (selected) {
-          context.stats.interval(selected.first);
-          reload(context);
-        });
+      segments: [
+        ButtonSegment<IntervalType>(
+          value: IntervalType.recent,
+          label: Text(context.strings.recentLabel),
+        ),
+        ButtonSegment<IntervalType>(
+          value: IntervalType.lastweek,
+          label: Text(context.strings.lastWeek),
+        ),
+        ButtonSegment<IntervalType>(
+          value: IntervalType.lastmonth,
+          label: Text(context.strings.lastMonth),
+        ),
+        ButtonSegment<IntervalType>(
+          value: IntervalType.month,
+          label: Text(context.strings.thisMonth),
+        ),
+      ],
+      selected: {selected.interval},
+      onSelectionChanged: (selected) {
+        context.stats.interval(selected.first);
+        reload(context);
+      },
+    );
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.strings.activityLabel), actions: [
-        popupMenu(context, [
-          PopupItem.play(context, (_) => _onPlay(context, state.tracks)),
-          PopupItem.shuffle(
-              context, (_) => _onPlay(context, state.tracks, shuffle: true)),
-          PopupItem.reload(context, (_) => reloadPage(context)),
-        ])
-      ]),
+      appBar: AppBar(
+        title: Text(context.strings.activityLabel),
+        actions: [
+          popupMenu(context, [
+            PopupItem.play(context, (_) => _onPlay(context, state.tracks)),
+            PopupItem.shuffle(
+              context,
+              (_) => _onPlay(context, state.tracks, shuffle: true),
+            ),
+            PopupItem.reload(context, (_) => reloadPage(context)),
+          ]),
+        ],
+      ),
       body: RefreshIndicator(
-          onRefresh: () => reloadPage(context),
-          child: Column(children: [
+        onRefresh: () => reloadPage(context),
+        child: Column(
+          children: [
             types,
             intervals,
             Expanded(
-                child: SingleChildScrollView(
-                    child: Column(
-              children: [
-                if (selected.type == StatsType.artist)
-                  _ActivityArtistListWidget(
-                    state.artists,
-                  ),
-                if (selected.type == StatsType.release)
-                  _ActivityReleaseListWidget(state.releases),
-                if (selected.type == StatsType.track)
-                  _ActivityTrackListWidget(state.tracks, showCounts: true)
-              ],
-            )))
-          ])),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (selected.type == StatsType.artist)
+                      _ActivityArtistListWidget(state.artists),
+                    if (selected.type == StatsType.release)
+                      _ActivityReleaseListWidget(state.releases),
+                    if (selected.type == StatsType.track)
+                      _ActivityTrackListWidget(state.tracks, showCounts: true),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -130,22 +142,25 @@ class TrackHistoryWidget extends ClientPage<TrackHistoryView> {
   @override
   Widget page(BuildContext context, TrackHistoryView state) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.strings.recentlyPlayed), actions: [
-        popupMenu(context, [
-          PopupItem.play(context, (_) => _onPlay(context, state.tracks)),
-          PopupItem.shuffle(
-              context, (_) => _onPlay(context, state.tracks, shuffle: true)),
-          PopupItem.reload(context, (_) => reloadPage(context)),
-        ])
-      ]),
+      appBar: AppBar(
+        title: Text(context.strings.recentlyPlayed),
+        actions: [
+          popupMenu(context, [
+            PopupItem.play(context, (_) => _onPlay(context, state.tracks)),
+            PopupItem.shuffle(
+              context,
+              (_) => _onPlay(context, state.tracks, shuffle: true),
+            ),
+            PopupItem.reload(context, (_) => reloadPage(context)),
+          ]),
+        ],
+      ),
       body: RefreshIndicator(
-          onRefresh: () => reloadPage(context),
-          child: SingleChildScrollView(
-              child: Column(
-            children: [
-              _ActivityTrackListWidget(state.tracks),
-            ],
-          ))),
+        onRefresh: () => reloadPage(context),
+        child: SingleChildScrollView(
+          child: Column(children: [_ActivityTrackListWidget(state.tracks)]),
+        ),
+      ),
     );
   }
 }
@@ -160,44 +175,61 @@ class _ActivityTrackListWidget extends StatelessWidget {
     showPopupMenu(context, pos, [
       PopupItem.trackPlaylist(context, (_) {
         pushSpiff(
-            ref: '/music/tracks/${t.id}/playlist',
-            context,
-            (client, {Duration? ttl}) =>
-                client.trackPlaylist('${t.id}', ttl: Duration.zero));
+          ref: '/music/tracks/${t.id}/playlist',
+          context,
+          (client, {Duration? ttl}) =>
+              client.trackPlaylist('${t.id}', ttl: Duration.zero),
+        );
       }),
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      final downloads = context.watch<DownloadCubit>();
-      final trackCache = context.watch<TrackCacheCubit>();
-      List<Widget> children = [];
-      for (var i = 0; i < tracks.length; i++) {
-        final e = tracks[i];
-        children.add(GestureDetector(
-            onDoubleTapDown: (d) {
-              final offset = d.globalPosition;
-              final pos = RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                MediaQuery.of(context).size.width - offset.dx,
-                MediaQuery.of(context).size.height - offset.dy,
-              );
-              _onDoubleTap(context, e.track, pos);
-            },
-            child: CoverTrackListTile.mediaTrack(context, e.track,
+    return Builder(
+      builder: (context) {
+        final downloads = context.watch<DownloadCubit>();
+        final trackCache = context.watch<TrackCacheCubit>();
+        List<Widget> children = [];
+        for (var i = 0; i < tracks.length; i++) {
+          final e = tracks[i];
+          children.add(
+            GestureDetector(
+              onDoubleTapDown: (d) {
+                final offset = d.globalPosition;
+                final pos = RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  MediaQuery.of(context).size.width - offset.dx,
+                  MediaQuery.of(context).size.height - offset.dy,
+                );
+                _onDoubleTap(context, e.track, pos);
+              },
+              child: CoverTrackListTile.mediaTrack(
+                context,
+                e.track,
                 onTap: () => _onPlay(context, tracks, index: i),
-                trailing:
-                    _trailing(context, downloads.state, trackCache.state, e))));
-      }
-      return Column(children: children);
-    });
+                trailing: _trailing(
+                  context,
+                  downloads.state,
+                  trackCache.state,
+                  e,
+                ),
+              ),
+            ),
+          );
+        }
+        return Column(children: children);
+      },
+    );
   }
 
-  Widget? _trailing(BuildContext context, DownloadState downloadState,
-      TrackCacheState trackCache, ActivityTrack t) {
+  Widget? _trailing(
+    BuildContext context,
+    DownloadState downloadState,
+    TrackCacheState trackCache,
+    ActivityTrack t,
+  ) {
     if (showCounts) {
       return Text('${t.count}', style: Theme.of(context).textTheme.bodyLarge);
     }
@@ -221,11 +253,19 @@ class _ActivityArtistListWidget extends StatelessWidget {
     List<Widget> children = [];
     for (var i = 0; i < artists.length; i++) {
       final a = artists[i];
-      children.add(GestureDetector(
-          child: ArtistListTile(context, a.artist.name,
-              onTap: () {},
-              trailing: Text('${a.count}',
-                  style: Theme.of(context).textTheme.bodyLarge))));
+      children.add(
+        GestureDetector(
+          child: ArtistListTile(
+            context,
+            a.artist.name,
+            onTap: () {},
+            trailing: Text(
+              '${a.count}',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ),
+      );
     }
     return Column(children: children);
   }
@@ -241,21 +281,37 @@ class _ActivityReleaseListWidget extends StatelessWidget {
     List<Widget> children = [];
     for (var i = 0; i < releases.length; i++) {
       final r = releases[i];
-      children.add(GestureDetector(
+      children.add(
+        GestureDetector(
           child: AlbumListTile(
-              context, r.release.artist, r.release.album, r.release.image,
-              onTap: () {},
-              trailing: Text('${r.count}',
-                  style: Theme.of(context).textTheme.bodyLarge))));
+            context,
+            r.release.artist,
+            r.release.album,
+            r.release.image,
+            onTap: () {},
+            trailing: Text(
+              '${r.count}',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ),
+      );
     }
     return Column(children: children);
   }
 }
 
-void _onPlay(BuildContext context, List<ActivityTrack> tracks,
-    {int index = 0, bool shuffle = false}) {
+void _onPlay(
+  BuildContext context,
+  List<ActivityTrack> tracks, {
+  int index = 0,
+  bool shuffle = false,
+}) {
   final mediaTracks = tracks.map((e) => e.track);
-  final spiff = Spiff.fromMediaTracks(mediaTracks,
-      title: context.strings.recentlyPlayed, index: index);
+  final spiff = Spiff.fromMediaTracks(
+    mediaTracks,
+    title: context.strings.recentlyPlayed,
+    index: index,
+  );
   context.play(shuffle ? spiff.shuffle() : spiff);
 }

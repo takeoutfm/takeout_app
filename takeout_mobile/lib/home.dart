@@ -62,22 +62,27 @@ class HomeWidget extends StatelessWidget {
     return _grid(context, indexState, mediaTypeState);
   }
 
-  void _onMovie(BuildContext context, Movie movie) => Navigator.of(context)
-      .push(MaterialPageRoute<void>(builder: (_) => MovieWidget(movie)));
+  void _onMovie(BuildContext context, Movie movie) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => MovieWidget(movie)));
 
-  void _onTVSeries(BuildContext context, TVSeries series) =>
-      Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => TVSeriesWidget(series)));
+  void _onTVSeries(BuildContext context, TVSeries series) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => TVSeriesWidget(series)));
 
-  void _onRelease(BuildContext context, Release release) =>
-      Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => ReleaseWidget(release)));
+  void _onRelease(BuildContext context, Release release) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => ReleaseWidget(release)));
 
-  void _onSeries(BuildContext context, Series series) => Navigator.of(context)
-      .push(MaterialPageRoute<void>(builder: (_) => SeriesWidget(series)));
+  void _onSeries(BuildContext context, Series series) => Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => SeriesWidget(series)));
 
-  Widget _grid(BuildContext context, IndexState indexState,
-      MediaTypeState mediaTypeState) {
+  Widget _grid(
+    BuildContext context,
+    IndexState indexState,
+    MediaTypeState mediaTypeState,
+  ) {
     final mediaType = mediaTypeState.mediaType;
     final appBar = _appBar(context, indexState, mediaType);
     switch (mediaType) {
@@ -97,8 +102,10 @@ class HomeWidget extends StatelessWidget {
       case MediaType.film:
         final filmType = mediaTypeState.filmType;
         return filmType == FilmType.all
-            ? MoviesViewGrid(appBar,
-                onTap: (context, item) => _onMovie(context, item))
+            ? MoviesViewGrid(
+                appBar,
+                onTap: (context, item) => _onMovie(context, item),
+              )
             : HomeViewGrid(
                 mediaTypeState,
                 appBar,
@@ -126,8 +133,10 @@ class HomeWidget extends StatelessWidget {
                 maxCrossAxisExtent: posterGridWidth,
               );
       case MediaType.tv:
-        return TVShowsViewGrid(appBar,
-            onTap: (context, item) => _onTVSeries(context, item)); // XXX TODO
+        return TVShowsViewGrid(
+          appBar,
+          onTap: (context, item) => _onTVSeries(context, item),
+        ); // XXX TODO
       case MediaType.podcast:
         final podcastType = mediaTypeState.podcastType;
         switch (podcastType) {
@@ -157,39 +166,44 @@ class HomeWidget extends StatelessWidget {
 
   Widget _appBar(BuildContext context, IndexState state, MediaType mediaType) {
     const iconSize = 22.0;
-    final buttons =
-        SplayTreeMap<MediaType, Widget>((a, b) => a.index.compareTo(b.index));
+    final buttons = SplayTreeMap<MediaType, Widget>(
+      (a, b) => a.index.compareTo(b.index),
+    );
     if (state.music) {
       buttons[MediaType.music] = IconButton(
-          iconSize: iconSize,
-          icon: mediaType == MediaType.music
-              ? const Icon(Icons.audiotrack)
-              : const Icon(Icons.audiotrack_outlined),
-          onPressed: () => _onMusicSelected(context));
+        iconSize: iconSize,
+        icon: mediaType == MediaType.music
+            ? const Icon(Icons.audiotrack)
+            : const Icon(Icons.audiotrack_outlined),
+        onPressed: () => _onMusicSelected(context),
+      );
     }
     if (state.movies) {
       buttons[MediaType.film] = IconButton(
-          iconSize: iconSize,
-          icon: mediaType == MediaType.film
-              ? const Icon(Icons.movie)
-              : const Icon(Icons.movie_outlined),
-          onPressed: () => _onFilmSelected(context));
+        iconSize: iconSize,
+        icon: mediaType == MediaType.film
+            ? const Icon(Icons.movie)
+            : const Icon(Icons.movie_outlined),
+        onPressed: () => _onFilmSelected(context),
+      );
     }
     if (state.shows) {
       buttons[MediaType.tv] = IconButton(
-          iconSize: iconSize,
-          icon: mediaType == MediaType.tv
-              ? const Icon(Icons.tv)
-              : const Icon(Icons.tv_outlined),
-          onPressed: () => _onTVSelected(context));
+        iconSize: iconSize,
+        icon: mediaType == MediaType.tv
+            ? const Icon(Icons.tv)
+            : const Icon(Icons.tv_outlined),
+        onPressed: () => _onTVSelected(context),
+      );
     }
     if (state.podcasts) {
       buttons[MediaType.podcast] = IconButton(
-          iconSize: iconSize,
-          icon: mediaType == MediaType.podcast
-              ? const Icon(Icons.podcasts)
-              : const Icon(Icons.podcasts_outlined),
-          onPressed: () => _onPodcastsSelected(context));
+        iconSize: iconSize,
+        icon: mediaType == MediaType.podcast
+            ? const Icon(Icons.podcasts)
+            : const Icon(Icons.podcasts_outlined),
+        onPressed: () => _onPodcastsSelected(context),
+      );
     }
     final iconBar = <Widget>[];
     iconBar.addAll(buttons.values);
@@ -199,7 +213,9 @@ class HomeWidget extends StatelessWidget {
       floating: true,
       snap: true,
       leading: IconButton(
-          icon: const Icon(Icons.search), onPressed: () => _onSearch(context)),
+        icon: const Icon(Icons.search),
+        onPressed: () => _onSearch(context),
+      ),
       actions: [
         ...iconBar,
         popupMenu(context, [
@@ -277,40 +293,52 @@ class HomeWidget extends StatelessWidget {
 
   void _onAbout(BuildContext context) {
     showAboutDialog(
-        context: context,
-        applicationName: context.strings.takeoutTitle,
-        applicationVersion: appVersion,
-        applicationLegalese: 'Copyleft \u00a9 2020-2025 defsub',
-        children: <Widget>[
-          InkWell(
-              child: const Text(
-                appHome,
-                style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blueAccent),
-              ),
-              onTap: () => launchUrl(Uri.parse(appHome))),
-        ]);
+      context: context,
+      applicationName: context.strings.takeoutTitle,
+      applicationVersion: appVersion,
+      applicationLegalese: 'Copyleft \u00a9 2020-2025 defsub',
+      applicationIcon: Image.asset(
+        'assets/logo_192.png',
+        width: 96,
+        height: 96,
+      ),
+      children: <Widget>[
+        InkWell(
+          child: const Text(
+            appHome,
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: Colors.blueAccent,
+            ),
+          ),
+          onTap: () => launchUrl(Uri.parse(appHome)),
+        ),
+      ],
+    );
   }
 }
 
 mixin _GridTile<T> {
-  Widget? _tile(MediaAlbum item, SpiffTrackCacheState cache,
-      {String? subtitle}) {
+  Widget? _tile(
+    MediaAlbum item,
+    SpiffTrackCacheState cache, {
+    String? subtitle,
+  }) {
     final title = Text(item.album);
     final cached = cache.isCached(item);
     final downloaded = cache.isDownloaded(item);
     return Material(
-        color: Colors.transparent,
-        clipBehavior: Clip.antiAlias,
-        child: GridTileBar(
-          backgroundColor: Colors.black26,
-          title: title,
-          subtitle: subtitle != null ? Text(subtitle) : null,
-          trailing: cached
-              ? Icon(downloaded ? iconsDownloadDone : iconsDownload)
-              : null,
-        ));
+      color: Colors.transparent,
+      clipBehavior: Clip.antiAlias,
+      child: GridTileBar(
+        backgroundColor: Colors.black26,
+        title: title,
+        subtitle: subtitle != null ? Text(subtitle) : null,
+        trailing: cached
+            ? Icon(downloaded ? iconsDownloadDone : iconsDownload)
+            : null,
+      ),
+    );
   }
 
   Widget _grid(BuildContext context, T state, SpiffTrackCacheState cache);
@@ -341,17 +369,25 @@ abstract class ViewGrid<T> extends ClientPage<T> with _GridTile<T> {
 
   @override
   Widget page(BuildContext context, T state) {
-    return Builder(builder: (context) {
-      final trackCacheState = context.watch<TrackCacheCubit>().state;
-      final spiffCacheState = context.watch<SpiffCacheCubit>().state;
-      return RefreshIndicator(
+    return Builder(
+      builder: (context) {
+        final trackCacheState = context.watch<TrackCacheCubit>().state;
+        final spiffCacheState = context.watch<SpiffCacheCubit>().state;
+        return RefreshIndicator(
           onRefresh: () => reloadPage(context),
-          child: CustomScrollView(slivers: [
-            appBar,
-            _grid(context, state,
-                SpiffTrackCacheState(spiffCacheState, trackCacheState)),
-          ]));
-    });
+          child: CustomScrollView(
+            slivers: [
+              appBar,
+              _grid(
+                context,
+                state,
+                SpiffTrackCacheState(spiffCacheState, trackCacheState),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -381,32 +417,38 @@ class HomeViewGrid extends ViewGrid<HomeView> {
 
   @override
   Widget _grid(
-      BuildContext context, HomeView state, SpiffTrackCacheState cache) {
+    BuildContext context,
+    HomeView state,
+    SpiffTrackCacheState cache,
+  ) {
     return SliverGrid.extent(
-        childAspectRatio: childAspectRatio,
-        maxCrossAxisExtent: maxCrossAxisExtent,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          ...itemsFunc(state).map((i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              child: GridTile(
-                footer: _tile(i, cache,
-                    subtitle: i.creator.isNotEmpty ? i.creator : null),
-                child: coverFunc(context, i),
-              )))
-        ]);
+      childAspectRatio: childAspectRatio,
+      maxCrossAxisExtent: maxCrossAxisExtent,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      children: [
+        ...itemsFunc(state).map(
+          (i) => GestureDetector(
+            onTap: () => onTap(context, i),
+            child: GridTile(
+              footer: _tile(
+                i,
+                cache,
+                subtitle: i.creator.isNotEmpty ? i.creator : null,
+              ),
+              child: coverFunc(context, i),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
 class MoviesViewGrid extends ViewGrid<MoviesView> {
   final void Function(BuildContext, Movie) onTap;
 
-  MoviesViewGrid(
-    super.appBar, {
-    required this.onTap,
-    super.key,
-  });
+  MoviesViewGrid(super.appBar, {required this.onTap, super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -415,31 +457,34 @@ class MoviesViewGrid extends ViewGrid<MoviesView> {
 
   @override
   Widget _grid(
-      BuildContext context, MoviesView state, SpiffTrackCacheState cache) {
+    BuildContext context,
+    MoviesView state,
+    SpiffTrackCacheState cache,
+  ) {
     return SliverGrid.extent(
-        childAspectRatio: posterAspectRatio,
-        maxCrossAxisExtent: posterGridWidth,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          ...state.movies.map((i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              child: GridTile(
-                footer: _tile(i, cache),
-                child: gridPoster(context, i.image),
-              )))
-        ]);
+      childAspectRatio: posterAspectRatio,
+      maxCrossAxisExtent: posterGridWidth,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      children: [
+        ...state.movies.map(
+          (i) => GestureDetector(
+            onTap: () => onTap(context, i),
+            child: GridTile(
+              footer: _tile(i, cache),
+              child: gridPoster(context, i.image),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
 class TVShowsViewGrid extends ViewGrid<TVShowsView> {
   final void Function(BuildContext, TVSeries) onTap;
 
-  TVShowsViewGrid(
-    super.appBar, {
-    required this.onTap,
-    super.key,
-  });
+  TVShowsViewGrid(super.appBar, {required this.onTap, super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -448,20 +493,27 @@ class TVShowsViewGrid extends ViewGrid<TVShowsView> {
 
   @override
   Widget _grid(
-      BuildContext context, TVShowsView state, SpiffTrackCacheState cache) {
+    BuildContext context,
+    TVShowsView state,
+    SpiffTrackCacheState cache,
+  ) {
     return SliverGrid.extent(
-        childAspectRatio: posterAspectRatio,
-        maxCrossAxisExtent: posterGridWidth,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          ...state.series.map((i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              child: GridTile(
-                footer: _tile(i, cache),
-                child: gridPoster(context, i.image),
-              )))
-        ]);
+      childAspectRatio: posterAspectRatio,
+      maxCrossAxisExtent: posterGridWidth,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      children: [
+        ...state.series.map(
+          (i) => GestureDetector(
+            onTap: () => onTap(context, i),
+            child: GridTile(
+              footer: _tile(i, cache),
+              child: gridPoster(context, i.image),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -483,24 +535,31 @@ class PodcastsViewGrid extends ViewGrid<PodcastsView> {
 
   @override
   Widget _grid(
-      BuildContext context, PodcastsView state, SpiffTrackCacheState cache) {
+    BuildContext context,
+    PodcastsView state,
+    SpiffTrackCacheState cache,
+  ) {
     final onLongPress = this.onLongPress;
     return SliverGrid.extent(
-        childAspectRatio: seriesAspectRatio,
-        maxCrossAxisExtent: seriesGridWidth,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          ...state.series.map((i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              onLongPressStart: onLongPress != null
-                  ? (details) => onLongPress(context, i, details.globalPosition)
-                  : null,
-              child: GridTile(
-                footer: _tile(i, cache),
-                child: gridSeries(context, i.image),
-              )))
-        ]);
+      childAspectRatio: seriesAspectRatio,
+      maxCrossAxisExtent: seriesGridWidth,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      children: [
+        ...state.series.map(
+          (i) => GestureDetector(
+            onTap: () => onTap(context, i),
+            onLongPressStart: onLongPress != null
+                ? (details) => onLongPress(context, i, details.globalPosition)
+                : null,
+            child: GridTile(
+              footer: _tile(i, cache),
+              child: gridSeries(context, i.image),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -513,18 +572,26 @@ class SubscribedPodcastsViewGrid extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      final state = context.watch<SubscribedCubit>().state;
-      final trackCacheState = context.watch<TrackCacheCubit>().state;
-      final spiffCacheState = context.watch<SpiffCacheCubit>().state;
-      return RefreshIndicator(
+    return Builder(
+      builder: (context) {
+        final state = context.watch<SubscribedCubit>().state;
+        final trackCacheState = context.watch<TrackCacheCubit>().state;
+        final spiffCacheState = context.watch<SpiffCacheCubit>().state;
+        return RefreshIndicator(
           onRefresh: () => reload(context),
-          child: CustomScrollView(slivers: [
-            appBar,
-            _grid(context, state,
-                SpiffTrackCacheState(spiffCacheState, trackCacheState)),
-          ]));
-    });
+          child: CustomScrollView(
+            slivers: [
+              appBar,
+              _grid(
+                context,
+                state,
+                SpiffTrackCacheState(spiffCacheState, trackCacheState),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> reload(BuildContext context) async {
@@ -533,19 +600,26 @@ class SubscribedPodcastsViewGrid extends StatelessWidget
 
   @override
   Widget _grid(
-      BuildContext context, SubscribedState state, SpiffTrackCacheState cache) {
+    BuildContext context,
+    SubscribedState state,
+    SpiffTrackCacheState cache,
+  ) {
     return SliverGrid.extent(
-        childAspectRatio: seriesAspectRatio,
-        maxCrossAxisExtent: seriesGridWidth,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: [
-          ...state.series.map((i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              child: GridTile(
-                footer: _tile(i, cache),
-                child: gridSeries(context, i.image),
-              )))
-        ]);
+      childAspectRatio: seriesAspectRatio,
+      maxCrossAxisExtent: seriesGridWidth,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+      children: [
+        ...state.series.map(
+          (i) => GestureDetector(
+            onTap: () => onTap(context, i),
+            child: GridTile(
+              footer: _tile(i, cache),
+              child: gridSeries(context, i.image),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

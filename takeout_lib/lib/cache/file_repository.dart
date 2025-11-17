@@ -25,7 +25,7 @@ class FileCacheRepository {
   void Function()? onChange;
 
   FileCacheRepository({required this.directory, FileCacheProvider? cache})
-      : _cache = cache ?? DirectoryFileCache(directory: directory);
+    : _cache = cache ?? DirectoryFileCache(directory: directory);
 
   void init({void Function()? onChange}) {
     this.onChange = onChange;
@@ -46,8 +46,10 @@ class FileCacheRepository {
   }
 
   Future<void> removeIds(Iterable<FileIdentifier> ids) async {
-    return Future.forEach<FileIdentifier>(ids, (id) => _cache.remove(id))
-        .whenComplete(() => onChange?.call());
+    return Future.forEach<FileIdentifier>(
+      ids,
+      (id) => _cache.remove(id),
+    ).whenComplete(() => onChange?.call());
   }
 
   Future<void> removeAll() async {

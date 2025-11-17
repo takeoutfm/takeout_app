@@ -45,8 +45,8 @@ String ymd(dynamic date) {
   final t = (date is String)
       ? DateTime.parse(date)
       : (date is DateTime)
-          ? date
-          : DateTime.parse(date.toString());
+      ? date
+      : DateTime.parse(date.toString());
   final y = twoDigits(t.year);
   final m = twoDigits(t.month);
   final d = twoDigits(t.day);
@@ -186,6 +186,7 @@ class ExpiringSet<V> {
 
 NavigatorObserver heroController() {
   return HeroController(
-      createRectTween: (begin, end) =>
-          MaterialRectArcTween(begin: begin, end: end));
+    createRectTween: (begin, end) =>
+        MaterialRectArcTween(begin: begin, end: end),
+  );
 }

@@ -27,24 +27,24 @@ class ConnectivityState {
 
   ConnectivityState(this.type);
 
-  bool get wifi => type == ConnectivityType.wifi;
+  bool get wifi => type == .wifi;
 
-  bool get mobile => type == ConnectivityType.mobile;
+  bool get mobile => type == .mobile;
 
-  bool get ethernet => type == ConnectivityType.ethernet;
+  bool get ethernet => type == .ethernet;
 
-  bool get bluetooth => type == ConnectivityType.bluetooth;
+  bool get bluetooth => type == .bluetooth;
 
-  bool get vpn => type == ConnectivityType.vpn;
+  bool get other => type == .other;
 
-  bool get none => type == ConnectivityType.none;
+  bool get none => type == .none;
 
   bool get any =>
-      type == ConnectivityType.wifi ||
-      type == ConnectivityType.mobile ||
-      type == ConnectivityType.bluetooth ||
-      type == ConnectivityType.vpn ||
-      type == ConnectivityType.ethernet;
+      type == .wifi ||
+      type == .mobile ||
+      type == .bluetooth ||
+      type == .other ||
+      type == .ethernet;
 }
 
 class ConnectivityChange extends ConnectivityState {
@@ -55,8 +55,7 @@ class ConnectivityCubit extends Cubit<ConnectivityState> {
   final ConnectivityRepository repository;
   StreamSubscription<ConnectivityType>? _subscription;
 
-  ConnectivityCubit(this.repository)
-      : super(ConnectivityState(ConnectivityType.none)) {
+  ConnectivityCubit(this.repository) : super(ConnectivityState(.none)) {
     _init();
   }
 

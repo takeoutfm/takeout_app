@@ -147,10 +147,10 @@ class HomePage extends ClientPage<HomeView> {
   }
 
   Widget playerButton() {
-    return BlocBuilder<Player, PlayerState>(
-        buildWhen: (_, state) => state is PlayerProcessingState,
+    return BlocBuilder<Player, PlayerEvent>(
+        buildWhen: (_, state) => state is PlayerProcessingEvent,
         builder: (context, state) {
-          if (state is PlayerProcessingState) {
+          if (state is PlayerProcessingEvent) {
             if (state.buffering) {
               return const SizedBox.square(
                   dimension: 24, child: CircularProgressIndicator());

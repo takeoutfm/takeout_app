@@ -59,8 +59,9 @@ extension TakeoutContext on BuildContext {
 
   void download(Spiff spiff) {
     spiffCache.add(spiff);
-    final events = spiff.playlist.tracks
-        .map((t) => DownloadEvent(t, Uri.parse(t.location), t.size));
+    final events = spiff.playlist.tracks.map(
+      (t) => DownloadEvent(t, Uri.parse(t.location), t.size),
+    );
     downloads.addAll(events);
   }
 
@@ -76,8 +77,9 @@ extension TakeoutContext on BuildContext {
   }
 
   void downloadTracks(Iterable<Track> tracks) {
-    final events =
-        tracks.map((t) => DownloadEvent(t, Uri.parse(t.location), t.size));
+    final events = tracks.map(
+      (t) => DownloadEvent(t, Uri.parse(t.location), t.size),
+    );
     downloads.addAll(events);
   }
 
@@ -92,8 +94,9 @@ extension TakeoutContext on BuildContext {
   }
 
   void downloadEpisodes(Iterable<Episode> episodes) {
-    final events =
-        episodes.map((t) => DownloadEvent(t, Uri.parse(t.location), t.size));
+    final events = episodes.map(
+      (t) => DownloadEvent(t, Uri.parse(t.location), t.size),
+    );
     downloads.addAll(events);
   }
 
@@ -114,7 +117,9 @@ extension TakeoutContext on BuildContext {
   }
 
   void downloadTVEpisode(TVEpisode episode) {
-    clientRepository.tvEpisodePlaylist(episode.id).then((spiff) => download(spiff));
+    clientRepository
+        .tvEpisodePlaylist(episode.id)
+        .then((spiff) => download(spiff));
   }
 
   Future<void> reload() async {
@@ -128,8 +133,11 @@ extension TakeoutContext on BuildContext {
     trackCache.removeAll();
   }
 
-  Future<void> updateProgress(String etag,
-      {required Duration position, Duration? duration}) async {
+  Future<void> updateProgress(
+    String etag, {
+    required Duration position,
+    Duration? duration,
+  }) async {
     final offset = Offset.now(etag: etag, offset: position, duration: duration);
     if (await offsets.repository.contains(offset) == false) {
       // add local offset

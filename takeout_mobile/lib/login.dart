@@ -42,8 +42,11 @@ class LoginWidget extends ClientPage<bool> {
     final password = _passwordText.text.trim();
     final passcode = _passcodeText.text.trim();
     if (user.isNotEmpty && password.isNotEmpty) {
-      await context.client.login(user, password,
-          passcode: passcode.isNotEmpty ? passcode : null);
+      await context.client.login(
+        user,
+        password,
+        passcode: passcode.isNotEmpty ? passcode : null,
+      );
     }
   }
 
@@ -55,82 +58,89 @@ class LoginWidget extends ClientPage<bool> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(context.strings.takeoutTitle),
+      appBar: AppBar(title: Text(context.strings.takeoutTitle)),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: ListView(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                context.strings.hostLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                controller: _hostText,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.hostLabel,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                context.strings.loginLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                controller: _userText,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.userLabel,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                obscureText: true,
+                controller: _passwordText,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.passwordLabel,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                controller: _passcodeText,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.passcodeLabel,
+                ),
+              ),
+            ),
+            Container(
+              height: 70,
+              padding: const EdgeInsets.all(10),
+              child: OutlinedButton(
+                child: Text(context.strings.loginLabel),
+                onPressed: () {
+                  reloadPage(context);
+                },
+              ),
+            ),
+          ],
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(10),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      context.strings.hostLabel,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 30),
-                    )),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _hostText,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.hostLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      context.strings.loginLabel,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 30),
-                    )),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _userText,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.userLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    obscureText: true,
-                    controller: _passwordText,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.passwordLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _passcodeText,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.passcodeLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                    height: 70,
-                    padding: const EdgeInsets.all(10),
-                    child: OutlinedButton(
-                      child: Text(context.strings.loginLabel),
-                      onPressed: () {
-                        reloadPage(context);
-                      },
-                    )),
-              ],
-            )));
+      ),
+    );
   }
 }

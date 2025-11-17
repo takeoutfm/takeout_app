@@ -24,12 +24,13 @@ import 'package:takeout_lib/spiff/model.dart';
 import 'model.dart';
 
 abstract class HistoryProvider {
-  Future<History> add(
-      {String? search,
-      Spiff? spiff,
-      MediaTrack? track,
-      StreamTrack? streamTrack,
-      DateTime? dateTime});
+  Future<History> add({
+    String? search,
+    Spiff? spiff,
+    MediaTrack? track,
+    StreamTrack? streamTrack,
+    DateTime? dateTime,
+  });
 
   Future<History> get();
 
@@ -42,7 +43,7 @@ class JsonHistoryProvider implements HistoryProvider {
   History? _history;
 
   JsonHistoryProvider(this.directory)
-      : _file = File('${directory.path}/history.json');
+    : _file = File('${directory.path}/history.json');
 
   @override
   Future<History> add({
@@ -79,13 +80,22 @@ class JsonHistoryProvider implements HistoryProvider {
       // maintain map of unique tracks by etag with play counts
       final entry = history.tracks[track.etag];
       history.tracks[track.etag] = entry == null
-          ? TrackHistory(track.creator, track.album, track.title, track.image,
-              track.etag, 1, dateTime)
+          ? TrackHistory(
+              track.creator,
+              track.album,
+              track.title,
+              track.image,
+              track.etag,
+              1,
+              dateTime,
+            )
           : entry.copyWith(count: entry.count + 1, dateTime: dateTime);
     }
     if (streamTrack != null) {
       final last = history.lastStreamHistory;
-      if (last != null && last.name == streamTrack.name && last.title == streamTrack.title) {
+      if (last != null &&
+          last.name == streamTrack.name &&
+          last.title == streamTrack.title) {
         final entry = last.copyWith(dateTime);
         history.stream[history.stream.length - 1] = entry;
       } else {
@@ -113,9 +123,9 @@ class JsonHistoryProvider implements HistoryProvider {
       return History(spiffs: [], searches: [], tracks: {}, stream: []);
     }
 
-    final json = await file
-        .readAsBytes()
-        .then((body) => jsonDecode(utf8.decode(body)) as Map<String, dynamic>);
+    final json = await file.readAsBytes().then(
+      (body) => jsonDecode(utf8.decode(body)) as Map<String, dynamic>,
+    );
     // Allow for older version w/o tracks
     if (json.containsKey('Tracks') == false) {
       json['Tracks'] = <String, TrackHistory>{};
@@ -141,8 +151,10 @@ class JsonHistoryProvider implements HistoryProvider {
   void _prune(History history) {
     if (history.searches.length > maxSearchHistory) {
       // remove oldest first
-      history.searches
-          .removeRange(0, history.searches.length - maxSearchHistory);
+      history.searches.removeRange(
+        0,
+        history.searches.length - maxSearchHistory,
+      );
     }
     if (history.spiffs.length > maxSpiffHistory) {
       // remove oldest first

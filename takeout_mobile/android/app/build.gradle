@@ -30,8 +30,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.takeoutfm.mobile"
-    compileSdkVersion 35
-    ndkVersion = "25.1.8937393"
+    compileSdkVersion 36
+    ndkVersion = "26.1.10909125"
 
     lintOptions {
         disable 'InvalidPackage'
@@ -44,10 +44,10 @@ android {
 
     defaultConfig {
         applicationId "com.takeoutfm.mobile"
-        minSdkVersion 23
-        targetSdkVersion 35
-        versionCode 2404 // #versionCode#
-        versionName "0.24.4" // #version#
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 36
+        versionCode 2500 // #versionCode#
+        versionName "0.25.0" // #version#
     }
 
     signingConfigs {

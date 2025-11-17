@@ -16,9 +16,9 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_mobile/app/context.dart';
 
 import 'tiles.dart';
 
@@ -34,11 +34,17 @@ class TrackListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      ..._tracks.asMap().keys.toList().map((index) =>
-          CoverTrackListTile.mediaTrack(context, _tracks[index],
-              onTap: () => _onPlay(context, index),
-              trailing: const Icon(Icons.play_arrow)))
-    ]);
+    return Column(
+      children: [
+        ..._tracks.asMap().keys.toList().map(
+          (index) => CoverTrackListTile.mediaTrack(
+            context,
+            _tracks[index],
+            onTap: () => _onPlay(context, index),
+            trailing: const Icon(Icons.play_arrow),
+          ),
+        ),
+      ],
+    );
   }
 }

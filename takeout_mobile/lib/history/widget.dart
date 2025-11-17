@@ -37,49 +37,57 @@ class HistoryListWidget extends StatelessWidget {
     final spiffs = List<SpiffHistory>.from(history.spiffs);
     spiffs.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return Scaffold(
-        appBar: AppBar(
-          title: header(context.strings.historyLabel),
-          actions: [
-            popupMenu(context, [
-              PopupItem.streamHistory(context, (ctx) => _onStreamHistory(ctx)),
-              PopupItem.delete(
-                  context, context.strings.deleteAll, (ctx) => _onDelete(ctx)),
-            ])
-          ],
-        ),
-        body: Column(children: [
+      appBar: AppBar(
+        title: header(context.strings.historyLabel),
+        actions: [
+          popupMenu(context, [
+            PopupItem.streamHistory(context, (ctx) => _onStreamHistory(ctx)),
+            PopupItem.delete(
+              context,
+              context.strings.deleteAll,
+              (ctx) => _onDelete(ctx),
+            ),
+          ]),
+        ],
+      ),
+      body: Column(
+        children: [
           Expanded(
-              child: ListView.builder(
-                  itemCount: spiffs.length,
-                  itemBuilder: (buildContext, index) {
-                    return SpiffHistoryTile(spiffs[index]);
-                  }))
-        ]));
+            child: ListView.builder(
+              itemCount: spiffs.length,
+              itemBuilder: (buildContext, index) {
+                return SpiffHistoryTile(spiffs[index]);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onDelete(BuildContext context) {
     showDialog<void>(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text(context.strings.confirmDelete),
-            content: Text(context.strings.deleteHistory),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _onDeleteConfirmed(ctx);
-                },
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(context.strings.confirmDelete),
+          content: Text(context.strings.deleteHistory),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _onDeleteConfirmed(ctx);
+              },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _onDeleteConfirmed(BuildContext context) async {
@@ -92,15 +100,17 @@ class HistoryListWidget extends StatelessWidget {
 }
 
 Widget _streamTrackList(BuildContext context) {
-  return Builder(builder: (context) {
-    final history = context.watch<HistoryCubit>();
-    final tracks = List<StreamHistory>.from(history.state.history.stream);
-    tracks.sort((a, b) => b.dateTime.compareTo(a.dateTime));
-    final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
+  return Builder(
+    builder: (context) {
+      final history = context.watch<HistoryCubit>();
+      final tracks = List<StreamHistory>.from(history.state.history.stream);
+      tracks.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+      final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
 
-    return Column(children: [
-      Expanded(
-          child: ListView.builder(
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
               itemCount: tracks.length,
               itemBuilder: (buildContext, index) {
                 return CoverTrackListTile.streamTrack(
@@ -109,9 +119,13 @@ Widget _streamTrackList(BuildContext context) {
                   showCover: !sameArtwork,
                   dateTime: tracks[index].dateTime,
                 );
-              })),
-    ]);
-  });
+              },
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 class StreamTrackHistoryWidget extends StatelessWidget {
@@ -120,10 +134,9 @@ class StreamTrackHistoryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: header(context.strings.streamHistory),
-        ),
-        body: _streamTrackList(context));
+      appBar: AppBar(title: header(context.strings.streamHistory)),
+      body: _streamTrackList(context),
+    );
   }
 }
 
@@ -132,34 +145,43 @@ class SpiffHistoryTile extends StatelessWidget {
   final String _cover;
 
   SpiffHistoryTile(this.spiffHistory, {super.key})
-      : _cover = spiffHistory.spiff.cover;
+    : _cover = spiffHistory.spiff.cover;
 
   @override
   Widget build(BuildContext context) {
-    final subtitle =
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-      Text(spiffHistory.spiff.playlist.creator ?? 'no creator',
-          overflow: TextOverflow.ellipsis),
-      RelativeDateWidget(spiffHistory.dateTime)
-    ]);
+    final subtitle = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          spiffHistory.spiff.playlist.creator ?? 'no creator',
+          overflow: TextOverflow.ellipsis,
+        ),
+        RelativeDateWidget(spiffHistory.dateTime),
+      ],
+    );
 
     return ListTile(
-        selected: false,
-        isThreeLine: true,
-        onTap: () => _onTap(context, spiffHistory),
-        onLongPress: null,
-        leading: tileCover(context, _cover),
-        trailing: null,
-        subtitle: subtitle,
-        title: Text(spiffHistory.spiff.playlist.title,
-            overflow: TextOverflow.ellipsis));
+      selected: false,
+      isThreeLine: true,
+      onTap: () => _onTap(context, spiffHistory),
+      onLongPress: null,
+      leading: tileCover(context, _cover),
+      trailing: null,
+      subtitle: subtitle,
+      title: Text(
+        spiffHistory.spiff.playlist.title,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
   }
 
   void _onTap(BuildContext context, SpiffHistory spiffHistory) {
     Navigator.push<void>(
-        context,
-        MaterialPageRoute<void>(
-            // TODO consider making spiff refreshable. Need original reference or uri.
-            builder: (_) => SpiffWidget(value: spiffHistory.spiff)));
+      context,
+      MaterialPageRoute<void>(
+        // TODO consider making spiff refreshable. Need original reference or uri.
+        builder: (_) => SpiffWidget(value: spiffHistory.spiff),
+      ),
+    );
   }
 }

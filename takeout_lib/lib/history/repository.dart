@@ -28,7 +28,7 @@ class HistoryRepository {
   final HistoryProvider _provider;
 
   HistoryRepository({required this.directory, HistoryProvider? provider})
-      : _provider = provider ?? JsonHistoryProvider(directory);
+    : _provider = provider ?? JsonHistoryProvider(directory);
 
   Future<History> get() async {
     return _provider.get();
@@ -42,7 +42,12 @@ class HistoryRepository {
     DateTime? dateTime,
   }) async {
     return _provider.add(
-        search: search, spiff: spiff, track: track, dateTime: dateTime, streamTrack: streamTrack);
+      search: search,
+      spiff: spiff,
+      track: track,
+      dateTime: dateTime,
+      streamTrack: streamTrack,
+    );
   }
 
   Future<History> remove() async {

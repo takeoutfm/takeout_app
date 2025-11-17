@@ -38,13 +38,14 @@ class JsonCacheEntry extends JsonCacheResult {
   final DateTime lastModified;
 
   JsonCacheEntry(this.uri, this.file, this.lastModified, bool expired)
-      : super(true, expired);
+    : super(true, expired);
 
   @override
   Future<Map<String, dynamic>> read() async {
     try {
       return await file.readAsBytes().then(
-          (body) => jsonDecode(utf8.decode(body)) as Map<String, dynamic>);
+        (body) => jsonDecode(utf8.decode(body)) as Map<String, dynamic>,
+      );
     } catch (e) {
       return Future.error(e);
     }

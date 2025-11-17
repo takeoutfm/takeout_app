@@ -52,21 +52,21 @@ class RadioWidget extends ClientPage<RadioView> {
   @override
   Widget page(BuildContext context, RadioView state) {
     return BlocBuilder<SpiffCacheCubit, SpiffCacheState>(
-        builder: (context, cacheState) {
-      final entries = _radioFilter(cacheState.spiffs ?? <Spiff>[]);
-      bool hasDownloads = entries.isNotEmpty;
+      builder: (context, cacheState) {
+        final entries = _radioFilter(cacheState.spiffs ?? <Spiff>[]);
+        bool hasDownloads = entries.isNotEmpty;
 
-      final hasGenre = isNotEmpty(state.genre);
-      final hasPeriod = isNotEmpty(state.period);
-      final hasSeries = isNotEmpty(state.series);
-      final hasOther = isNotEmpty(state.other);
-      final hasStream = isNotEmpty(state.stream);
+        final hasGenre = isNotEmpty(state.genre);
+        final hasPeriod = isNotEmpty(state.period);
+        final hasSeries = isNotEmpty(state.series);
+        final hasOther = isNotEmpty(state.other);
+        final hasStream = isNotEmpty(state.stream);
 
-      final empty =
-          !hasGenre && !hasPeriod && !hasSeries && !hasOther && !hasStream;
+        final empty =
+            !hasGenre && !hasPeriod && !hasSeries && !hasOther && !hasStream;
 
-      if (empty) {
-        return RefreshIndicator(
+        if (empty) {
+          return RefreshIndicator(
             child: Scaffold(
               appBar: AppBar(
                 title: header(context.strings.radioLabel),
@@ -77,51 +77,59 @@ class RadioWidget extends ClientPage<RadioView> {
                 ],
               ),
               body: Center(
-                  child: TextButton(
-                      child: Text(context.strings.radioEmpty),
-                      onPressed: () => reloadPage(context))),
+                child: TextButton(
+                  child: Text(context.strings.radioEmpty),
+                  onPressed: () => reloadPage(context),
+                ),
+              ),
             ),
-            onRefresh: () => reloadPage(context));
-      }
+            onRefresh: () => reloadPage(context),
+          );
+        }
 
-      return DefaultTabController(
+        return DefaultTabController(
           length: hasDownloads ? 5 : 4, // TODO FIXME
           child: RefreshIndicator(
-              onRefresh: () => reloadPage(context),
-              child: Scaffold(
-                  appBar: AppBar(
-                      title: header(context.strings.radioLabel),
-                      actions: [
-                        popupMenu(context, [
-                          PopupItem.reload(context, (_) => reloadPage(context)),
-                        ]),
-                      ],
-                      bottom: TabBar(
-                        tabs: [
-                          if (hasStream)
-                            Tab(text: context.strings.streamsLabel),
-                          if (hasGenre) Tab(text: context.strings.genresLabel),
-                          if (hasPeriod)
-                            Tab(text: context.strings.decadesLabel),
-                          if (hasSeries || hasOther)
-                            Tab(text: context.strings.otherLabel),
-                          if (hasDownloads)
-                            Tab(text: context.strings.downloadsLabel)
-                        ],
-                      )),
-                  body: TabBarView(
-                    children: [
-                      if (hasStream) _stations(state.stream!),
-                      if (hasGenre) _stations(state.genre!),
-                      if (hasPeriod) _stations(state.period!),
-                      if (hasSeries || hasOther)
-                        _stations(_merge(
-                            state.series != null ? state.series! : [],
-                            state.other != null ? state.other! : [])),
-                      if (hasDownloads) DownloadListWidget(filter: _radioFilter)
-                    ],
-                  ))));
-    });
+            onRefresh: () => reloadPage(context),
+            child: Scaffold(
+              appBar: AppBar(
+                title: header(context.strings.radioLabel),
+                actions: [
+                  popupMenu(context, [
+                    PopupItem.reload(context, (_) => reloadPage(context)),
+                  ]),
+                ],
+                bottom: TabBar(
+                  tabs: [
+                    if (hasStream) Tab(text: context.strings.streamsLabel),
+                    if (hasGenre) Tab(text: context.strings.genresLabel),
+                    if (hasPeriod) Tab(text: context.strings.decadesLabel),
+                    if (hasSeries || hasOther)
+                      Tab(text: context.strings.otherLabel),
+                    if (hasDownloads) Tab(text: context.strings.downloadsLabel),
+                  ],
+                ),
+              ),
+              body: TabBarView(
+                children: [
+                  if (hasStream) _stations(state.stream!),
+                  if (hasGenre) _stations(state.genre!),
+                  if (hasPeriod) _stations(state.period!),
+                  if (hasSeries || hasOther)
+                    _stations(
+                      _merge(
+                        state.series != null ? state.series! : [],
+                        state.other != null ? state.other! : [],
+                      ),
+                    ),
+                  if (hasDownloads) DownloadListWidget(filter: _radioFilter),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   List<Station> _merge(List<Station> a, List<Station> b) {
@@ -132,31 +140,35 @@ class RadioWidget extends ClientPage<RadioView> {
 
   Widget _stations(List<Station> stations) {
     return ListView.builder(
-        itemCount: stations.length,
-        itemBuilder: (context, index) {
-          final station = stations[index];
-          final isStream = station.type == radioStream;
-          return isStream
-              ? StreamingTile(
-                  onTap: () => _onRadioStream(context, station),
-                  leading: station.image.isNotEmpty
-                      ? tileCover(context, station.image)
-                      : null,
-                  title: Text(station.name),
-                  subtitle: _stationSubtitle(station),
-                  isThreeLine: station.description.isNotEmpty,
-                  trailing: const Icon(Icons.play_arrow))
-              : ListTile(
-                  onTap: () => _onStation(context, station),
-                  leading: station.image.isNotEmpty
-                      ? tileCover(context, station.image)
-                      : null,
-                  title: Text(station.name),
-                  subtitle: _stationSubtitle(station),
-                  isThreeLine: station.description.isNotEmpty,
-                  trailing: DownloadButton(
-                      onPressed: () => _onDownload(context, station)));
-        });
+      itemCount: stations.length,
+      itemBuilder: (context, index) {
+        final station = stations[index];
+        final isStream = station.type == radioStream;
+        return isStream
+            ? StreamingTile(
+                onTap: () => _onRadioStream(context, station),
+                leading: station.image.isNotEmpty
+                    ? tileCover(context, station.image)
+                    : null,
+                title: Text(station.name),
+                subtitle: _stationSubtitle(station),
+                isThreeLine: station.description.isNotEmpty,
+                trailing: const Icon(Icons.play_arrow),
+              )
+            : ListTile(
+                onTap: () => _onStation(context, station),
+                leading: station.image.isNotEmpty
+                    ? tileCover(context, station.image)
+                    : null,
+                title: Text(station.name),
+                subtitle: _stationSubtitle(station),
+                isThreeLine: station.description.isNotEmpty,
+                trailing: DownloadButton(
+                  onPressed: () => _onDownload(context, station),
+                ),
+              );
+      },
+    );
   }
 
   Widget? _stationSubtitle(Station station) {
@@ -181,10 +193,11 @@ class RadioWidget extends ClientPage<RadioView> {
 
   void _onStation(BuildContext context, Station station) {
     pushSpiff(
-        ref: '/api/stations/${station.id}/playlist',
-        context,
-        (client, {Duration? ttl}) =>
-            client.station(station.id, ttl: Duration.zero));
+      ref: '/api/stations/${station.id}/playlist',
+      context,
+      (client, {Duration? ttl}) =>
+          client.station(station.id, ttl: Duration.zero),
+    );
   }
 
   void _onDownload(BuildContext context, Station station) {

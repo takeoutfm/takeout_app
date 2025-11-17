@@ -49,81 +49,88 @@ class LinkWidget extends ClientPage<bool> {
   @override
   Widget page(BuildContext context, bool state) {
     if (state) {
-      showAlertDialog(context, context.strings.linkSuccess,
-          onConfirmed: () => Navigator.pop(context));
+      showAlertDialog(
+        context,
+        context.strings.linkSuccess,
+        onConfirmed: () => Navigator.pop(context),
+      );
       return const EmptyWidget();
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(context.strings.takeoutTitle),
+      appBar: AppBar(title: Text(context.strings.takeoutTitle)),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: ListView(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(10),
+              child: Text(
+                context.strings.linkTitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 30,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                controller: _userText,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.userLabel,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                obscureText: true,
+                controller: _passwordText,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.passwordLabel,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                controller: _passcodeText,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.passcodeLabel,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextFormField(
+                controller: _codeText,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: context.strings.codeLabel,
+                ),
+              ),
+            ),
+            Container(
+              height: 70,
+              padding: const EdgeInsets.all(10),
+              child: OutlinedButton(
+                child: Text(context.strings.linkLabel),
+                onPressed: () {
+                  reloadPage(context);
+                },
+              ),
+            ),
+          ],
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(10),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      context.strings.linkTitle,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 30),
-                    )),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _userText,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.userLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    obscureText: true,
-                    controller: _passwordText,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.passwordLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _passcodeText,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.passcodeLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: _codeText,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: context.strings.codeLabel,
-                    ),
-                  ),
-                ),
-                Container(
-                    height: 70,
-                    padding: const EdgeInsets.all(10),
-                    child: OutlinedButton(
-                      child: Text(context.strings.linkLabel),
-                      onPressed: () {
-                        reloadPage(context);
-                      },
-                    )),
-              ],
-            )));
+      ),
+    );
   }
 }

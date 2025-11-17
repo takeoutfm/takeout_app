@@ -15,11 +15,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/track.dart';
-import 'package:takeout_lib/api/model.dart';
-import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/model.dart';
+import 'package:takeout_lib/spiff/model.dart';
 
 class SpiffTrackCacheState {
   final SpiffCacheState spiffCacheState;

@@ -46,16 +46,19 @@ class ArtworkBuilder {
     return secondary;
   }
 
-  ArtworkBuilder(this.primary,
-      {this.secondary,
-      this.placeholder = const Icon(Icons.image_outlined, size: 40),
-      this.errorIcon = const Icon(Icons.broken_image_outlined, size: 40),
-      this.hero = false})
-      : _artwork = _pick(primary, secondary);
+  ArtworkBuilder(
+    this.primary, {
+    this.secondary,
+    this.placeholder = const Icon(Icons.image_outlined, size: 40),
+    this.errorIcon = const Icon(Icons.broken_image_outlined, size: 40),
+    this.hero = false,
+  }) : _artwork = _pick(primary, secondary);
 
   factory ArtworkBuilder.artist(String? artistUrl, String? coverUrl) =>
-      ArtworkBuilder(artistUrl != null ? Artwork.artist(artistUrl) : null,
-          secondary: coverUrl != null ? Artwork.cover(coverUrl) : null);
+      ArtworkBuilder(
+        artistUrl != null ? Artwork.artist(artistUrl) : null,
+        secondary: coverUrl != null ? Artwork.cover(coverUrl) : null,
+      );
 
   Widget _cachedImage(BuildContext context, Artwork artwork) {
     if (artworkErrors.contains(artwork.url)) {
@@ -66,30 +69,32 @@ class ArtworkBuilder {
     final imageProvider = context.imageProvider.get(artwork.url);
     //CachedNetworkImage.logLevel = CacheManagerLogLevel.verbose;
     final image = OctoImage(
-        image: imageProvider,
-        width: artwork.width,
-        height: artwork.height,
-        color: artwork.color,
-        colorBlendMode: artwork.blendMode,
-        fit: artwork.fit,
-        placeholderBuilder: (_) => artwork.placeholder ?? placeholder,
-        errorBuilder: (context, error, stack) {
-          log.w('OctoImage error', error: error);
-          artworkErrors.add(imageProvider.url);
-          if (imageProvider.url == primary?.url && secondary != null) {
-            // primary failed, forget it and use secondary
-            _artwork = secondary!;
-            return _cachedImage(context, secondary!);
-          }
-          urlStream.add(null);
-          return errorIcon;
-        });
+      image: imageProvider,
+      width: artwork.width,
+      height: artwork.height,
+      color: artwork.color,
+      colorBlendMode: artwork.blendMode,
+      fit: artwork.fit,
+      placeholderBuilder: (_) => artwork.placeholder ?? placeholder,
+      errorBuilder: (context, error, stack) {
+        log.w('OctoImage error', error: error);
+        artworkErrors.add(imageProvider.url);
+        if (imageProvider.url == primary?.url && secondary != null) {
+          // primary failed, forget it and use secondary
+          _artwork = secondary!;
+          return _cachedImage(context, secondary!);
+        }
+        urlStream.add(null);
+        return errorIcon;
+      },
+    );
     _provider = imageProvider;
     final borderRadius = artwork.borderRadius;
     return borderRadius != null
         ? ClipRRect(
             borderRadius: borderRadius,
-            child: _hero(image, artwork.tag))
+            child: _hero(image, artwork.tag),
+          )
         : _hero(image, artwork.tag);
   }
 
@@ -132,9 +137,12 @@ Future<Color> getImageBackgroundColor(BuildContext context, String url) async {
 }
 
 Future<Color> _backgroundColor(
-    BuildContext context, ImageProvider imageProvider) async {
-  final paletteGenerator =
-      await PaletteGenerator.fromImageProvider(imageProvider);
+  BuildContext context,
+  ImageProvider imageProvider,
+) async {
+  final paletteGenerator = await PaletteGenerator.fromImageProvider(
+    imageProvider,
+  );
   if (!context.mounted) {
     return Future.value(Colors.black);
   }

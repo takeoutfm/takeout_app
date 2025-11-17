@@ -37,16 +37,18 @@ class SettingsState {
 class SettingsCubit extends HydratedCubit<SettingsState> {
   SettingsCubit() : super(SettingsState(Settings.initial()));
 
-  void add(
-          {String? user,
-          String? host,
-          bool? allowStreaming,
-          bool? allowDownload,
-          bool? allowArtistArtwork,
-          String? listenBrainzToken,
-          bool? enableListenBrainz,
-          bool? enableTrackActivity}) =>
-      emit(SettingsState(state.settings.copyWith(
+  void add({
+    String? user,
+    String? host,
+    bool? allowStreaming,
+    bool? allowDownload,
+    bool? allowArtistArtwork,
+    String? listenBrainzToken,
+    bool? enableListenBrainz,
+    bool? enableTrackActivity,
+  }) => emit(
+    SettingsState(
+      state.settings.copyWith(
         user: user,
         host: host,
         allowMobileStreaming: allowStreaming,
@@ -55,20 +57,26 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
         listenBrainzToken: listenBrainzToken,
         enableListenBrainz: enableListenBrainz,
         enableTrackActivity: enableTrackActivity,
-      )));
+      ),
+    ),
+  );
 
   void apply(Settings settings) {
     // don't allow user & host to be changed here.
-    emit(SettingsState(state.settings.copyWith(
-      allowMobileArtistArtwork: settings.allowMobileArtistArtwork,
-      allowMobileDownload: settings.allowMobileDownload,
-      allowMobileStreaming: settings.allowMobileStreaming,
-      autoPlay: settings.autoPlay,
-      autoCache: settings.autoCache,
-      listenBrainzToken: settings.listenBrainzToken,
-      enableListenBrainz: settings.enableListenBrainz,
-      enableTrackActivity: settings.enableTrackActivity,
-    )));
+    emit(
+      SettingsState(
+        state.settings.copyWith(
+          allowMobileArtistArtwork: settings.allowMobileArtistArtwork,
+          allowMobileDownload: settings.allowMobileDownload,
+          allowMobileStreaming: settings.allowMobileStreaming,
+          autoPlay: settings.autoPlay,
+          autoCache: settings.autoCache,
+          listenBrainzToken: settings.listenBrainzToken,
+          enableListenBrainz: settings.enableListenBrainz,
+          enableTrackActivity: settings.enableTrackActivity,
+        ),
+      ),
+    );
   }
 
   set user(String user) {
@@ -88,8 +96,9 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
   }
 
   set allowArtistArtwork(bool value) {
-    emit(SettingsState(
-        state.settings.copyWith(allowMobileArtistArtwork: value)));
+    emit(
+      SettingsState(state.settings.copyWith(allowMobileArtistArtwork: value)),
+    );
   }
 
   set autoPlay(bool value) {
@@ -121,6 +130,7 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
       SettingsState.fromJson(json['settings'] as Map<String, dynamic>);
 
   @override
-  Map<String, dynamic>? toJson(SettingsState state) =>
-      {'settings': state.toJson()};
+  Map<String, dynamic>? toJson(SettingsState state) => {
+    'settings': state.toJson(),
+  };
 }

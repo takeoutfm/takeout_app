@@ -24,9 +24,10 @@ class MediaTrackResolver {
   final TrackUriResolver _resolver;
   final TrackCacheRepository trackCacheRepository;
 
-  MediaTrackResolver(
-      {required this.trackCacheRepository, TrackUriResolver? resolver})
-      : _resolver = resolver ?? DefaultTrackResolver(trackCacheRepository);
+  MediaTrackResolver({
+    required this.trackCacheRepository,
+    TrackUriResolver? resolver,
+  }) : _resolver = resolver ?? DefaultTrackResolver(trackCacheRepository);
 
   Future<Uri> resolve(MediaTrack track) async {
     return _resolver.resolve(track);

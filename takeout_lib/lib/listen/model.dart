@@ -46,19 +46,20 @@ class Listen extends HiveObject implements MediaTrack {
   final String location;
 
   Listen(
-      this.listenedAt,
-      this.creator,
-      this.album,
-      this.image,
-      this.date,
-      this.year,
-      this.title,
-      this.etag,
-      this.size,
-      this.number,
-      this.disc,
-      this.location,
-      {this.retryCount = 0});
+    this.listenedAt,
+    this.creator,
+    this.album,
+    this.image,
+    this.date,
+    this.year,
+    this.title,
+    this.etag,
+    this.size,
+    this.number,
+    this.disc,
+    this.location, {
+    this.retryCount = 0,
+  });
 
   factory Listen.fromMediaTrack(MediaTrack track, DateTime listenedAt) =>
       Listen(
@@ -78,18 +79,18 @@ class Listen extends HiveObject implements MediaTrack {
 
   // TODO use retryCount
   Listen copyWith({int? retryCount}) => Listen(
-        listenedAt,
-        creator,
-        album,
-        image,
-        date,
-        year,
-        title,
-        etag,
-        size,
-        number,
-        disc,
-        location,
-        retryCount: retryCount ?? this.retryCount,
-      );
+    listenedAt,
+    creator,
+    album,
+    image,
+    date,
+    year,
+    title,
+    etag,
+    size,
+    number,
+    disc,
+    location,
+    retryCount: retryCount ?? this.retryCount,
+  );
 }

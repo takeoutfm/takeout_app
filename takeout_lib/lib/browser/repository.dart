@@ -40,29 +40,30 @@ class MediaRepository {
   final MediaProvider _provider;
   MediaPlayer? _player;
 
-  MediaRepository(
-      {required ClientRepository clientRepository,
-      required HistoryRepository historyRepository,
-      required SettingsRepository settingsRepository,
-      required SpiffCacheRepository spiffCacheRepository,
-      required MediaTypeRepository mediaTypeRepository,
-      required SubscribedRepository subscribedRepository,
-      required OffsetCacheRepository offsetCacheRepository,
-      required TrackCacheRepository trackCacheRepository,
-      required Search searchRepository,
-      MediaProvider? provider})
-      : _provider = provider ??
-            DefaultMediaProvider(
-              clientRepository,
-              historyRepository,
-              settingsRepository,
-              spiffCacheRepository,
-              mediaTypeRepository,
-              subscribedRepository,
-              offsetCacheRepository,
-              trackCacheRepository,
-              searchRepository,
-            );
+  MediaRepository({
+    required ClientRepository clientRepository,
+    required HistoryRepository historyRepository,
+    required SettingsRepository settingsRepository,
+    required SpiffCacheRepository spiffCacheRepository,
+    required MediaTypeRepository mediaTypeRepository,
+    required SubscribedRepository subscribedRepository,
+    required OffsetCacheRepository offsetCacheRepository,
+    required TrackCacheRepository trackCacheRepository,
+    required Search searchRepository,
+    MediaProvider? provider,
+  }) : _provider =
+           provider ??
+           DefaultMediaProvider(
+             clientRepository,
+             historyRepository,
+             settingsRepository,
+             spiffCacheRepository,
+             mediaTypeRepository,
+             subscribedRepository,
+             offsetCacheRepository,
+             trackCacheRepository,
+             searchRepository,
+           );
 
   void init(MediaPlayer player) {
     _player = player;
@@ -84,8 +85,11 @@ class MediaRepository {
     return _provider.getChildren(parentId);
   }
 
-  Future<List<MediaItem>> search(String query,
-      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
+  Future<List<MediaItem>> search(
+    String query, {
+    MediaType? mediaType,
+    Map<String, dynamic>? extras,
+  }) async {
     return _provider.search(query, mediaType: mediaType, extras: extras);
   }
 
@@ -101,8 +105,11 @@ class MediaRepository {
     }
   }
 
-  Future<void> playFromSearch(String query,
-      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
+  Future<void> playFromSearch(
+    String query, {
+    MediaType? mediaType,
+    Map<String, dynamic>? extras,
+  }) async {
     if (mediaType == MediaType.film) {
       final results = await _provider.search(query, mediaType: mediaType);
       if (results.isNotEmpty) {
@@ -113,8 +120,11 @@ class MediaRepository {
         }
       }
     } else {
-      final spiff = await _provider.spiffFromSearch(query,
-          mediaType: mediaType, extras: extras);
+      final spiff = await _provider.spiffFromSearch(
+        query,
+        mediaType: mediaType,
+        extras: extras,
+      );
       if (spiff != null) {
         _player?.playSpiff(spiff);
       }

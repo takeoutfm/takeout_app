@@ -166,13 +166,19 @@ abstract class MediaProvider {
 
   Future<List<MediaItem>> getChildren(String parentId);
 
-  Future<List<MediaItem>> search(String query,
-      {MediaType? mediaType, Map<String, dynamic>? extras});
+  Future<List<MediaItem>> search(
+    String query, {
+    MediaType? mediaType,
+    Map<String, dynamic>? extras,
+  });
 
   Future<Spiff?> spiffFromMediaId(String mediaId);
 
-  Future<Spiff?> spiffFromSearch(String query,
-      {MediaType? mediaType, Map<String, dynamic>? extras});
+  Future<Spiff?> spiffFromSearch(
+    String query, {
+    MediaType? mediaType,
+    Map<String, dynamic>? extras,
+  });
 
   Future<Movie?> movieFromMediaId(String mediaId);
 }
@@ -189,69 +195,80 @@ class DefaultMediaProvider implements MediaProvider {
   final Search searchRepository;
 
   DefaultMediaProvider(
-      this.clientRepository,
-      this.historyRepository,
-      this.settingsRepository,
-      this.spiffCacheRepository,
-      this.mediaTypeRepository,
-      this.subscribedRepository,
-      this.offsetCacheRepository,
-      this.trackCacheRepository,
-      this.searchRepository);
+    this.clientRepository,
+    this.historyRepository,
+    this.settingsRepository,
+    this.spiffCacheRepository,
+    this.mediaTypeRepository,
+    this.subscribedRepository,
+    this.offsetCacheRepository,
+    this.trackCacheRepository,
+    this.searchRepository,
+  );
 
   @override
   Future<List<MediaItem>> getRoot() async {
     final items = <MediaItem>[];
     final index = await clientRepository.index();
-    items.add(const MediaItem(
-      id: '/history',
-      title: stringsRecent,
-      playable: false,
-      extras: extrasGridStyle,
-    ));
-    if (index.hasMusic) {
-      items.add(const MediaItem(
-        id: '/music',
-        title: stringsMusic,
+    items.add(
+      const MediaItem(
+        id: '/history',
+        title: stringsRecent,
         playable: false,
         extras: extrasGridStyle,
-      ));
+      ),
+    );
+    if (index.hasMusic) {
+      items.add(
+        const MediaItem(
+          id: '/music',
+          title: stringsMusic,
+          playable: false,
+          extras: extrasGridStyle,
+        ),
+      );
     }
     if (index.hasPodcasts) {
-      items.add(const MediaItem(
-        id: '/podcasts',
-        title: stringsPodcasts,
-        playable: false,
-        extras: extrasGridStyle,
-      ));
+      items.add(
+        const MediaItem(
+          id: '/podcasts',
+          title: stringsPodcasts,
+          playable: false,
+          extras: extrasGridStyle,
+        ),
+      );
     }
     if (index.hasMusic) {
-      items.add(const MediaItem(
-        id: '/history/artists',
-        title: stringsArtists,
-        playable: false,
-      ));
-      items.add(const MediaItem(
-        id: '/radio',
-        title: stringsRadio,
-        playable: false,
-      ));
+      items.add(
+        const MediaItem(
+          id: '/history/artists',
+          title: stringsArtists,
+          playable: false,
+        ),
+      );
+      items.add(
+        const MediaItem(id: '/radio', title: stringsRadio, playable: false),
+      );
     }
     if (index.hasPlaylists) {
-      items.add(const MediaItem(
-        id: '/playlists',
-        title: stringsPlaylists,
-        playable: false,
-      ));
+      items.add(
+        const MediaItem(
+          id: '/playlists',
+          title: stringsPlaylists,
+          playable: false,
+        ),
+      );
     }
     final downloads = await spiffCacheRepository.entries;
     if (downloads.isNotEmpty) {
-      items.add(const MediaItem(
-        id: '/downloads',
-        title: stringsDownloads,
-        playable: false,
-        extras: extrasGridStyle,
-      ));
+      items.add(
+        const MediaItem(
+          id: '/downloads',
+          title: stringsDownloads,
+          playable: false,
+          extras: extrasGridStyle,
+        ),
+      );
     }
     // if (index.hasMovies) {
     //   items.add(const MediaItem(
@@ -307,8 +324,11 @@ class DefaultMediaProvider implements MediaProvider {
   }
 
   @override
-  Future<List<MediaItem>> search(String query,
-      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
+  Future<List<MediaItem>> search(
+    String query, {
+    MediaType? mediaType,
+    Map<String, dynamic>? extras,
+  }) async {
     final items = <MediaItem>[];
     final results = await _search(query, extras: extras);
     final cache = await cacheState();
@@ -331,8 +351,13 @@ class DefaultMediaProvider implements MediaProvider {
         items.add(_artist(a, group: stringsGroupArtists));
       }
       for (var r in results.releases ?? <Release>[]) {
-        items.add(_release(r,
-            group: stringsGroupReleases, isDownloaded: cache.isDownloaded(r)));
+        items.add(
+          _release(
+            r,
+            group: stringsGroupReleases,
+            isDownloaded: cache.isDownloaded(r),
+          ),
+        );
       }
       for (var t in results.tracks ?? <Track>[]) {
         items.add(_track(t, group: stringsGroupTracks));
@@ -386,8 +411,11 @@ class DefaultMediaProvider implements MediaProvider {
 
   // TODO search isn't tested yet. Not sure how to test with ADB/AA.
   @override
-  Future<Spiff?> spiffFromSearch(String query,
-      {MediaType? mediaType, Map<String, dynamic>? extras}) async {
+  Future<Spiff?> spiffFromSearch(
+    String query, {
+    MediaType? mediaType,
+    Map<String, dynamic>? extras,
+  }) async {
     final results = await _search(query, extras: extras);
     if (results.hits == 0) {
       return null;
@@ -479,11 +507,13 @@ class DefaultMediaProvider implements MediaProvider {
         items.add(_artist(a));
       }
     }
-    items.add(const MediaItem(
-      id: '/artists',
-      title: stringsAllArtists,
-      playable: false,
-    ));
+    items.add(
+      const MediaItem(
+        id: '/artists',
+        title: stringsAllArtists,
+        playable: false,
+      ),
+    );
     return items;
   }
 
@@ -494,8 +524,13 @@ class DefaultMediaProvider implements MediaProvider {
     final artist = await clientRepository.artist(id);
     final cache = await cacheState();
     for (var r in artist.releases) {
-      items.add(_release(r,
-          group: stringsGroupReleases, isDownloaded: cache.isDownloaded(r)));
+      items.add(
+        _release(
+          r,
+          group: stringsGroupReleases,
+          isDownloaded: cache.isDownloaded(r),
+        ),
+      );
     }
     return items;
   }
@@ -504,23 +539,41 @@ class DefaultMediaProvider implements MediaProvider {
     final items = <MediaItem>[];
     final radio = await clientRepository.radio();
     if (radio.stream != null) {
-      items.add(const MediaItem(
+      items.add(
+        const MediaItem(
           id: '/radio/stream',
           title: stringsStreams,
           playable: false,
-          extras: extrasGridStyle));
+          extras: extrasGridStyle,
+        ),
+      );
     }
     if (radio.genre != null) {
-      items.add(const MediaItem(
-          id: '/radio/genre', title: stringsGenres, playable: false));
+      items.add(
+        const MediaItem(
+          id: '/radio/genre',
+          title: stringsGenres,
+          playable: false,
+        ),
+      );
     }
     if (radio.period != null) {
-      items.add(const MediaItem(
-          id: '/radio/period', title: stringsDecades, playable: false));
+      items.add(
+        const MediaItem(
+          id: '/radio/period',
+          title: stringsDecades,
+          playable: false,
+        ),
+      );
     }
     if (radio.other != null) {
-      items.add(const MediaItem(
-          id: '/radio/other', title: stringsOther, playable: false));
+      items.add(
+        const MediaItem(
+          id: '/radio/other',
+          title: stringsOther,
+          playable: false,
+        ),
+      );
     }
     return items;
   }
@@ -645,13 +698,14 @@ class DefaultMediaProvider implements MediaProvider {
     }
 
     return MediaItem(
-        id: '/music/releases/${r.id}/tracks',
-        title: r.album,
-        artist: r.artist,
-        album: r.album,
-        artUri: _img(r.image),
-        extras: extras,
-        playable: true);
+      id: '/music/releases/${r.id}/tracks',
+      title: r.album,
+      artist: r.artist,
+      album: r.album,
+      artUri: _img(r.image),
+      extras: extras,
+      playable: true,
+    );
   }
 
   MediaItem _station(Station s) {
@@ -732,8 +786,9 @@ class DefaultMediaProvider implements MediaProvider {
       extras = await _completionExtras(episode);
     }
 
-    final downloaded =
-        await trackCacheRepository.containsAll(spiff.playlist.tracks);
+    final downloaded = await trackCacheRepository.containsAll(
+      spiff.playlist.tracks,
+    );
     if (downloaded) {
       extras ??= <String, dynamic>{};
       extras[extrasKeyDownloadStatus] = extrasValueStatusDownloaded;
@@ -744,29 +799,29 @@ class DefaultMediaProvider implements MediaProvider {
 
   Future<MediaItem> _history(SpiffHistory h) async {
     return MediaItem(
-        id: '/history/spiffs/${h.dateTime.millisecondsSinceEpoch}',
-        title: h.spiff.title,
-        artist: h.spiff.creator,
-        artUri: _img(h.spiff.cover),
-        playable: true,
-        extras: await _spiffExtras(h.spiff));
+      id: '/history/spiffs/${h.dateTime.millisecondsSinceEpoch}',
+      title: h.spiff.title,
+      artist: h.spiff.creator,
+      artUri: _img(h.spiff.cover),
+      playable: true,
+      extras: await _spiffExtras(h.spiff),
+    );
   }
 
   MediaItem _track(Track t, {String? group}) {
     Map<String, dynamic>? extras;
     if (group != null) {
-      extras = {
-        extrasKeyContentStyleGroupTitle: group,
-      };
+      extras = {extrasKeyContentStyleGroupTitle: group};
     }
     return MediaItem(
-        id: '/music/releases/${t.reid}?index=${t.trackIndex}',
-        title: t.title,
-        artist: t.creator,
-        album: t.album,
-        artUri: _img(t.image),
-        extras: extras,
-        playable: true);
+      id: '/music/releases/${t.reid}?index=${t.trackIndex}',
+      title: t.title,
+      artist: t.creator,
+      album: t.album,
+      artUri: _img(t.image),
+      extras: extras,
+      playable: true,
+    );
   }
 
   Future<MediaItem> _movie(Movie m) async {
@@ -813,8 +868,10 @@ class DefaultMediaProvider implements MediaProvider {
     return Uri.parse(i);
   }
 
-  Future<SearchView> _search(String query,
-      {Map<String, dynamic>? extras}) async {
+  Future<SearchView> _search(
+    String query, {
+    Map<String, dynamic>? extras,
+  }) async {
     if (extras != null && extras.isNotEmpty) {
       final artist = extras[extrasKeyMediaArtist];
       final album = extras[extrasKeyMediaAlbum];
@@ -845,8 +902,9 @@ class DefaultMediaProvider implements MediaProvider {
 
   Future<SpiffTrackCacheState> cacheState() async {
     final spiffCacheState = SpiffCacheState(await spiffCacheRepository.entries);
-    final trackCacheState =
-        TrackCacheState(Set<String>.from(await trackCacheRepository.keys()));
+    final trackCacheState = TrackCacheState(
+      Set<String>.from(await trackCacheRepository.keys()),
+    );
     return SpiffTrackCacheState(spiffCacheState, trackCacheState);
   }
 }

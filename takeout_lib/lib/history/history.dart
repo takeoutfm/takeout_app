@@ -36,9 +36,9 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   void _load() {
-    repository
-        .get()
-        .then((history) => emit(HistoryState(history.unmodifiableCopy())));
+    repository.get().then(
+      (history) => emit(HistoryState(history.unmodifiableCopy())),
+    );
   }
 
   void add({
@@ -50,17 +50,18 @@ class HistoryCubit extends Cubit<HistoryState> {
   }) {
     repository
         .add(
-            search: search,
-            spiff: spiff,
-            track: track,
-            streamTrack: streamTrack,
-            dateTime: dateTime)
+          search: search,
+          spiff: spiff,
+          track: track,
+          streamTrack: streamTrack,
+          dateTime: dateTime,
+        )
         .then((history) => emit(HistoryState(history.unmodifiableCopy())));
   }
 
   void remove() {
-    repository
-        .remove()
-        .then((history) => emit(HistoryState(history.unmodifiableCopy())));
+    repository.remove().then(
+      (history) => emit(HistoryState(history.unmodifiableCopy())),
+    );
   }
 }

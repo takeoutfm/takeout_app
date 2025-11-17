@@ -1,3 +1,11 @@
+## 0.25.0
+
+- Use chewie video player (mobile)
+- Display any platform/code errors from video
+- Icon updates (mobile)
+- Flutter upgrade to 3.38.1, and Dart 3.10, Android Studio Otter 2025.2.1
+- Code cleanup
+
 ## 0.24.4
 
 - Use playback event stream for duration and index changes

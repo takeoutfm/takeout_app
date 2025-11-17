@@ -22,8 +22,8 @@ enum ConnectivityType {
   wifi,
   ethernet,
   mobile,
-  none,
-  vpn;
+  other,
+  none;
 
   bool get isConnected => this != none;
 }
@@ -44,23 +44,25 @@ class DefaultConnectivityProvider implements ConnectivityProvider {
 
   @override
   Stream<ConnectivityType> get stream {
-    return _connectivity.onConnectivityChanged.map((result) => map(result));
+    return _connectivity.onConnectivityChanged.map((results) => map(results));
   }
 
-  ConnectivityType map(ConnectivityResult result) {
-    switch (result) {
-      case ConnectivityResult.bluetooth:
-        return ConnectivityType.bluetooth;
-      case ConnectivityResult.wifi:
-        return ConnectivityType.wifi;
-      case ConnectivityResult.ethernet:
-        return ConnectivityType.ethernet;
-      case ConnectivityResult.mobile:
-        return ConnectivityType.mobile;
-      case ConnectivityResult.vpn:
-        return ConnectivityType.vpn;
-      default:
-        return ConnectivityType.none;
+  ConnectivityType map(List<ConnectivityResult> results) {
+    if (results.isEmpty) {
+      return ConnectivityType.none;
     }
+    if (results.length == 1 && results.first == .none) {
+      return ConnectivityType.none;
+    }
+
+    if (results.contains(ConnectivityResult.mobile)) {
+      return .mobile;
+    }
+    if (results.contains(ConnectivityResult.wifi)) {
+      return .wifi;
+    }
+    // takeout really only cares about mobile so just return
+    // other for anything else
+    return .other;
   }
 }

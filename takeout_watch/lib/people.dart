@@ -46,7 +46,9 @@ class PeoplePage extends StatelessWidget {
 
   void onPerson(BuildContext context, Person person) {
     Navigator.push(
-        context, CupertinoPageRoute<void>(builder: (_) => ProfilePage(person, onMediaTap)));
+        context,
+        CupertinoPageRoute<void>(
+            builder: (_) => ProfilePage(person, onMediaTap)));
   }
 }
 

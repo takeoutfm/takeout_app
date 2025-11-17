@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/connectivity/repository.dart';
 import 'package:takeout_lib/model.dart';
-import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/settings/repository.dart';
 
 import 'provider.dart';

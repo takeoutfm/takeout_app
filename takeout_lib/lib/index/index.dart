@@ -25,19 +25,21 @@ class IndexState {
   final bool playlists;
   final bool shows;
 
-  IndexState(
-      {required this.movies,
-      required this.music,
-      required this.podcasts,
-      required this.playlists,
-      required this.shows});
+  IndexState({
+    required this.movies,
+    required this.music,
+    required this.podcasts,
+    required this.playlists,
+    required this.shows,
+  });
 
   factory IndexState.initial() => IndexState(
-      movies: false,
-      music: false,
-      podcasts: false,
-      playlists: false,
-      shows: false);
+    movies: false,
+    music: false,
+    podcasts: false,
+    playlists: false,
+    shows: false,
+  );
 }
 
 class IndexCubit extends Cubit<IndexState> {
@@ -48,16 +50,22 @@ class IndexCubit extends Cubit<IndexState> {
   }
 
   Future<void> _load({Duration? ttl}) async {
-    await clientRepository.index(ttl: ttl).then((view) {
-      emit(IndexState(
-          movies: view.hasMovies,
-          music: view.hasMusic,
-          podcasts: view.hasPodcasts,
-          playlists: view.hasPlaylists,
-          shows: view.hasShows));
-    }).onError((error, stackTrace) {
-      Future.delayed(const Duration(minutes: 3), () => _load());
-    });
+    await clientRepository
+        .index(ttl: ttl)
+        .then((view) {
+          emit(
+            IndexState(
+              movies: view.hasMovies,
+              music: view.hasMusic,
+              podcasts: view.hasPodcasts,
+              playlists: view.hasPlaylists,
+              shows: view.hasShows,
+            ),
+          );
+        })
+        .onError((error, stackTrace) {
+          Future.delayed(const Duration(minutes: 3), () => _load());
+        });
   }
 
   Future<void> reload() => _load(ttl: Duration.zero);

@@ -50,8 +50,7 @@ class AboutPage extends StatelessWidget {
               final data = snapshot.data ?? {};
               //data.forEach((key, value) { print('$key => $value'); });
               final entries = [
-                AboutEntry('Copyleft \u00a9 2023-2025',
-                    subtitle: 'defsub'),
+                AboutEntry('Copyleft \u00a9 2023-2025', subtitle: 'defsub'),
                 AboutEntry(context.strings.connectivityLabel,
                     subtitle: context.connectivity.state.type.name,
                     onTap: () => context.connectivity.check()),

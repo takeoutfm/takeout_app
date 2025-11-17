@@ -17,8 +17,8 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/client/repository.dart';
+import 'package:takeout_lib/settings/repository.dart';
 
 class ArtProvider {
   final SettingsRepository settingsRepository;
@@ -26,11 +26,13 @@ class ArtProvider {
   final CacheManager _cacheManager;
 
   ArtProvider(this.settingsRepository, this.clientRepository)
-      : _cacheManager = _CoverCacheManager(clientRepository);
+    : _cacheManager = _CoverCacheManager(clientRepository);
 
   CachedNetworkImageProvider get(String url) {
-    return CachedNetworkImageProvider(_resolve(url),
-        cacheManager: _cacheManager);
+    return CachedNetworkImageProvider(
+      _resolve(url),
+      cacheManager: _cacheManager,
+    );
   }
 
   String _resolve(String url) {
@@ -52,6 +54,10 @@ class _CoverCacheManager extends CacheManager with ImageCacheManager {
   }
 
   _CoverCacheManager._(ClientRepository clientRepository)
-      : super(Config(key,
-            fileService: HttpFileService(httpClient: clientRepository.client)));
+    : super(
+        Config(
+          key,
+          fileService: HttpFileService(httpClient: clientRepository.client),
+        ),
+      );
 }

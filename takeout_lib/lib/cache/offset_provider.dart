@@ -86,7 +86,8 @@ class OffsetFileCache implements OffsetCache {
   Offset? _decode(File file) {
     try {
       return Offset.fromJson(
-          jsonDecode(file.readAsStringSync()) as Map<String, dynamic>);
+        jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
+      );
     } on FormatException catch (e) {
       log.e('parse failed: ${file.path}', error: e);
       return null;
@@ -95,8 +96,7 @@ class OffsetFileCache implements OffsetCache {
 
   Future<File> _save(Offset offset) async {
     File file = _cacheFile(offset.etag);
-    log.d(
-        'offset ${offset.etag} ${offset.position()} ${offset.duration}');
+    log.d('offset ${offset.etag} ${offset.position()} ${offset.duration}');
     final data = jsonEncode(offset.toJson());
     return file.writeAsString(data);
   }

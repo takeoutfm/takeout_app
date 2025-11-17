@@ -29,25 +29,28 @@ class History {
   final Map<String, TrackHistory> tracks;
   final List<StreamHistory> stream;
 
-  History(
-      {this.searches = const [],
-      this.spiffs = const [],
-      this.tracks = const {},
-      this.stream = const []});
+  History({
+    this.searches = const [],
+    this.spiffs = const [],
+    this.tracks = const {},
+    this.stream = const [],
+  });
 
   factory History.empty() => History();
 
   History unmodifiableCopy() => History(
-      searches: List.unmodifiable(searches),
-      spiffs: List.unmodifiable(spiffs),
-      tracks: Map.unmodifiable(tracks),
-      stream: List.unmodifiable(stream));
+    searches: List.unmodifiable(searches),
+    spiffs: List.unmodifiable(spiffs),
+    tracks: Map.unmodifiable(tracks),
+    stream: List.unmodifiable(stream),
+  );
 
   History copy() => History(
-      searches: List.from(searches),
-      spiffs: List.from(spiffs),
-      tracks: Map.from(tracks),
-      stream: List.from(stream));
+    searches: List.from(searches),
+    spiffs: List.from(spiffs),
+    tracks: Map.from(tracks),
+    stream: List.from(stream),
+  );
 
   SpiffHistory? get lastSpiff => spiffs.isNotEmpty ? spiffs.last : null;
 
@@ -55,8 +58,9 @@ class History {
       stream.isNotEmpty ? stream.last : null;
 
   Iterable<String> recentArtists({int? limit}) {
-    final recent =
-        List<SpiffHistory>.from(spiffs.where((spiff) => spiff.spiff.isMusic()));
+    final recent = List<SpiffHistory>.from(
+      spiffs.where((spiff) => spiff.spiff.isMusic()),
+    );
     recent.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     final artists = recent.map((spiff) => spiff.spiff.creator);
     final seen = <String>{};
@@ -66,7 +70,9 @@ class History {
         result.add(a);
       }
     }
-    return limit != null && result.length > limit ? result.sublist(0, limit) : result;
+    return limit != null && result.length > limit
+        ? result.sublist(0, limit)
+        : result;
   }
 
   // Map<String, TrackHistory> trackKeyMap() {
@@ -134,8 +140,15 @@ class TrackHistory {
   final int count;
   final DateTime dateTime;
 
-  const TrackHistory(this.creator, this.album, this.title, this.image,
-      this.etag, this.count, this.dateTime);
+  const TrackHistory(
+    this.creator,
+    this.album,
+    this.title,
+    this.image,
+    this.etag,
+    this.count,
+    this.dateTime,
+  );
 
   factory TrackHistory.fromJson(Map<String, dynamic> json) =>
       _$TrackHistoryFromJson(json);
@@ -159,12 +172,7 @@ class StreamHistory implements StreamTrack {
   const StreamHistory(this.name, this.title, this.image, this.dateTime);
 
   factory StreamHistory.fromTrack(StreamTrack track, DateTime dateTime) =>
-      StreamHistory(
-        track.name,
-        track.title,
-        track.image,
-        dateTime,
-      );
+      StreamHistory(track.name, track.title, track.image, dateTime);
 
   StreamHistory copyWith(DateTime newTime) =>
       StreamHistory(name, title, image, newTime);

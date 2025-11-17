@@ -20,13 +20,17 @@ List<Map<String, dynamic>> patchAppend(String ref) {
     {
       'op': 'add',
       'path': '/playlist/track/-',
-      'value': {'\$ref': ref}
-    }
+      'value': {'\$ref': ref},
+    },
   ];
 }
 
-List<Map<String, dynamic>> patchReplace(String ref, String type,
-    {String? creator, String? title}) {
+List<Map<String, dynamic>> patchReplace(
+  String ref,
+  String type, {
+  String? creator,
+  String? title,
+}) {
   return [
     if (creator != null)
       {'op': 'replace', 'path': '/playlist/creator', 'value': creator},
@@ -37,26 +41,26 @@ List<Map<String, dynamic>> patchReplace(String ref, String type,
     {
       'op': 'add',
       'path': '/playlist/track/-',
-      'value': {'\$ref': ref}
-    }
+      'value': {'\$ref': ref},
+    },
   ];
 }
 
 List<Map<String, dynamic>> patchRemove(String index) {
   return [
-    {'op': 'remove', 'path': '/playlist/track/$index'}
+    {'op': 'remove', 'path': '/playlist/track/$index'},
   ];
 }
 
 List<Map<String, dynamic>> patchClear() {
   return [
-    {'op': 'replace', 'path': '/playlist/track', 'value': <String>[]}
+    {'op': 'replace', 'path': '/playlist/track', 'value': <String>[]},
   ];
 }
 
 List<Map<String, dynamic>> patchPosition(int index, double position) {
   return [
     {'op': 'replace', 'path': '/index', 'value': index},
-    {'op': 'replace', 'path': '/position', 'value': position}
+    {'op': 'replace', 'path': '/position', 'value': position},
   ];
 }

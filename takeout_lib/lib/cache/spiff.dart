@@ -67,7 +67,7 @@ class SpiffCacheRepository {
   final SpiffCache _cache;
 
   SpiffCacheRepository({required this.directory, SpiffCache? cache})
-      : _cache = cache ?? DirectorySpiffCache(directory);
+    : _cache = cache ?? DirectorySpiffCache(directory);
 
   Future<void> add(Spiff spiff) async {
     return _cache.add(spiff);
@@ -129,8 +129,8 @@ class DirectorySpiffCache implements SpiffCache {
   Spiff? _decode(File file) {
     try {
       return Spiff.fromJson(
-              jsonDecode(file.readAsStringSync()) as Map<String, dynamic>)
-          .copyWith(lastModified: file.lastModifiedSync());
+        jsonDecode(file.readAsStringSync()) as Map<String, dynamic>,
+      ).copyWith(lastModified: file.lastModifiedSync());
     } on FormatException catch (e) {
       log.e('parse failed: $file', error: e);
       return null;

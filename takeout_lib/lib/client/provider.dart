@@ -27,7 +27,12 @@ abstract class ClientProvider {
 
   Future<bool> login(String user, String password, {String? passcode});
 
-  Future<bool> link({required String code, required String user, required String password, String? passcode});
+  Future<bool> link({
+    required String code,
+    required String user,
+    required String password,
+    String? passcode,
+  });
 
   Future<AccessCode> code();
 
@@ -117,7 +122,10 @@ abstract class ClientProvider {
 
   Future<PlaylistView> createPlaylist(Spiff spiff);
 
-  Future<PatchResult> patchPlaylist(PlaylistView playlist, List<Map<String, dynamic>> body);
+  Future<PatchResult> patchPlaylist(
+    PlaylistView playlist,
+    List<Map<String, dynamic>> body,
+  );
 
   Future<void> deletePlaylist(PlaylistView playlist);
 

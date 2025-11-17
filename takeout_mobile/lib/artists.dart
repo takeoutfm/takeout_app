@@ -20,12 +20,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:recase/recase.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/builder.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/playlists.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -49,14 +49,19 @@ class ArtistsWidget extends ClientPage<ArtistsView> {
   @override
   Widget page(BuildContext context, ArtistsView state) {
     return Scaffold(
-        appBar: AppBar(title: _title(context), actions: [
+      appBar: AppBar(
+        title: _title(context),
+        actions: [
           popupMenu(context, [
             PopupItem.reload(context, (_) => reloadPage(context)),
-          ])
-        ]),
-        body: RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: ArtistListWidget(_artists(state))));
+          ]),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => reloadPage(context),
+        child: ArtistListWidget(_artists(state)),
+      ),
+    );
   }
 
   Widget _title(BuildContext context) {
@@ -64,16 +69,16 @@ class ArtistsWidget extends ClientPage<ArtistsView> {
     return genre != null
         ? header('$artistsText \u2013 $genre')
         : area != null
-            ? header('$artistsText \u2013 $area')
-            : header(artistsText);
+        ? header('$artistsText \u2013 $area')
+        : header(artistsText);
   }
 
   List<Artist> _artists(ArtistsView view) {
     return genre != null
         ? view.artists.where((a) => a.genre == genre).toList()
         : area != null
-            ? view.artists.where((a) => a.area == area).toList()
-            : view.artists;
+        ? view.artists.where((a) => a.area == area).toList()
+        : view.artists;
   }
 }
 
@@ -107,18 +112,23 @@ class ArtistListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Expanded(
+    return Column(
+      children: [
+        Expanded(
           child: ListView.builder(
-              itemCount: _artists.length,
-              itemBuilder: (buildContext, index) {
-                final artist = _artists[index];
-                return ListTile(
-                    onTap: () => _onArtist(context, artist),
-                    title: Text(artist.name),
-                    subtitle: Text(_subtitle(artist)));
-              }))
-    ]);
+            itemCount: _artists.length,
+            itemBuilder: (buildContext, index) {
+              final artist = _artists[index];
+              return ListTile(
+                onTap: () => _onArtist(context, artist),
+                title: Text(artist.name),
+                subtitle: Text(_subtitle(artist)),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   void _onArtist(BuildContext context, Artist artist) {
@@ -143,34 +153,38 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
 
   void _onRadio(BuildContext context) {
     pushSpiff(
-        ref: '/music/artists/${_artist.id}/radio',
-        context,
-        (client, {Duration? ttl}) =>
-            client.artistRadio(_artist.id, ttl: Duration.zero));
+      ref: '/music/artists/${_artist.id}/radio',
+      context,
+      (client, {Duration? ttl}) =>
+          client.artistRadio(_artist.id, ttl: Duration.zero),
+    );
   }
 
   void _onShuffle(BuildContext context) {
     pushSpiff(
-        ref: '/music/artists/${_artist.id}/shuffle',
-        context,
-        (client, {Duration? ttl}) =>
-            client.artistPlaylist(_artist.id, ttl: Duration.zero));
+      ref: '/music/artists/${_artist.id}/shuffle',
+      context,
+      (client, {Duration? ttl}) =>
+          client.artistPlaylist(_artist.id, ttl: Duration.zero),
+    );
   }
 
   void _onSingles(BuildContext context) {
     pushSpiff(
-        ref: '/music/artists/${_artist.id}/singles',
-        context,
-        (client, {Duration? ttl}) =>
-            client.artistSinglesPlaylist(_artist.id, ttl: ttl));
+      ref: '/music/artists/${_artist.id}/singles',
+      context,
+      (client, {Duration? ttl}) =>
+          client.artistSinglesPlaylist(_artist.id, ttl: ttl),
+    );
   }
 
   void _onPopular(BuildContext context) {
     pushSpiff(
-        ref: '/music/artists/${_artist.id}/popular',
-        context,
-        (client, {Duration? ttl}) =>
-            client.artistPopularPlaylist(_artist.id, ttl: ttl));
+      ref: '/music/artists/${_artist.id}/popular',
+      context,
+      (client, {Duration? ttl}) =>
+          client.artistPopularPlaylist(_artist.id, ttl: ttl),
+    );
   }
 
   void _onGenre(BuildContext context, String genre) {
@@ -205,48 +219,56 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
         PopupItem.divider(),
         if (_artist.genre != null)
           PopupItem.genre(
-              context, genre, (_) => _onGenre(context, _artist.genre!)),
+            context,
+            genre,
+            (_) => _onGenre(context, _artist.genre!),
+          ),
         if (_artist.area != null)
           PopupItem.area(
-              context, _artist.area!, (_) => _onArea(context, _artist.area!)),
+            context,
+            _artist.area!,
+            (_) => _onArea(context, _artist.area!),
+          ),
         PopupItem.divider(),
-        PopupItem.link(context, 'MusicBrainz Artist',
-            (_) => launchUrl(Uri.parse(artistUrl))),
+        PopupItem.link(
+          context,
+          'MusicBrainz Artist',
+          (_) => launchUrl(Uri.parse(artistUrl)),
+        ),
         PopupItem.divider(),
         PopupItem.wantList(context, (_) => _onWantList(context)),
         PopupItem.reload(context, (_) => reloadPage(context)),
-      ])
+      ]),
     ];
   }
 
   @override
   Widget leftButton(BuildContext context) {
     return IconButton(
-        // color: overlayIconColor(context),
-        icon: const Icon(Icons.shuffle_sharp),
-        onPressed: () => _onShuffle(context));
+      // color: overlayIconColor(context),
+      icon: const Icon(Icons.shuffle_sharp),
+      onPressed: () => _onShuffle(context),
+    );
   }
 
   @override
   Widget rightButton(BuildContext context) {
     return IconButton(
-        // color: overlayIconColor(context),
-        icon: const Icon(Icons.radio),
-        onPressed: () => _onRadio(context));
+      // color: overlayIconColor(context),
+      icon: const Icon(Icons.radio),
+      onPressed: () => _onRadio(context),
+    );
   }
 
   @override
   List<Widget> slivers(BuildContext context, ArtistView view) {
     return [
       SliverToBoxAdapter(child: heading(context.strings.releasesLabel)),
-      AlbumGridWidget(
-        view.releases,
-        subtitle: false,
-      ),
+      AlbumGridWidget(view.releases, subtitle: false),
       if (view.similar.isNotEmpty)
         SliverToBoxAdapter(child: heading(context.strings.similarArtists)),
       if (view.similar.isNotEmpty)
-        SliverToBoxAdapter(child: SimilarArtistListWidget(view))
+        SliverToBoxAdapter(child: SimilarArtistListWidget(view)),
     ];
   }
 }
@@ -258,12 +280,17 @@ class SimilarArtistListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      ..._view.similar.map((a) => ListTile(
-          onTap: () => _onArtist(context, a),
-          title: Text(a.name),
-          subtitle: Text(_subtitle(a))))
-    ]);
+    return Column(
+      children: [
+        ..._view.similar.map(
+          (a) => ListTile(
+            onTap: () => _onArtist(context, a),
+            title: Text(a.name),
+            subtitle: Text(_subtitle(a)),
+          ),
+        ),
+      ],
+    );
   }
 
   void _onArtist(BuildContext context, Artist artist) {
@@ -311,68 +338,84 @@ mixin ArtistPage {
     final expandedHeight = screen.height / 2;
 
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-        builder: (context, state) {
-      final settings = context.settings.state.settings;
-      final allow = settings.allowMobileArtistArtwork;
-      String? image;
-      if (state.mobile ? allow : true) {
-        image = view.image;
-      }
-      final artwork = ArtworkBuilder.artist(image, _randomCover(view));
-      final artistImage = artwork.build(context);
-      return StreamBuilder<String?>(
+      builder: (context, state) {
+        final settings = context.settings.state.settings;
+        final allow = settings.allowMobileArtistArtwork;
+        String? image;
+        if (state.mobile ? allow : true) {
+          image = view.image;
+        }
+        final artwork = ArtworkBuilder.artist(image, _randomCover(view));
+        final artistImage = artwork.build(context);
+        return StreamBuilder<String?>(
           stream: artwork.urlStream.stream.distinct(),
           builder: (context, snapshot) {
             final url = snapshot.data;
             return FutureBuilder<Color?>(
-                future: url != null
-                    ? artwork.getBackgroundColor(context)
-                    : Future.value(),
-                builder: (context, snapshot) => Scaffold(
-                    backgroundColor: snapshot.data,
-                    body: CustomScrollView(slivers: [
-                      SliverAppBar(
-                          expandedHeight: expandedHeight,
-                          actions: actions(context, view),
-                          flexibleSpace: FlexibleSpaceBar(
-                              stretchModes: const [
-                                StretchMode.zoomBackground,
-                                StretchMode.fadeTitle
-                              ],
-                              background:
-                                  Stack(fit: StackFit.expand, children: [
-                                artistImage,
-                                const DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      begin: Alignment(0.0, 0.75),
-                                      end: Alignment(0.0, 0.0),
-                                      colors: <Color>[
-                                        Color(0x60000000),
-                                        Color(0x00000000),
-                                      ],
-                                    ),
-                                  ),
+              future: url != null
+                  ? artwork.getBackgroundColor(context)
+                  : Future.value(),
+              builder: (context, snapshot) => Scaffold(
+                backgroundColor: snapshot.data,
+                body: CustomScrollView(
+                  slivers: [
+                    SliverAppBar(
+                      expandedHeight: expandedHeight,
+                      actions: actions(context, view),
+                      flexibleSpace: FlexibleSpaceBar(
+                        stretchModes: const [
+                          StretchMode.zoomBackground,
+                          StretchMode.fadeTitle,
+                        ],
+                        background: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            artistImage,
+                            const DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment(0.0, 0.75),
+                                  end: Alignment(0.0, 0.0),
+                                  colors: <Color>[
+                                    Color(0x60000000),
+                                    Color(0x00000000),
+                                  ],
                                 ),
-                                Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: leftButton(context)),
-                                Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: rightButton(context)),
-                              ]))),
-                      SliverToBoxAdapter(
-                          child: Container(
-                              padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                              child: Column(children: [
-                                Text(view.artist.name,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall)
-                              ]))),
-                      ...slivers(context, view)
-                    ])));
-          });
-    });
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: leftButton(context),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: rightButton(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                        child: Column(
+                          children: [
+                            Text(
+                              view.artist.name,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    ...slivers(context, view),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

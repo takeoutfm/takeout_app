@@ -46,7 +46,7 @@ class PlayerQueueState extends State<PlayerQueue> {
 
   Widget playerQueue(BuildContext context) {
     String? location;
-    return BlocBuilder<Player, PlayerState>(
+    return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) =>
             state is PlayerIndexChange ||
             state.spiff.playlist.location != location,

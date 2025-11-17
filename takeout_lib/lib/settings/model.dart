@@ -48,12 +48,12 @@ class Settings {
   });
 
   factory Settings.initial() => Settings(
-        user: 'takeout',
-        host: 'https://example.com',
-        allowMobileArtistArtwork: true,
-        allowMobileDownload: true,
-        allowMobileStreaming: true,
-      );
+    user: 'takeout',
+    host: 'https://example.com',
+    allowMobileArtistArtwork: true,
+    allowMobileDownload: true,
+    allowMobileStreaming: true,
+  );
 
   String get endpoint {
     if (host.startsWith(RegExp(r'(http|https)://.+/'))) {
@@ -77,21 +77,20 @@ class Settings {
     bool? enableListenBrainz,
     bool? enableTrackActivity,
     int? cacheUsageThreshold,
-  }) =>
-      Settings(
-        user: user ?? this.user,
-        host: host ?? this.host,
-        allowMobileStreaming: allowMobileStreaming ?? this.allowMobileStreaming,
-        allowMobileDownload: allowMobileDownload ?? this.allowMobileDownload,
-        allowMobileArtistArtwork:
-            allowMobileArtistArtwork ?? this.allowMobileArtistArtwork,
-        autoPlay: autoPlay ?? this.autoPlay,
-        autoCache: autoCache ?? this.autoCache,
-        listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
-        enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
-        enableTrackActivity: enableTrackActivity ?? this.enableTrackActivity,
-        cacheUsageThreshold: cacheUsageThreshold ?? this.cacheUsageThreshold,
-      );
+  }) => Settings(
+    user: user ?? this.user,
+    host: host ?? this.host,
+    allowMobileStreaming: allowMobileStreaming ?? this.allowMobileStreaming,
+    allowMobileDownload: allowMobileDownload ?? this.allowMobileDownload,
+    allowMobileArtistArtwork:
+        allowMobileArtistArtwork ?? this.allowMobileArtistArtwork,
+    autoPlay: autoPlay ?? this.autoPlay,
+    autoCache: autoCache ?? this.autoCache,
+    listenBrainzToken: listenBrainzToken ?? this.listenBrainzToken,
+    enableListenBrainz: enableListenBrainz ?? this.enableListenBrainz,
+    enableTrackActivity: enableTrackActivity ?? this.enableTrackActivity,
+    cacheUsageThreshold: cacheUsageThreshold ?? this.cacheUsageThreshold,
+  );
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
       _$SettingsFromJson(json);

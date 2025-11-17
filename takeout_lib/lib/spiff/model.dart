@@ -82,8 +82,15 @@ class Spiff {
 
   @override
   int get hashCode {
-    return Object.hash(playlist.title, playlist.creator, playlist.location,
-        playlist.image, playlist.date, playlist.tracks.length, playlist.tracks);
+    return Object.hash(
+      playlist.title,
+      playlist.creator,
+      playlist.location,
+      playlist.image,
+      playlist.date,
+      playlist.tracks.length,
+      playlist.tracks,
+    );
   }
 
   int get length {
@@ -132,10 +139,11 @@ class Spiff {
       return _$SpiffFromJson(json);
     } catch (e) {
       return Spiff(
-          index: 0,
-          position: 0,
-          playlist: Playlist(title: 'error: $e', tracks: []),
-          type: MediaType.music.name);
+        index: 0,
+        position: 0,
+        playlist: Playlist(title: 'error: $e', tracks: []),
+        type: MediaType.music.name,
+      );
     }
   }
 
@@ -146,13 +154,17 @@ class Spiff {
     int index = 0,
     double position = 0.0,
   }) {
-    final tracks =
-        mediaTracks.map<Entry>((t) => Entry.fromMediaTrack(t)).toList();
-    return cleanup(Spiff(
+    final tracks = mediaTracks
+        .map<Entry>((t) => Entry.fromMediaTrack(t))
+        .toList();
+    return cleanup(
+      Spiff(
         index: index,
         position: position,
         playlist: Playlist(title: title, tracks: tracks),
-        type: mediaType.name));
+        type: mediaType.name,
+      ),
+    );
   }
 
   Map<String, dynamic> toJson() => _$SpiffToJson(this);
@@ -163,13 +175,13 @@ class Spiff {
     Playlist? playlist,
     String? type,
     DateTime? lastModified,
-  }) =>
-      Spiff(
-          index: index ?? this.index,
-          position: position ?? this.position,
-          playlist: playlist ?? this.playlist,
-          type: type ?? this.type,
-          lastModified: lastModified ?? this.lastModified);
+  }) => Spiff(
+    index: index ?? this.index,
+    position: position ?? this.position,
+    playlist: playlist ?? this.playlist,
+    type: type ?? this.type,
+    lastModified: lastModified ?? this.lastModified,
+  );
 
   Spiff updateAt(int int, Entry entry) {
     return copyWith(playlist: playlist.updateAt(index, entry));
@@ -201,10 +213,11 @@ class Spiff {
   }
 
   factory Spiff.empty({String title = ''}) => Spiff(
-      index: 0,
-      position: 0,
-      playlist: Playlist(title: title, tracks: []),
-      type: MediaType.music.name);
+    index: 0,
+    position: 0,
+    playlist: Playlist(title: title, tracks: []),
+    type: MediaType.music.name,
+  );
 }
 
 @JsonSerializable()
@@ -227,41 +240,42 @@ class Entry extends DownloadIdentifier implements MediaTrack, OffsetIdentifier {
   final List<int>? sizes;
   final int _year;
 
-  Entry(
-      {required this.creator,
-      required this.album,
-      required this.title,
-      required this.image,
-      this.date = '',
-      required this.locations,
-      this.identifiers,
-      this.sizes})
-      : _year = parseYear(date);
+  Entry({
+    required this.creator,
+    required this.album,
+    required this.title,
+    required this.image,
+    this.date = '',
+    required this.locations,
+    this.identifiers,
+    this.sizes,
+  }) : _year = parseYear(date);
 
   Entry copyWith({
     String? title,
     String? image,
     // List<String>? locations,
-  }) =>
-      Entry(
-          creator: creator,
-          album: album,
-          title: title ?? this.title,
-          image: image ?? this.image,
-          date: date,
-          locations: locations,
-          identifiers: identifiers,
-          sizes: sizes);
+  }) => Entry(
+    creator: creator,
+    album: album,
+    title: title ?? this.title,
+    image: image ?? this.image,
+    date: date,
+    locations: locations,
+    identifiers: identifiers,
+    sizes: sizes,
+  );
 
   factory Entry.fromMediaTrack(MediaTrack track) => Entry(
-      creator: track.creator,
-      album: track.album,
-      title: track.title,
-      image: track.image,
-      date: track.date,
-      locations: [track.location],
-      identifiers: [track.etag],
-      sizes: [track.size]);
+    creator: track.creator,
+    album: track.album,
+    title: track.title,
+    image: track.image,
+    date: track.date,
+    locations: [track.location],
+    identifiers: [track.etag],
+    sizes: [track.size],
+  );
 
   factory Entry.fromJson(Map<String, dynamic> json) {
     try {
@@ -318,28 +332,27 @@ class Playlist {
   final List<Entry> tracks;
   final String _cover;
 
-  Playlist(
-      {this.location,
-      this.creator,
-      required this.title,
-      this.image,
-      this.date,
-      required this.tracks})
-      : _cover = _pickCover(image, tracks);
+  Playlist({
+    this.location,
+    this.creator,
+    required this.title,
+    this.image,
+    this.date,
+    required this.tracks,
+  }) : _cover = _pickCover(image, tracks);
 
   Playlist copyWith({
     String? location,
     String? creator,
     String? title,
     List<Entry>? tracks,
-  }) =>
-      Playlist(
-        location: location ?? this.location,
-        creator: creator ?? this.creator,
-        title: title ?? this.title,
-        image: image,
-        tracks: tracks ?? this.tracks,
-      );
+  }) => Playlist(
+    location: location ?? this.location,
+    creator: creator ?? this.creator,
+    title: title ?? this.title,
+    image: image,
+    tracks: tracks ?? this.tracks,
+  );
 
   Playlist shuffle() {
     final list = List<Entry>.from(tracks);
@@ -427,9 +440,9 @@ String _playlistTitle(Spiff spiff) {
   final counts = spiff.playlist.tracks
       .map((t) => t.album)
       .fold<Map<String, int>>({}, (map, album) {
-    map[album] = (map[album] ?? 0) + 1;
-    return map;
-  });
+        map[album] = (map[album] ?? 0) + 1;
+        return map;
+      });
   // sort ascending
   final sorted = counts.entries.toList()
     ..sort((a, b) => b.value.compareTo(a.value));

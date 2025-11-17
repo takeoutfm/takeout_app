@@ -19,10 +19,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/spiff/widget.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/spiff/widget.dart';
 
 import 'menu.dart';
 import 'nav.dart';
@@ -34,44 +34,48 @@ class DownloadsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(context.strings.downloadsLabel), actions: [
+      appBar: AppBar(
+        title: Text(context.strings.downloadsLabel),
+        actions: [
           popupMenu(context, [
             PopupItem.delete(
-                context, context.strings.deleteAll, (ctx) => _onDeleteAll(ctx)),
-          ])
-        ]),
-        body: const SingleChildScrollView(
-            child: Column(
-          children: [
-            DownloadListWidget(),
-          ],
-        )));
+              context,
+              context.strings.deleteAll,
+              (ctx) => _onDeleteAll(ctx),
+            ),
+          ]),
+        ],
+      ),
+      body: const SingleChildScrollView(
+        child: Column(children: [DownloadListWidget()]),
+      ),
+    );
   }
 
   void _onDeleteAll(BuildContext context) {
     showDialog<void>(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text(context.strings.confirmDelete),
-            content: Text(context.strings.deleteDownloadedTracks),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
-              ),
-              TextButton(
-                onPressed: () {
-                  _onDeleteConfirmed(context);
-                  Navigator.pop(ctx);
-                  Navigator.pop(context);
-                },
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(context.strings.confirmDelete),
+          content: Text(context.strings.deleteDownloadedTracks),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            TextButton(
+              onPressed: () {
+                _onDeleteConfirmed(context);
+                Navigator.pop(ctx);
+                Navigator.pop(context);
+              },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _onDeleteConfirmed(BuildContext context) {
@@ -84,11 +88,12 @@ class DownloadListWidget extends StatefulWidget {
   final DownloadSortType sortType;
   final List<Spiff> Function(List<Spiff>)? filter;
 
-  const DownloadListWidget(
-      {super.key,
-      this.sortType = DownloadSortType.name,
-      this.limit = -1,
-      this.filter});
+  const DownloadListWidget({
+    super.key,
+    this.sortType = DownloadSortType.name,
+    this.limit = -1,
+    this.filter,
+  });
 
   @override
   DownloadListState createState() => DownloadListState();
@@ -117,27 +122,38 @@ class DownloadListState extends State<DownloadListWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SpiffCacheCubit, SpiffCacheState>(
-        builder: (context, state) {
-      var entries = List<Spiff>.from(state.spiffs ?? <Spiff>[]);
-      if (widget.filter != null) {
-        entries = widget.filter!(entries);
-      }
-      downloadsSort(widget.sortType, entries);
-      return Column(children: [
-        ...entries
-            .sublist(
-                0,
-                widget.limit == -1
-                    ? entries.length
-                    : min(widget.limit, entries.length))
-            .map((entry) => AlbumListTile(
-                context, entry.creator, entry.title, entry.cover,
-                trailing: IconButton(
-                    icon: const Icon(Icons.play_arrow),
-                    onPressed: () => _onPlay(context, entry)),
-                onTap: () => _onTap(context, entry)))
-      ]);
-    });
+      builder: (context, state) {
+        var entries = List<Spiff>.from(state.spiffs ?? <Spiff>[]);
+        if (widget.filter != null) {
+          entries = widget.filter!(entries);
+        }
+        downloadsSort(widget.sortType, entries);
+        return Column(
+          children: [
+            ...entries
+                .sublist(
+                  0,
+                  widget.limit == -1
+                      ? entries.length
+                      : min(widget.limit, entries.length),
+                )
+                .map(
+                  (entry) => AlbumListTile(
+                    context,
+                    entry.creator,
+                    entry.title,
+                    entry.cover,
+                    trailing: IconButton(
+                      icon: const Icon(Icons.play_arrow),
+                      onPressed: () => _onPlay(context, entry),
+                    ),
+                    onTap: () => _onTap(context, entry),
+                  ),
+                ),
+          ],
+        );
+      },
+    );
   }
 
   void _onTap(BuildContext context, Spiff spiff) {

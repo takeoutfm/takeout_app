@@ -26,12 +26,14 @@ Future<bool?> confirmDialog(BuildContext context,
             titleTextStyle: context.textTheme.bodyMedium,
             title: title != null ? Center(child: Text(title)) : null,
             contentTextStyle: context.textTheme.bodySmall,
-            content: body != null ? Text(body, textAlign: TextAlign.center) : null,
+            content:
+                body != null ? Text(body, textAlign: TextAlign.center) : null,
             actionsAlignment: MainAxisAlignment.spaceBetween,
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.pop<bool>(context, false),
-                child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
               ),
               TextButton(
                 onPressed: () => Navigator.pop<bool>(context, true),

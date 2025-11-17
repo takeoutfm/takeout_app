@@ -42,15 +42,23 @@ class Download extends Equatable {
   final DownloadProgress? progress;
   final DateTime _date;
 
-  Download(this.id, this.uri, this.size,
-      {this.file, this.progress, DateTime? date})
-      : _date = date ?? DateTime.now();
+  Download(
+    this.id,
+    this.uri,
+    this.size, {
+    this.file,
+    this.progress,
+    DateTime? date,
+  }) : _date = date ?? DateTime.now();
 
-  Download copyWith({File? file, DownloadProgress? progress}) =>
-      Download(id, uri, size,
-          date: date,
-          file: file ?? this.file,
-          progress: progress ?? this.progress);
+  Download copyWith({File? file, DownloadProgress? progress}) => Download(
+    id,
+    uri,
+    size,
+    date: date,
+    file: file ?? this.file,
+    progress: progress ?? this.progress,
+  );
 
   @override
   List<Object> get props => [id];
@@ -95,10 +103,12 @@ class DownloadAdd extends DownloadState {
 
   /// Download added but not yet in progress
   factory DownloadAdd.from(DownloadState state, Download download) {
-    final downloads =
-        Map<DownloadIdentifier, Download>.fromEntries(state._downloads.entries);
-    final failed =
-        Map<DownloadIdentifier, Object?>.fromEntries(state._failed.entries);
+    final downloads = Map<DownloadIdentifier, Download>.fromEntries(
+      state._downloads.entries,
+    );
+    final failed = Map<DownloadIdentifier, Object?>.fromEntries(
+      state._failed.entries,
+    );
 
     downloads[download.id] = download;
     failed.remove(download.id);
@@ -114,16 +124,23 @@ class DownloadStart extends DownloadState {
 
   /// Download started
   factory DownloadStart.from(
-      DownloadState state, DownloadIdentifier id, File file) {
-    final downloads =
-        Map<DownloadIdentifier, Download>.fromEntries(state._downloads.entries);
-    final failed =
-        Map<DownloadIdentifier, Object?>.fromEntries(state._failed.entries);
+    DownloadState state,
+    DownloadIdentifier id,
+    File file,
+  ) {
+    final downloads = Map<DownloadIdentifier, Download>.fromEntries(
+      state._downloads.entries,
+    );
+    final failed = Map<DownloadIdentifier, Object?>.fromEntries(
+      state._failed.entries,
+    );
 
     final download = downloads[id];
     if (download != null) {
       downloads[id] = download.copyWith(
-          file: file, progress: DownloadProgress(0, download.size));
+        file: file,
+        progress: DownloadProgress(0, download.size),
+      );
     }
 
     return DownloadStart(id, downloads, failed);
@@ -137,16 +154,22 @@ class DownloadUpdate extends DownloadState {
 
   /// Download progress updated
   factory DownloadUpdate.from(
-      DownloadState state, DownloadIdentifier id, int offset) {
-    final downloads =
-        Map<DownloadIdentifier, Download>.fromEntries(state._downloads.entries);
-    final failed =
-        Map<DownloadIdentifier, Object?>.fromEntries(state._failed.entries);
+    DownloadState state,
+    DownloadIdentifier id,
+    int offset,
+  ) {
+    final downloads = Map<DownloadIdentifier, Download>.fromEntries(
+      state._downloads.entries,
+    );
+    final failed = Map<DownloadIdentifier, Object?>.fromEntries(
+      state._failed.entries,
+    );
 
     final download = downloads[id];
     if (download != null) {
-      downloads[id] =
-          download.copyWith(progress: DownloadProgress(offset, download.size));
+      downloads[id] = download.copyWith(
+        progress: DownloadProgress(offset, download.size),
+      );
     }
 
     return DownloadUpdate(id, downloads, failed);
@@ -160,16 +183,22 @@ class DownloadComplete extends DownloadState {
 
   /// Download completed
   factory DownloadComplete.from(
-      DownloadState state, DownloadIdentifier id, int offset) {
-    final downloads =
-        Map<DownloadIdentifier, Download>.fromEntries(state._downloads.entries);
-    final failed =
-        Map<DownloadIdentifier, Object?>.fromEntries(state._failed.entries);
+    DownloadState state,
+    DownloadIdentifier id,
+    int offset,
+  ) {
+    final downloads = Map<DownloadIdentifier, Download>.fromEntries(
+      state._downloads.entries,
+    );
+    final failed = Map<DownloadIdentifier, Object?>.fromEntries(
+      state._failed.entries,
+    );
 
     final download = downloads[id];
     if (download != null) {
-      downloads[id] =
-          download.copyWith(progress: DownloadProgress(offset, download.size));
+      downloads[id] = download.copyWith(
+        progress: DownloadProgress(offset, download.size),
+      );
     }
 
     return DownloadComplete(id, downloads, failed);
@@ -183,11 +212,16 @@ class DownloadError extends DownloadState {
 
   /// Download failed with error
   factory DownloadError.from(
-      DownloadState state, DownloadIdentifier id, Object? error) {
-    final downloads =
-        Map<DownloadIdentifier, Download>.fromEntries(state._downloads.entries);
-    final failed =
-        Map<DownloadIdentifier, Object?>.fromEntries(state._failed.entries);
+    DownloadState state,
+    DownloadIdentifier id,
+    Object? error,
+  ) {
+    final downloads = Map<DownloadIdentifier, Download>.fromEntries(
+      state._downloads.entries,
+    );
+    final failed = Map<DownloadIdentifier, Object?>.fromEntries(
+      state._failed.entries,
+    );
 
     downloads.remove(id);
     failed[id] = error;
@@ -200,10 +234,11 @@ class DownloadState {
   final Map<DownloadIdentifier, Download> _downloads;
   final Map<DownloadIdentifier, Object?> _failed;
 
-  DownloadState(Map<DownloadIdentifier, Download> downloads,
-      Map<DownloadIdentifier, Object?> failed)
-      : _downloads = downloads,
-        _failed = failed;
+  DownloadState(
+    Map<DownloadIdentifier, Download> downloads,
+    Map<DownloadIdentifier, Object?> failed,
+  ) : _downloads = downloads,
+      _failed = failed;
 
   factory DownloadState.initial() => DownloadState({}, {});
 
@@ -219,8 +254,10 @@ class DownloadState {
   /// Download for id is pending, in progress or complete
   bool contains(DownloadIdentifier id) => _downloads.containsKey(id);
 
-  int get downloading => _downloads.values
-      .fold(0, (count, d) => d.downloading ? count + 1 : count);
+  int get downloading => _downloads.values.fold(
+    0,
+    (count, d) => d.downloading ? count + 1 : count,
+  );
 
   Download? get next {
     try {
@@ -260,9 +297,10 @@ class DownloadCubit extends Cubit<DownloadState> {
   final TrackCacheRepository trackCacheRepository;
   final ClientRepository clientRepository;
 
-  DownloadCubit(
-      {required this.trackCacheRepository, required this.clientRepository})
-      : super(DownloadState.initial());
+  DownloadCubit({
+    required this.trackCacheRepository,
+    required this.clientRepository,
+  }) : super(DownloadState.initial());
 
   void add(DownloadIdentifier id, Uri uri, int size) {
     _add(DownloadEvent(id, uri, size));
@@ -287,8 +325,9 @@ class DownloadCubit extends Cubit<DownloadState> {
     trackCacheRepository.contains(event.id).then((isCached) {
       if (!isCached) {
         if (state.contains(event.id) == false) {
-          emit(DownloadAdd.from(
-              state, Download(event.id, event.uri, event.size)));
+          emit(
+            DownloadAdd.from(state, Download(event.id, event.uri, event.size)),
+          );
         }
       }
     });
@@ -300,8 +339,12 @@ class DownloadCubit extends Cubit<DownloadState> {
 
     // *must* emit state before async code
     clientRepository
-        .download(download.uri, file, download.size,
-            progress: _ProgressSink((offset) => _update(download.id, offset)))
+        .download(
+          download.uri,
+          file,
+          download.size,
+          progress: _ProgressSink((offset) => _update(download.id, offset)),
+        )
         .then((_) => _complete(download.id))
         .onError((error, stackTrace) => _error(download.id, error));
   }

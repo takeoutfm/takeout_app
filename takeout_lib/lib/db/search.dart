@@ -24,8 +24,9 @@ class Search {
   final ArtistRepository artistRepository;
 
   Search({required this.clientRepository, ArtistRepository? artistRepository})
-      : artistRepository = artistRepository ??
-            ArtistRepository(clientRepository: clientRepository);
+    : artistRepository =
+          artistRepository ??
+          ArtistRepository(clientRepository: clientRepository);
 
   Iterable<String> findArtistsByName(String query) {
     return artistRepository.findByName(query);

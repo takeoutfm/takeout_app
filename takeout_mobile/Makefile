@@ -58,6 +58,7 @@ analyze:
 
 generate:
 	${FLUTTER} pub run build_runner build --delete-conflicting-outputs
+	${FLUTTER} gen-l10n
 
 ${RELEASE_APK}: pubspec.lock ${SOURCES} ${RESOURCES}
 	${FLUTTER} build apk --release --target-platform ${TARGET_PLATFORM}

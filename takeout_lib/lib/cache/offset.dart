@@ -76,7 +76,7 @@ class OffsetCacheCubit extends Cubit<OffsetCacheState> {
   final ClientRepository clientRepository;
 
   OffsetCacheCubit(this.repository, this.clientRepository)
-      : super(OffsetCacheState.empty()) {
+    : super(OffsetCacheState.empty()) {
     _emitState();
     reload();
   }
@@ -102,10 +102,11 @@ class OffsetCacheCubit extends Cubit<OffsetCacheState> {
         .progress(ttl: Duration.zero)
         .then((view) => repository.merge(view.offsets))
         .then((newer) {
-      final offsets = List<Offset>.from(newer);
-      if (offsets.isNotEmpty) {
-        clientRepository.updateProgress(Offsets(offsets: offsets));
-      }
-    }).whenComplete(() => _emitState());
+          final offsets = List<Offset>.from(newer);
+          if (offsets.isNotEmpty) {
+            clientRepository.updateProgress(Offsets(offsets: offsets));
+          }
+        })
+        .whenComplete(() => _emitState());
   }
 }

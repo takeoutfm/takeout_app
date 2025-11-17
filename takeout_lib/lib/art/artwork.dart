@@ -54,62 +54,113 @@ class Artwork {
     this.blendMode,
   });
 
-  factory Artwork.artist(String url) =>
-      Artwork(url, 1000, 1000, BoxFit.fitHeight,
-          placeholder: const Icon(Icons.people));
+  factory Artwork.artist(String url) => Artwork(
+    url,
+    1000,
+    1000,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.people),
+  );
 
-  factory Artwork.cover(String url) =>
-      Artwork(url, coverGridWidth, coverGridHeight, BoxFit.fitHeight,
-          placeholder: const Icon(Icons.album));
+  factory Artwork.cover(String url) => Artwork(
+    url,
+    coverGridWidth,
+    coverGridHeight,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.album),
+  );
 
-  factory Artwork.playerCover(String url) =>
-      Artwork(url, coverGridWidth, coverGridHeight, BoxFit.fitHeight,
-          placeholder: const Icon(Icons.album));
+  factory Artwork.playerCover(String url) => Artwork(
+    url,
+    coverGridWidth,
+    coverGridHeight,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.album),
+  );
 
-  factory Artwork.circleCover(String url,
-          {required double radius,
-          double? width,
-          double? height,
-          Color? color,
-          BlendMode? blendMode}) =>
-      Artwork(url, width, height, BoxFit.cover,
-          color: color,
-          blendMode: blendMode,
-          borderRadius: BorderRadius.circular(radius),
-          placeholder: const Icon(Icons.album, size: listTileIconHeight));
+  factory Artwork.circleCover(
+    String url, {
+    required double radius,
+    double? width,
+    double? height,
+    Color? color,
+    BlendMode? blendMode,
+  }) => Artwork(
+    url,
+    width,
+    height,
+    BoxFit.cover,
+    color: color,
+    blendMode: blendMode,
+    borderRadius: BorderRadius.circular(radius),
+    placeholder: const Icon(Icons.album, size: listTileIconHeight),
+  );
 
-  factory Artwork.tileCover(String url) => Artwork(url, null, null, null,
-      borderRadius: BorderRadius.circular(4),
-      placeholder: const Icon(Icons.album, size: listTileIconHeight));
+  factory Artwork.tileCover(String url) => Artwork(
+    url,
+    null,
+    null,
+    null,
+    borderRadius: BorderRadius.circular(4),
+    placeholder: const Icon(Icons.album, size: listTileIconHeight),
+  );
 
-  factory Artwork.tilePodcast(String url) => Artwork(url, null, null, null,
-      borderRadius: BorderRadius.circular(4),
-      placeholder: const Icon(Icons.podcasts, size: listTileIconHeight));
+  factory Artwork.tilePodcast(String url) => Artwork(
+    url,
+    null,
+    null,
+    null,
+    borderRadius: BorderRadius.circular(4),
+    placeholder: const Icon(Icons.podcasts, size: listTileIconHeight),
+  );
 
-  factory Artwork.tilePoster(String url) => Artwork(url, null, null, null,
-      borderRadius: BorderRadius.circular(4),
-      placeholder: const Icon(Icons.movie, size: listTileIconHeight));
+  factory Artwork.tilePoster(String url) => Artwork(
+    url,
+    null,
+    null,
+    null,
+    borderRadius: BorderRadius.circular(4),
+    placeholder: const Icon(Icons.movie, size: listTileIconHeight),
+  );
 
-  factory Artwork.tileStill(String url) => Artwork(url, null, null, null,
-      borderRadius: BorderRadius.circular(4),
-      placeholder: const Icon(Icons.tv, size: listTileIconHeight));
+  factory Artwork.tileStill(String url) => Artwork(
+    url,
+    null,
+    null,
+    null,
+    borderRadius: BorderRadius.circular(4),
+    placeholder: const Icon(Icons.tv, size: listTileIconHeight),
+  );
 
   factory Artwork.background(String url) =>
       Artwork(url, 1920, 1080, BoxFit.cover);
 
-  factory Artwork.coverGrid(String url) =>
-      Artwork(url, coverGridWidth, coverGridHeight, BoxFit.fill,
-          aspectRatio: coverAspectRatio,
-          placeholder: const Icon(Icons.album, size: coverGridHeight / 3));
+  factory Artwork.coverGrid(String url) => Artwork(
+    url,
+    coverGridWidth,
+    coverGridHeight,
+    BoxFit.fill,
+    aspectRatio: coverAspectRatio,
+    placeholder: const Icon(Icons.album, size: coverGridHeight / 3),
+  );
 
-  factory Artwork.posterGrid(String url) =>
-      Artwork(url, posterGridWidth, posterGridHeight, BoxFit.fill,
-          aspectRatio: posterAspectRatio, placeholder: const Icon(Icons.movie));
+  factory Artwork.posterGrid(String url) => Artwork(
+    url,
+    posterGridWidth,
+    posterGridHeight,
+    BoxFit.fill,
+    aspectRatio: posterAspectRatio,
+    placeholder: const Icon(Icons.movie),
+  );
 
-  factory Artwork.seriesGrid(String url) =>
-      Artwork(url, seriesGridWidth, seriesGridHeight, BoxFit.fill,
-          aspectRatio: seriesAspectRatio,
-          placeholder: const Icon(Icons.podcasts));
+  factory Artwork.seriesGrid(String url) => Artwork(
+    url,
+    seriesGridWidth,
+    seriesGridHeight,
+    BoxFit.fill,
+    aspectRatio: seriesAspectRatio,
+    placeholder: const Icon(Icons.podcasts),
+  );
 
   String get tag => url;
 }

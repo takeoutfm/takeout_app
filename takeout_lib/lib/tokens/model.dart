@@ -30,9 +30,10 @@ class Tokens {
   factory Tokens.initial() => Tokens();
 
   Tokens copyWith({String? access, String? media, String? refresh}) => Tokens(
-      access: access ?? this.access,
-      media: media ?? this.media,
-      refresh: refresh ?? this.refresh);
+    access: access ?? this.access,
+    media: media ?? this.media,
+    refresh: refresh ?? this.refresh,
+  );
 
   bool get authenticated => access != null && media != null && refresh != null;
 

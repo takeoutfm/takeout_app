@@ -42,18 +42,22 @@ class DefaultListenProvider implements ListenProvider {
   final ConnectivityRepository connectivityRepository;
   final List<ListenProvider> _providers;
 
-  DefaultListenProvider(this.settingsRepository, this.clientRepository,
-      this.connectivityRepository)
-      : _providers = [
-          RetryListenProvider(
-              'lbz',
-              ListenBrainzListenProvider(settingsRepository, clientRepository),
-              connectivityRepository),
-          RetryListenProvider(
-              'tfm',
-              TakeoutListenProvider(settingsRepository, clientRepository),
-              connectivityRepository),
-        ];
+  DefaultListenProvider(
+    this.settingsRepository,
+    this.clientRepository,
+    this.connectivityRepository,
+  ) : _providers = [
+        RetryListenProvider(
+          'lbz',
+          ListenBrainzListenProvider(settingsRepository, clientRepository),
+          connectivityRepository,
+        ),
+        RetryListenProvider(
+          'tfm',
+          TakeoutListenProvider(settingsRepository, clientRepository),
+          connectivityRepository,
+        ),
+      ];
 
   @override
   Future<void> playingNow(MediaTrack track) async {
@@ -139,9 +143,7 @@ class TakeoutListenProvider implements ListenProvider {
 
   Future<void> _updateActivity(MediaTrack track, DateTime listenedAt) {
     final events = Events(
-      trackEvents: [
-        TrackEvent.from(track.etag, listenedAt),
-      ],
+      trackEvents: [TrackEvent.from(track.etag, listenedAt)],
     );
     return clientRepository.updateActivity(events);
   }

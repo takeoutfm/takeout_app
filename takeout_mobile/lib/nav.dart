@@ -29,13 +29,15 @@ void push(BuildContext context, {required WidgetBuilder builder}) {
 }
 
 void pushSpiff(BuildContext context, FetchSpiff fetch, {String? ref}) {
-  push(context, builder: (_) => SpiffWidget(fetch: fetch, ref: ref));
+  push(
+    context,
+    builder: (_) => SpiffWidget(fetch: fetch, ref: ref),
+  );
 }
 
 void pushPlaylist(BuildContext context, FetchSpiff fetch, {String? ref}) {
-  push(context,
-      builder: (_) => SpiffWidget(
-            fetch: fetch,
-            ref: ref,
-          ));
+  push(
+    context,
+    builder: (_) => SpiffWidget(fetch: fetch, ref: ref),
+  );
 }

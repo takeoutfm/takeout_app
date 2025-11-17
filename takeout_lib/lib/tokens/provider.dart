@@ -46,7 +46,12 @@ class DefaultTokenProvider implements TokenProvider {
 
   @override
   void add({String? accessToken, String? refreshToken, String? mediaToken}) {
-    _tokens.add(_tokens.state.tokens.copyWith(
-        access: accessToken, refresh: refreshToken, media: mediaToken));
+    _tokens.add(
+      _tokens.state.tokens.copyWith(
+        access: accessToken,
+        refresh: refreshToken,
+        media: mediaToken,
+      ),
+    );
   }
 }

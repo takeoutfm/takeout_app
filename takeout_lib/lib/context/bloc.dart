@@ -19,6 +19,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:nested/nested.dart';
 import 'package:path_provider/path_provider.dart';
@@ -58,7 +59,6 @@ import 'package:takeout_lib/subscribed/repository.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
-import 'package:hive_ce/hive.dart';
 
 import 'context.dart';
 
@@ -73,17 +73,19 @@ class TakeoutBloc {
     Hive.registerAdapter(ListenAdapter());
 
     final storageDir = HydratedStorageDirectory(path);
-    HydratedBloc.storage =
-        await HydratedStorage.build(storageDirectory: storageDir);
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: storageDir,
+    );
   }
 
   Widget init(BuildContext context, {required Widget child}) {
     return MultiRepositoryProvider(
-        providers: repositories(_appDir),
-        child: MultiBlocProvider(
-            providers: blocs(),
-            child: MultiBlocListener(
-                listeners: listeners(context), child: child)));
+      providers: repositories(_appDir),
+      child: MultiBlocProvider(
+        providers: blocs(),
+        child: MultiBlocListener(listeners: listeners(context), child: child),
+      ),
+    );
   }
 
   List<SingleChildWidget> repositories(Directory directory) {
@@ -91,30 +93,35 @@ class TakeoutBloc {
 
     final settingsRepository = SettingsRepository();
 
-    final trackCacheRepository =
-        TrackCacheRepository(directory: d('track_cache'));
+    final trackCacheRepository = TrackCacheRepository(
+      directory: d('track_cache'),
+    );
 
     final jsonCacheRepository = JsonCacheRepository(directory: d('json_cache'));
 
-    final offsetCacheRepository =
-        OffsetCacheRepository(directory: d('offset_cache'));
+    final offsetCacheRepository = OffsetCacheRepository(
+      directory: d('offset_cache'),
+    );
 
-    final spiffCacheRepository =
-        SpiffCacheRepository(directory: d('spiff_cache'));
+    final spiffCacheRepository = SpiffCacheRepository(
+      directory: d('spiff_cache'),
+    );
 
     final tokenRepository = TokenRepository();
 
     final clientRepository = createClientRepository(
-        settingsRepository: settingsRepository,
-        tokenRepository: tokenRepository,
-        jsonCacheRepository: jsonCacheRepository);
+      settingsRepository: settingsRepository,
+      tokenRepository: tokenRepository,
+      jsonCacheRepository: jsonCacheRepository,
+    );
 
     final connectivityRepository = ConnectivityRepository();
 
     final search = Search(clientRepository: clientRepository);
 
-    final trackResolver =
-        MediaTrackResolver(trackCacheRepository: trackCacheRepository);
+    final trackResolver = MediaTrackResolver(
+      trackCacheRepository: trackCacheRepository,
+    );
 
     final historyRepository = HistoryRepository(directory: directory);
 
@@ -168,168 +175,187 @@ class TakeoutBloc {
   List<SingleChildWidget> blocs() {
     return [
       BlocProvider(
-          lazy: false,
-          create: (context) {
-            final settings = SettingsCubit();
-            context.read<SettingsRepository>().init(settings);
-            return settings;
-          }),
+        lazy: false,
+        create: (context) {
+          final settings = SettingsCubit();
+          context.read<SettingsRepository>().init(settings);
+          return settings;
+        },
+      ),
       BlocProvider(
-          lazy: false,
-          create: (context) {
-            final nowPlaying = NowPlayingCubit();
-            context
-                .read<MediaRepository>()
-                .init(createMediaPlayer(nowPlaying, context));
-            return nowPlaying;
-          }),
+        lazy: false,
+        create: (context) {
+          final nowPlaying = NowPlayingCubit();
+          context.read<MediaRepository>().init(
+            createMediaPlayer(nowPlaying, context),
+          );
+          return nowPlaying;
+        },
+      ),
       BlocProvider(
-          create: (context) => PlaylistCubit(context.read<ClientRepository>())),
+        create: (context) => PlaylistCubit(context.read<ClientRepository>()),
+      ),
       BlocProvider(
-          create: (context) =>
-              ConnectivityCubit(context.read<ConnectivityRepository>())),
-      BlocProvider(create: (context) {
-        final tokens = TokensCubit();
-        context.read<TokenRepository>().init(tokens);
-        return tokens;
-      }),
+        create: (context) =>
+            ConnectivityCubit(context.read<ConnectivityRepository>()),
+      ),
+      BlocProvider(
+        create: (context) {
+          final tokens = TokensCubit();
+          context.read<TokenRepository>().init(tokens);
+          return tokens;
+        },
+      ),
       BlocProvider(create: (context) => createPlayer(context)),
       BlocProvider(
-          create: (context) =>
-              SpiffCacheCubit(context.read<SpiffCacheRepository>())),
+        create: (context) =>
+            SpiffCacheCubit(context.read<SpiffCacheRepository>()),
+      ),
       BlocProvider(
-          lazy: false,
-          create: (context) => OffsetCacheCubit(
-              context.read<OffsetCacheRepository>(),
-              context.read<ClientRepository>())),
+        lazy: false,
+        create: (context) => OffsetCacheCubit(
+          context.read<OffsetCacheRepository>(),
+          context.read<ClientRepository>(),
+        ),
+      ),
       BlocProvider(
-          create: (context) => DownloadCubit(
-                trackCacheRepository: context.read<TrackCacheRepository>(),
-                clientRepository: context.read<ClientRepository>(),
-              )),
+        create: (context) => DownloadCubit(
+          trackCacheRepository: context.read<TrackCacheRepository>(),
+          clientRepository: context.read<ClientRepository>(),
+        ),
+      ),
       BlocProvider(
-          create: (context) => TrackCacheCubit(
-                context.read<TrackCacheRepository>(),
-              )),
+        create: (context) =>
+            TrackCacheCubit(context.read<TrackCacheRepository>()),
+      ),
       BlocProvider(
-          create: (context) => HistoryCubit(context.read<HistoryRepository>())),
+        create: (context) => HistoryCubit(context.read<HistoryRepository>()),
+      ),
       BlocProvider(
-          create: (context) => IndexCubit(context.read<ClientRepository>())),
+        create: (context) => IndexCubit(context.read<ClientRepository>()),
+      ),
       BlocProvider(
-          lazy: false,
-          create: (context) {
-            final mediaType = MediaTypeCubit();
-            context.read<MediaTypeRepository>().init(mediaType);
-            return mediaType;
-          }),
+        lazy: false,
+        create: (context) {
+          final mediaType = MediaTypeCubit();
+          context.read<MediaTypeRepository>().init(mediaType);
+          return mediaType;
+        },
+      ),
       BlocProvider(
-          lazy: false,
-          create: (context) {
-            final subscribed =
-                SubscribedCubit(context.read<ClientRepository>());
-            context.read<SubscribedRepository>().init(subscribed);
-            return subscribed;
-          }),
+        lazy: false,
+        create: (context) {
+          final subscribed = SubscribedCubit(context.read<ClientRepository>());
+          context.read<SubscribedRepository>().init(subscribed);
+          return subscribed;
+        },
+      ),
       BlocProvider(lazy: false, create: (context) => IntentCubit()),
       BlocProvider(
-          lazy: false,
-          create: (context) {
-            final stats = StatsCubit();
-            context.read<StatsRepository>().init(stats);
-            return stats;
-          }),
+        lazy: false,
+        create: (context) {
+          final stats = StatsCubit();
+          context.read<StatsRepository>().init(stats);
+          return stats;
+        },
+      ),
     ];
   }
 
   List<SingleChildWidget> listeners(BuildContext context) {
     return [
       BlocListener<NowPlayingCubit, NowPlayingState>(
-          listenWhen: (_, state) =>
-              state is NowPlayingChange ||
-              state is NowPlayingIndexChange ||
-              state is NowPlayingListenChange ||
-              state is NowPlayingRepeatChange,
-          listener: (context, state) {
-            if (state is NowPlayingChange) {
-              onNowPlayingChange(context, state);
-            } else if (state is NowPlayingIndexChange) {
-              onNowPlayingIndexChange(context, state);
-            } else if (state is NowPlayingListenChange) {
-              onNowPlayingListenChange(context, state);
-            } else if (state is NowPlayingRepeatChange) {
-              onNowPlayingRepeatChange(context, state);
+        listenWhen: (_, state) =>
+            state is NowPlayingChange ||
+            state is NowPlayingIndexChange ||
+            state is NowPlayingListenChange ||
+            state is NowPlayingRepeatChange,
+        listener: (context, state) {
+          if (state is NowPlayingChange) {
+            onNowPlayingChange(context, state);
+          } else if (state is NowPlayingIndexChange) {
+            onNowPlayingIndexChange(context, state);
+          } else if (state is NowPlayingListenChange) {
+            onNowPlayingListenChange(context, state);
+          } else if (state is NowPlayingRepeatChange) {
+            onNowPlayingRepeatChange(context, state);
+          }
+        },
+      ),
+      BlocListener<Player, PlayerEvent>(
+        listenWhen: (_, state) =>
+            state is PlayerReady ||
+            state is PlayerLoad ||
+            state is PlayerPlay ||
+            state is PlayerPause ||
+            state is PlayerTrackListen ||
+            state is PlayerIndexChange ||
+            state is PlayerTrackEnd ||
+            state is PlayerRepeatModeChange ||
+            state is PlayerStreamTrackChange,
+        listener: (context, state) {
+          switch (state) {
+            case PlayerReady():
+              _onPlayerReady(context, state);
+            case PlayerLoad():
+              _onPlayerLoad(context, state);
+            case PlayerPlay():
+              _onPlayerPlay(context, state);
+            case PlayerPause():
+              _onPlayerPause(context, state);
+            case PlayerTrackListen():
+              _onPlayerTrackListen(context, state);
+            case PlayerIndexChange():
+              _onPlayerIndexChange(context, state);
+            case PlayerTrackEnd():
+              _onPlayerTrackEnd(context, state);
+            case PlayerRepeatModeChange():
+              _onPlayerRepeatModeChange(context, state);
+            case PlayerStreamTrackChange():
+              _onPlayerStreamTrackChange(context, state);
+          }
+        },
+      ),
+      BlocListener<PlaylistCubit, PlaylistEvent>(
+        listenWhen: (_, state) =>
+            state is PlaylistChange || state is PlaylistSync,
+        listener: (context, state) {
+          if (state is PlaylistChange) {
+            _onPlaylistChange(context, state);
+          } else if (state is PlaylistSync) {
+            final nowPlaying = context.nowPlaying.state.nowPlaying;
+            if (state.spiff != nowPlaying.spiff) {
+              _onPlaylistSyncChange(context, state);
+            } else if (state.spiff.index != nowPlaying.spiff.index) {
+              // TODO consider position also
+              context.player.skipToIndex(state.spiff.index);
             }
-          }),
-      BlocListener<Player, PlayerState>(
-          listenWhen: (_, state) =>
-              state is PlayerReady ||
-              state is PlayerLoad ||
-              state is PlayerPlay ||
-              state is PlayerPause ||
-              state is PlayerTrackListen ||
-              state is PlayerIndexChange ||
-              state is PlayerTrackEnd ||
-              state is PlayerRepeatModeChange ||
-              state is PlayerStreamTrackChange,
-          listener: (context, state) {
-            switch (state) {
-              case PlayerReady():
-                _onPlayerReady(context, state);
-              case PlayerLoad():
-                _onPlayerLoad(context, state);
-              case PlayerPlay():
-                _onPlayerPlay(context, state);
-              case PlayerPause():
-                _onPlayerPause(context, state);
-              case PlayerTrackListen():
-                _onPlayerTrackListen(context, state);
-              case PlayerIndexChange():
-                _onPlayerIndexChange(context, state);
-              case PlayerTrackEnd():
-                _onPlayerTrackEnd(context, state);
-              case PlayerRepeatModeChange():
-                _onPlayerRepeatModeChange(context, state);
-              case PlayerStreamTrackChange():
-                _onPlayerStreamTrackChange(context, state);
-            }
-          }),
-      BlocListener<PlaylistCubit, PlaylistState>(
-          listenWhen: (_, state) =>
-              state is PlaylistChange || state is PlaylistSync,
-          listener: (context, state) {
-            if (state is PlaylistChange) {
-              _onPlaylistChange(context, state);
-            } else if (state is PlaylistSync) {
-              final nowPlaying = context.nowPlaying.state.nowPlaying;
-              if (state.spiff != nowPlaying.spiff) {
-                _onPlaylistSyncChange(context, state);
-              } else if (state.spiff.index != nowPlaying.spiff.index) {
-                // TODO consider position also
-                context.player.skipToIndex(state.spiff.index);
-              }
-            }
-          }),
+          }
+        },
+      ),
       BlocListener<DownloadCubit, DownloadState>(
-          listenWhen: (_, state) =>
-              state is DownloadAdd ||
-              state is DownloadComplete ||
-              state is DownloadError,
-          listener: (context, state) {
-            if (state is DownloadComplete) {
-              _onDownloadComplete(context, state);
-            }
-            _onDownloadChange(context, state);
-          }),
+        listenWhen: (_, state) =>
+            state is DownloadAdd ||
+            state is DownloadComplete ||
+            state is DownloadError,
+        listener: (context, state) {
+          if (state is DownloadComplete) {
+            _onDownloadComplete(context, state);
+          }
+          _onDownloadChange(context, state);
+        },
+      ),
       BlocListener<IntentCubit, IntentState>(
-          listenWhen: (_, state) =>
-              state is IntentStart || state is IntentReceive,
-          listener: (context, state) {
-            if (state is IntentStart) {
-              onIntentStart(context, state);
-            } else if (state is IntentReceive) {
-              onIntentReceive(context, state);
-            }
-          }),
+        listenWhen: (_, state) =>
+            state is IntentStart || state is IntentReceive,
+        listener: (context, state) {
+          if (state is IntentStart) {
+            onIntentStart(context, state);
+          } else if (state is IntentReceive) {
+            onIntentReceive(context, state);
+          }
+        },
+      ),
     ];
   }
 
@@ -340,25 +366,31 @@ class TakeoutBloc {
     String? userAgent,
   }) {
     return ClientRepository(
-        userAgent: userAgent,
-        settingsRepository: settingsRepository,
-        tokenRepository: tokenRepository,
-        jsonCacheRepository: jsonCacheRepository);
+      userAgent: userAgent,
+      settingsRepository: settingsRepository,
+      tokenRepository: tokenRepository,
+      jsonCacheRepository: jsonCacheRepository,
+    );
   }
 
-  Player createPlayer(BuildContext context,
-      {PositionInterval? positionInterval}) {
+  Player createPlayer(
+    BuildContext context, {
+    PositionInterval? positionInterval,
+  }) {
     return Player(
-        positionInterval: positionInterval,
-        offsetRepository: context.read<OffsetCacheRepository>(),
-        settingsRepository: context.read<SettingsRepository>(),
-        tokenRepository: context.read<TokenRepository>(),
-        trackResolver: context.read<MediaTrackResolver>(),
-        mediaRepository: context.read<MediaRepository>());
+      positionInterval: positionInterval,
+      offsetRepository: context.read<OffsetCacheRepository>(),
+      settingsRepository: context.read<SettingsRepository>(),
+      tokenRepository: context.read<TokenRepository>(),
+      trackResolver: context.read<MediaTrackResolver>(),
+      mediaRepository: context.read<MediaRepository>(),
+    );
   }
 
   MediaPlayer createMediaPlayer(
-      NowPlayingCubit nowPlaying, BuildContext context) {
+    NowPlayingCubit nowPlaying,
+    BuildContext context,
+  ) {
     final settingsRepository = context.read<SettingsRepository>();
     return BaseMediaPlayer(nowPlaying, settingsRepository);
   }
@@ -386,12 +418,16 @@ class TakeoutBloc {
 
   /// NowPlaying playlist index change event
   void onNowPlayingIndexChange(
-      BuildContext context, NowPlayingIndexChange state) {
+    BuildContext context,
+    NowPlayingIndexChange state,
+  ) {
     _onNowPlayingIndexChange(context, state);
   }
 
   void _onNowPlayingIndexChange(
-      BuildContext context, NowPlayingIndexChange state) {
+    BuildContext context,
+    NowPlayingIndexChange state,
+  ) {
     final startedAt = state.nowPlaying.startedAt(state.nowPlaying.spiff.index);
     if (startedAt != null) {
       final track =
@@ -407,14 +443,19 @@ class TakeoutBloc {
 
   /// NowPlaying track listen change
   void onNowPlayingListenChange(
-      BuildContext context, NowPlayingListenChange state) {
+    BuildContext context,
+    NowPlayingListenChange state,
+  ) {
     _onNowPlayingListenChange(context, state);
   }
 
   void _onNowPlayingListenChange(
-      BuildContext context, NowPlayingListenChange state) {
-    final listenedAt =
-        state.nowPlaying.listenedAt(state.nowPlaying.spiff.index);
+    BuildContext context,
+    NowPlayingListenChange state,
+  ) {
+    final listenedAt = state.nowPlaying.listenedAt(
+      state.nowPlaying.spiff.index,
+    );
     if (listenedAt != null) {
       final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
       // submit listen to listenbrainz and takeout
@@ -424,18 +465,20 @@ class TakeoutBloc {
 
   /// NowPlaying repeat mode change
   void onNowPlayingRepeatChange(
-      BuildContext context, NowPlayingRepeatChange state) {
+    BuildContext context,
+    NowPlayingRepeatChange state,
+  ) {
     final repeat = state.nowPlaying.repeat;
     if (repeat != null) {
       context.player.repeatMode(repeat);
     }
   }
 
-  void _onPlaylistChange(BuildContext context, PlaylistState state) {
+  void _onPlaylistChange(BuildContext context, PlaylistEvent state) {
     context.play(state.spiff);
   }
 
-  void _onPlaylistSyncChange(BuildContext context, PlaylistState state) {
+  void _onPlaylistSyncChange(BuildContext context, PlaylistEvent state) {
     context.play(state.spiff, autoPlay: false);
   }
 
@@ -446,9 +489,14 @@ class TakeoutBloc {
     context.nowPlaying.restore();
 
     final player = context.player;
-    player.stream.timeout(const Duration(minutes: 1), onTimeout: (_) {
-      player.stop();
-    }).listen((event) {});
+    player.stream
+        .timeout(
+          const Duration(minutes: 1),
+          onTimeout: (_) {
+            player.stop();
+          },
+        )
+        .listen((event) {});
   }
 
   void _onPlayerLoad(BuildContext context, PlayerLoad state) {
@@ -482,12 +530,16 @@ class TakeoutBloc {
   }
 
   void _onPlayerRepeatModeChange(
-      BuildContext context, PlayerRepeatModeChange state) {
+    BuildContext context,
+    PlayerRepeatModeChange state,
+  ) {
     context.nowPlaying.repeatMode(state.repeat);
   }
 
   void _onPlayerStreamTrackChange(
-      BuildContext context, PlayerStreamTrackChange state) {
+    BuildContext context,
+    PlayerStreamTrackChange state,
+  ) {
     context.history.add(streamTrack: state.track);
   }
 
@@ -513,18 +565,21 @@ class TakeoutBloc {
   }
 
   // override this to change behavior
-  void saveProgress(BuildContext context, PlayerPositionState state) {
+  void saveProgress(BuildContext context, PlayerPositionEvent state) {
     _saveProgress(context, state);
   }
 
-  void _saveProgress(BuildContext context, PlayerPositionState state) {
+  void _saveProgress(BuildContext context, PlayerPositionEvent state) {
     if (state.buffering == false) {
       if (state.spiff.isPodcast()) {
         // save podcast progress at server
         final currentTrack = state.currentTrack;
         if (currentTrack != null) {
-          context.updateProgress(currentTrack.etag,
-              position: state.position, duration: state.duration);
+          context.updateProgress(
+            currentTrack.etag,
+            position: state.position,
+            duration: state.duration,
+          );
         }
       }
       if (state.spiff.isNotStream()) {
@@ -535,9 +590,12 @@ class TakeoutBloc {
   }
 
   void _updateSpiffHistoryPosition(
-      BuildContext context, PlayerPositionState state) {
-    final spiff =
-        state.spiff.copyWith(position: state.position.inSeconds.toDouble());
+    BuildContext context,
+    PlayerPositionEvent state,
+  ) {
+    final spiff = state.spiff.copyWith(
+      position: state.position.inSeconds.toDouble(),
+    );
     if (spiff.isNotEmpty && spiff.isNotStream()) {
       context.history.add(spiff: Spiff.cleanup(spiff));
     }
@@ -560,8 +618,9 @@ class TakeoutBloc {
 
   // add to local track history
   void addTrackHistory(BuildContext context, NowPlayingListenChange state) {
-    final listenedAt =
-        state.nowPlaying.listenedAt(state.nowPlaying.spiff.index);
+    final listenedAt = state.nowPlaying.listenedAt(
+      state.nowPlaying.spiff.index,
+    );
     if (listenedAt != null) {
       final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
       context.history.add(track: track, dateTime: listenedAt);
@@ -577,9 +636,11 @@ class BaseMediaPlayer implements MediaPlayer {
 
   @override
   void playSpiff(Spiff spiff) {
-    player.add(spiff,
-        autoCache: settingsRepository.settings?.autoCache,
-        autoPlay: settingsRepository.settings?.autoPlay);
+    player.add(
+      spiff,
+      autoCache: settingsRepository.settings?.autoCache,
+      autoPlay: settingsRepository.settings?.autoPlay,
+    );
   }
 
   @override

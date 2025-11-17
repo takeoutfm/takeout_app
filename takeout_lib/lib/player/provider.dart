@@ -33,10 +33,10 @@ typedef IndexCallback = void Function(Spiff, bool);
 typedef PositionCallback = void Function(Spiff, Duration, Duration, bool);
 typedef ListenCallback = void Function(Spiff, Duration, Duration, bool);
 typedef StoppedCallback = void Function(Spiff);
-typedef TrackChangeCallback = void Function(Spiff, int index,
-    {String? title, String? image});
-typedef TrackEndCallback = void Function(
-    Spiff, int index, Duration, Duration, bool);
+typedef TrackChangeCallback =
+    void Function(Spiff, int index, {String? title, String? image});
+typedef TrackEndCallback =
+    void Function(Spiff, int index, Duration, Duration, bool);
 typedef RepeatModeChangeCallback = void Function(Spiff, RepeatMode);
 typedef StreamTrackChangeCallback = void Function(Spiff, StreamTrack);
 
@@ -51,8 +51,11 @@ class PositionInterval {
   /// [duration] / [steps]. This interval will be clipped between [minPeriod]
   /// and [maxPeriod]. This stream will not emit values while audio playback is
   /// paused or stalled.
-  PositionInterval(
-      {required this.steps, required this.minPeriod, required this.maxPeriod});
+  PositionInterval({
+    required this.steps,
+    required this.minPeriod,
+    required this.maxPeriod,
+  });
 }
 
 abstract class PlayerProvider {
@@ -76,8 +79,12 @@ abstract class PlayerProvider {
     PositionInterval? positionInterval,
   });
 
-  Future<void> load(Spiff spiff,
-      {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat});
+  Future<void> load(
+    Spiff spiff, {
+    LoadCallback? onLoad,
+    bool? autoCache,
+    RepeatMode? repeat,
+  });
 
   Future<void> play();
 
@@ -151,8 +158,12 @@ class DefaultPlayerProvider implements PlayerProvider {
   }
 
   @override
-  Future<void> load(Spiff spiff,
-          {LoadCallback? onLoad, bool? autoCache, RepeatMode? repeat}) =>
+  Future<void> load(
+    Spiff spiff, {
+    LoadCallback? onLoad,
+    bool? autoCache,
+    RepeatMode? repeat,
+  }) =>
       handler.load(spiff, onLoad: onLoad, autoCache: autoCache, repeat: repeat);
 
   @override

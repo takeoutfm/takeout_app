@@ -38,8 +38,10 @@ class RetryListenProvider implements ListenProvider {
   late Box<Listen> box;
 
   RetryListenProvider(
-      this.name, this.listenProvider, this.connectivityRepository)
-      : _boxName = 'listens_$name' {
+    this.name,
+    this.listenProvider,
+    this.connectivityRepository,
+  ) : _boxName = 'listens_$name' {
     _init();
   }
 
@@ -75,7 +77,9 @@ class RetryListenProvider implements ListenProvider {
 
   Future<void> _enqueue(MediaTrack track, DateTime listenedAt) {
     return box.put(
-        listenedAt.toString(), Listen.fromMediaTrack(track, listenedAt));
+      listenedAt.toString(),
+      Listen.fromMediaTrack(track, listenedAt),
+    );
   }
 
   Future<void> _retry(MediaTrack track, DateTime listenedAt) {

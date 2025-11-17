@@ -44,11 +44,14 @@ class SubscribedCubit extends Cubit<SubscribedState> {
   }
 
   void _load({Duration? ttl}) {
-    clientRepository.podcastsSubscribed(ttl: ttl).then((view) {
-      emit(SubscribedState(series: view.series));
-    }).onError((error, stackTrace) {
-      Future.delayed(const Duration(minutes: 3), () => _load());
-    });
+    clientRepository
+        .podcastsSubscribed(ttl: ttl)
+        .then((view) {
+          emit(SubscribedState(series: view.series));
+        })
+        .onError((error, stackTrace) {
+          Future.delayed(const Duration(minutes: 3), () => _load());
+        });
   }
 
   void reload() {

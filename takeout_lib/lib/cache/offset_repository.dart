@@ -30,7 +30,7 @@ class OffsetCacheRepository {
   final OffsetCache _cache;
 
   OffsetCacheRepository({required this.directory, OffsetCache? cache})
-      : _cache = cache ?? OffsetFileCache(directory: directory);
+    : _cache = cache ?? OffsetFileCache(directory: directory);
 
   Future<Offset?> get(OffsetIdentifier id, {Duration? ttl}) async {
     return _cache.get(id, ttl: ttl);

@@ -36,7 +36,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "com.takeoutfm.watch"
     compileSdkVersion flutter.compileSdkVersion
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "26.1.10909125"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -53,10 +53,10 @@ android {
 
     defaultConfig {
         applicationId "com.takeoutfm.watch"
-        minSdkVersion 23
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 31 // Wear OS must be 30..33
-        versionCode 2404 // #versionCode#
-        versionName "0.24.4" // #version#
+        versionCode 2500 // #versionCode#
+        versionName "0.25.0" // #version#
     }
 
     signingConfigs {

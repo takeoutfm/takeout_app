@@ -21,37 +21,40 @@ import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/patch.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
-class PlaylistState {
+class PlaylistEvent {
   final Spiff spiff;
 
-  PlaylistState(this.spiff);
+  PlaylistEvent(this.spiff);
 
-  factory PlaylistState.initial() => PlaylistState(Spiff.empty());
+  factory PlaylistEvent.initial() => PlaylistEvent(Spiff.empty());
 }
 
-class PlaylistLoad extends PlaylistState {
+class PlaylistLoad extends PlaylistEvent {
   PlaylistLoad(super.spiff);
 }
 
-class PlaylistChange extends PlaylistState {
+class PlaylistChange extends PlaylistEvent {
   PlaylistChange(super.spiff);
 }
 
-class PlaylistSync extends PlaylistState {
+class PlaylistSync extends PlaylistEvent {
   PlaylistSync(super.spiff);
 }
 
-class PlaylistCubit extends Cubit<PlaylistState> {
+class PlaylistCubit extends Cubit<PlaylistEvent> {
   final ClientRepository clientRepository;
 
-  PlaylistCubit(this.clientRepository) : super(PlaylistState.initial()) {
+  PlaylistCubit(this.clientRepository) : super(PlaylistEvent.initial()) {
     load();
   }
 
   Future<void> load({Duration? ttl}) async {
-    await clientRepository.playlist(ttl: ttl).then((spiff) {
-      emit(PlaylistLoad(spiff));
-    }).onError((error, stackTrace) {});
+    await clientRepository
+        .playlist(ttl: ttl)
+        .then((spiff) {
+          emit(PlaylistLoad(spiff));
+        })
+        .onError((error, stackTrace) {});
   }
 
   Future<void> reload() {
@@ -59,9 +62,12 @@ class PlaylistCubit extends Cubit<PlaylistState> {
   }
 
   Future<void> sync() async {
-    return clientRepository.playlist(ttl: Duration.zero).then((spiff) {
-      emit(PlaylistSync(spiff));
-    }).onError((error, stackTrace) {});
+    return clientRepository
+        .playlist(ttl: Duration.zero)
+        .then((spiff) {
+          emit(PlaylistSync(spiff));
+        })
+        .onError((error, stackTrace) {});
   }
 
   Future<void> replace(
@@ -74,39 +80,45 @@ class PlaylistCubit extends Cubit<PlaylistState> {
     bool shuffle = false,
   }) async {
     await clientRepository
-        .replace(ref,
-            index: index,
-            position: position,
-            mediaType: mediaType,
-            creator: creator,
-            title: title)
+        .replace(
+          ref,
+          index: index,
+          position: position,
+          mediaType: mediaType,
+          creator: creator,
+          title: title,
+        )
         .then((spiff) {
-      if (spiff != null) {
-        if (shuffle) {
-          spiff = spiff.shuffle();
-        }
-        emit(PlaylistChange(spiff));
-      } else {
-        // unchanged
-        if (state.spiff.isEmpty) {
-          // no local state, force a sync
-          sync();
-        } else {
-          // emit as PlaylistChange for now
-          emit(PlaylistChange(state.spiff));
-        }
-      }
-    }).onError((error, stackTrace) {
-      // TODO
-    });
+          if (spiff != null) {
+            if (shuffle) {
+              spiff = spiff.shuffle();
+            }
+            emit(PlaylistChange(spiff));
+          } else {
+            // unchanged
+            if (state.spiff.isEmpty) {
+              // no local state, force a sync
+              sync();
+            } else {
+              // emit as PlaylistChange for now
+              emit(PlaylistChange(state.spiff));
+            }
+          }
+        })
+        .onError((error, stackTrace) {
+          // TODO
+        });
   }
 
   Future<void> update({int index = 0, double position = 0.0}) async {
     final body = patchPosition(index, position);
-    await clientRepository.patch(body).then((result) {
-      // TODO
-    }).onError((error, stackTrace) {
-      // TODO
-    });
+    await clientRepository
+        .patch(body)
+        .then((result) {
+          // TODO
+        })
+        .onError((error, stackTrace) {
+          // TODO
+        });
   }
 }

@@ -36,36 +36,30 @@ class PlayerPage extends StatelessWidget {
     final constraints = BoxConstraints(maxWidth: media.size.width - 72);
     return Scaffold(
         body: Stack(fit: StackFit.expand, children: [
-          Center(child: playerImage(context)),
-          Positioned.fill(child: playerProgress(context)),
-          Positioned.fill(
-              child: Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        PlayerTitle(
-                            boxConstraints: constraints,
-                            style: Theme
-                                .of(context)
-                                .listTileTheme
-                                .titleTextStyle),
-                        PlayerArtist(
-                            boxConstraints: constraints,
-                            style: Theme
-                                .of(context)
-                                .listTileTheme
-                                .subtitleTextStyle),
-                        const SizedBox(height: 24),
-                        playerControls(context),
-                      ]))),
-          const Align(alignment: Alignment.bottomCenter, child: PlayerQueue())
-        ]));
+      Center(child: playerImage(context)),
+      Positioned.fill(child: playerProgress(context)),
+      Positioned.fill(
+          child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+            PlayerTitle(
+                boxConstraints: constraints,
+                style: Theme.of(context).listTileTheme.titleTextStyle),
+            PlayerArtist(
+                boxConstraints: constraints,
+                style: Theme.of(context).listTileTheme.subtitleTextStyle),
+            const SizedBox(height: 24),
+            playerControls(context),
+          ]))),
+      const Align(alignment: Alignment.bottomCenter, child: PlayerQueue())
+    ]));
   }
 
   Widget playerImage(BuildContext context) {
     String? image;
     final media = MediaQuery.of(context);
-    return BlocBuilder<Player, PlayerState>(
+    return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) => state.currentTrack?.image != image,
         builder: (context, state) {
           final width = state.spiff.isStream()
@@ -77,13 +71,13 @@ class PlayerPage extends StatelessWidget {
             if (cover != null) {
               return GridTile(
                   child: circleCover(
-                    context,
-                    cover,
-                    radius: width / 2,
-                    height: width,
-                    color: Colors.black45,
-                    blendMode: BlendMode.darken,
-                  ) ??
+                        context,
+                        cover,
+                        radius: width / 2,
+                        height: width,
+                        color: Colors.black45,
+                        blendMode: BlendMode.darken,
+                      ) ??
                       const EmptyWidget());
             }
           }
@@ -93,39 +87,39 @@ class PlayerPage extends StatelessWidget {
 
   Widget playerProgress(BuildContext context) {
     final media = MediaQuery.of(context);
-    return BlocBuilder<Player, PlayerState>(
+    return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) => state is PlayerPositionChange,
         builder: (context, state) {
           if (state is PlayerPositionChange) {
             return state.spiff.isStream() // no radio stream progress
                 ? const EmptyWidget()
                 : CircularPercentIndicator(
-              radius: media.size.width / 2,
-              lineWidth: 13.0,
-              animation: true,
-              animateFromLastPercent: true,
-              percent: state.progress,
-              circularStrokeCap: CircularStrokeCap.round,
-              progressColor: Colors.blueAccent,
-              backgroundColor: Colors.grey.shade800,
-            );
+                    radius: media.size.width / 2,
+                    lineWidth: 13.0,
+                    animation: true,
+                    animateFromLastPercent: true,
+                    percent: state.progress,
+                    circularStrokeCap: CircularStrokeCap.round,
+                    progressColor: Colors.blueAccent,
+                    backgroundColor: Colors.grey.shade800,
+                  );
           }
           return const EmptyWidget();
         });
   }
 
   Widget playerControls(BuildContext context) {
-    return BlocBuilder<Player, PlayerState>(
-        buildWhen: (_, state) => state is PlayerProcessingState,
+    return BlocBuilder<Player, PlayerEvent>(
+        buildWhen: (_, state) => state is PlayerProcessingEvent,
         builder: (context, state) {
-          if (state is PlayerProcessingState) {
+          if (state is PlayerProcessingEvent) {
             return _controlButtons(context, state);
           }
           return const EmptyWidget();
         });
   }
 
-  Widget _controlButtons(BuildContext context, PlayerProcessingState state) {
+  Widget _controlButtons(BuildContext context, PlayerProcessingEvent state) {
     final player = context.player;
     final isPodcast = state.spiff.isPodcast();
     final isStream = state.spiff.isStream();
@@ -141,7 +135,7 @@ class PlayerPage extends StatelessWidget {
               CircleButton(
                 icon: const Icon(Icons.skip_previous, size: iconSize),
                 onPressed:
-                state.hasPrevious ? () => player.skipToPrevious() : null,
+                    state.hasPrevious ? () => player.skipToPrevious() : null,
               ),
             if (isPodcast)
               CircleButton(
@@ -150,17 +144,16 @@ class PlayerPage extends StatelessWidget {
               ),
             if (buffering)
               const CircularProgressIndicator()
+            else if (playing)
+              CircleButton(
+                icon: const Icon(Icons.pause, size: 24),
+                onPressed: () => player.pause(),
+              )
             else
-              if (playing)
-                CircleButton(
-                  icon: const Icon(Icons.pause, size: 24),
-                  onPressed: () => player.pause(),
-                )
-              else
-                CircleButton(
-                  icon: const Icon(Icons.play_arrow, size: 24),
-                  onPressed: () => player.play(),
-                ),
+              CircleButton(
+                icon: const Icon(Icons.play_arrow, size: 24),
+                onPressed: () => player.play(),
+              ),
             if (isPodcast)
               CircleButton(
                 icon: const Icon(Icons.forward_30_outlined, size: iconSize),
@@ -184,23 +177,23 @@ class AmbientPlayer extends StatelessWidget {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => const PlayerPage()));
     String? title, artist;
-    buildWhen(PlayerState state) =>
+    buildWhen(PlayerEvent state) =>
         state.currentTrack?.title != title ||
-            state.currentTrack?.creator != artist;
+        state.currentTrack?.creator != artist;
     return Scaffold(
-        body: BlocBuilder<Player, PlayerState>(
+        body: BlocBuilder<Player, PlayerEvent>(
             buildWhen: (_, state) => buildWhen(state),
             builder: (context, state) {
               if (buildWhen(state)) {
                 return Center(
                     child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        ListTile(
-                            title: Center(child: Text(title ?? '')),
-                            subtitle: Center(child: Text(artist ?? ''))),
-                      ],
-                    ));
+                  shrinkWrap: true,
+                  children: [
+                    ListTile(
+                        title: Center(child: Text(title ?? '')),
+                        subtitle: Center(child: Text(artist ?? ''))),
+                  ],
+                ));
               }
               return const EmptyWidget();
             }));
@@ -216,7 +209,7 @@ class PlayerArtist extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? artist;
-    return BlocBuilder<Player, PlayerState>(
+    return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) => state.currentTrack?.creator != artist,
         builder: (context, state) {
           // if (state.currentTrack?.creator != artist) {
@@ -245,7 +238,7 @@ class PlayerTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? title;
-    return BlocBuilder<Player, PlayerState>(
+    return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) => state.currentTrack?.title != title,
         builder: (context, state) {
           // if (state.currentTrack?.title != title) {
@@ -271,7 +264,7 @@ class PlayerImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? image;
-    return BlocBuilder<Player, PlayerState>(
+    return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) => state.currentTrack?.image != image,
         builder: (context, state) {
           final currentTrack = state.currentTrack;

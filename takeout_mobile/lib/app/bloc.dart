@@ -32,8 +32,9 @@ import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/video/player.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/film.dart';
 
 import 'app.dart';
 import 'context.dart';
@@ -56,14 +57,18 @@ class AppBloc extends TakeoutBloc {
 
   @override
   void onNowPlayingIndexChange(
-      BuildContext context, NowPlayingIndexChange state) {
+    BuildContext context,
+    NowPlayingIndexChange state,
+  ) {
     super.onNowPlayingIndexChange(context, state);
     updateSpiffHistory(context, state);
   }
 
   @override
   void onNowPlayingListenChange(
-      BuildContext context, NowPlayingListenChange state) {
+    BuildContext context,
+    NowPlayingListenChange state,
+  ) {
     super.onNowPlayingListenChange(context, state);
     addTrackHistory(context, state);
   }
@@ -86,15 +91,20 @@ class AppBloc extends TakeoutBloc {
 
   @override
   MediaPlayer createMediaPlayer(
-      NowPlayingCubit nowPlaying, BuildContext context) {
+    NowPlayingCubit nowPlaying,
+    BuildContext context,
+  ) {
     final settingsRepository = context.read<SettingsRepository>();
     final clientRepository = context.read<ClientRepository>();
     final mediaTrackResolver = context.read<MediaTrackResolver>();
     final tokenRepository = context.read<TokenRepository>();
-    return DefaultMediaPlayer(nowPlaying, settingsRepository,
-        clientRepository: clientRepository,
-        mediaTrackResolver: mediaTrackResolver,
-        tokenRepository: tokenRepository);
+    return DefaultMediaPlayer(
+      nowPlaying,
+      settingsRepository,
+      clientRepository: clientRepository,
+      mediaTrackResolver: mediaTrackResolver,
+      tokenRepository: tokenRepository,
+    );
   }
 
   @override
@@ -120,15 +130,17 @@ class AppBloc extends TakeoutBloc {
         final artist = intent.parameters?['artist'];
         final song = intent.parameters?['song'];
         if (artist != null && song != null) {
-          context.playlist
-              .replace('/music/search?q=+artist:"$artist" +title:"$song"');
+          context.playlist.replace(
+            '/music/search?q=+artist:"$artist" +title:"$song"',
+          );
         }
       case 'com.takeoutfm.action.PLAY_ARTIST_ALBUM':
         final artist = intent.parameters?['artist'];
         final album = intent.parameters?['album'];
         if (artist != null && album != null) {
-          context.playlist
-              .replace('/music/search?q=+artist:"$artist" +release:"$album"');
+          context.playlist.replace(
+            '/music/search?q=+artist:"$artist" +release:"$album"',
+          );
         }
       case 'com.takeoutfm.action.PLAY_ARTIST_RADIO':
         final artist = intent.parameters?['artist'];
@@ -138,8 +150,9 @@ class AppBloc extends TakeoutBloc {
       case 'com.takeoutfm.action.PLAY_ARTIST_POPULAR_SONGS':
         final artist = intent.parameters?['artist'];
         if (artist != null) {
-          context.playlist
-              .replace('/music/search?q=+artist:"$artist" +popularity:<11');
+          context.playlist.replace(
+            '/music/search?q=+artist:"$artist" +popularity:<11',
+          );
         }
       case 'com.takeoutfm.action.PLAY_ALBUM':
         final album = intent.parameters?['album'];
@@ -175,8 +188,10 @@ class AppBloc extends TakeoutBloc {
       case 'com.takeoutfm.action.PLAY_MOVIE':
         final title = intent.parameters?['title'] as String?;
         if (title != null) {
-          context.mediaRepository
-              .playFromSearch(title, mediaType: MediaType.film);
+          context.mediaRepository.playFromSearch(
+            title,
+            mediaType: MediaType.film,
+          );
         }
     }
   }
@@ -205,19 +220,25 @@ class DefaultMediaPlayer extends BaseMediaPlayer {
   final MediaTrackResolver mediaTrackResolver;
   final TokenRepository tokenRepository;
 
-  DefaultMediaPlayer(super.player, super.settingsRepository,
-      {required this.clientRepository,
-      required this.mediaTrackResolver,
-      required this.tokenRepository});
+  DefaultMediaPlayer(
+    super.player,
+    super.settingsRepository, {
+    required this.clientRepository,
+    required this.mediaTrackResolver,
+    required this.tokenRepository,
+  });
 
   @override
   void playMovie(Movie movie) {
     clientRepository.movie(movie.id).then((view) {
       globalPush(
-          builder: (_) => MoviePlayer(MovieMediaTrack(view),
-              mediaTrackResolver: mediaTrackResolver,
-              tokenRepository: tokenRepository,
-              settingsRepository: settingsRepository));
+        builder: (_) => VideoPlayer(
+          MovieMediaTrack(view),
+          mediaTrackResolver: mediaTrackResolver,
+          tokenRepository: tokenRepository,
+          settingsRepository: settingsRepository,
+        ),
+      );
     });
   }
 }

@@ -17,8 +17,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
+import 'package:takeout_mobile/app/context.dart';
 
 import 'style.dart';
 
@@ -49,16 +49,22 @@ abstract class _ConnectivityButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ConnectivityCubit, ConnectivityState>(
-        builder: (context, state) {
-      return IconButton(
-          icon: icon, onPressed: _allowed(context, state) ? onPressed : null);
-    });
+      builder: (context, state) {
+        return IconButton(
+          icon: icon,
+          onPressed: _allowed(context, state) ? onPressed : null,
+        );
+      },
+    );
   }
 }
 
 class DownloadButton extends _ConnectivityButton {
-  const DownloadButton(
-      {super.key, super.icon = const Icon(iconsDownload), super.onPressed});
+  const DownloadButton({
+    super.key,
+    super.icon = const Icon(iconsDownload),
+    super.onPressed,
+  });
 
   @override
   bool _allowed(BuildContext context, ConnectivityState state) {

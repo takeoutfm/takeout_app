@@ -17,88 +17,113 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/settings/settings.dart';
+import 'package:takeout_mobile/app/context.dart';
 
 class SettingsWidget extends StatelessWidget {
   const SettingsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SettingsCubit, SettingsState>(builder: (context, state) {
-      return Scaffold(
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, state) {
+        return Scaffold(
           appBar: AppBar(title: Text(context.strings.settingsLabel)),
           body: SingleChildScrollView(
-              child: Column(children: [
-            Card(
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              _switchTile(
-                  Icons.cloud_outlined,
-                  context.strings.settingStreamingTitle,
-                  context.strings.settingStreamingSubtitle,
-                  state.settings.allowMobileStreaming, (value) {
-                context.settings.allowStreaming = value;
-              }),
-              _switchTile(
-                  Icons.cloud_download_outlined,
-                  context.strings.settingDownloadsTitle,
-                  context.strings.settingDownloadsSubtitle,
-                  state.settings.allowMobileDownload, (value) {
-                context.settings.allowDownload = value;
-              }),
-              _switchTile(
-                  Icons.image_outlined,
-                  context.strings.settingArtworkTitle,
-                  context.strings.settingArtworkSubtitle,
-                  state.settings.allowMobileArtistArtwork, (value) {
-                context.settings.allowArtistArtwork = value;
-              }),
-              _switchTile(
-                  Icons.image_outlined,
-                  context.strings.settingAutoCacheTitle,
-                  context.strings.settingAutoCacheSubtitle,
-                  state.settings.autoCache, (value) {
-                context.settings.autoCache = value;
-              }),
-            ])),
-            Card(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  _switchTile(
-                      Icons.share,
-                      context.strings.settingTrackActivityTitle,
-                      context.strings.settingTrackActivitySubtitle,
-                      state.settings.enableTrackActivity, (value) {
-                    context.settings.enableTrackActivity = value;
-                  }),
-                ],
-              ),
-            ),
-            Card(
-                child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ListTile(
-                  leading: const Icon(Icons.key),
-                  title: Text(context.strings.settingListenBrainzToken),
-                  subtitle: _TokenField(state),
-                  trailing: Switch(
-                    value: state.settings.enableListenBrainz,
-                    onChanged: (value) {
-                      context.settings.enabledListenBrainz = value;
-                    },
+            child: Column(
+              children: [
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      _switchTile(
+                        Icons.cloud_outlined,
+                        context.strings.settingStreamingTitle,
+                        context.strings.settingStreamingSubtitle,
+                        state.settings.allowMobileStreaming,
+                        (value) {
+                          context.settings.allowStreaming = value;
+                        },
+                      ),
+                      _switchTile(
+                        Icons.cloud_download_outlined,
+                        context.strings.settingDownloadsTitle,
+                        context.strings.settingDownloadsSubtitle,
+                        state.settings.allowMobileDownload,
+                        (value) {
+                          context.settings.allowDownload = value;
+                        },
+                      ),
+                      _switchTile(
+                        Icons.image_outlined,
+                        context.strings.settingArtworkTitle,
+                        context.strings.settingArtworkSubtitle,
+                        state.settings.allowMobileArtistArtwork,
+                        (value) {
+                          context.settings.allowArtistArtwork = value;
+                        },
+                      ),
+                      _switchTile(
+                        Icons.image_outlined,
+                        context.strings.settingAutoCacheTitle,
+                        context.strings.settingAutoCacheSubtitle,
+                        state.settings.autoCache,
+                        (value) {
+                          context.settings.autoCache = value;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      _switchTile(
+                        Icons.share,
+                        context.strings.settingTrackActivityTitle,
+                        context.strings.settingTrackActivitySubtitle,
+                        state.settings.enableTrackActivity,
+                        (value) {
+                          context.settings.enableTrackActivity = value;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Card(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ListTile(
+                        leading: const Icon(Icons.key),
+                        title: Text(context.strings.settingListenBrainzToken),
+                        subtitle: _TokenField(state),
+                        trailing: Switch(
+                          value: state.settings.enableListenBrainz,
+                          onChanged: (value) {
+                            context.settings.enabledListenBrainz = value;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            )),
-          ])));
-    });
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  Widget _switchTile(IconData icon, String title, String subtitle, bool value,
-      ValueChanged<bool> onChanged) {
+  Widget _switchTile(
+    IconData icon,
+    String title,
+    String subtitle,
+    bool value,
+    ValueChanged<bool> onChanged,
+  ) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title),

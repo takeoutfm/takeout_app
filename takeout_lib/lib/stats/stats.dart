@@ -48,14 +48,11 @@ class StatsState {
   final IntervalType interval;
 
   factory StatsState.initial() =>
-      StatsState(StatsType.artist, IntervalType.recent);
+      StatsState(.artist, .recent);
 
   StatsState(this.type, this.interval);
 
-  StatsState copyWith({
-    StatsType? type,
-    IntervalType? interval,
-  }) =>
+  StatsState copyWith({StatsType? type, IntervalType? interval}) =>
       StatsState(type ?? this.type, interval ?? this.interval);
 
   factory StatsState.fromJson(Map<String, dynamic> json) =>

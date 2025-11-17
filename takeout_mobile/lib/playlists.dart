@@ -16,10 +16,10 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
-import 'package:takeout_lib/spiff/model.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_mobile/app/context.dart';
 
 import 'dialog.dart';
 import 'menu.dart';
@@ -36,7 +36,9 @@ void showPlaylistAppend(BuildContext context, String ref) {
 }
 
 void showPlaylistSelect(
-    BuildContext context, void Function(PlaylistView playlist) onSelected) {
+  BuildContext context,
+  void Function(PlaylistView playlist) onSelected,
+) {
   showPlaylistsBottomSheet(context).then((playlist) {
     if (playlist != null) {
       onSelected(playlist);
@@ -46,12 +48,15 @@ void showPlaylistSelect(
 
 Future<PlaylistView?> showPlaylistsBottomSheet(BuildContext context) {
   return showModalBottomSheet<PlaylistView>(
-      context: context,
-      builder: (ctx) {
-        return _SelectPlaylistWidget(onSelected: (playlist) {
+    context: context,
+    builder: (ctx) {
+      return _SelectPlaylistWidget(
+        onSelected: (playlist) {
           Navigator.pop(ctx, playlist);
-        });
-      });
+        },
+      );
+    },
+  );
 }
 
 class _SelectPlaylistWidget extends ClientPage<PlaylistsView> {
@@ -66,28 +71,33 @@ class _SelectPlaylistWidget extends ClientPage<PlaylistsView> {
 
   @override
   Widget page(BuildContext context, PlaylistsView state) {
-    return Column(children: [
-      ListTile(
+    return Column(
+      children: [
+        ListTile(
           leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
-              }),
-          title: Text(context.strings.playlists)),
-      Expanded(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          title: Text(context.strings.playlists),
+        ),
+        Expanded(
           child: ListView.builder(
-              itemCount: state.playlists.length,
-              itemBuilder: (buildContext, index) {
-                final playlist = state.playlists[index];
-                return ListTile(
-                  leading: const Icon(Icons.playlist_add),
-                  onTap: () => onSelected(playlist),
-                  title: Text(playlist.name),
-                  subtitle:
-                      Text(context.strings.trackCount(playlist.trackCount)),
-                );
-              }))
-    ]);
+            itemCount: state.playlists.length,
+            itemBuilder: (buildContext, index) {
+              final playlist = state.playlists[index];
+              return ListTile(
+                leading: const Icon(Icons.playlist_add),
+                onTap: () => onSelected(playlist),
+                title: Text(playlist.name),
+                subtitle: Text(context.strings.trackCount(playlist.trackCount)),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -102,38 +112,48 @@ class PlaylistsWidget extends ClientPage<PlaylistsView> {
   @override
   Widget page(BuildContext context, PlaylistsView state) {
     return Scaffold(
-        appBar: AppBar(title: header(context.strings.playlists), actions: [
+      appBar: AppBar(
+        title: header(context.strings.playlists),
+        actions: [
           IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => _onCreatePlaylist(context)),
+            icon: const Icon(Icons.add),
+            onPressed: () => _onCreatePlaylist(context),
+          ),
           popupMenu(context, [
             PopupItem.reload(context, (_) => reloadPage(context)),
-          ])
-        ]),
-        body: RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: _playlists(context, state)));
+          ]),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => reloadPage(context),
+        child: _playlists(context, state),
+      ),
+    );
   }
 
   Widget _playlists(BuildContext context, PlaylistsView state) {
-    return Column(children: [
-      Expanded(
+    return Column(
+      children: [
+        Expanded(
           child: ListView.builder(
-              itemCount: state.playlists.length,
-              itemBuilder: (buildContext, index) {
-                final playlist = state.playlists[index];
-                return ListTile(
-                  leading: const Icon(Icons.playlist_play),
-                  onTap: () => _onPlaylist(context, playlist),
-                  title: Text(playlist.name),
-                  subtitle:
-                      Text(context.strings.trackCount(playlist.trackCount)),
-                  trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _onDeletePlaylist(context, playlist)),
-                );
-              }))
-    ]);
+            itemCount: state.playlists.length,
+            itemBuilder: (buildContext, index) {
+              final playlist = state.playlists[index];
+              return ListTile(
+                leading: const Icon(Icons.playlist_play),
+                onTap: () => _onPlaylist(context, playlist),
+                title: Text(playlist.name),
+                subtitle: Text(context.strings.trackCount(playlist.trackCount)),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => _onDeletePlaylist(context, playlist),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   void _onCreatePlaylist(BuildContext context) {
@@ -146,8 +166,11 @@ class PlaylistsWidget extends ClientPage<PlaylistsView> {
   }
 
   void _onDeletePlaylist(BuildContext context, PlaylistView playlist) {
-    confirmDeleteDialog(context, context.strings.deletePlaylist,
-        () => _onDeletePlaylistConfirmed(context, playlist));
+    confirmDeleteDialog(
+      context,
+      context.strings.deletePlaylist,
+      () => _onDeletePlaylistConfirmed(context, playlist),
+    );
   }
 
   void _onDeletePlaylistConfirmed(BuildContext context, PlaylistView playlist) {
@@ -156,8 +179,9 @@ class PlaylistsWidget extends ClientPage<PlaylistsView> {
 
   void _onPlaylist(BuildContext context, PlaylistView playlist) {
     pushPlaylist(
-        context,
-        (client, {Duration? ttl}) =>
-            client.playlist(id: playlist.id, ttl: Duration.zero));
+      context,
+      (client, {Duration? ttl}) =>
+          client.playlist(id: playlist.id, ttl: Duration.zero),
+    );
   }
 }

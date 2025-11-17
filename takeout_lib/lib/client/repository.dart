@@ -17,7 +17,7 @@
 
 import 'dart:io';
 
-import 'package:http/http.dart';
+import 'package:http/http.dart' hide MediaType;
 import 'package:takeout_lib/api/client.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/json_repository.dart';
@@ -33,18 +33,20 @@ import 'provider.dart';
 class ClientRepository {
   final ClientProvider _provider;
 
-  ClientRepository(
-      {required SettingsRepository settingsRepository,
-      required JsonCacheRepository jsonCacheRepository,
-      required TokenRepository tokenRepository,
-      String? userAgent,
-      ClientProvider? provider})
-      : _provider = provider ??
-            TakeoutClient(
-                userAgent: userAgent,
-                settingsRepository: settingsRepository,
-                jsonCacheRepository: jsonCacheRepository,
-                tokenRepository: tokenRepository);
+  ClientRepository({
+    required SettingsRepository settingsRepository,
+    required JsonCacheRepository jsonCacheRepository,
+    required TokenRepository tokenRepository,
+    String? userAgent,
+    ClientProvider? provider,
+  }) : _provider =
+           provider ??
+           TakeoutClient(
+             userAgent: userAgent,
+             settingsRepository: settingsRepository,
+             jsonCacheRepository: jsonCacheRepository,
+             tokenRepository: tokenRepository,
+           );
 
   Client get client => _provider.client;
 
@@ -52,13 +54,18 @@ class ClientRepository {
     return _provider.login(user, password, passcode: passcode);
   }
 
-  Future<bool> link(
-      {required String code,
-      required String user,
-      required String password,
-      String? passcode}) async {
+  Future<bool> link({
+    required String code,
+    required String user,
+    required String password,
+    String? passcode,
+  }) async {
     return _provider.link(
-        code: code, user: user, password: password, passcode: passcode);
+      code: code,
+      user: user,
+      password: password,
+      passcode: passcode,
+    );
   }
 
   Future<AccessCode> code() async {
@@ -149,8 +156,10 @@ class ClientRepository {
     return _provider.moviePlaylist(id, ttl: ttl);
   }
 
-  Future<GenreView> moviesGenre(String genre,
-      {Duration? ttl = Duration.zero}) async {
+  Future<GenreView> moviesGenre(
+    String genre, {
+    Duration? ttl = Duration.zero,
+  }) async {
     return _provider.moviesGenre(genre, ttl: ttl);
   }
 
@@ -170,15 +179,24 @@ class ClientRepository {
     return _provider.tvSeries(id, ttl: ttl);
   }
 
-  Future<Spiff> tvSeriesPlaylist(int id, {Duration? ttl = Duration.zero}) async {
+  Future<Spiff> tvSeriesPlaylist(
+    int id, {
+    Duration? ttl = Duration.zero,
+  }) async {
     return _provider.tvSeriesPlaylist(id, ttl: ttl);
   }
 
-  Future<TVEpisodeView> tvEpisode(int id, {Duration? ttl = Duration.zero}) async {
+  Future<TVEpisodeView> tvEpisode(
+    int id, {
+    Duration? ttl = Duration.zero,
+  }) async {
     return _provider.tvEpisode(id, ttl: ttl);
   }
 
-  Future<Spiff> tvEpisodePlaylist(int id, {Duration? ttl = Duration.zero}) async {
+  Future<Spiff> tvEpisodePlaylist(
+    int id, {
+    Duration? ttl = Duration.zero,
+  }) async {
     return _provider.tvEpisodePlaylist(id, ttl: ttl);
   }
 
@@ -210,8 +228,12 @@ class ClientRepository {
     return _provider.popularTracks(ttl: ttl);
   }
 
-  Future<int> download(Uri uri, File file, int size,
-      {Sink<int>? progress}) async {
+  Future<int> download(
+    Uri uri,
+    File file,
+    int size, {
+    Sink<int>? progress,
+  }) async {
     return _provider.download(uri, file, size, progress: progress);
   }
 
@@ -232,7 +254,9 @@ class ClientRepository {
   }
 
   Future<PatchResult> patchPlaylist(
-      PlaylistView playlist, List<Map<String, dynamic>> body) async {
+    PlaylistView playlist,
+    List<Map<String, dynamic>> body,
+  ) async {
     return _provider.patchPlaylist(playlist, body);
   }
 
@@ -248,8 +272,10 @@ class ClientRepository {
     return _provider.updateProgress(offsets);
   }
 
-  Future<TrackStatsView> trackStats(
-      {Duration? ttl, IntervalType? interval}) async {
+  Future<TrackStatsView> trackStats({
+    Duration? ttl,
+    IntervalType? interval,
+  }) async {
     return _provider.trackStats(ttl: ttl, interval: interval);
   }
 
@@ -279,7 +305,7 @@ class ClientRepository {
   }) async {
     final body =
         patchReplace(ref, mediaType.name, creator: creator, title: title) +
-            patchPosition(index, position);
+        patchPosition(index, position);
     final result = await patch(body);
     if (result.isModified) {
       return Spiff.fromJson(result.body);
@@ -288,17 +314,22 @@ class ClientRepository {
   }
 
   // update current index and position
-  Future<Spiff?> playlistUpdate(PlaylistView playlist,
-          {int index = 0, double position = 0.0}) async =>
-      _doPatch(playlist, patchPosition(index, position));
+  Future<Spiff?> playlistUpdate(
+    PlaylistView playlist, {
+    int index = 0,
+    double position = 0.0,
+  }) async => _doPatch(playlist, patchPosition(index, position));
 
   // replace contents with new ref
-  Future<Spiff?> playlistReplace(PlaylistView playlist, String ref,
-          {int index = 0, double position = 0.0}) async =>
-      _doPatch(
-          playlist,
-          patchReplace(ref, MediaType.music.name) +
-              patchPosition(index, position));
+  Future<Spiff?> playlistReplace(
+    PlaylistView playlist,
+    String ref, {
+    int index = 0,
+    double position = 0.0,
+  }) async => _doPatch(
+    playlist,
+    patchReplace(ref, MediaType.music.name) + patchPosition(index, position),
+  );
 
   // remove track at index
   Future<Spiff?> playlistRemove(PlaylistView playlist, int index) async =>
@@ -309,7 +340,9 @@ class ClientRepository {
       _doPatch(playlist, patchAppend(ref));
 
   Future<Spiff?> _doPatch(
-      PlaylistView playlist, List<Map<String, dynamic>> body) async {
+    PlaylistView playlist,
+    List<Map<String, dynamic>> body,
+  ) async {
     final result = await patchPlaylist(playlist, body);
     if (result.isModified) {
       return Spiff.fromJson(result.body);

@@ -16,11 +16,11 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
-import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'menu.dart';
@@ -38,18 +38,27 @@ class ArtistWantListWidget extends ClientPage<WantListView> {
   @override
   Widget page(BuildContext context, WantListView state) {
     return Scaffold(
-        appBar: AppBar(title: Text(_artist.name), actions: [
+      appBar: AppBar(
+        title: Text(_artist.name),
+        actions: [
           popupMenu(context, [
             PopupItem.reload(context, (_) => reloadPage(context)),
-          ])
-        ]),
-        body: RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: SingleChildScrollView(
-                child: Column(children: [
-              ...state.releases.map((release) =>
-                  WantReleaseCard(artist: _artist, release: release))
-            ]))));
+          ]),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => reloadPage(context),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ...state.releases.map(
+                (release) => WantReleaseCard(artist: _artist, release: release),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -57,8 +66,11 @@ class WantReleaseCard extends StatelessWidget {
   final Artist artist;
   final Release release;
 
-  const WantReleaseCard(
-      {required this.artist, required this.release, super.key});
+  const WantReleaseCard({
+    required this.artist,
+    required this.release,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,12 +82,14 @@ class WantReleaseCard extends StatelessWidget {
             ListTile(
               leading: tileCover(context, release.image),
               title: Text(release.name),
-              subtitle: Text(merge([
-                artist.name,
-                release.year.toString(),
-                release.country ?? '',
-                release.asin ?? ''
-              ])),
+              subtitle: Text(
+                merge([
+                  artist.name,
+                  release.year.toString(),
+                  release.country ?? '',
+                  release.asin ?? '',
+                ]),
+              ),
               onTap: () => _onAmazon(),
             ),
             Row(
@@ -123,10 +137,10 @@ class WantReleaseCard extends StatelessWidget {
     launchUrl(Uri.parse(uri), mode: LaunchMode.externalApplication);
   }
 
-// void _onWikipedia() {
-//   final uri =
-//       'https://en.wikipedia.org/w/index.php?title=Special:Search&search=${Uri
-//       .encodeQueryComponent(release.name + " by " + artist.name)}';
-//   launchUrl(Uri.parse(uri), mode: LaunchMode.externalApplication);
-// }
+  // void _onWikipedia() {
+  //   final uri =
+  //       'https://en.wikipedia.org/w/index.php?title=Special:Search&search=${Uri
+  //       .encodeQueryComponent(release.name + " by " + artist.name)}';
+  //   launchUrl(Uri.parse(uri), mode: LaunchMode.externalApplication);
+  // }
 }
