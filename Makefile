@@ -28,30 +28,30 @@ ASSETS = ./assets
 .PHONY: all clean release assets analyze
 
 all:
-	${MAKE} --directory=takeout_lib generate
-	${MAKE} --directory=takeout_mobile all
-	${MAKE} --directory=takeout_watch all
+	${MAKE} --directory=packages/takeout_lib generate
+	${MAKE} --directory=apps/takeout_mobile all
+	${MAKE} --directory=apps/takeout_watch all
 
 analyze:
-	${MAKE} --directory=takeout_lib analyze
-	${MAKE} --directory=takeout_mobile analyze
-	${MAKE} --directory=takeout_watch analyze
+	${MAKE} --directory=packages/takeout_lib analyze
+	${MAKE} --directory=apps/takeout_mobile analyze
+	${MAKE} --directory=apps/takeout_watch analyze
 
 release:
-	${MAKE} --directory=takeout_lib generate
-	${MAKE} --directory=takeout_mobile release
-	${MAKE} --directory=takeout_watch release
+	${MAKE} --directory=packages/takeout_lib generate
+	${MAKE} --directory=apps/takeout_mobile release
+	${MAKE} --directory=apps/takeout_watch release
 
 bundle:
-	${MAKE} --directory=takeout_lib generate
-	${MAKE} --directory=takeout_mobile bundle
-	${MAKE} --directory=takeout_watch bundle
+	${MAKE} --directory=packages/takeout_lib generate
+	${MAKE} --directory=apps/takeout_mobile bundle
+	${MAKE} --directory=apps/takeout_watch bundle
 
 clean:
 	rm -rf ${ASSETS}
-	${MAKE} --directory=takeout_lib clean
-	${MAKE} --directory=takeout_mobile clean
-	${MAKE} --directory=takeout_watch clean
+	${MAKE} --directory=packages/takeout_lib clean
+	${MAKE} --directory=apps/takeout_mobile clean
+	${MAKE} --directory=apps/takeout_watch clean
 
 tag:
 	git tag --list | grep -q v${VERSION} || git tag v${VERSION}
@@ -60,10 +60,10 @@ tag:
 
 assets:
 	@mkdir -p ${ASSETS}
-	@cp takeout_mobile/${RELEASE_APK} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.apk || true
-	@cp takeout_mobile/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.aab || true
-	@cp takeout_watch/${RELEASE_APK} ${ASSETS}/com.takeoutfm.watch-${VERSION}.apk || true
-	@cp takeout_watch/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.watch-${VERSION}.aab || true
+	@cp apps/takeout_mobile/${RELEASE_APK} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.apk || true
+	@cp apps/takeout_mobile/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.mobile-${VERSION}.aab || true
+	@cp apps/takeout_watch/${RELEASE_APK} ${ASSETS}/com.takeoutfm.watch-${VERSION}.apk || true
+	@cp apps/takeout_watch/${RELEASE_AAB} ${ASSETS}/com.takeoutfm.watch-${VERSION}.aab || true
 
 version:
 	scripts/version.sh

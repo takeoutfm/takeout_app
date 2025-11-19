@@ -3,9 +3,9 @@
 This source repository contains an Android and Wear OS app, both of which share
 a common library.
 
-* takeout\_lib - common code
-* takeout\_mobile - the Android app
-* takeout\_watch - the Wear OS app
+* packages/takeout\_lib - common code
+* apps/takeout\_mobile - the Android app
+* apps/takeout\_watch - the Wear OS app
 
 This document describes general steps to build release versions of both apps
 using command line tools.

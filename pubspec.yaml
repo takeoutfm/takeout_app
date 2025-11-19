@@ -1,0 +1,13 @@
+name: takeout_app
+description: "Takeout apps for mobile and watch"
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+
+workspace:
+  - packages/takeout_lib
+  - apps/takeout_mobile
+  - apps/takeout_watch
+

@@ -1,0 +1,35 @@
+name: takeout_watch
+description: TakeoutFM
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  takeout_lib: any
+  android_intent_plus: ^6.0.0
+  bloc: ^9.0.0
+  flutter_bloc: ^9.0.0
+  cupertino_icons: ^1.0.8
+  nested: ^1.0.0
+  device_info_plus: ^12.1.0
+  percent_indicator: ^4.2.3
+  rotary_scrollbar: ^1.0.0
+  timeago: ^3.6.1
+  wear_plus: ^1.2.0
+  wearable_rotary: ^2.0.2
+
+  intl: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  generate: true

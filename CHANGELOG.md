@@ -1,3 +1,8 @@
+## 0.25.1
+
+- Changed to dart workspace repo format with packages and apps directories
+- Added proguard exlusions for newer gradle release builds
+
 ## 0.25.0
 
 - Use chewie video player (mobile)
