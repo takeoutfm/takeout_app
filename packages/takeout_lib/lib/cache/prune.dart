@@ -101,7 +101,7 @@ Future<void> _pruneTracks(
         final fileSize = file.lengthSync();
         if (fileSize == track.size) {
           keep.add(id);
-        } else if (spiff.isPodcast()) {
+        } else if (spiff.isPodcast) {
           // Allow podcasts download to be larger - TWiT sizes can be off
           // TODO is this still valid?
           if (fileSize > track.size) {

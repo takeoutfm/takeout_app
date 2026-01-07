@@ -38,7 +38,7 @@ typedef TrackChangeCallback =
 typedef TrackEndCallback =
     void Function(Spiff, int index, Duration, Duration, bool);
 typedef RepeatModeChangeCallback = void Function(Spiff, RepeatMode);
-typedef StreamTrackChangeCallback = void Function(Spiff, StreamTrack);
+typedef LiveTrackChangeCallback = void Function(Spiff, LiveTrack);
 
 class PositionInterval {
   final int steps;
@@ -75,7 +75,7 @@ abstract class PlayerProvider {
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
-    required StreamTrackChangeCallback onStreamTrackChange,
+    required LiveTrackChangeCallback onLiveTrackChange,
     PositionInterval? positionInterval,
   });
 
@@ -131,7 +131,7 @@ class DefaultPlayerProvider implements PlayerProvider {
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
-    required StreamTrackChangeCallback onStreamTrackChange,
+    required LiveTrackChangeCallback onLiveTrackChange,
     PositionInterval? positionInterval,
   }) async {
     handler = await TakeoutPlayerHandler.create(
@@ -153,7 +153,7 @@ class DefaultPlayerProvider implements PlayerProvider {
       onTrackChange: onTrackChange,
       onTrackEnd: onTrackEnd,
       onRepeatModeChange: onRepeatModeChange,
-      onStreamTrackChange: onStreamTrackChange,
+      onLiveTrackChange: onLiveTrackChange,
     );
   }
 

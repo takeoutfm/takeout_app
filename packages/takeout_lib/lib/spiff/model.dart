@@ -97,32 +97,35 @@ class Spiff {
     return playlist.tracks.length;
   }
 
-  bool isLocal() {
+  bool get isLocal {
     return playlist.location?.startsWith(RegExp(r'^file')) ?? false;
   }
 
-  bool isRemote() {
+  bool get isRemote {
     // https, http, or relative "/api" are remote
     return playlist.location?.startsWith(RegExp(r'^(http|/api)')) ?? false;
   }
 
-  bool isMusic() {
+  bool get isMusic {
     return type == MediaType.music.name;
   }
 
-  bool isVideo() {
+  bool get isVideo {
     return type == 'video'; // film or tv are video
   }
 
-  bool isPodcast() {
+  bool get isPodcast {
     return type == MediaType.podcast.name;
   }
 
-  bool isStream() {
+  @Deprecated('use isLive')
+  bool get isStream => isLive;
+
+  bool get isLive {
     return type == MediaType.stream.name;
   }
 
-  bool isNotStream() {
+  bool get isNotLive {
     return type != MediaType.stream.name;
   }
 
@@ -408,10 +411,10 @@ class Playlist {
 
 String spiffDate(Spiff spiff, {Entry? entry, Playlist? playlist}) {
   if (entry != null) {
-    return spiff.isPodcast() ? ymd(entry.date) : entry.year.toString();
+    return spiff.isPodcast ? ymd(entry.date) : entry.year.toString();
   }
   if (playlist != null && playlist.date != null) {
-    return spiff.isPodcast()
+    return spiff.isPodcast
         ? ymd(playlist.date!)
         : parseYear(playlist.date!).toString();
   }

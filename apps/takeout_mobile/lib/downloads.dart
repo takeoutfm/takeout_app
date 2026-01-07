@@ -160,9 +160,9 @@ class DownloadListState extends State<DownloadListWidget> {
   }
 
   void _onPlay(BuildContext context, Spiff spiff) {
-    if (spiff.isMusic() || spiff.isPodcast()) {
+    if (spiff.isMusic || spiff.isPodcast) {
       context.play(spiff);
-    } else if (spiff.isVideo()) {
+    } else if (spiff.isVideo) {
       final entry = spiff.playlist.tracks.first;
       context.showMovie(entry);
     }

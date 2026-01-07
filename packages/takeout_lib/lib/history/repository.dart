@@ -38,7 +38,7 @@ class HistoryRepository {
     String? search,
     Spiff? spiff,
     MediaTrack? track,
-    StreamTrack? streamTrack,
+    LiveTrack? liveTrack,
     DateTime? dateTime,
   }) async {
     return _provider.add(
@@ -46,7 +46,7 @@ class HistoryRepository {
       spiff: spiff,
       track: track,
       dateTime: dateTime,
-      streamTrack: streamTrack,
+      liveTrack: liveTrack,
     );
   }
 

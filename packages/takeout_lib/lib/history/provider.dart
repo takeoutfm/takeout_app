@@ -28,7 +28,7 @@ abstract class HistoryProvider {
     String? search,
     Spiff? spiff,
     MediaTrack? track,
-    StreamTrack? streamTrack,
+    LiveTrack? liveTrack,
     DateTime? dateTime,
   });
 
@@ -50,7 +50,7 @@ class JsonHistoryProvider implements HistoryProvider {
     String? search,
     Spiff? spiff,
     MediaTrack? track,
-    StreamTrack? streamTrack,
+    LiveTrack? liveTrack,
     DateTime? dateTime,
   }) async {
     dateTime ??= DateTime.now();
@@ -91,15 +91,15 @@ class JsonHistoryProvider implements HistoryProvider {
             )
           : entry.copyWith(count: entry.count + 1, dateTime: dateTime);
     }
-    if (streamTrack != null) {
+    if (liveTrack != null) {
       final last = history.lastStreamHistory;
       if (last != null &&
-          last.name == streamTrack.name &&
-          last.title == streamTrack.title) {
+          last.name == liveTrack.name &&
+          last.title == liveTrack.title) {
         final entry = last.copyWith(dateTime);
         history.stream[history.stream.length - 1] = entry;
       } else {
-        final entry = StreamHistory.fromTrack(streamTrack, dateTime);
+        final entry = StreamHistory.fromTrack(liveTrack, dateTime);
         history.stream.add(entry);
       }
     }

@@ -61,7 +61,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final TrackChangeCallback onTrackChange;
   final TrackEndCallback onTrackEnd;
   final RepeatModeChangeCallback onRepeatModeChange;
-  final StreamTrackChangeCallback onStreamTrackChange;
+  final LiveTrackChangeCallback onLiveTrackChange;
 
   final _subscriptions = <StreamSubscription<dynamic>>[];
   final _listens = ExpiringSet<String>(const Duration(minutes: 15));
@@ -88,7 +88,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required this.onTrackChange,
     required this.onTrackEnd,
     required this.onRepeatModeChange,
-    required this.onStreamTrackChange,
+    required this.onLiveTrackChange,
     required this.trackResolver,
     required this.tokenRepository,
     required this.settingsRepository,
@@ -124,7 +124,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required TrackChangeCallback onTrackChange,
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
-    required StreamTrackChangeCallback onStreamTrackChange,
+    required LiveTrackChangeCallback onLiveTrackChange,
     Duration? skipBeginningInterval,
     Duration? fastForwardInterval,
     Duration? rewindInterval,
@@ -148,7 +148,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         onTrackChange: onTrackChange,
         onTrackEnd: onTrackEnd,
         onRepeatModeChange: onRepeatModeChange,
-        onStreamTrackChange: onStreamTrackChange,
+        onLiveTrackChange: onLiveTrackChange,
         trackResolver: trackResolver,
         tokenRepository: tokenRepository,
         settingsRepository: settingsRepository,
@@ -266,7 +266,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     _subscriptions.add(
       _player.icyMetadataStream.listen((event) {
         // TODO icy events are sometimes sent for regular media so ignore them.
-        if (_spiff.isStream() && event != null) {
+        if (_spiff.isLive && event != null) {
           final title = event.info?.title;
           if (title == null || title == mediaItem.value?.title) {
             // only proceed if there's a new title
@@ -307,8 +307,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
             image: icyTrack.image,
           );
 
-          // update StreamTrack change
-          onStreamTrackChange(_spiff, icyTrack);
+          // update LiveTrack change
+          onLiveTrackChange(_spiff, icyTrack);
         }
       }),
     );
@@ -435,7 +435,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   //   }
   // }
 
-  Future<MediaItem> _map(Entry entry) async {
+  Future<MediaItem> _map(bool isLive, Entry entry) async {
     final endpoint = settingsRepository.settings?.endpoint;
     String image = entry.image;
     if (image.startsWith('/img/')) {
@@ -453,13 +453,14 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       title: entry.title,
       artist: entry.creator,
       artUri: Uri.parse(image),
+      isLive: isLive,
     );
   }
 
-  Future<List<MediaItem>> _mapAll(List<Entry> tracks) async {
+  Future<List<MediaItem>> _mapAll(bool isLive, List<Entry> tracks) async {
     final list = <MediaItem>[];
     await Future.forEach<Entry>(tracks, (entry) async {
-      final item = await _map(entry);
+      final item = await _map(isLive, entry);
       _mapped[item.id] = entry;
       list.add(item);
     });
@@ -468,7 +469,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   File? _checkPlaybackCache(MediaItem item, Entry entry, bool autoCache) {
     File? cacheFile;
-    if (autoCache && item.isRemote()) {
+    if (autoCache && item.isRemote() && item.isLive == false) {
       cacheFile = trackResolver.trackCacheRepository.create(entry);
     }
     return cacheFile;
@@ -531,7 +532,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     // build a new MediaItem queue
     _queue.clear();
     _mapped.clear();
-    _queue.addAll(await _mapAll(_spiff.playlist.tracks));
+    _queue.addAll(await _mapAll(_spiff.isLive, _spiff.playlist.tracks));
 
     // broadcast queue state
     queue.add(_queue);
@@ -815,8 +816,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     List<MediaControl> controls;
     List<MediaAction> systemActions;
 
-    final isPodcast = _spiff.isPodcast();
-    final isStream = _spiff.isStream();
+    final isPodcast = _spiff.isPodcast;
+    final isLive = _spiff.isLive;
 
     if (isPodcast) {
       controls = [
@@ -838,7 +839,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ];
-    } else if (isStream) {
+    } else if (isLive) {
       controls = [if (playing) MediaControl.pause else MediaControl.play];
       systemActions = const [MediaAction.stop, MediaAction.seek];
     } else {

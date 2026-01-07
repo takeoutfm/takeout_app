@@ -45,7 +45,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     String? search,
     Spiff? spiff,
     MediaTrack? track,
-    StreamTrack? streamTrack,
+    LiveTrack? liveTrack,
     DateTime? dateTime,
   }) {
     repository
@@ -53,7 +53,7 @@ class HistoryCubit extends Cubit<HistoryState> {
           search: search,
           spiff: spiff,
           track: track,
-          streamTrack: streamTrack,
+          liveTrack: liveTrack,
           dateTime: dateTime,
         )
         .then((history) => emit(HistoryState(history.unmodifiableCopy())));

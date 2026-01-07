@@ -203,7 +203,7 @@ class SpiffWidget extends ClientPage<Spiff> {
 
   void onPlay(BuildContext context, Spiff spiff) {
     // final offsets = context.read<OffsetCacheCubit>();
-    if (spiff.isVideo()) {
+    if (spiff.isVideo) {
       final entry = spiff.playlist.tracks.first;
       // final pos = offsets.state.position(entry);
       context.showMovie(entry);
@@ -256,9 +256,9 @@ class _SpiffTrackListView extends StatelessWidget {
   const _SpiffTrackListView(this._spiff);
 
   void _onTrack(BuildContext context, int index) {
-    if (_spiff.isMusic() || _spiff.isPodcast()) {
+    if (_spiff.isMusic || _spiff.isPodcast) {
       context.play(_spiff.copyWith(index: index));
-    } else if (_spiff.isVideo()) {
+    } else if (_spiff.isVideo) {
       final video = _spiff.playlist.tracks[index];
       context.showMovie(video);
     }
@@ -285,7 +285,7 @@ class _SpiffTrackListView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: subChildren,
           );
-          final isThreeLine = subChildren.length > 1 || _spiff.isPodcast();
+          final isThreeLine = subChildren.length > 1 || _spiff.isPodcast;
           children.add(
             ListTile(
               isThreeLine: isThreeLine,
@@ -334,7 +334,7 @@ class _SpiffTrackListView extends StatelessWidget {
     Entry entry,
   ) {
     final children = <Widget>[];
-    if (_spiff.isMusic()) {
+    if (_spiff.isMusic) {
       if (entry.creator != _spiff.playlist.creator) {
         children.add(Text(entry.creator, overflow: TextOverflow.ellipsis));
       }
@@ -347,7 +347,7 @@ class _SpiffTrackListView extends StatelessWidget {
     } else {
       final duration = offsets.remaining(entry);
       if (duration != null) {
-        if (_spiff.isPodcast() || _spiff.isVideo()) {
+        if (_spiff.isPodcast || _spiff.isVideo) {
           final value = offsets.value(entry);
           if (value != null) {
             children.add(LinearProgressIndicator(value: value));

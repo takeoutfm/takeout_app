@@ -59,7 +59,7 @@ class History {
 
   Iterable<String> recentArtists({int? limit}) {
     final recent = List<SpiffHistory>.from(
-      spiffs.where((spiff) => spiff.spiff.isMusic()),
+      spiffs.where((spiff) => spiff.spiff.isMusic),
     );
     recent.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     final artists = recent.map((spiff) => spiff.spiff.creator);
@@ -160,7 +160,7 @@ class TrackHistory {
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
-class StreamHistory implements StreamTrack {
+class StreamHistory implements LiveTrack {
   @override
   final String name; // stream name
   @override
@@ -171,7 +171,7 @@ class StreamHistory implements StreamTrack {
 
   const StreamHistory(this.name, this.title, this.image, this.dateTime);
 
-  factory StreamHistory.fromTrack(StreamTrack track, DateTime dateTime) =>
+  factory StreamHistory.fromTrack(LiveTrack track, DateTime dateTime) =>
       StreamHistory(track.name, track.title, track.image, dateTime);
 
   StreamHistory copyWith(DateTime newTime) =>

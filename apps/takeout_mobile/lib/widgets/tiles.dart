@@ -231,9 +231,9 @@ class CoverTrackListTile extends _TrackListTile {
     );
   }
 
-  factory CoverTrackListTile.streamTrack(
+  factory CoverTrackListTile.liveTrack(
     BuildContext context,
-    StreamTrack track, {
+    LiveTrack track, {
     bool showCover = true,
     bool selected = false,
     DateTime? dateTime,

@@ -73,7 +73,7 @@ class PopupItem {
   PopupItem.download(BuildContext context, MenuCallback onSelected)
     : this(
         const Icon(iconsDownload),
-        context.strings.downloadsLabel,
+        context.strings.downloadLabel,
         onSelected,
       );
 

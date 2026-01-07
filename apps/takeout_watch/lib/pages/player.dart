@@ -61,7 +61,7 @@ class PlayerPage extends StatelessWidget {
     return BlocBuilder<Player, PlayerEvent>(
         buildWhen: (_, state) => state.currentTrack?.image != image,
         builder: (context, state) {
-          final width = state.spiff.isStream()
+          final width = state.spiff.isLive
               ? media.size.width // no progress
               : media.size.width - 26; // room for progress lineWidth: 13
           if (state.currentTrack?.image != image) {
@@ -90,7 +90,7 @@ class PlayerPage extends StatelessWidget {
         buildWhen: (_, state) => state is PlayerPositionChange,
         builder: (context, state) {
           if (state is PlayerPositionChange) {
-            return state.spiff.isStream() // no radio stream progress
+            return state.spiff.isLive // no radio stream progress
                 ? const EmptyWidget()
                 : CircularPercentIndicator(
                     radius: media.size.width / 2,
@@ -120,8 +120,8 @@ class PlayerPage extends StatelessWidget {
 
   Widget _controlButtons(BuildContext context, PlayerProcessingEvent state) {
     final player = context.player;
-    final isPodcast = state.spiff.isPodcast();
-    final isStream = state.spiff.isStream();
+    final isPodcast = state.spiff.isPodcast;
+    final isStream = state.spiff.isLive;
     final playing = state.playing;
     final buffering = state.buffering;
     const iconSize = 18.0;

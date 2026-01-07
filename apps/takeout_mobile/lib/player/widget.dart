@@ -195,7 +195,7 @@ class PlayerWidget extends StatelessWidget {
       buildWhen: (_, state) =>
           state is PlayerIndexChange || state is PlayerPositionEvent,
       builder: (context, state) {
-        if (state.spiff.isEmpty || state.spiff.isStream()) {
+        if (state.spiff.isEmpty || state.spiff.isLive) {
           // no controls needed for streams
           return const EmptyWidget();
         }
@@ -221,8 +221,8 @@ class PlayerWidget extends StatelessWidget {
       buildWhen: (_, state) =>
           state is PlayerLoad || state is PlayerIndexChange,
       builder: (context, state) {
-        if (state.spiff.isStream()) {
-          return _streamTrackList(context);
+        if (state.spiff.isLive) {
+          return _liveTrackList(context);
         }
         if (state.spiff.length == 1) {
           // hide track list
@@ -259,9 +259,9 @@ class PlayerWidget extends StatelessWidget {
 
   Widget _controlButtons(BuildContext context, PlayerPositionEvent state) {
     final player = context.player;
-    final isPodcast = state.spiff.isPodcast();
-    final isStream = state.spiff.isStream();
-    final isMusic = state.spiff.isMusic();
+    final isPodcast = state.spiff.isPodcast;
+    final isLive = state.spiff.isLive;
+    final isMusic = state.spiff.isMusic;
     final playing = state.playing;
     final buffering = state.buffering;
     return Container(
@@ -270,7 +270,7 @@ class PlayerWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (isMusic) _repeatButton(),
-          if (!isStream)
+          if (!isLive)
             IconButton(
               icon: const Icon(Icons.skip_previous),
               onPressed: state.hasPrevious
@@ -309,7 +309,7 @@ class PlayerWidget extends StatelessWidget {
               icon: const Icon(Icons.forward_30_outlined),
               onPressed: () => player.skipForward(),
             ),
-          if (!isStream)
+          if (!isLive)
             IconButton(
               icon: const Icon(Icons.skip_next),
               onPressed: state.hasNext ? () => player.skipToNext() : null,
@@ -380,7 +380,7 @@ class PlayerWidget extends StatelessWidget {
     );
   }
 
-  Widget _streamTrackList(BuildContext context) {
+  Widget _liveTrackList(BuildContext context) {
     return Builder(
       builder: (context) {
         final history = context.watch<HistoryCubit>();
@@ -392,7 +392,7 @@ class PlayerWidget extends StatelessWidget {
           children: [
             ...List.generate(
               tracks.length,
-              (index) => CoverTrackListTile.streamTrack(
+              (index) => CoverTrackListTile.liveTrack(
                 context,
                 tracks[index],
                 showCover: !sameArtwork,

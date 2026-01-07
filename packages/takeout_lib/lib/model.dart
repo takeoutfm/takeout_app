@@ -47,15 +47,15 @@ abstract class MediaTrack implements MediaEntry {
   String get location;
 }
 
-abstract class StreamTrack {
-  String get name; // name of radio stream
+abstract class LiveTrack {
+  String get name; // name of radio live stream
 
   String get title; // track title (StreamTitle)
 
   String get image; // track image (StreamUrl)
 }
 
-class IcyTrack implements StreamTrack {
+class IcyTrack implements LiveTrack {
   @override
   final String name;
   @override

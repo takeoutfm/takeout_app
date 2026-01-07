@@ -208,10 +208,10 @@ class PlayerRepeatModeChange extends PlayerEvent {
   PlayerRepeatModeChange(super.spiff, this.repeat);
 }
 
-class PlayerStreamTrackChange extends PlayerEvent {
-  final StreamTrack track;
+class PlayerLiveTrackChange extends PlayerEvent {
+  final LiveTrack track;
 
-  PlayerStreamTrackChange(super.spiff, this.track);
+  PlayerLiveTrackChange(super.spiff, this.track);
 }
 
 class Player extends Cubit<PlayerEvent> {
@@ -296,8 +296,8 @@ class Player extends Cubit<PlayerEvent> {
           ),
           onRepeatModeChange: (spiff, repeat) =>
               emit(PlayerRepeatModeChange(spiff, repeat)),
-          onStreamTrackChange: (spiff, track) =>
-              emit(PlayerStreamTrackChange(spiff, track)),
+          onLiveTrackChange: (spiff, track) =>
+              emit(PlayerLiveTrackChange(spiff, track)),
         )
         .whenComplete(() => emit(PlayerReady()));
   }

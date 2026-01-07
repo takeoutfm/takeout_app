@@ -1,6 +1,6 @@
 name: takeout_lib
 description: TakeoutFM Library
-version: 0.25.1 # #version#
+version: 0.25.2 # #version#
 publish_to: 'none'
 resolution: workspace
 
@@ -13,40 +13,40 @@ dependencies:
 
   audio_service: ^0.18.18
   audio_session: ^0.2.2
-  cached_network_image: ^3.3.1
-  chewie: ^1.8.1
+  cached_network_image: ^3.4.1
+  chewie: ^1.13.0
   connectivity_plus: ^7.0.0
-  crypto: ^3.0.3
+  crypto: ^3.0.7
   cupertino_icons: ^1.0.8
-  equatable: ^2.0.5
-  bloc: ^9.0.0
-  flutter_bloc: ^9.0.0
-  flutter_cache_manager: ^3.3.2
-  hive_ce: ^2.10.1
-  http: ^1.2.1
-  hydrated_bloc: ^10.0.0
-  logger: ^2.5.0
+  equatable: ^2.0.8
+  bloc: ^9.2.0
+  flutter_bloc: ^9.1.1
+  flutter_cache_manager: ^3.4.1
+  hive_ce: ^2.16.0
+  http: ^1.6.0
+  hydrated_bloc: ^10.1.1
+  logger: ^2.6.2
   json_annotation: ^4.9.0
-  just_audio: ^0.10.3
+  just_audio: ^0.10.5
   nested: ^1.0.0
-  octo_image: ^2.0.0
-  palette_generator: ^0.3.3+3
-  path: ^1.9.0
-  path_provider: ^2.1.3
-  receive_intent: ^0.2.4
+  octo_image: ^2.1.0
+  palette_generator: ^0.3.3+7
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  receive_intent: ^0.2.7
   rxdart: ^0.28.0
-  video_player: ^2.9.1
+  video_player: ^2.10.1
   listenbrainz_dart: ^0.0.4
-  storage_space_fork: ^1.1.1
+  storage_space_fork: ^1.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.11
-  json_serializable: ^6.8.0
+  build_runner: ^2.10.4
+  json_serializable: ^6.11.2
   flutter_lints: ^6.0.0
-  test: ^1.25.8
-  hive_ce_generator: ^1.8.2
+  test: ^1.26.3
+  hive_ce_generator: ^1.10.0
 
 # need this since 7.4.0 is broken
 # https://github.com/google/json_serializable.dart/issues/1485

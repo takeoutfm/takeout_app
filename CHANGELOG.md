@@ -1,7 +1,15 @@
+## 0.25.2
+
+- gradle and ndk updates
+- use isLive to not cache live MediaItems
+- prefer live over stream in internal code; need to update server
+- refactor some isFoo() to isFoo getters
+- Pub upgrade
+
 ## 0.25.1
 
 - Changed to dart workspace repo format with packages and apps directories
-- Added proguard exlusions for newer gradle release builds
+- Added proguard exclusions for newer gradle release builds
 
 ## 0.25.0
 

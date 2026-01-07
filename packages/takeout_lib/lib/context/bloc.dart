@@ -292,7 +292,7 @@ class TakeoutBloc {
             state is PlayerIndexChange ||
             state is PlayerTrackEnd ||
             state is PlayerRepeatModeChange ||
-            state is PlayerStreamTrackChange,
+            state is PlayerLiveTrackChange,
         listener: (context, state) {
           switch (state) {
             case PlayerReady():
@@ -311,8 +311,8 @@ class TakeoutBloc {
               _onPlayerTrackEnd(context, state);
             case PlayerRepeatModeChange():
               _onPlayerRepeatModeChange(context, state);
-            case PlayerStreamTrackChange():
-              _onPlayerStreamTrackChange(context, state);
+            case PlayerLiveTrackChange():
+              _onPlayerLiveTrackChange(context, state);
           }
         },
       ),
@@ -435,7 +435,7 @@ class TakeoutBloc {
       context.listenRepository.playingNow(track);
     }
 
-    if (state.isDefaultPlaylist() && state.nowPlaying.spiff.isNotStream()) {
+    if (state.isDefaultPlaylist() && state.nowPlaying.spiff.isNotLive) {
       // keep server playlist updated
       context.updatePosition(state.nowPlaying.spiff.index, 0);
     }
@@ -520,7 +520,7 @@ class TakeoutBloc {
   }
 
   void _onPlayerTrackListen(BuildContext context, PlayerTrackListen state) {
-    if (state.spiff.isMusic()) {
+    if (state.spiff.isMusic) {
       final index = state.currentIndex;
       if (context.nowPlaying.state.nowPlaying.listenedTo(index) == false) {
         final listenedAt = DateTime.now(); // TODO is now ok?
@@ -536,11 +536,11 @@ class TakeoutBloc {
     context.nowPlaying.repeatMode(state.repeat);
   }
 
-  void _onPlayerStreamTrackChange(
+  void _onPlayerLiveTrackChange(
     BuildContext context,
-    PlayerStreamTrackChange state,
+    PlayerLiveTrackChange state,
   ) {
-    context.history.add(streamTrack: state.track);
+    context.history.add(liveTrack: state.track);
   }
 
   void _onDownloadComplete(BuildContext context, DownloadComplete state) {
@@ -571,7 +571,7 @@ class TakeoutBloc {
 
   void _saveProgress(BuildContext context, PlayerPositionEvent state) {
     if (state.buffering == false) {
-      if (state.spiff.isPodcast()) {
+      if (state.spiff.isPodcast) {
         // save podcast progress at server
         final currentTrack = state.currentTrack;
         if (currentTrack != null) {
@@ -582,7 +582,7 @@ class TakeoutBloc {
           );
         }
       }
-      if (state.spiff.isNotStream()) {
+      if (state.spiff.isNotLive) {
         // save progress in history for quick restore
         _updateSpiffHistoryPosition(context, state);
       }
@@ -596,7 +596,7 @@ class TakeoutBloc {
     final spiff = state.spiff.copyWith(
       position: state.position.inSeconds.toDouble(),
     );
-    if (spiff.isNotEmpty && spiff.isNotStream()) {
+    if (spiff.isNotEmpty && spiff.isNotLive) {
       context.history.add(spiff: Spiff.cleanup(spiff));
     }
   }

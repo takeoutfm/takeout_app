@@ -113,7 +113,7 @@ Widget _streamTrackList(BuildContext context) {
             child: ListView.builder(
               itemCount: tracks.length,
               itemBuilder: (buildContext, index) {
-                return CoverTrackListTile.streamTrack(
+                return CoverTrackListTile.liveTrack(
                   context,
                   tracks[index],
                   showCover: !sameArtwork,

@@ -715,6 +715,7 @@ class DefaultMediaProvider implements MediaProvider {
       artist: s.creator.isNotEmpty ? s.creator : null,
       artUri: s.image.isNotEmpty ? _img(s.image) : null,
       playable: true,
+      isLive: true,
     );
   }
 
@@ -772,7 +773,7 @@ class DefaultMediaProvider implements MediaProvider {
     };
     return MediaItem(
       id: '/artists/${a.id}',
-      title: a.name,
+      title: a.sortName, // use sortName for poor Android Audio sorting
       playable: false,
       extras: extras,
     );
@@ -781,7 +782,7 @@ class DefaultMediaProvider implements MediaProvider {
   Future<Map<String, dynamic>?> _spiffExtras(Spiff spiff) async {
     Map<String, dynamic>? extras;
 
-    if (spiff.isPodcast() && spiff.length == 1) {
+    if (spiff.isPodcast && spiff.length == 1) {
       final episode = spiff[0];
       extras = await _completionExtras(episode);
     }
