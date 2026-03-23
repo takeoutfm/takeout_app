@@ -1,3 +1,9 @@
+## 0.25.3
+
+- revert to original storage\_space package
+- fixes for flutter updates
+- pub updates
+
 ## 0.25.2
 
 - gradle and ndk updates

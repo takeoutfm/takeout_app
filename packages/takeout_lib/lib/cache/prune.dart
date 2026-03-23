@@ -16,7 +16,7 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:logger/logger.dart';
-import 'package:storage_space_fork/storage_space_fork.dart';
+import 'package:storage_space/storage_space.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/settings/settings.dart';
 import 'package:takeout_lib/spiff/model.dart';

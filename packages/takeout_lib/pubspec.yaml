@@ -1,6 +1,6 @@
 name: takeout_lib
 description: TakeoutFM Library
-version: 0.25.2 # #version#
+version: 0.25.3 # #version#
 publish_to: 'none'
 resolution: workspace
 
@@ -37,7 +37,7 @@ dependencies:
   rxdart: ^0.28.0
   video_player: ^2.10.1
   listenbrainz_dart: ^0.0.4
-  storage_space_fork: ^1.1.2
+  storage_space: ^1.2.0
 
 dev_dependencies:
   flutter_test:

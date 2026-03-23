@@ -46,8 +46,8 @@ android {
         applicationId "com.takeoutfm.mobile"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
-        versionCode 2502 // #versionCode#
-        versionName "0.25.2" // #version#
+        versionCode 2503 // #versionCode#
+        versionName "0.25.3" // #version#
     }
 
     signingConfigs {
