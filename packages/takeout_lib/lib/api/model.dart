@@ -628,6 +628,7 @@ class MovieView {
   final List<String>? genres;
   final int? vote;
   final int? voteCount;
+  final List<Trailer>? trailers;
 
   MovieView({
     required this.movie,
@@ -642,6 +643,7 @@ class MovieView {
     this.genres = const [],
     this.vote,
     this.voteCount,
+    this.trailers = const [],
   });
 
   // @override
@@ -692,6 +694,10 @@ class MovieView {
     return writing?.isNotEmpty ?? false;
   }
 
+  bool hasTrailers() {
+    return trailers?.isNotEmpty ?? false;
+  }
+
   List<Cast> castMembers() {
     return cast ?? [];
   }
@@ -715,6 +721,36 @@ class MovieView {
   List<Person> writingPeople() {
     return writing ?? [];
   }
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class Trailer {
+  @JsonKey(name: 'TMID')
+  final int tmid;
+  final String name;
+  final String site;
+  final String key;
+  final int size;
+  final String date;
+  final bool official;
+  @JsonKey(name: 'URL')
+  final String url;
+
+  Trailer({
+    required this.tmid,
+    required this.name,
+    required this.site,
+    required this.key,
+    required this.size,
+    required this.date,
+    required this.official,
+    required this.url,
+  });
+
+  factory Trailer.fromJson(Map<String, dynamic> json) =>
+      _$TrailerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TrailerToJson(this);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -1041,8 +1077,14 @@ class Movie extends DownloadIdentifier
   @override
   int get number => 0;
 
+  String get backdrop => _movieBackdropUrl();
+
   String _moviePosterUrl({String size = 'w342'}) {
     return '/img/tm/$size$posterPath';
+  }
+
+  String _movieBackdropUrl({String size = 'w780'}) {
+    return '/img/tm/$size$backdropPath';
   }
 
   String get titleYear => '$title ($year)';
@@ -1050,6 +1092,19 @@ class Movie extends DownloadIdentifier
   String get vote {
     int vote = (10 * (voteAverage ?? 0)).round();
     return vote > 0 ? '$vote%' : '';
+  }
+
+  num get stars {
+    final v = (2 * (voteAverage ?? 0)).ceilToDouble() / 2;
+    return (v % 1 == 0.5) ? v : v.toInt();
+  }
+
+  bool get hasVotes {
+    return (voteAverage ?? 0) > 0;
+  }
+
+  bool get hasRating {
+    return rating.isNotEmpty;
   }
 }
 

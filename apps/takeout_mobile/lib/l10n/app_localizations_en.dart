@@ -100,6 +100,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playLabel => 'Play';
 
   @override
+  String get resumeLabel => 'Resume';
+
+  @override
   String get refreshLabel => 'Refresh';
 
   @override
@@ -402,6 +405,18 @@ class AppLocalizationsEn extends AppLocalizations {
       locale: localeName,
       other: '$count tracks',
       one: '1 track',
+      zero: 'empty',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String discCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count discs',
+      one: '1 disc',
       zero: 'empty',
     );
     return '$_temp0';

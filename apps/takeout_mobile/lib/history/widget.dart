@@ -36,20 +36,26 @@ class HistoryListWidget extends StatelessWidget {
     final history = historyCubit.state.history;
     final spiffs = List<SpiffHistory>.from(history.spiffs);
     spiffs.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    final orientation = MediaQuery.of(context).orientation;
     return Scaffold(
-      appBar: AppBar(
-        title: header(context.strings.historyLabel),
-        actions: [
-          popupMenu(context, [
-            PopupItem.streamHistory(context, (ctx) => _onStreamHistory(ctx)),
-            PopupItem.delete(
-              context,
-              context.strings.deleteAll,
-              (ctx) => _onDelete(ctx),
-            ),
-          ]),
-        ],
-      ),
+      appBar: orientation == .portrait
+          ? AppBar(
+              title: header(context.strings.historyLabel),
+              actions: [
+                popupMenu(context, [
+                  PopupItem.streamHistory(
+                    context,
+                    (ctx) => _onStreamHistory(ctx),
+                  ),
+                  PopupItem.delete(
+                    context,
+                    context.strings.deleteAll,
+                    (ctx) => _onDelete(ctx),
+                  ),
+                ]),
+              ],
+            )
+          : null,
       body: Column(
         children: [
           Expanded(

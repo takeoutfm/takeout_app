@@ -28,6 +28,7 @@ import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/artists.dart';
+import 'package:takeout_mobile/pages/music/release_details.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/widgets/buttons.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
@@ -50,11 +51,12 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
   }
 
   void _onPlay(BuildContext context) {
-    context.playlist.replace(
-      _release.reference,
-      creator: _release.creator,
-      title: _release.name,
-    );
+    // context.playlist.replace(
+    //   _release.reference,
+    //   creator: _release.creator,
+    //   title: _release.name,
+    // );
+    push(context, builder: (_) => ReleaseDetailsPage(_release));
   }
 
   void _onShufflePlay(BuildContext context) {

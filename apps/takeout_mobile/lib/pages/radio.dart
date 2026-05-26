@@ -67,7 +67,8 @@ class RadioWidget extends ClientPage<RadioView> {
         if (empty) {
           return RefreshIndicator(
             child: Scaffold(
-              appBar: AppBar(
+              appBar: appBar(
+                context,
                 title: header(context.strings.radioLabel),
                 actions: [
                   popupMenu(context, [
@@ -91,7 +92,8 @@ class RadioWidget extends ClientPage<RadioView> {
           child: RefreshIndicator(
             onRefresh: () => reloadPage(context),
             child: Scaffold(
-              appBar: AppBar(
+              appBar: appBar(
+                context,
                 title: header(context.strings.radioLabel),
                 actions: [
                   popupMenu(context, [

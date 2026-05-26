@@ -34,8 +34,10 @@ import 'package:takeout_mobile/widgets/tracks.dart';
 
 class SearchWidget extends ClientPage<SearchView> {
   final _query = StringBuffer();
+  final bool allowBack;
 
-  SearchWidget({super.key}) : super(value: SearchView.empty());
+  SearchWidget({this.allowBack = true, super.key})
+    : super(value: SearchView.empty());
 
   void _onPlay(BuildContext context, SearchView view) {
     final List<Track>? tracks = view.tracks;
@@ -70,10 +72,16 @@ class SearchWidget extends ClientPage<SearchView> {
         final words = searches.map((e) => e.search);
         return Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
+            leading: allowBack
+                ? IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.pop(context);
+                      }
+                    }
+                  )
+                : null,
             title: Autocomplete<String>(
               optionsBuilder: (editValue) {
                 final text = editValue.text;

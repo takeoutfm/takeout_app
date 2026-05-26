@@ -23,6 +23,7 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/art/scaffold.dart';
+import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/empty.dart';
@@ -37,10 +38,12 @@ import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/people.dart';
 import 'package:takeout_mobile/widgets/buttons.dart';
+import 'package:takeout_mobile/pages/film/movie_details.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
 class MovieWidget extends ClientPage<MovieView> {
   final Movie _movie;
+  final _relatedKey = GlobalKey();
 
   MovieWidget(this._movie, {super.key});
 
@@ -54,58 +57,101 @@ class MovieWidget extends ClientPage<MovieView> {
     return scaffold(
       context,
       image: _movie.image,
-      body: (_) => RefreshIndicator(
+      body: (color) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
             final isCached = cacheState.contains(_movie);
             final screen = MediaQuery.of(context).size;
-            final expandedHeight = screen.height / 2;
+            final expandedHeight = screen.height / 1.5;
+            final landscape = screen.width >= screen.height;
             return CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  // actions: [ ],
-                  backgroundColor: Colors.black,
-                  expandedHeight: expandedHeight,
-                  flexibleSpace: FlexibleSpaceBar(
-                    // centerTitle: true,
-                    // title: Text(release.name, style: TextStyle(fontSize: 15)),
-                    stretchModes: const [
-                      StretchMode.zoomBackground,
-                      StretchMode.fadeTitle,
-                    ],
-                    background: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        releaseSmallCover(context, _movie.image),
-                        const DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment(0.0, 0.75),
-                              end: Alignment(0.0, 0.0),
-                              colors: <Color>[
-                                Color(0x60000000),
-                                Color(0x00000000),
-                              ],
+                if (landscape)
+                  SliverAppBar(
+                    titleSpacing: 64,
+                    backgroundColor: Colors.black,
+                    expandedHeight: expandedHeight,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Row(
+                        mainAxisAlignment: .start,
+                        crossAxisAlignment: .end,
+                        children: [
+                          releaseSmallCover(context, _movie.image),
+                          Row(
+                            mainAxisAlignment: .start,
+                            spacing: 18,
+                            children: [
+                              _playResumeButton(
+                                context,
+                                state,
+                                isCached,
+                                color,
+                              ),
+                                SquareButton(
+                                  onPressed: () {
+                                    // Scrollable.ensureVisible(
+                                    //   _relatedKey.currentContext!,
+                                    //   duration: Duration(milliseconds: 500),
+                                    //   curve: Curves.easeOut,
+                                    // );
+                                    push(context, builder: (_) => MovieDetailsPage(_movie));
+                                  },
+                                  title: 'Related',
+                                  color: color,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      background: backdropImage(context, _movie.backdrop),
+                    ),
+                  )
+                else
+                  SliverAppBar(
+                    // actions: [ ],
+                    backgroundColor: Colors.black,
+                    expandedHeight: expandedHeight,
+                    flexibleSpace: FlexibleSpaceBar(
+                      // centerTitle: true,
+                      // title: Text(release.name, style: TextStyle(fontSize: 15)),
+                      stretchModes: const [
+                        StretchMode.zoomBackground,
+                        StretchMode.fadeTitle,
+                      ],
+                      background: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          releaseSmallCover(context, _movie.image),
+                          const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment(0.0, 0.75),
+                                end: Alignment(0.0, 0.0),
+                                colors: <Color>[
+                                  Color(0x60000000),
+                                  Color(0x00000000),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: _playButton(context, state, isCached),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: _progress(context),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: _downloadButton(context, isCached),
-                        ),
-                      ],
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: _playButton(context, state, isCached),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: _progress(context),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: _downloadButton(context, isCached),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                if (landscape) SliverToBoxAdapter(child: _progress(context)),
                 SliverToBoxAdapter(
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(4, 16, 4, 4),
@@ -135,7 +181,8 @@ class MovieWidget extends ClientPage<MovieView> {
                   SliverToBoxAdapter(
                     child: heading(context.strings.relatedLabel),
                   ),
-                if (state.hasRelated()) MovieGridWidget(state.other!),
+                if (state.hasRelated())
+                  MovieGridWidget(state.other!, key: _relatedKey),
               ],
             );
           },
@@ -145,11 +192,16 @@ class MovieWidget extends ClientPage<MovieView> {
   }
 
   Widget _progress(BuildContext context) {
-    final value = context.offsets.state.value(_movie);
-    // print('progress for ${_movie.etag} is $value');
-    return value != null
-        ? LinearProgressIndicator(value: value)
-        : const EmptyWidget();
+    return Builder(
+      builder: (context) {
+        context.watch<OffsetCacheCubit>();
+        final value = context.offsets.state.value(_movie);
+        // print('progress for ${_movie.etag} is $value');
+        return value != null
+            ? LinearProgressIndicator(value: value)
+            : const EmptyWidget();
+      },
+    );
   }
 
   Widget _title(BuildContext context) {
@@ -157,7 +209,7 @@ class MovieWidget extends ClientPage<MovieView> {
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Text(
         _movie.title,
-        style: Theme.of(context).textTheme.headlineSmall,
+        style: Theme.of(context).textTheme.headlineMedium,
       ),
     );
   }
@@ -210,7 +262,9 @@ class MovieWidget extends ClientPage<MovieView> {
       padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
       child: Text(
         _movie.tagline,
-        style: Theme.of(context).textTheme.titleMedium!,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium!.copyWith(fontStyle: .italic),
       ),
     );
   }
@@ -243,6 +297,31 @@ class MovieWidget extends ClientPage<MovieView> {
             onPressed: () => _onPlay(context, view, pos),
           )
         : StreamingButton(onPressed: () => _onPlay(context, view, pos));
+  }
+
+  Widget _playResumeButton(
+    BuildContext context,
+    MovieView view,
+    bool isCached,
+    Color? color,
+  ) {
+    return Builder(
+      builder: (context) {
+        final offsetCache = context.watch<OffsetCacheCubit>().state;
+        final pos = offsetCache.position(_movie) ?? Duration.zero;
+        late final String title;
+        if (pos < Duration(minutes: 1)) {
+          title = context.strings.playLabel;
+        } else {
+          title = context.strings.resumeLabel;
+        }
+        return SquareButton(
+          color: color,
+          title: title,
+          onPressed: () => _onPlay(context, view, pos),
+        );
+      },
+    );
   }
 
   Widget _downloadButton(BuildContext context, bool isCached) {
@@ -330,7 +409,7 @@ class MovieGridWidget extends StatelessWidget {
   }
 
   void _onTap(BuildContext context, Movie movie) {
-    push(context, builder: (_) => MovieWidget(movie));
+    push(context, builder: (_) => MovieDetailsPage(movie));
   }
 }
 
@@ -358,7 +437,7 @@ class MovieListWidget extends StatelessWidget {
   }
 
   void _onTapped(BuildContext context, Movie movie) {
-    push(context, builder: (_) => MovieWidget(movie));
+    push(context, builder: (_) => MovieDetailsPage(movie));
   }
 }
 
@@ -375,13 +454,50 @@ void playMovie(
         tokenRepository: context.read<TokenRepository>(),
         mediaTrackResolver: context.read<MediaTrackResolver>(),
         startOffset: startOffset,
+        onPause: (position, duration) =>
+            onPause(context, movie, position, duration),
       ),
     ),
   );
+}
+
+void onPause(
+  BuildContext context,
+  MediaTrack movie,
+  Duration position,
+  Duration duration,
+) {
+  context.updateProgress(movie.etag, position: position, duration: duration);
 }
 
 // Note this modifies the original list.
 List<Movie> _sortByTitle(List<Movie> movies) {
   movies.sort((a, b) => a.sortTitle.compareTo(b.sortTitle));
   return movies;
+}
+
+class SquareButton extends StatelessWidget {
+  final void Function() onPressed;
+  final String title;
+  final Color? color;
+
+  const SquareButton({
+    super.key,
+    required this.onPressed,
+    required this.title,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(borderRadius: .zero),
+        backgroundColor: color,
+        minimumSize: Size(100, 50),
+      ),
+      child: Text(title),
+    );
+  }
 }

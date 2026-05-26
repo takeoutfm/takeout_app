@@ -21,7 +21,17 @@ const appVersion = '0.25.3'; // #version#
 const appSource = 'https://takeoutfm.dev/';
 const appHome = 'https://takeoutfm.com/';
 
-enum NavigationIndex { home, artists, history, radio, player }
+enum NavigationIndex {
+  home,
+  artists,
+  history,
+  radio,
+  player,
+  music,
+  film,
+  tv,
+  podcast,
+}
 
 class AppState {
   final NavigationIndex index;
@@ -34,7 +44,9 @@ class AppState {
   AppState copyWith({NavigationIndex? index, bool? authenticated}) =>
       AppState(index ?? this.index, authenticated ?? this.authenticated);
 
-  int get navigationBarIndex => index.index;
+  // int get navigationBarIndexValue => index.index;
+
+  NavigationIndex get navigationIndex => index;
 }
 
 class AppCubit extends Cubit<AppState> {
@@ -56,6 +68,8 @@ class AppCubit extends Cubit<AppState> {
   void radio() => emit(state.copyWith(index: NavigationIndex.radio));
 
   void player() => emit(state.copyWith(index: NavigationIndex.player));
+
+  void music() => emit(state.copyWith(index: NavigationIndex.music));
 
   void showPlayer() => player();
 }

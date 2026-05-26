@@ -29,6 +29,7 @@
   "navGenres": "Genres",
   "similarArtists": "Similar Artists",
   "playLabel": "Play",
+  "resumeLabel": "Resume",
   "refreshLabel": "Refresh",
   "logoutLabel": "Logout",
   "aboutLabel": "About",
@@ -182,6 +183,12 @@
   },
   "trackCount": "{count, plural, =0{empty} =1{1 track} other{{count} tracks}}",
   "@trackCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "discCount": "{count, plural, =0{empty} =1{1 disc} other{{count} discs}}",
+  "@discCount": {
     "placeholders": {
       "count": {}
     }

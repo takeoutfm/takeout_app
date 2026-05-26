@@ -23,6 +23,7 @@ import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film.dart';
+import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/tv.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
@@ -81,17 +82,17 @@ class ProfileWidget extends ClientPage<ProfileView> {
             if (state.hasStarringMovies() || state.hasStarringShows())
               SliverToBoxAdapter(child: heading(context.strings.starringLabel)),
             if (state.hasStarringMovies())
-              MovieGridWidget(state.starringMovies()),
+              MovieGrid(state.starringMovies()),
             if (state.hasStarringShows())
               TVSeriesGridWidget(state.starringShows()),
             if (state.hasDirecting())
               SliverToBoxAdapter(
                 child: heading(context.strings.directingLabel),
               ),
-            if (state.hasDirecting()) MovieGridWidget(state.directingMovies()),
+            if (state.hasDirecting()) MovieGrid(state.directingMovies()),
             if (state.hasWriting())
               SliverToBoxAdapter(child: heading(context.strings.writingLabel)),
-            if (state.hasWriting()) MovieGridWidget(state.writingMovies()),
+            if (state.hasWriting()) MovieGrid(state.writingMovies()),
           ],
         ),
       ),

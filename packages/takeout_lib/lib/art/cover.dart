@@ -40,6 +40,18 @@ Widget releaseSmallCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.cover(url), hero: true).build(context);
 }
 
+Widget moviePoster(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.moviePoster(url), hero: true).build(context);
+}
+
+Widget movieSmallPoster(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.movieSmallPoster(url), hero: true).build(context);
+}
+
+Widget backdropImage(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.background(url)).build(context);
+}
+
 Widget spiffCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.cover(url), hero: true).build(context);
 }
@@ -58,6 +70,10 @@ Widget gridSeries(BuildContext context, String url) {
 
 Widget playerCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.playerCover(url), hero: false).build(context);
+}
+
+Widget avatar(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.avatar(url), hero: false).build(context);
 }
 
 Widget? circleCover(

@@ -48,7 +48,8 @@ class ArtistsWidget extends ClientPage<ArtistsView> {
   @override
   Widget page(BuildContext context, ArtistsView state) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: appBar(
+        context,
         title: _title(context),
         actions: [
           popupMenu(context, [

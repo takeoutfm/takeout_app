@@ -69,6 +69,11 @@ class OffsetCacheState {
     final offset = offsets[id.etag];
     return offset?.value();
   }
+
+  bool hasValue(OffsetIdentifier id) {
+    final v = value(id);
+    return v != null && v > 0;
+  }
 }
 
 class OffsetCacheCubit extends Cubit<OffsetCacheState> {

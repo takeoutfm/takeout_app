@@ -17,27 +17,20 @@
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
 import 'package:takeout_lib/context/bloc.dart';
-import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/log/basic_printer.dart';
-import 'package:takeout_lib/player/player.dart';
-import 'package:takeout_lib/util.dart';
+import 'package:takeout_lib/video/player.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/history/widget.dart';
-import 'package:takeout_mobile/home.dart';
+import 'package:takeout_mobile/desktop.dart';
 import 'package:takeout_mobile/l10n/app_localizations.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/artists.dart';
-import 'package:takeout_mobile/pages/login.dart';
-import 'package:takeout_mobile/pages/radio.dart';
-import 'package:takeout_mobile/pages/search.dart';
-import 'package:takeout_mobile/player/widget.dart';
+import 'package:takeout_mobile/takeout.dart';
+import 'package:takeout_mobile/widgets/fab.dart';
 
 void main() async {
   // setup the logger
@@ -46,6 +39,7 @@ void main() async {
   Logger.defaultPrinter = () => BasicPrinter();
 
   WidgetsFlutterBinding.ensureInitialized();
+  VideoPlayer.init();
 
   await TakeoutBloc.initStorage();
 
@@ -63,38 +57,57 @@ class TakeoutApp extends StatelessWidget {
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
           final light = ThemeData.light(useMaterial3: true);
           final dark = ThemeData.dark(useMaterial3: true);
-          return MaterialApp(
-            key: globalAppKey,
-            onGenerateTitle: (context) => context.strings.takeoutTitle,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en', '')],
-            home: const _TakeoutWidget(),
-            theme: light.copyWith(
-              colorScheme: lightDynamic,
-              // appBarTheme:
-              //     light.appBarTheme.copyWith(iconTheme: light.iconTheme),
-              // iconButtonTheme: IconButtonThemeData(
-              //     style: IconButton.styleFrom(
-              //         foregroundColor: light.iconTheme.color)),
-              listTileTheme: light.listTileTheme.copyWith(
-                iconColor: light.iconTheme.color,
-              ),
-            ),
-            darkTheme: dark.copyWith(
-              colorScheme: darkDynamic,
-              // appBarTheme: dark.appBarTheme.copyWith(iconTheme: dark.iconTheme),
-              // iconButtonTheme: IconButtonThemeData(
-              //     style: IconButton.styleFrom(
-              //         foregroundColor: dark.iconTheme.color)),
-              listTileTheme: dark.listTileTheme.copyWith(
-                iconColor: dark.iconTheme.color,
-              ),
-            ),
+          return OrientationBuilder(
+            builder: (context, orientation) {
+              final index = context.app.state.index;
+              if (orientation == .portrait) {
+                if (TakeoutMobileState.navigationIndices.contains(index) ==
+                    false) {
+                  context.app.home();
+                }
+              } else {
+                if (TakeoutDesktopState.navigationIndices.contains(index) ==
+                    false) {
+                  context.app.music();
+                }
+              }
+              return MaterialApp(
+                key: globalAppKey,
+                debugShowCheckedModeBanner: false,
+                onGenerateTitle: (context) => context.strings.takeoutTitle,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en', '')],
+                home: orientation == .landscape
+                    ? const TakeoutDesktopWidget()
+                    : const TakeoutMobileWidget(),
+                theme: light.copyWith(
+                  colorScheme: lightDynamic,
+                  // appBarTheme:
+                  //     light.appBarTheme.copyWith(iconTheme: light.iconTheme),
+                  // iconButtonTheme: IconButtonThemeData(
+                  //     style: IconButton.styleFrom(
+                  //         foregroundColor: light.iconTheme.color)),
+                  listTileTheme: light.listTileTheme.copyWith(
+                    iconColor: light.iconTheme.color,
+                  ),
+                ),
+                darkTheme: dark.copyWith(
+                  colorScheme: darkDynamic,
+                  // appBarTheme: dark.appBarTheme.copyWith(iconTheme: dark.iconTheme),
+                  // iconButtonTheme: IconButtonThemeData(
+                  //     style: IconButton.styleFrom(
+                  //         foregroundColor: dark.iconTheme.color)),
+                  listTileTheme: dark.listTileTheme.copyWith(
+                    iconColor: dark.iconTheme.color,
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -102,219 +115,73 @@ class TakeoutApp extends StatelessWidget {
   }
 }
 
-class _TakeoutWidget extends StatefulWidget {
-  const _TakeoutWidget();
+class TakeoutMobileWidget extends StatefulWidget {
+  const TakeoutMobileWidget({super.key});
 
   @override
-  _TakeoutState createState() => _TakeoutState();
+  TakeoutMobileState createState() => TakeoutMobileState();
 }
 
-class _TakeoutState extends State<_TakeoutWidget>
-    with AppBlocState, WidgetsBindingObserver {
-  static final _navigators = {
-    NavigationIndex.home: GlobalKey<NavigatorState>(),
-    NavigationIndex.artists: GlobalKey<NavigatorState>(),
-    NavigationIndex.history: GlobalKey<NavigatorState>(),
-    NavigationIndex.radio: GlobalKey<NavigatorState>(),
-    NavigationIndex.player: GlobalKey<NavigatorState>(),
-  };
-
-  NavigatorState? _navigatorState(NavigationIndex index) =>
-      _navigators[index]?.currentState;
-
-  List<Widget> pages = [];
-
+class TakeoutMobileState extends TakeoutState<TakeoutMobileWidget> {
   @override
-  void initState() {
-    super.initState();
-
-    pages = [
-      navigatorPage(
-        HomeWidget(
-          (context) => Navigator.push(
-            context,
-            MaterialPageRoute<void>(builder: (_) => SearchWidget()),
-          ),
-        ),
-        key: _navigators[NavigationIndex.home],
-      ),
-      navigatorPage(ArtistsWidget(), key: _navigators[NavigationIndex.artists]),
-      navigatorPage(
-        HistoryListWidget(),
-        key: _navigators[NavigationIndex.history],
-      ),
-      navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),
-      navigatorPage(PlayerWidget(), key: _navigators[NavigationIndex.player]),
-    ];
-
-    WidgetsBinding.instance.addObserver(this);
-    appInitState(context);
-  }
-
-  @override
-  void dispose() {
-    appDispose();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      context.connectivity.check();
-    }
-  }
-
-  Widget navigatorPage(Widget page, {Key? key}) {
-    return Navigator(
-      key: key,
-      observers: [heroController()],
-      onGenerateRoute: (settings) {
-        return MaterialPageRoute(builder: (_) => page, settings: settings);
-      },
+  Widget body(AppState state) {
+    return Scaffold(
+      floatingActionButton: FabWidget(),
+      body: IndexedStack(index: state.navigationIndex.index, children: pages),
+      bottomNavigationBar: _bottomNavigation(),
     );
   }
 
-  void _onNavTapped(BuildContext context, int index) {
-    final currentIndex = context.app.state.navigationBarIndex;
-    if (currentIndex == index) {
-      NavigatorState? navState = _navigatorState(context.app.state.index);
-      if (navState != null && navState.canPop()) {
-        navState.popUntil((route) => route.isFirst);
-      } else {
-        context.selectedMediaType.next();
-      }
-    } else {
-      context.app.goto(index);
-    }
-  }
-
-  @override
-  Widget build(final BuildContext context) {
-    return BlocBuilder<AppCubit, AppState>(
-      builder: (context, state) {
-        if (state.authenticated == false) {
-          return LoginWidget();
-        }
-        final navIndex = context.app.state.index;
-        return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (didPop, _) async {
-            if (didPop) {
-              return;
-            }
-            NavigatorState? navState = _navigatorState(navIndex);
-            if (navState != null) {
-              final handled = await navState.maybePop();
-              if (!handled && navIndex == NavigationIndex.home) {
-                // allow pop and app to exit
-                await SystemNavigator.pop();
-              }
-            }
-          },
-          child: Scaffold(
-            floatingActionButton: _fab(context),
-            body: IndexedStack(
-              index: state.navigationBarIndex,
-              children: pages,
-            ),
-            bottomNavigationBar: _bottomNavigation(),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _fab(BuildContext context) {
-    return BlocBuilder<Player, PlayerEvent>(
-      builder: (context, state) {
-        bool playing = false;
-        double? progress;
-
-        if (context.app.state.index == NavigationIndex.player) {
-          // hide fab on player page
-          return const EmptyWidget();
-        }
-        if (state is PlayerInit ||
-            state is PlayerReady ||
-            state is PlayerLoad ||
-            state is PlayerStop) {
-          // hide fab
-          return const EmptyWidget();
-        }
-        if (state is PlayerPositionEvent) {
-          playing = state.playing;
-          progress = state.progress;
-          if (state.buffering) {
-            progress = null;
-          }
-        }
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            FloatingActionButton(
-              onPressed: () =>
-                  playing ? context.player.pause() : context.player.play(),
-              shape: const CircleBorder(),
-              child: playing
-                  ? const Icon(Icons.pause)
-                  : const Icon(Icons.play_arrow),
-            ),
-            IgnorePointer(
-              child: SizedBox(
-                width: 52, // non-mini FAB is 56, progress is 4
-                height: 52,
-                child: CircularProgressIndicator(value: progress),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  static const navigationIndices = [
+    NavigationIndex.home,
+    NavigationIndex.artists,
+    NavigationIndex.history,
+    NavigationIndex.radio,
+    NavigationIndex.player,
+  ];
 
   Widget _bottomNavigation() {
     return Stack(
       children: [
         BlocBuilder<AppCubit, AppState>(
           builder: (context, state) {
-            final index = state.navigationBarIndex;
+            var index = state.navigationIndex;
             return NavigationBar(
               labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
               destinations: [
                 NavigationDestination(
-                  icon: index == NavigationIndex.home.index
+                  icon: index == NavigationIndex.home
                       ? const Icon(Icons.home)
                       : const Icon(Icons.home_outlined),
                   label: context.strings.navHome,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.artists.index
+                  icon: index == NavigationIndex.artists
                       ? const Icon(Icons.people_alt)
                       : const Icon(Icons.people_alt_outlined),
                   label: context.strings.navArtists,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.history.index
+                  icon: index == NavigationIndex.history
                       ? const Icon(Icons.history)
                       : const Icon(Icons.history_outlined),
                   label: context.strings.navHistory,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.radio.index
+                  icon: index == NavigationIndex.radio
                       ? const Icon(Icons.radio)
                       : const Icon(Icons.radio_outlined),
                   label: context.strings.navRadio,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.player.index
+                  icon: index == NavigationIndex.player
                       ? const Icon(Icons.queue_music)
                       : const Icon(Icons.queue_music_outlined),
                   label: context.strings.navPlayer,
                 ),
               ],
-              selectedIndex: index,
-              onDestinationSelected: (index) => _onNavTapped(context, index),
+              selectedIndex: index.index,
+              onDestinationSelected: (index) => onNavTapped(context, index),
             );
           },
         ),

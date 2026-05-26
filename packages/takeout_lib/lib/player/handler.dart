@@ -24,6 +24,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
@@ -136,6 +137,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     if (mediaRepository.getSearchSupported()) {
       rootExtras = {'android.media.browse.SEARCH_SUPPORTED': true};
     }
+    // enable support for windows and linux
+    JustAudioMediaKit.ensureInitialized();
     return await AudioService.init(
       builder: () => TakeoutPlayerHandler._(
         onPlay: onPlay,

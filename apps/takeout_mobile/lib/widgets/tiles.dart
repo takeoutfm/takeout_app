@@ -24,6 +24,7 @@ import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/app/text_style.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 
@@ -134,8 +135,18 @@ class _TrackListTile extends StatelessWidget {
     final subtitle = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        if (artist.isNotEmpty) Text(artist, overflow: TextOverflow.ellipsis),
-        if (album.isNotEmpty) Text(album, overflow: TextOverflow.ellipsis),
+        if (artist.isNotEmpty)
+          Text(
+            artist,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyle.musicArtistSubtitle,
+          ),
+        if (album.isNotEmpty)
+          Text(
+            album,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyle.musicAlbumSubtitle,
+          ),
         if (t != null) RelativeDateWidget(t),
       ],
     );
@@ -148,7 +159,7 @@ class _TrackListTile extends StatelessWidget {
       leading: leading,
       trailing: trailing,
       subtitle: subtitle,
-      title: Text(title),
+      title: Text(title, style: AppTextStyle.musicTrackTitle),
     );
   }
 }

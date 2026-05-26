@@ -1,3 +1,7 @@
+## 0.26.0
+
+- enable Linux (and windows; untested) audio support
+
 ## 0.25.3
 
 - revert to original storage\_space package

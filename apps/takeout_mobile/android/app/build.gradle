@@ -31,10 +31,17 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace "com.takeoutfm.mobile"
     compileSdkVersion 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "28.2.13676358"
 
     lintOptions {
         disable 'InvalidPackage'
+    }
+
+    // added for vlc; is this needed
+    packagingOptions {
+        // Fixes duplicate libraries build issue,
+        // when your project uses more than one plugin that depend on C++ libs.
+        pickFirst 'lib/**/libc++_shared.so'
     }
 
     compileOptions {

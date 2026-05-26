@@ -70,6 +70,22 @@ class Artwork {
     placeholder: const Icon(Icons.album),
   );
 
+  factory Artwork.moviePoster(String url) => Artwork(
+    url,
+    342,
+    513,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.movie),
+  );
+
+  factory Artwork.movieSmallPoster(String url) => Artwork(
+    url,
+    342*0.65,
+    513*0.65,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.movie),
+  );
+
   factory Artwork.playerCover(String url) => Artwork(
     url,
     coverGridWidth,
@@ -160,6 +176,15 @@ class Artwork {
     BoxFit.fill,
     aspectRatio: seriesAspectRatio,
     placeholder: const Icon(Icons.podcasts),
+  );
+
+  factory Artwork.avatar(String url) => Artwork(
+    url,
+    64,
+    64,
+    BoxFit.cover,
+    borderRadius: BorderRadius.circular(32),
+    placeholder: const Icon(Icons.person),
   );
 
   String get tag => url;

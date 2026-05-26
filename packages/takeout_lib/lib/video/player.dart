@@ -15,13 +15,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
-import 'package:chewie/chewie.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
-import 'package:video_player/video_player.dart';
+
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
+
+import 'track_selection.dart';
 
 class VideoPlayer extends StatefulWidget {
   final MediaTrack media;
@@ -33,6 +39,10 @@ class VideoPlayer extends StatefulWidget {
   final bool allowedScreenSleep;
   final bool fullScreenByDefault;
   final void Function(Duration, Duration)? onPause;
+
+  static void init() {
+    MediaKit.ensureInitialized();
+  }
 
   const VideoPlayer(
     this.media, {
@@ -52,9 +62,16 @@ class VideoPlayer extends StatefulWidget {
 }
 
 class VideoPlayerState extends State<VideoPlayer> {
-  VideoPlayerController? videoPlayerController;
-  ChewieController? chewieController;
+  VideoController? controller;
+  Player player = Player(configuration: PlayerConfiguration(libass: true));
   Exception? error;
+  StreamSubscription<bool>? completedSubscription;
+  StreamSubscription<bool>? playingSubscription;
+
+  // static const _networkCachingMs = 2000;
+  // static const _subtitlesFontSize = 30;
+
+  // static const _height = 400.0;
 
   @override
   void initState() {
@@ -64,8 +81,9 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   @override
   void dispose() {
-    videoPlayerController?.dispose();
-    chewieController?.dispose();
+    player.dispose();
+    completedSubscription?.cancel();
+    playingSubscription?.cancel();
     super.dispose();
   }
 
@@ -76,34 +94,59 @@ class VideoPlayerState extends State<VideoPlayer> {
       url = '${widget.settingsRepository.settings?.endpoint}$url';
     }
     final headers = widget.tokenRepository.addMediaToken();
-    final controller = VideoPlayerController.networkUrl(
-      Uri.parse(url),
-      httpHeaders: headers,
-    );
-    try {
-      await controller.initialize();
-      controller.addListener(() {
-        final value = controller.value;
-        if (value.isInitialized) {
-          if (value.isPlaying == false) {
-            widget.onPause?.call(value.position, value.duration);
-          }
-        }
-      });
-      videoPlayerController = controller;
 
-      chewieController = ChewieController(
-        allowedScreenSleep: widget.allowedScreenSleep,
-        autoPlay: widget.autoPlay,
-        fullScreenByDefault: widget.fullScreenByDefault,
-        startAt: widget.startOffset,
-        videoPlayerController: videoPlayerController!,
-      );
-    } on Exception catch (e) {
-      error = e;
-    }
+    controller = VideoController(player);
+    await player.setSubtitleTrack(SubtitleTrack.auto());
+
+    completedSubscription = player.stream.completed.listen((completed) {
+      print('completed $completed ${player.state.position}');
+      if (completed) {
+        widget.onPause?.call(player.state.position, player.state.duration);
+      }
+    });
+    playingSubscription = player.stream.playing.listen((playing) {
+      print('playing $playing ${player.state.position}');
+      if (playing == false && player.state.duration > Duration.zero) {
+        // false and zero can happen before or while loading so ignore
+        widget.onPause?.call(player.state.position, player.state.duration);
+      }
+    });
+
+    await player.open(
+      Media(url, start: widget.startOffset, httpHeaders: headers),
+    );
+
     setState(() {});
   }
+
+  List<Widget> _topControls() => [
+    MaterialCustomButton(
+      onPressed: () async {
+        // await player.stop();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      },
+      icon: Icon(Icons.arrow_back),
+    ),
+    const Spacer(),
+    MaterialDesktopCustomButton(
+      onPressed: () => showDialog<void>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text('Tracks'),
+          children: [
+            TrackSelection(player),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Close'),
+            ),
+          ],
+        ),
+      ),
+      icon: const Icon(Icons.settings),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -117,9 +160,30 @@ class VideoPlayerState extends State<VideoPlayer> {
         ),
       );
     }
-    if (videoPlayerController == null || chewieController == null) {
+
+    final videoController = controller;
+    if (videoController == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return Chewie(controller: chewieController!);
+
+    final topButtonBar = _topControls();
+    return MaterialVideoControlsTheme(
+      normal: MaterialVideoControlsThemeData(topButtonBar: topButtonBar),
+      fullscreen: MaterialVideoControlsThemeData(topButtonBar: topButtonBar),
+      child: MaterialDesktopVideoControlsTheme(
+        normal: MaterialDesktopVideoControlsThemeData(
+          topButtonBar: topButtonBar,
+        ),
+        fullscreen: MaterialDesktopVideoControlsThemeData(
+          topButtonBar: topButtonBar,
+        ),
+        child: Scaffold(
+          body: Video(
+            controller: videoController,
+            controls: MaterialDesktopVideoControls,
+          ),
+        ),
+      ),
+    );
   }
 }

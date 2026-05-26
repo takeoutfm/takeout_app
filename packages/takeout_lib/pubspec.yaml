@@ -14,7 +14,6 @@ dependencies:
   audio_service: ^0.18.18
   audio_session: ^0.2.2
   cached_network_image: ^3.4.1
-  chewie: ^1.13.0
   connectivity_plus: ^7.0.0
   crypto: ^3.0.7
   cupertino_icons: ^1.0.8
@@ -28,6 +27,12 @@ dependencies:
   logger: ^2.6.2
   json_annotation: ^4.9.0
   just_audio: ^0.10.5
+  just_audio_media_kit: ^2.1.0
+  media_kit: ^1.2.6
+  media_kit_video: ^2.0.1
+  media_kit_libs_audio: ^1.0.7
+  media_kit_libs_video: ^1.0.7
+  media_kit_libs_linux: ^1.2.1
   nested: ^1.0.0
   octo_image: ^2.1.0
   palette_generator: ^0.3.3+7
@@ -35,7 +40,6 @@ dependencies:
   path_provider: ^2.1.5
   receive_intent: ^0.2.7
   rxdart: ^0.28.0
-  video_player: ^2.10.1
   listenbrainz_dart: ^0.0.4
   storage_space: ^1.2.0
 

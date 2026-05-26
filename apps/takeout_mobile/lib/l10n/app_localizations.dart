@@ -274,6 +274,12 @@ abstract class AppLocalizations {
   /// **'Play'**
   String get playLabel;
 
+  /// No description provided for @resumeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resumeLabel;
+
   /// No description provided for @refreshLabel.
   ///
   /// In en, this message translates to:
@@ -765,6 +771,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{empty} =1{1 track} other{{count} tracks}}'**
   String trackCount(num count);
+
+  /// No description provided for @discCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{empty} =1{1 disc} other{{count} discs}}'**
+  String discCount(num count);
 
   /// No description provided for @episodeLabel.
   ///

@@ -52,6 +52,18 @@ abstract mixin class ClientPageBuilder<T> {
 
   Widget page(BuildContext context, T state);
 
+  PreferredSizeWidget? appBar(
+    BuildContext context, {
+    Widget? title,
+    List<Widget>? actions,
+    PreferredSizeWidget? bottom,
+  }) {
+    final orientation = MediaQuery.of(context).orientation;
+    return orientation == .portrait
+        ? AppBar(title: title, actions: actions, bottom: bottom)
+        : null;
+  }
+
   Widget errorPage(BuildContext context, ClientError error) {
     return Center(
       child: TextButton(
