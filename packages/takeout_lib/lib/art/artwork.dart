@@ -29,6 +29,14 @@ const seriesAspectRatio = 1.0;
 const seriesGridWidth = 250.0;
 const seriesGridHeight = 250.0;
 
+const tvEpisodeAspectRatio = 1.0;
+const tvEpisodeGridWidth = 300.0;
+const tvEpisodeGridHeight = 250.0;
+
+const podcastEpisodeAspectRatio = 1.0;
+const podcastEpisodeGridWidth = 300.0;
+const podcastEpisodeGridHeight = 250.0;
+
 const listTileIconHeight = 56.0;
 
 class Artwork {
@@ -178,6 +186,33 @@ class Artwork {
     placeholder: const Icon(Icons.podcasts),
   );
 
+  factory Artwork.tvSeriesSmallPoster(String url) => Artwork(
+    url,
+    342*0.65,
+    513*0.65,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.movie),
+  );
+
+
+  factory Artwork.tvEpisodeGrid(String url) => Artwork(
+    url,
+    tvEpisodeGridWidth,
+    tvEpisodeGridHeight,
+    BoxFit.cover,
+    aspectRatio: tvEpisodeAspectRatio,
+    placeholder: const Icon(Icons.tv),
+  );
+
+  factory Artwork.podcastEpisodeGrid(String url) => Artwork(
+    url,
+    podcastEpisodeGridWidth,
+    podcastEpisodeGridHeight,
+    BoxFit.cover,
+    aspectRatio: podcastEpisodeAspectRatio,
+    placeholder: const Icon(Icons.podcasts_outlined),
+  );
+
   factory Artwork.avatar(String url) => Artwork(
     url,
     64,
@@ -185,6 +220,14 @@ class Artwork {
     BoxFit.cover,
     borderRadius: BorderRadius.circular(32),
     placeholder: const Icon(Icons.person),
+  );
+
+  factory Artwork.fillImage(String url) => Artwork(
+    url,
+    null,
+    null,
+    BoxFit.fill,
+    placeholder: const Icon(Icons.image),
   );
 
   String get tag => url;

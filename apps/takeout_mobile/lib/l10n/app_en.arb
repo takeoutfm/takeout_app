@@ -193,6 +193,18 @@
       "count": {}
     }
   },
+  "seasonCount": "{count, plural, =0{empty} =1{1 season} other{{count} seasons}}",
+  "@seasonCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "episodeCount": "{count, plural, =0{empty} =1{1 episode} other{{count} episodes}}",
+  "@episodeCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "episodeLabel": "Episode {num}",
   "@episodeLabel": {
     "placeholders": {

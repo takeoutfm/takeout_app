@@ -72,8 +72,24 @@ Widget playerCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.playerCover(url), hero: false).build(context);
 }
 
+Widget tvSeriesSmallPoster(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.tvSeriesSmallPoster(url), hero: true).build(context);
+}
+
+Widget gridTVEpisode(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.tvEpisodeGrid(url), hero: true).build(context);
+}
+
+Widget gridPodcastEpisode(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.podcastEpisodeGrid(url), hero: true).build(context);
+}
+
 Widget avatar(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.avatar(url), hero: false).build(context);
+}
+
+Widget fillImage(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.fillImage(url), hero: false).build(context);
 }
 
 Widget? circleCover(

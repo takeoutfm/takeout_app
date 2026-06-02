@@ -82,17 +82,17 @@ class ProfileWidget extends ClientPage<ProfileView> {
             if (state.hasStarringMovies() || state.hasStarringShows())
               SliverToBoxAdapter(child: heading(context.strings.starringLabel)),
             if (state.hasStarringMovies())
-              MovieGrid(state.starringMovies()),
+              SliverMovieGrid(state.starringMovies()),
             if (state.hasStarringShows())
               TVSeriesGridWidget(state.starringShows()),
             if (state.hasDirecting())
               SliverToBoxAdapter(
                 child: heading(context.strings.directingLabel),
               ),
-            if (state.hasDirecting()) MovieGrid(state.directingMovies()),
+            if (state.hasDirecting()) SliverMovieGrid(state.directingMovies()),
             if (state.hasWriting())
               SliverToBoxAdapter(child: heading(context.strings.writingLabel)),
-            if (state.hasWriting()) MovieGrid(state.writingMovies()),
+            if (state.hasWriting()) SliverMovieGrid(state.writingMovies()),
           ],
         ),
       ),

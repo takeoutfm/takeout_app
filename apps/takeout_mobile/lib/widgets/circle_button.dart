@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CircleButton extends StatelessWidget {
   final IconData icon;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const CircleButton({super.key, required this.icon, required this.onTap});
 
@@ -11,6 +11,20 @@ class CircleButton extends StatelessWidget {
 
   const CircleButton.favorite({super.key, required this.onTap})
     : icon = Icons.favorite_border;
+
+  const CircleButton.menu({super.key}) : icon = Icons.menu, onTap = null;
+
+  const CircleButton.moreHorizontal({super.key})
+    : icon = Icons.more_horiz,
+      onTap = null;
+
+  const CircleButton.moreVertical({super.key})
+    : icon = Icons.more_vert,
+      onTap = null;
+
+  const CircleButton.dropDown({super.key})
+      : icon = Icons.keyboard_arrow_down,
+        onTap = null;
 
   @override
   Widget build(BuildContext context) {

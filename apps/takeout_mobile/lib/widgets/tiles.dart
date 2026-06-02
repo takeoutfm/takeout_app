@@ -25,6 +25,7 @@ import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/app/text_style.dart';
+import 'package:takeout_mobile/widgets/focus_tile.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 
@@ -151,7 +152,7 @@ class _TrackListTile extends StatelessWidget {
       ],
     );
 
-    return ListTile(
+    return FocusedListTile(
       selected: selected,
       isThreeLine: artist.isNotEmpty,
       onTap: onTap,

@@ -23,7 +23,7 @@ class GenrePage extends ClientPage<GenreView> {
           slivers: [
             SliverAppBar(title: Text(_genre)),
             if (state.movies.isNotEmpty)
-              MovieGrid(_sortByTitle(state.movies)),
+              SliverMovieGrid(_sortByTitle(state.movies)),
           ],
         ),
       ),

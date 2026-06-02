@@ -778,6 +778,18 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{empty} =1{1 disc} other{{count} discs}}'**
   String discCount(num count);
 
+  /// No description provided for @seasonCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{empty} =1{1 season} other{{count} seasons}}'**
+  String seasonCount(num count);
+
+  /// No description provided for @episodeCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{empty} =1{1 episode} other{{count} episodes}}'**
+  String episodeCount(num count);
+
   /// No description provided for @episodeLabel.
   ///
   /// In en, this message translates to:

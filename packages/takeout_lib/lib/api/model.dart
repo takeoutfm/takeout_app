@@ -180,6 +180,8 @@ class ReleaseView {
   final List<Track> popular;
   final List<Track> singles;
   final List<Release> similar;
+  final String? image;
+  final String? background;
 
   ReleaseView({
     required this.artist,
@@ -188,6 +190,8 @@ class ReleaseView {
     this.popular = const [],
     this.singles = const [],
     this.similar = const [],
+    this.image,
+    this.background,
   });
 
   factory ReleaseView.fromJson(Map<String, dynamic> json) =>
@@ -267,6 +271,8 @@ class Artist {
   final String? date;
   final String? endDate;
   final String? genre;
+  final String? image;
+  final String? background;
 
   Artist({
     required this.id,
@@ -279,6 +285,8 @@ class Artist {
     this.date,
     this.endDate,
     this.genre,
+    this.image,
+    this.background,
   });
 
   factory Artist.fromJson(Map<String, dynamic> json) => _$ArtistFromJson(json);
@@ -1094,11 +1102,6 @@ class Movie extends DownloadIdentifier
     return vote > 0 ? '$vote%' : '';
   }
 
-  num get stars {
-    final v = (2 * (voteAverage ?? 0)).ceilToDouble() / 2;
-    return (v % 1 == 0.5) ? v : v.toInt();
-  }
-
   bool get hasVotes {
     return (voteAverage ?? 0) > 0;
   }
@@ -1165,15 +1168,29 @@ class TVSeries extends MediaAlbum {
   @override
   String get image => _seriesPosterUrl();
 
+  String get backdrop => _seriesBackdropUrl();
+
   String get reference => '/tv/series/$id';
 
   String _seriesPosterUrl({String size = 'w342'}) {
     return '/img/tm/$size$posterPath';
   }
 
+  String _seriesBackdropUrl({String size = 'w780'}) {
+    return '/img/tm/$size$backdropPath';
+  }
+
   String get vote {
     int vote = (10 * voteAverage).round();
     return vote > 0 ? '$vote%' : '';
+  }
+
+  bool get hasVotes {
+    return voteAverage > 0;
+  }
+
+  bool get hasRating {
+    return rating.isNotEmpty;
   }
 }
 
@@ -1268,6 +1285,10 @@ class TVEpisode extends DownloadIdentifier
 
   String get se {
     return 'S${season}E$episode';
+  }
+
+  bool get hasVotes {
+    return voteAverage > 0;
   }
 }
 
@@ -1522,8 +1543,9 @@ class Episode extends DownloadIdentifier
   @JsonKey(includeFromJson: false, includeToJson: false)
   final String album;
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  final String image; // set from series
+  // @JsonKey(includeFromJson: false, includeToJson: false)
+  // final String image; // set from series
+  final String image;
 
   Episode({
     required this.id,

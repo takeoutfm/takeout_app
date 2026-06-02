@@ -2,52 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
-import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/track.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
-import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
-import 'package:takeout_mobile/pages/people.dart';
+import 'package:takeout_mobile/pages/film/play_movie.dart';
+import 'package:takeout_mobile/pages/tv/season_details.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
-import 'package:takeout_mobile/widgets/media_progress.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:takeout_mobile/pages/film/play_movie.dart';
 
-class MovieDetailsPage extends ClientPage<MovieView> {
-  final Movie _movie;
+class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
+  final TVSeries _series;
 
-  MovieDetailsPage(this._movie, {super.key});
+  TVSeriesDetailsPage(this._series, {super.key});
 
-  Movie get movie => _movie;
+  TVSeries get series => _series;
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
-    return context.client.movie(_movie.id, ttl: ttl);
+    return context.client.tvSeries(_series.id, ttl: ttl);
   }
 
   @override
-  Widget page(BuildContext context, MovieView state) {
+  Widget page(BuildContext context, TVSeriesView state) {
+    final seasons = <int>{};
+    for (final e in state.episodes) {
+      seasons.add(e.season);
+    }
+    final seasonsList = seasons.toList()..sort();
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            final offsetState = context.watch<OffsetCacheCubit>().state;
-            final hasProgress = offsetState.hasValue(_movie);
+            // final offsetState = context.watch<OffsetCacheCubit>().state;
+            // final hasProgress = offsetState.hasValue(_movie);
             return Stack(
               fit: StackFit.expand,
               children: [
                 // Background poster
-                backdropImage(context, movie.backdrop),
+                backdropImage(context, series.backdrop),
 
                 // Dark overlay
                 Container(color: Colors.black.withValues(alpha: 0.65)),
@@ -81,9 +82,9 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  MediaProgress.movie(
-                                    _movie,
-                                    movieSmallPoster(context, movie.image),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: tvSeriesSmallPoster(context, series.image),
                                   ),
 
                                   const SizedBox(width: 20),
@@ -95,14 +96,14 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          movie.title,
+                                          series.name,
                                           style: AppTextStyle.movieTitle,
                                         ),
 
                                         const SizedBox(height: 12),
 
                                         Text(
-                                          movie.tagline,
+                                          series.tagline,
                                           style: AppTextStyle.movieTagline,
                                         ),
 
@@ -110,7 +111,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
 
                                         Wrap(
                                           children: [
-                                            if (movie.hasVotes) ...[
+                                            if (series.hasVotes) ...[
                                               Icon(
                                                 Icons.star,
                                                 color: Colors.amber,
@@ -118,28 +119,35 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                                               ),
                                               SizedBox(width: 6),
                                               Text(
-                                                movie.vote,
+                                                series.vote,
                                                 style: AppTextStyle.movieVote,
                                               ),
                                               SizedBox(width: 16),
                                             ],
-                                            if (movie.hasRating) ...[
+                                            if (series.hasRating) ...[
                                               Text(
-                                                movie.rating,
+                                                series.rating,
                                                 style: AppTextStyle.movieRating,
                                               ),
                                               SizedBox(width: 16),
                                             ],
                                             Text(
-                                              '${movie.year}',
+                                              '${series.year}',
                                               style: AppTextStyle.movieYear,
                                             ),
                                             SizedBox(width: 16),
                                             Text(
-                                              Duration(
-                                                minutes: movie.runtime,
-                                              ).inHoursMinutes,
-                                              style: AppTextStyle.movieRuntime,
+                                              context.strings.seasonCount(
+                                                series.seasonCount,
+                                              ),
+                                              style: AppTextStyle.movieYear,
+                                            ),
+                                            SizedBox(width: 16),
+                                            Text(
+                                              context.strings.episodeCount(
+                                                series.episodeCount,
+                                              ),
+                                              style: AppTextStyle.movieYear,
                                             ),
                                           ],
                                         ),
@@ -161,54 +169,25 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                                           ),
                                         ],
 
-                                        if (state.hasTrailers()) ...[
-                                          const SizedBox(height: 16),
-                                          Wrap(
-                                            spacing: 8,
-                                            runSpacing: 8,
-                                            children: [
-                                              ...state.trailers!
-                                                  .where((t) => t.official)
-                                                  .map(
-                                                    (trailer) => MyChip(
-                                                      label: trailer.name,
-                                                      overflow: .ellipsis,
-                                                      onPressed: () {
-                                                        launchUrl(
-                                                          Uri.parse(
-                                                            trailer.url,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                            ],
-                                          ),
-                                        ],
+                                        const SizedBox(height: 16),
+
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: [
+                                            ...seasonsList.map(
+                                                  (season) => MyChip(
+                                                label: context.strings.seasonLabel(season),
+                                                onPressed: () =>
+                                                    _onSeason(context, season),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 40),
-
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  FilledButton.icon(
-                                    onPressed: () => _onPlay(context, state),
-                                    label: Text('Play'),
-                                    icon: Icon(Icons.play_arrow),
-                                  ),
-                                  if (hasProgress)
-                                    FilledButton.icon(
-                                      onPressed: () =>
-                                          _onResume(context, state),
-                                      label: Text('Resume'),
-                                      icon: Icon(Icons.play_arrow),
-                                    ),
                                 ],
                               ),
 
@@ -223,7 +202,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                               const SizedBox(height: 16),
 
                               Text(
-                                movie.overview,
+                                series.overview,
                                 style: AppTextStyle.movieOverview,
                               ),
 
@@ -259,32 +238,6 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                           ),
                         ),
                       ),
-
-                      if (state.hasRelated()) ...[
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsetsGeometry.all(20),
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                const SizedBox(height: 32),
-                                const Text(
-                                  'Related',
-                                  style: AppTextStyle.movieRelatedTitle,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                      SliverMovieGrid(
-                        state.relatedMovies(),
-                        padding: EdgeInsetsGeometry.only(
-                          left: movieGridEdgeInset,
-                          right: movieGridEdgeInset,
-                          bottom: movieGridEdgeInset,
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -298,6 +251,10 @@ class MovieDetailsPage extends ClientPage<MovieView> {
 
   void _onGenre(BuildContext context, String genre) {
     push(context, builder: (_) => GenrePage(genre));
+  }
+
+  void _onSeason(BuildContext context, int season) {
+    push(context, builder: (_) => SeasonDetailsPage(series, season));
   }
 
   void _onPlay(BuildContext context, MovieView view) {

@@ -3,21 +3,20 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/film/movie_details.dart';
+import 'package:takeout_mobile/pages/tv/tvepisode_details.dart';
 import 'package:takeout_mobile/widgets/focus_item.dart';
-import 'package:takeout_mobile/widgets/media_progress.dart';
 
-const movieGridEdgeInset = 20.0;
-const movieGridSpacing = 12.0;
+const tvEpisodeGridEdgeInset = 20.0;
+const tvEpisodeGridSpacing = 12.0;
 
-class SliverMovieGrid extends StatelessWidget {
-  final List<Movie> _movies;
+class SliverTVEpisodeGrid extends StatelessWidget {
+  final List<TVEpisode> _episodes;
   final EdgeInsetsGeometry padding;
 
-  const SliverMovieGrid(
-    this._movies, {
+  const SliverTVEpisodeGrid(
+    this._episodes, {
     super.key,
-    this.padding = const EdgeInsetsGeometry.all(movieGridEdgeInset),
+    this.padding = const EdgeInsetsGeometry.all(tvEpisodeGridEdgeInset),
   });
 
   @override
@@ -27,13 +26,13 @@ class SliverMovieGrid extends StatelessWidget {
       sliver: SliverGrid.extent(
         maxCrossAxisExtent: posterGridWidth,
         childAspectRatio: posterAspectRatio,
-        crossAxisSpacing: movieGridSpacing,
-        mainAxisSpacing: movieGridSpacing,
+        crossAxisSpacing: tvEpisodeGridSpacing,
+        mainAxisSpacing: tvEpisodeGridSpacing,
         children: [
-          ..._movies.map(
-            (m) => FocusItem(
+          ..._episodes.map(
+            (e) => FocusItem(
               child: InkWell(
-                onTap: () => _onTap(context, m),
+                onTap: () => _onTap(context, e),
                 // TODO figure out how to add material splash it seemed
                 // be happening underneath the image
                 child: ClipRRect(
@@ -44,10 +43,10 @@ class SliverMovieGrid extends StatelessWidget {
                       clipBehavior: Clip.antiAlias,
                       child: GridTileBar(
                         backgroundColor: Colors.black.withValues(alpha: 0.65),
-                        title: Text(m.title),
+                        title: Text('${e.episode}. ${e.name}'),
                       ),
                     ),
-                    child: MediaProgress.movie(m, gridPoster(context, m.image)),
+                    child: gridTVEpisode(context, e.image),
                   ),
                 ),
               ),
@@ -58,7 +57,7 @@ class SliverMovieGrid extends StatelessWidget {
     );
   }
 
-  void _onTap(BuildContext context, Movie movie) {
-    push(context, builder: (_) => MovieDetailsPage(movie));
+  void _onTap(BuildContext context, TVEpisode episode) {
+    push(context, builder: (_) => TVEpisodeDetailsPage(episode));
   }
 }

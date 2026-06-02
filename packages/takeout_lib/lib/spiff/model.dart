@@ -233,6 +233,7 @@ class Entry extends DownloadIdentifier implements MediaTrack, OffsetIdentifier {
   final String title;
   @override
   final String image;
+  final String background;
   @override
   final String date;
   @JsonKey(name: 'location')
@@ -248,6 +249,7 @@ class Entry extends DownloadIdentifier implements MediaTrack, OffsetIdentifier {
     required this.album,
     required this.title,
     required this.image,
+    this.background = '',
     this.date = '',
     required this.locations,
     this.identifiers,
@@ -263,6 +265,7 @@ class Entry extends DownloadIdentifier implements MediaTrack, OffsetIdentifier {
     album: album,
     title: title ?? this.title,
     image: image ?? this.image,
+    background: background,
     date: date,
     locations: locations,
     identifiers: identifiers,
@@ -330,6 +333,7 @@ class Playlist {
   final String? creator;
   final String title;
   final String? image;
+  final String? background;
   final String? date;
   @JsonKey(name: 'track')
   final List<Entry> tracks;
@@ -340,6 +344,7 @@ class Playlist {
     this.creator,
     required this.title,
     this.image,
+    this.background,
     this.date,
     required this.tracks,
   }) : _cover = _pickCover(image, tracks);
@@ -354,6 +359,7 @@ class Playlist {
     creator: creator ?? this.creator,
     title: title ?? this.title,
     image: image,
+    background: background,
     tracks: tracks ?? this.tracks,
   );
 

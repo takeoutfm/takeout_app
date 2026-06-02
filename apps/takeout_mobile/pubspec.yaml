@@ -29,6 +29,7 @@ dependencies:
   webview_flutter: ^4.13.0
   audio_service: ^0.18.18
   swipeable_tile: ^2.0.1
+  flutter_widget_from_html: ^0.16.0
 
 dev_dependencies:
   flutter_test:

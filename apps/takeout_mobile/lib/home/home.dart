@@ -26,9 +26,11 @@ import 'package:takeout_mobile/home/media_bar.dart';
 import 'package:takeout_mobile/pages/film.dart';
 import 'package:takeout_mobile/pages/film/movie_details.dart';
 import 'package:takeout_mobile/pages/music/release_details.dart';
+import 'package:takeout_mobile/pages/podcast/series_details.dart';
 import 'package:takeout_mobile/pages/podcasts.dart';
 import 'package:takeout_mobile/pages/release.dart';
 import 'package:takeout_mobile/pages/tv.dart';
+import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 
 class HomeWidget extends StatelessWidget {
@@ -97,7 +99,7 @@ class MediaTypeWidget extends StatelessWidget {
 
   void _onTVSeries(BuildContext context, TVSeries series) => Navigator.of(
     context,
-  ).push(MaterialPageRoute<void>(builder: (_) => TVSeriesWidget(series)));
+  ).push(MaterialPageRoute<void>(builder: (_) => TVSeriesDetailsPage(series)));
 
   void _onRelease(BuildContext context, Release release) => Navigator.of(
     context,
@@ -105,7 +107,7 @@ class MediaTypeWidget extends StatelessWidget {
 
   void _onSeries(BuildContext context, Series series) => Navigator.of(
     context,
-  ).push(MaterialPageRoute<void>(builder: (_) => SeriesWidget(series)));
+  ).push(MaterialPageRoute<void>(builder: (_) => SeriesDetailsPage(series)));
 
   Widget _grid(BuildContext context, MediaTypeState mediaTypeState) {
     final mediaType = mediaTypeState.mediaType;
@@ -188,7 +190,10 @@ class MediaTypeWidget extends StatelessWidget {
               mediaTypeState,
               sliverAppBar: mediaBar,
               itemsFunc: (view) => view.newSeries ?? [],
-              coverFunc: (context, item) => gridSeries(context, item.image),
+              coverFunc: (context, item) => ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: gridSeries(context, item.image),
+              ),
               onTap: (context, item) => _onSeries(context, item as Series),
               childAspectRatio: seriesAspectRatio,
               maxCrossAxisExtent: seriesGridWidth,

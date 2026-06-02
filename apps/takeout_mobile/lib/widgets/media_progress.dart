@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
+import 'package:takeout_mobile/widgets/focus_item.dart';
 
 class MediaProgress extends StatelessWidget {
   final OffsetIdentifier id;

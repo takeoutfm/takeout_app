@@ -9,6 +9,7 @@ import 'package:takeout_mobile/history/widget.dart';
 import 'package:takeout_mobile/home/home.dart';
 import 'package:takeout_mobile/pages/artists.dart';
 import 'package:takeout_mobile/pages/login.dart';
+import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/radio.dart';
 import 'package:takeout_mobile/player/widget.dart';
 
@@ -37,7 +38,10 @@ abstract class TakeoutState<T> extends State
 
     pages = [
       navigatorPage(HomeWidget(), key: _navigators[NavigationIndex.home]),
-      navigatorPage(ArtistsWidget(), key: _navigators[NavigationIndex.artists]),
+      navigatorPage(
+        AllArtistsGrid(),
+        key: _navigators[NavigationIndex.artists],
+      ),
       navigatorPage(
         HistoryListWidget(),
         key: _navigators[NavigationIndex.history],

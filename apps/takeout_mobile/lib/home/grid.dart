@@ -13,6 +13,7 @@ import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/widgets/focus_item.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
@@ -132,15 +133,17 @@ class HomeViewGrid extends ViewGrid<HomeView> {
         mainAxisSpacing: 12,
         children: [
           ...itemsFunc(state).map(
-            (i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              child: GridTile(
-                footer: _tile(
-                  i,
-                  cache,
-                  subtitle: i.creator.isNotEmpty ? i.creator : null,
+            (i) => FocusItem(
+              child: InkWell(
+                onTap: () => onTap(context, i),
+                child: GridTile(
+                  footer: _tile(
+                    i,
+                    cache,
+                    subtitle: i.creator.isNotEmpty ? i.creator : null,
+                  ),
+                  child: coverFunc(context, i),
                 ),
-                child: coverFunc(context, i),
               ),
             ),
           ),
@@ -175,11 +178,13 @@ class MoviesViewGrid extends ViewGrid<MoviesView> {
         mainAxisSpacing: 12,
         children: [
           ...state.movies.map(
-            (i) => GestureDetector(
-              onTap: () => onTap(context, i),
-              child: GridTile(
-                footer: _tile(i, cache),
-                child: MediaProgress.movie(i, gridPoster(context, i.image)),
+            (i) => FocusItem(
+              child: InkWell(
+                onTap: () => onTap(context, i),
+                child: GridTile(
+                  footer: _tile(i, cache),
+                  child: MediaProgress.movie(i, gridPoster(context, i.image)),
+                ),
               ),
             ),
           ),
@@ -205,22 +210,30 @@ class TVShowsViewGrid extends ViewGrid<TVShowsView> {
     TVShowsView state,
     SpiffTrackCacheState cache,
   ) {
-    return SliverGrid.extent(
-      childAspectRatio: posterAspectRatio,
-      maxCrossAxisExtent: posterGridWidth,
-      crossAxisSpacing: 8,
-      mainAxisSpacing: 8,
-      children: [
-        ...state.series.map(
-          (i) => GestureDetector(
-            onTap: () => onTap(context, i),
-            child: GridTile(
-              footer: _tile(i, cache),
-              child: gridPoster(context, i.image),
+    return SliverPadding(
+      padding: EdgeInsetsGeometry.all(20),
+      sliver: SliverGrid.extent(
+        childAspectRatio: posterAspectRatio,
+        maxCrossAxisExtent: posterGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.series.map(
+            (i) => FocusItem(
+              child: InkWell(
+                onTap: () => onTap(context, i),
+                child: GridTile(
+                  footer: _tile(i, cache),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: gridPoster(context, i.image),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -248,25 +261,34 @@ class PodcastsViewGrid extends ViewGrid<PodcastsView> {
     SpiffTrackCacheState cache,
   ) {
     final onLongPress = this.onLongPress;
-    return SliverGrid.extent(
-      childAspectRatio: seriesAspectRatio,
-      maxCrossAxisExtent: seriesGridWidth,
-      crossAxisSpacing: 8,
-      mainAxisSpacing: 8,
-      children: [
-        ...state.series.map(
-          (i) => GestureDetector(
-            onTap: () => onTap(context, i),
-            onLongPressStart: onLongPress != null
-                ? (details) => onLongPress(context, i, details.globalPosition)
-                : null,
-            child: GridTile(
-              footer: _tile(i, cache),
-              child: gridSeries(context, i.image),
+    return SliverPadding(
+      padding: EdgeInsetsGeometry.all(20),
+      sliver: SliverGrid.extent(
+        childAspectRatio: seriesAspectRatio,
+        maxCrossAxisExtent: seriesGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.series.map(
+            (i) => FocusItem(
+              child: GestureDetector(
+                onTap: () => onTap(context, i),
+                onLongPressStart: onLongPress != null
+                    ? (details) =>
+                          onLongPress(context, i, details.globalPosition)
+                    : null,
+                child: GridTile(
+                  footer: _tile(i, cache),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: gridSeries(context, i.image),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -312,22 +334,30 @@ class SubscribedPodcastsViewGrid extends StatelessWidget
     SubscribedState state,
     SpiffTrackCacheState cache,
   ) {
-    return SliverGrid.extent(
-      childAspectRatio: seriesAspectRatio,
-      maxCrossAxisExtent: seriesGridWidth,
-      crossAxisSpacing: 8,
-      mainAxisSpacing: 8,
-      children: [
-        ...state.series.map(
-          (i) => GestureDetector(
-            onTap: () => onTap(context, i),
-            child: GridTile(
-              footer: _tile(i, cache),
-              child: gridSeries(context, i.image),
+    return SliverPadding(
+      padding: EdgeInsetsGeometry.all(20),
+      sliver: SliverGrid.extent(
+        childAspectRatio: seriesAspectRatio,
+        maxCrossAxisExtent: seriesGridWidth,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        children: [
+          ...state.series.map(
+            (i) => FocusItem(
+              child: InkWell(
+                onTap: () => onTap(context, i),
+                child: GridTile(
+                  footer: _tile(i, cache),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: gridSeries(context, i.image),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -423,6 +423,30 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String seasonCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seasons',
+      one: '1 season',
+      zero: 'empty',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String episodeCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count episodes',
+      one: '1 episode',
+      zero: 'empty',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String episodeLabel(int num) {
     final intl.NumberFormat numNumberFormat = intl.NumberFormat.compact(
       locale: localeName,

@@ -4,21 +4,23 @@ import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/music/release_details.dart';
+import 'package:takeout_mobile/pages/podcast/series_details.dart';
 
-const albumGridEdgeInset = 20.0;
-const albumGridSpacing = 12.0;
+const seriesGridEdgeInset = 20.0;
+const seriesGridSpacing = 12.0;
 
-class SliverAlbumGrid extends StatelessWidget {
-  final List<MediaAlbum> _albums;
+class SliverSeriesGrid extends StatelessWidget {
+  final List<Series> _series;
   final bool subtitle;
   final EdgeInsetsGeometry padding;
 
-  const SliverAlbumGrid(
-    this._albums, {
-    super.key,
-    this.subtitle = true,
-    this.padding = const EdgeInsetsGeometry.all(albumGridEdgeInset),
-  });
+  const SliverSeriesGrid(
+      this._series, {
+        super.key,
+
+        this.subtitle = true,
+        this.padding = const EdgeInsetsGeometry.all(seriesGridEdgeInset),
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +28,12 @@ class SliverAlbumGrid extends StatelessWidget {
       padding: padding,
       sliver: SliverGrid.extent(
         maxCrossAxisExtent: 250,
-        crossAxisSpacing: albumGridSpacing,
-        mainAxisSpacing: albumGridSpacing,
+        crossAxisSpacing: seriesGridSpacing,
+        mainAxisSpacing: seriesGridSpacing,
         children: [
-          ..._albums.map(
-            (a) => InkWell(
-              onTap: () => _onTap(context, a),
+          ..._series.map(
+                (s) => InkWell(
+              onTap: () => _onTap(context, s),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: GridTile(
@@ -40,13 +42,13 @@ class SliverAlbumGrid extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     child: GridTileBar(
                       backgroundColor: Colors.black.withValues(alpha: 0.65),
-                      title: Text(a.album),
-                      subtitle: subtitle ? Text(a.creator) : null,
+                      title: Text(s.title),
+                      subtitle: subtitle ? Text(s.creator) : null,
                     ),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: gridCover(context, a.image),
+                    child: gridCover(context, s.image),
                   ),
                 ),
               ),
@@ -57,14 +59,11 @@ class SliverAlbumGrid extends StatelessWidget {
     );
   }
 
-  void _onTap(BuildContext context, MediaAlbum album) {
+  void _onTap(BuildContext context, Series s) {
     push(
       context,
       builder: (context) {
-        if (album is Release) {
-          return ReleaseDetailsPage(album);
-        }
-        throw UnimplementedError;
+        return SeriesDetailsPage(s);
       },
     );
   }

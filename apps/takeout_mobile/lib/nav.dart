@@ -16,7 +16,7 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:flutter/material.dart';
-import 'package:takeout_mobile/spiff/widget.dart';
+import 'package:takeout_mobile/pages/spiff/spiff_details.dart';
 
 final globalAppKey = GlobalKey<NavigatorState>();
 
@@ -31,13 +31,13 @@ void push(BuildContext context, {required WidgetBuilder builder}) {
 void pushSpiff(BuildContext context, FetchSpiff fetch, {String? ref}) {
   push(
     context,
-    builder: (_) => SpiffWidget(fetch: fetch, ref: ref),
+    builder: (_) => SpiffDetailsPage(fetch: fetch, ref: ref),
   );
 }
 
 void pushPlaylist(BuildContext context, FetchSpiff fetch, {String? ref}) {
   push(
     context,
-    builder: (_) => SpiffWidget(fetch: fetch, ref: ref),
+    builder: (_) => SpiffDetailsPage(fetch: fetch, ref: ref),
   );
 }

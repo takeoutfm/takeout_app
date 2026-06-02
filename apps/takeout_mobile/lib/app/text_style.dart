@@ -55,14 +55,14 @@ class AppTextStyle {
     color: Colors.white,
     fontSize: 20,
     fontWeight: FontWeight.bold,
-    letterSpacing: 1.2,
+    // letterSpacing: 1.2,
   );
 
   static const musicArtist = TextStyle(
     color: Colors.white70,
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    letterSpacing: 1.2,
+    // letterSpacing: 1.2,
   );
 
   static const musicYear = subtitle;
@@ -79,7 +79,21 @@ class AppTextStyle {
 
   static const musicDiscNumber = subtitle;
 
-  // static const discTitle = TextStyle(
+  static const musicRelatedTitle = title;
+
+  static const miniPlayerTitle = TextStyle(
+    color: Colors.white,
+    fontSize: 14,
+    // fontWeight: FontWeight.w600,
+  );
+
+  static const miniPlayerSubtitle = TextStyle(
+    color: Colors.white70,
+    fontSize: 14,
+    // fontWeight: FontWeight.w300,
+  );
+
+// static const discTitle = TextStyle(
   //   color: Colors.white70,
   //   fontSize: 16,
   //   // fontWeight: FontWeight.w600,

@@ -324,6 +324,17 @@ class Player extends Cubit<PlayerEvent> {
 
   Future<void> play() => _provider.play();
 
+  Future<void> toggle() async {
+    if (state is PlayerProcessingEvent) {
+      final t = state as PlayerProcessingEvent;
+      if (t.playing) {
+        return pause();
+      } else {
+        return play();
+      }
+    }
+  }
+
   Future<void> playIndex(int index) => _provider.playIndex(index);
 
   Future<void> pause() => _provider.pause();
