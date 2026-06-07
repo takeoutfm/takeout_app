@@ -57,7 +57,7 @@ class MovieWidget extends ClientPage<MovieView> {
     return scaffold(
       context,
       image: _movie.image,
-      body: (color) => RefreshIndicator(
+      body: (color, {String? image}) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {

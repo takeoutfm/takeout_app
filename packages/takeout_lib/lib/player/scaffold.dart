@@ -19,10 +19,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/scaffold.dart';
 
+import '../art/builder.dart';
+import '../model.dart';
+import '../spiff/model.dart';
 import 'player.dart';
 
+typedef PlayerScaffoldBodyFunc = Widget? Function(Color?, {Spiff? spiff});
+
 class PlayerScaffold extends StatelessWidget {
-  final ScaffoldBodyFunc? body;
+  final PlayerScaffoldBodyFunc? body;
   final Widget? drawer;
   final Widget? bottomSheet;
 
@@ -35,16 +40,24 @@ class PlayerScaffold extends StatelessWidget {
         return state is PlayerLoad || state is PlayerIndexChange;
       },
       builder: (context, state) {
+        Spiff? spiff;
         String? image;
         if (state is PlayerLoad || state is PlayerIndexChange) {
-          image = state.currentTrack?.image;
+          spiff = state.spiff;
+          if (state.spiff.isNotEmpty) {
+            image = state.spiff[state.spiff.index].image;
+          }
         }
-        return scaffold(
-          context,
-          image: image,
-          body: body,
-          drawer: drawer,
-          bottomSheet: bottomSheet,
+        return FutureBuilder<Color?>(
+          future: image != null ? getImageBackgroundColor(context, image) : null,
+          builder: (context, snapshot) {
+            return Scaffold(
+              bottomSheet: bottomSheet,
+              drawer: drawer,
+              backgroundColor: snapshot.data,
+              body: body?.call(snapshot.data, spiff: spiff),
+            );
+          },
         );
       },
     );

@@ -24,6 +24,10 @@ Widget? tileCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.tileCover(url)).build(context);
 }
 
+Widget? tileCover64(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.tileCover64(url)).build(context);
+}
+
 Widget? tilePodcast(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.tilePodcast(url)).build(context);
 }
@@ -45,7 +49,10 @@ Widget moviePoster(BuildContext context, String url) {
 }
 
 Widget movieSmallPoster(BuildContext context, String url) {
-  return ArtworkBuilder(Artwork.movieSmallPoster(url), hero: true).build(context);
+  return ArtworkBuilder(
+    Artwork.movieSmallPoster(url),
+    hero: true,
+  ).build(context);
 }
 
 Widget backdropImage(BuildContext context, String url) {
@@ -73,7 +80,10 @@ Widget playerCover(BuildContext context, String url) {
 }
 
 Widget tvSeriesSmallPoster(BuildContext context, String url) {
-  return ArtworkBuilder(Artwork.tvSeriesSmallPoster(url), hero: true).build(context);
+  return ArtworkBuilder(
+    Artwork.tvSeriesSmallPoster(url),
+    hero: true,
+  ).build(context);
 }
 
 Widget gridTVEpisode(BuildContext context, String url) {
@@ -81,7 +91,10 @@ Widget gridTVEpisode(BuildContext context, String url) {
 }
 
 Widget gridPodcastEpisode(BuildContext context, String url) {
-  return ArtworkBuilder(Artwork.podcastEpisodeGrid(url), hero: true).build(context);
+  return ArtworkBuilder(
+    Artwork.podcastEpisodeGrid(url),
+    hero: true,
+  ).build(context);
 }
 
 Widget avatar(BuildContext context, String url) {

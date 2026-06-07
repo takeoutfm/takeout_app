@@ -88,7 +88,7 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
     return scaffold(
       context,
       image: _release.image,
-      body: (_) => RefreshIndicator(
+      body: (_, {String? image}) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {

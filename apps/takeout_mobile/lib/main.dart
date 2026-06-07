@@ -125,8 +125,10 @@ class TakeoutMobileWidget extends StatefulWidget {
 class TakeoutMobileState extends TakeoutState<TakeoutMobileWidget> {
   @override
   Widget body(AppState state) {
+    debugPrint('TakeoutMobileState build');
+
     return Scaffold(
-      floatingActionButton: FabWidget(),
+      floatingActionButton: RepaintBoundary(child: FabWidget()),
       body: IndexedStack(index: state.navigationIndex.index, children: pages),
       bottomNavigationBar: _bottomNavigation(),
     );

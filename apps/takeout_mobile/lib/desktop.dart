@@ -30,6 +30,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
 
   @override
   Widget body(AppState state) {
+    debugPrint('desktopRebuild');
     return Shortcuts(
       shortcuts: _shortcutKeys(),
       child: Actions(
@@ -61,7 +62,16 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                         children: pages,
                       ),
                     ),
-                    MiniPlayer()
+                    if (context.app.state.navigationIndex != .player) ...[
+                      SizedBox(height: 5),
+                      RepaintBoundary(
+                        child: SizedBox(
+                          height: MiniPlayer.height,
+                          child: MiniPlayer(),
+                        ),
+                      ),
+                    ],
+                    SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -84,6 +94,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
   ];
 
   Widget _navigationRail() {
+    debugPrint('navrail build');
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
         final index = state.navigationIndex;

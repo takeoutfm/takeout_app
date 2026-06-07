@@ -50,7 +50,7 @@ class SeriesWidget extends ClientPage<SeriesView> {
     return scaffold(
       context,
       image: _series.image,
-      body: (color) => RefreshIndicator(
+      body: (color, {String? image}) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {

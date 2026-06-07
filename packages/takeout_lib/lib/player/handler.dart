@@ -101,11 +101,9 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     Duration? maxPositionPeriod,
   }) : _skipToBeginningInterval =
            skipToBeginningInterval ?? const Duration(seconds: 10),
-       _positionSteps = positionSteps ?? 800,
-       _minPositionPeriod =
-           minPositionPeriod ?? const Duration(milliseconds: 16),
-       _maxPositionPeriod =
-           maxPositionPeriod ?? const Duration(milliseconds: 200) {
+       _positionSteps = positionSteps ?? 100,
+       _minPositionPeriod = minPositionPeriod ?? const Duration(seconds: 1),
+       _maxPositionPeriod = maxPositionPeriod ?? const Duration(seconds: 5) {
     _init();
   }
 
@@ -217,24 +215,26 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     // }));
 
     // player position changes
+    // print('pos min=${_minPositionPeriod} max=${_maxPositionPeriod}');
     _subscriptions.add(
-      _player
-          .createPositionStream(
-            steps: _positionSteps,
-            minPeriod: _minPositionPeriod,
-            maxPeriod: _maxPositionPeriod,
-          )
-          .listen((position) {
-            if (_player.currentIndex == null) {
-              return;
-            }
-            onPositionChange(
-              _spiff,
-              _player.duration ?? Duration.zero,
-              _player.position,
-              _player.playing,
-            );
-          }),
+      _throttlePositionStream(
+        _player.createPositionStream(
+          steps: _positionSteps,
+          minPeriod: _minPositionPeriod,
+          maxPeriod: _maxPositionPeriod,
+        ),
+      ).listen((position) {
+        if (_player.currentIndex == null) {
+          return;
+        }
+        // print('${DateTime.now()} pos ${_player.position}');
+        onPositionChange(
+          _spiff,
+          _player.duration ?? Duration.zero,
+          _player.position,
+          _player.playing,
+        );
+      }),
     );
 
     // use default positionStream
@@ -390,6 +390,24 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     );
   }
 
+  Stream<Duration> _throttlePositionStream(
+    Stream<Duration> input, {
+    Duration interval = const Duration(milliseconds: 1000),
+  }) async* {
+    Duration? latest;
+    DateTime lastEmit = DateTime.fromMillisecondsSinceEpoch(0);
+
+    await for (final value in input) {
+      latest = value;
+
+      final now = DateTime.now();
+      if (now.difference(lastEmit) >= interval) {
+        lastEmit = now;
+        yield latest;
+      }
+    }
+  }
+
   void _durationChange(Duration? duration) {
     if (duration != null) {
       final index = _spiff.index;
@@ -488,7 +506,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     IndexedAudioSource? audioSource;
 
     if (entry != null && entry.size > 0) {
-      File? cacheFile = _checkPlaybackCache(item, entry, autoCache ?? false);
+      // File? cacheFile = _checkPlaybackCache(item, entry, autoCache ?? false);
+      File? cacheFile = null;
       if (cacheFile != null) {
         // only create a caching audio source to create a new cache file
         // during playback, otherwise the uri source below will use the

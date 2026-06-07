@@ -17,9 +17,11 @@
 
 import 'package:flutter/material.dart';
 
+import '../model.dart';
+import '../spiff/model.dart';
 import 'builder.dart';
 
-typedef ScaffoldBodyFunc = Widget? Function(Color?);
+typedef ScaffoldBodyFunc = Widget? Function(Color?, {String? image});
 
 Widget scaffold(
   BuildContext context, {
@@ -35,7 +37,7 @@ Widget scaffold(
         bottomSheet: bottomSheet,
         drawer: drawer,
         backgroundColor: snapshot.data,
-        body: body?.call(snapshot.data),
+        body: body?.call(snapshot.data, image: image),
       );
     },
   );

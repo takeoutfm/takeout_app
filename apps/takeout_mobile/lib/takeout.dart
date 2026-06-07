@@ -11,6 +11,7 @@ import 'package:takeout_mobile/pages/artists.dart';
 import 'package:takeout_mobile/pages/login.dart';
 import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/radio.dart';
+import 'package:takeout_mobile/player/player.dart';
 import 'package:takeout_mobile/player/widget.dart';
 
 abstract class TakeoutState<T> extends State
@@ -36,6 +37,8 @@ abstract class TakeoutState<T> extends State
   void initState() {
     super.initState();
 
+    debugPrint('takeout initstate');
+
     pages = [
       navigatorPage(HomeWidget(), key: _navigators[NavigationIndex.home]),
       navigatorPage(
@@ -47,7 +50,7 @@ abstract class TakeoutState<T> extends State
         key: _navigators[NavigationIndex.history],
       ),
       navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),
-      navigatorPage(PlayerWidget(), key: _navigators[NavigationIndex.player]),
+      navigatorPage(PlayerWidget2(), key: _navigators[NavigationIndex.player]),
       navigatorPage(
         MusicMediaWidget(),
         key: _navigators[NavigationIndex.music],
@@ -111,12 +114,14 @@ abstract class TakeoutState<T> extends State
 
   @override
   Widget build(final BuildContext context) {
+    debugPrint('takeout build');
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
         if (state.authenticated == false) {
           return LoginWidget();
         }
         final navIndex = context.app.state.index;
+        debugPrint('takeout build2');
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) async {

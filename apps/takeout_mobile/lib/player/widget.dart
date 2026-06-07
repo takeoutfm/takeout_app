@@ -70,39 +70,42 @@ class PlayerWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => PlayerScaffold(
-    body: (backgroundColor) => CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          automaticallyImplyLeading: false,
-          expandedHeight: MediaQuery.of(context).size.height / 3,
-          actions: actions(context),
-          backgroundColor: backgroundColor,
-          flexibleSpace: FlexibleSpaceBar(
-            stretchModes: const [StretchMode.fadeTitle],
-            background: Container(
-              padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
-              child: playerImage(context),
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Column(
-              children: [
-                playerTitle(context),
-                playerArtist(context),
-                playerControls(context),
-                playerSeekBar(context),
-              ],
-            ),
-          ),
-        ),
-        SliverToBoxAdapter(child: playerQueue(context)),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    return EmptyWidget();
+  }
+  // PlayerScaffold(
+  //   body: (backgroundColor, {String? image}) => CustomScrollView(
+  //     slivers: [
+  //       SliverAppBar(
+  //         automaticallyImplyLeading: false,
+  //         expandedHeight: MediaQuery.of(context).size.height / 3,
+  //         actions: actions(context),
+  //         backgroundColor: backgroundColor,
+  //         flexibleSpace: FlexibleSpaceBar(
+  //           stretchModes: const [StretchMode.fadeTitle],
+  //           background: Container(
+  //             padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
+  //             child: playerImage(context),
+  //           ),
+  //         ),
+  //       ),
+  //       SliverToBoxAdapter(
+  //         child: Container(
+  //           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+  //           child: Column(
+  //             children: [
+  //               playerTitle(context),
+  //               playerArtist(context),
+  //               playerControls(context),
+  //               playerSeekBar(context),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       SliverToBoxAdapter(child: playerQueue(context)),
+  //     ],
+  //   ),
+  // );
 
   Widget playerImage(BuildContext context) {
     return BlocBuilder<Player, PlayerEvent>(

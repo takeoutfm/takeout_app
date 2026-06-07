@@ -107,7 +107,7 @@ class SpiffWidget extends ClientPage<Spiff> {
     return scaffold(
       context,
       image: state.cover,
-      body: (_) => fetch != null
+      body: (_, {String? image}) => fetch != null
           ? RefreshIndicator(
               onRefresh: () => reloadPage(context),
               child: body(context, state),

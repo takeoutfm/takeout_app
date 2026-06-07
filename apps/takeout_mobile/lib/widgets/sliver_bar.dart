@@ -5,8 +5,14 @@ import 'package:takeout_mobile/widgets/menu.dart';
 class SliverMenuBar extends StatelessWidget {
   final String? title;
   final List<PopupItem> items;
+  final bool allowBack;
 
-  const SliverMenuBar({super.key, this.title, required this.items});
+  const SliverMenuBar({
+    super.key,
+    this.title,
+    required this.items,
+    this.allowBack = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,9 @@ class SliverMenuBar extends StatelessWidget {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       pinned: true,
-      leading: CircleButton.back(onTap: () => Navigator.pop(context)),
+      leading: allowBack
+          ? CircleButton.back(onTap: () => Navigator.pop(context))
+          : null,
       title: title != null ? Text(title!) : null,
       actions: [
         popupMenu(context, items, icon: null, child: CircleButton.dropDown()),

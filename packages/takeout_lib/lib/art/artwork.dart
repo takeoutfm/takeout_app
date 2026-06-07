@@ -96,8 +96,8 @@ class Artwork {
 
   factory Artwork.playerCover(String url) => Artwork(
     url,
-    coverGridWidth,
-    coverGridHeight,
+    null,// coverGridWidth,
+    null,// coverGridHeight,
     BoxFit.fitHeight,
     placeholder: const Icon(Icons.album),
   );
@@ -127,6 +127,15 @@ class Artwork {
     null,
     borderRadius: BorderRadius.circular(4),
     placeholder: const Icon(Icons.album, size: listTileIconHeight),
+  );
+
+  factory Artwork.tileCover64(String url) => Artwork(
+    url,
+    null,
+    null,
+    null,
+    borderRadius: BorderRadius.circular(6),
+    placeholder: const Icon(Icons.album, size: 64),
   );
 
   factory Artwork.tilePodcast(String url) => Artwork(

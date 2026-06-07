@@ -42,7 +42,7 @@ class ProfileWidget extends ClientPage<ProfileView> {
     return scaffold(
       context,
       image: _person.image,
-      body: (_) => RefreshIndicator(
+      body: (_, {String? image}) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: CustomScrollView(
           slivers: [

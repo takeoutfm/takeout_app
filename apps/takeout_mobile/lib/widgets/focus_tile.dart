@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:takeout_mobile/widgets/custom_list_tile.dart';
 
 class FocusedListTile extends StatefulWidget {
   final bool selected;
@@ -10,6 +11,7 @@ class FocusedListTile extends StatefulWidget {
   final Widget? subtitle;
   final Widget? title;
   final TextStyle? style;
+  final Color? tileColor;
 
   const FocusedListTile({
     super.key,
@@ -22,6 +24,7 @@ class FocusedListTile extends StatefulWidget {
     this.subtitle,
     this.title,
     this.style,
+    this.tileColor,
   });
 
   @override
@@ -72,16 +75,19 @@ class _FocusedListTileState extends State<FocusedListTile> {
             : [],
       ),
 
-      child: ListTile(
-        focusNode: focusNode,
-        title: widget.title,
-        subtitle: widget.subtitle,
-        leading: widget.leading,
-        trailing: widget.trailing,
-        onTap: widget.onTap,
-        onLongPress: widget.onLongPress,
-        selected: widget.selected,
-        isThreeLine: widget.isThreeLine,
+      child: SizedBox(
+        height: 100,
+        child: CustomListTile(
+          focusNode: focusNode,
+          title: widget.title!,
+          subtitle: widget.subtitle,
+          leading: widget.leading,
+          trailing: widget.trailing,
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
+          selected: widget.selected,
+          tileColor: widget.tileColor,
+        ),
       ),
     );
   }

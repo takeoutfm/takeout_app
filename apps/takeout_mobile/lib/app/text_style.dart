@@ -93,6 +93,16 @@ class AppTextStyle {
     // fontWeight: FontWeight.w300,
   );
 
+  static const mediaTrackTileTitle = TextStyle(
+    color: Colors.white,
+    fontSize: 14,
+  );
+
+  static const mediaTrackTileSubtitle = TextStyle(
+    color: Colors.white70,
+    fontSize: 14,
+  );
+
 // static const discTitle = TextStyle(
   //   color: Colors.white70,
   //   fontSize: 16,

@@ -54,7 +54,7 @@ class TVSeriesWidget extends ClientPage<TVSeriesView> {
     return scaffold(
       context,
       image: _series.image,
-      body: (_) => RefreshIndicator(
+      body: (_, {String? image}) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
@@ -388,7 +388,7 @@ class TVEpisodeWidget extends ClientPage<TVEpisodeView> {
     return scaffold(
       context,
       image: _episode.image,
-      body: (_) => RefreshIndicator(
+      body: (_, {String? image}) => RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {

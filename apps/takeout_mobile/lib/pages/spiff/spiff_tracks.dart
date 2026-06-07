@@ -47,15 +47,15 @@ class SpiffTracks extends StatelessWidget {
           );
           final isThreeLine = subChildren.length > 1 || spiff.isPodcast;
           children.add(
-            ListTile(
-              isThreeLine: isThreeLine,
+            CoverTrackListTile.mediaTrack(context, e,
+              // isThreeLine: isThreeLine,
               onTap: () => _onTrack(context, i),
               onLongPress: () => _onArtist(context, spiff.creator),
-              leading: _leading(context, e, sameArtwork),
+              // leading: _leading(context, e, sameArtwork),
               trailing: _trailing(downloads.state, trackCache.state, e),
-              subtitle: subtitle,
+              // subtitle: subtitle,
               selected: i == spiff.index,
-              title: Text(e.title),
+              // title: Text(e.title),
             ),
           );
           children.add(Divider());
