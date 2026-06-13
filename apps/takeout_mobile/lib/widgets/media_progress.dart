@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
-import 'package:takeout_mobile/widgets/focus_item.dart';
 
 class MediaProgress extends StatelessWidget {
   final OffsetIdentifier id;
@@ -13,7 +12,7 @@ class MediaProgress extends StatelessWidget {
   const MediaProgress.movie(
     Movie movie,
     this.image, {
-    this.color = Colors.yellow,
+    this.color = Colors.red,
     super.key,
   }) : id = movie;
 
@@ -26,7 +25,6 @@ class MediaProgress extends StatelessWidget {
       child: Stack(
         children: [
           image,
-          // Progress bar overlay at bottom
           if (value != null && value > 0)
             Positioned(
               left: 0,
@@ -34,9 +32,9 @@ class MediaProgress extends StatelessWidget {
               bottom: 0,
               child: LinearProgressIndicator(
                 value: value,
-                minHeight: 6,
-                backgroundColor: Colors.black.withValues(alpha: 0.3),
-                valueColor: AlwaysStoppedAnimation<Color>(color),
+                minHeight: 9,
+                backgroundColor: Colors.white24.withValues(alpha: 0.6),
+                color: color,
               ),
             ),
         ],

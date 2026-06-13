@@ -18,8 +18,6 @@
 // This file was heavily based on the audio_service example app located here:
 // https://github.com/ryanheise/audio_service
 
-import 'dart:io';
-
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/empty.dart';
@@ -37,7 +35,6 @@ import 'package:takeout_mobile/player/player_widgets.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
-import 'package:takeout_mobile/widgets/smooth_media_progress.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
 class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
@@ -205,8 +202,8 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                         Row(
                           children: [
                             repeatButton(),
-                            // Expanded(child: playerSeekBar(context)),
-                            Expanded(child: newSeekBar(context)),
+                            Expanded(child: playerSeekBar(context)),
+                            // Expanded(child: newSeekBar(context)),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -224,32 +221,6 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                 ),
               ),
             ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget newSeekBar(BuildContext context) {
-    final player = context.player;
-    Duration duration = .zero; // TODO get current duration
-    return BlocBuilder<Player, PlayerEvent>(
-      bloc: player,
-      buildWhen: (_, state) => state is PlayerDurationChange,
-      builder: (context, state) {
-        if (state is PlayerDurationChange) {
-          duration = state.duration;
-        }
-        debugPrint('duration is $duration');
-        return RepaintBoundary(
-          child: SmoothMediaProgress(
-            positionStream: player.stream
-                .where((state) => state is PlayerPositionEvent)
-                .cast<PlayerPositionEvent>()
-                .map((state) => state.position),
-            duration: duration,
-            onSeek: (position) => player.seek(position),
-            targetFps: Platform.isLinux ? 4 : 60,
           ),
         );
       },
@@ -294,14 +265,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
           // hide track list
           return const EmptyWidget();
         }
-        if (state is PlayerLoad || state is PlayerIndexChange) {
-          return _trackList(context, player, state);
-        } else if (state is PlayerIndexChange) {
-          return _trackList(context, player, state);
-        } else if (state is PlayerPositionEvent) {
-          return _trackList(context, player, state);
-        }
-        return const EmptyWidget();
+        return _trackList(context, player, state);
       },
     );
   }
@@ -372,23 +336,24 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
     // final playing = (state is PlayerPositionEvent) && state.playing;
     return Column(
       children: [
-        ...List.generate(
-          tracks.length,
-          (index) => CoverTrackListTile.mediaTrack(
-            context,
-            tracks[index],
-            showCover: true,
-            //!sameArtwork,
-            trailing: _cachedIcon(),
-            // selected: index == state.currentIndex,
-            nowPlaying: index == state.currentIndex,
-            // TODO
-            onTap: () => player.playIndex(index),
-            onLongPress: () {
-              _onArtist(context, tracks[index].creator);
-            },
-          ),
-        ),
+        ...List.generate(tracks.length * 2 - 1, (i) {
+          final index = i ~/ 2;
+          return i.isEven
+              ? CoverTrackListTile.mediaTrack(
+                  context,
+                  tracks[index],
+                  showCover: true,
+                  //!sameArtwork,
+                  trailing: _cachedIcon(),
+                  nowPlaying: index == state.currentIndex,
+                  // TODO
+                  onTap: () => player.playIndex(index),
+                  onLongPress: () {
+                    _onArtist(context, tracks[index].creator);
+                  },
+                )
+              : Divider();
+        }),
       ],
     );
   }
@@ -397,7 +362,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
     return Builder(
       builder: (context) {
         final history = context.watch<HistoryCubit>();
-        final player = context.watch<Player>();
+        // final player = context.watch<Player>();
         final tracks = List<StreamHistory>.from(history.state.history.stream);
         tracks.sort((a, b) => b.dateTime.compareTo(a.dateTime));
         final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
@@ -409,8 +374,8 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                 context,
                 tracks[index],
                 showCover: !sameArtwork,
-                selected:
-                    player.state.currentTrack?.title == tracks[index].title,
+                // selected:
+                //     player.state.currentTrack?.title == tracks[index].title,
                 dateTime: tracks[index].dateTime,
               ),
             ),

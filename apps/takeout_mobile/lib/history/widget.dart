@@ -21,6 +21,9 @@ import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/pages/spiff/spiff_details.dart';
+import 'package:takeout_mobile/widgets/custom_list_tile.dart';
+import 'package:takeout_mobile/widgets/focus_tile.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/spiff/widget.dart';
@@ -166,7 +169,7 @@ class SpiffHistoryTile extends StatelessWidget {
       ],
     );
 
-    return ListTile(
+    return FocusedListTile(
       selected: false,
       isThreeLine: true,
       onTap: () => _onTap(context, spiffHistory),
@@ -186,7 +189,7 @@ class SpiffHistoryTile extends StatelessWidget {
       context,
       MaterialPageRoute<void>(
         // TODO consider making spiff refreshable. Need original reference or uri.
-        builder: (_) => SpiffWidget(value: spiffHistory.spiff),
+        builder: (_) => SpiffDetailsPage(value: spiffHistory.spiff),
       ),
     );
   }

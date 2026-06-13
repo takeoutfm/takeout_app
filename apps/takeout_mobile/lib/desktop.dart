@@ -159,20 +159,37 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
           selectedIndex: navigationIndices.indexOf(index),
           onDestinationSelected: (index) {
             final navIndex = navigationIndices[index];
-            if (navIndex == context.app.state.index) {
+            final popped = onNavTapped(
+              context,
+              navIndex.index,
+              selectNextMediaType: false,
+            );
+            if (!popped) {
+              // no pop so update selection or next type
               switch (navIndex) {
                 case .music:
-                  context.selectedMediaType.nextMusicType();
+                  if (context.selectedMediaType.state.isMusic()) {
+                    context.selectedMediaType.nextMusicType();
+                  } else {
+                    context.selectedMediaType.select(.music);
+                  }
                 case .film:
-                  context.selectedMediaType.nextFilmType();
+                  if (context.selectedMediaType.state.isFilm()) {
+                    context.selectedMediaType.nextFilmType();
+                  } else {
+                    context.selectedMediaType.select(.film);
+                  }
                 case .podcast:
-                  context.selectedMediaType.nextPodcastType();
+                  if (context.selectedMediaType.state.isPodcast()) {
+                    context.selectedMediaType.nextPodcastType();
+                  } else {
+                    context.selectedMediaType.select(.podcast);
+                  }
                 case .tv:
-                // TODO
+                  context.selectedMediaType.select(.tv);
                 default:
               }
-            } else {
-              onNavTapped(context, navIndex.index);
+              // print(context.selectedMediaType.state.toJson());
             }
           },
         );

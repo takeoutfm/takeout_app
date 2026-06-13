@@ -84,7 +84,9 @@ class ReleaseTracks extends StatelessWidget {
               ),
             ),
           );
-          children.add(Divider());
+          if (i + 1 != _view.tracks.length) {
+            children.add(Divider());
+          }
         }
         return Column(crossAxisAlignment: .start, children: children);
       },

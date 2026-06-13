@@ -212,15 +212,12 @@ class NumberedTrackListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final trackNumStyle = Theme
-        .of(context)
-        .textTheme
-        .bodySmall;
+    // final trackNumStyle = Theme
+    //     .of(context)
+    //     .textTheme
+    //     .bodySmall;
     final trackNum = number ?? track.trackNum;
-    final leading = Container(
-      padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
-      child: Text('$trackNum', style: trackNumStyle),
-    );
+    final leading = Text('$trackNum');
     // only show artist if different from album artist
     final artist = track.trackArtist != track.artist ? track.trackArtist : '';
     return _TrackListTile(

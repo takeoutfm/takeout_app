@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/app/text_style.dart';
 
 class MyChip extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback onTap;
   final TextOverflow? overflow;
 
   const MyChip({
     super.key,
     required this.label,
-    required this.onPressed,
+    required this.onTap,
     this.overflow,
   });
 
@@ -20,7 +21,7 @@ class MyChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: onPressed,
+        onTap: onTap,
         splashColor: Colors.white.withValues(alpha: 0.2),
         highlightColor: Colors.white.withValues(alpha: 0.1),
         child: Ink(
@@ -32,7 +33,7 @@ class MyChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: AppTextStyle.chip.copyWith(overflow: overflow),
+            style: context.labelLarge?.copyWith(overflow: overflow),
           ),
         ),
       ),

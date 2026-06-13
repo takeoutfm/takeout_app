@@ -51,111 +51,47 @@ class MiniPlayer extends StatelessWidget with PlayerWidgets {
     MediaTrack track,
     Color? backgroundColor,
   ) {
-    bool playing = false;
-    debugPrint('miniplayer _build');
-
-    // if (state is PlayerPositionEvent) {
-    //   if (state.spiff.isNotLive) {
-    //     final value =
-    //         state.position.inMilliseconds / state.duration.inMilliseconds;
-    //     final slider = RepaintBoundary(
-    //       child: LinearProgressIndicator(value: value),
-    //     );
-    //     // final slider = RepaintBoundary(child: SizedBox(
-    //     //   height: 4,
-    //     //   child: Stack(
-    //     //     children: [
-    //     //       Container(
-    //     //         color: Colors.grey.shade700,
-    //     //       ),
-    //     //       FractionallySizedBox(
-    //     //         widthFactor: value,
-    //     //         alignment: Alignment.centerLeft,
-    //     //         child: Container(
-    //     //           color: Theme.of(context).colorScheme.primary,
-    //     //         ),
-    //     //       ),
-    //     //     ],
-    //     //   ),
-    //     // ));
-    //     final duration = state.duration - state.position;
-    //     remaining = RemainingTime(duration);
-    //
-    //     progress = slider;
-    //   }
-    //   playing = state.playing;
-    // }
-
-    return Container(
-      color: backgroundColor,
-      padding: EdgeInsetsGeometry.all(5),
-      height: height,
-      child: Row(
-        mainAxisAlignment: .start,
-        children: [
-          playerImage(context),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Stack(
-              children: [
-                Column(
-                  spacing: 0,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Text(track.title, style: AppTextStyle.miniPlayerTitle),
-                    // Text(track.creator, style: AppTextStyle.miniPlayerSubtitle),
-                    playerTitle(context),
-                    playerArtist(context),
-                    playerProgressBar(context),
-                  ],
-                ),
-                Align(
-                  alignment: .centerRight,
-                  child: SizedBox(
-                    height: 30,
-                    width: 50,
-                    child: RepaintBoundary(child: remainingTime(context)),
+    return GestureDetector(
+      onTap: () => context.app.player(),
+      child: Container(
+        color: backgroundColor,
+        padding: EdgeInsetsGeometry.all(5),
+        height: height,
+        child: Row(
+          mainAxisAlignment: .start,
+          children: [
+            playerImage(context),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Stack(
+                children: [
+                  Column(
+                    spacing: 0,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Text(track.title, style: AppTextStyle.miniPlayerTitle),
+                      // Text(track.creator, style: AppTextStyle.miniPlayerSubtitle),
+                      playerTitle(context),
+                      playerArtist(context),
+                      playerProgressBar(context),
+                    ],
                   ),
-                ),
-              ],
+                  Align(
+                    alignment: .centerRight,
+                    child: SizedBox(
+                      height: 30,
+                      width: 50,
+                      child: RepaintBoundary(child: remainingTime(context)),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          if (playing)
-            IconButton(
-              icon: Icon(Icons.pause, size: height * .4),
-              onPressed: () => context.player.pause(),
-            ),
-          if (playing == false)
-            IconButton(
-              icon: Icon(Icons.play_arrow, size: height * .4),
-              onPressed: () => context.player.play(),
-            ),
-          IconButton(
-            icon: Icon(Icons.queue_music, size: height * .5),
-            onPressed: () => context.app.player(),
-          ),
-        ],
+            playPauseButton(context, iconSize: height * .4),
+          ],
+        ),
       ),
     );
-  }
-}
-
-class RemainingTime extends StatelessWidget {
-  final Duration duration;
-
-  const RemainingTime(this.duration, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return RepaintBoundary(child: Text(format(duration)));
-  }
-
-  String format(Duration d) {
-    final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60);
-
-    return '${minutes.toString().padLeft(2, '0')}:'
-        '${seconds.toString().padLeft(2, '0')}';
   }
 }

@@ -6,16 +6,18 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/music/album_grid.dart';
 import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/music/artist_grid.dart';
+import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
-import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
+import 'package:takeout_mobile/widgets/sliver_box.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/sliver_title.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ArtistDetailsPage extends ClientPage<ArtistView> {
   final Artist _artist;
@@ -31,204 +33,125 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
 
   @override
   Widget page(BuildContext context, ArtistView state) {
-    // final releaseUrl = 'https://musicbrainz.org/release/${_release.reid}';
-    // final releaseGroupUrl =
-    //     'https://musicbrainz.org/release-group/${_release.rgid}';
+    final artistUrl = 'https://musicbrainz.org/artist/${_artist.arid}';
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // Background poster
-                if (state.background != null)
-                  backdropImage(context, state.background!),
-
-                // Dark overlay
-                Container(color: Colors.black.withValues(alpha: 0.65)),
-
-                // Blur effect
-                // BackdropFilter(
-                //   filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), //12
-                //   child: Container(
-                //     color: Colors.black.withOpacity(0.2), // 0.2
-                //   ),
-                // ),
-                SafeArea(
-                  child: Focus(
-                    canRequestFocus: false,
-                    descendantsAreFocusable: true,
-                    child: CustomScrollView(
-                      slivers: [
-                        SliverMenuBar(
-                          items: [
-                            // PopupItem.play(
-                            //   context,
-                            //   (_) => _onPlay(context, state),
-                            // ),
-                            // PopupItem.shuffle(
-                            //   context,
-                            //   (_) => _onShufflePlay(context),
-                            // ),
-                            // PopupItem.download(
-                            //   context,
-                            //   (_) => _onDownload(context, state),
-                            // ),
-                            // PopupItem.playlistAppend(
-                            //   context,
-                            //   (_) => _onPlaylistAppend(context, state),
-                            // ),
-                            // PopupItem.divider(),
-                            // PopupItem.link(
-                            //   context,
-                            //   'MusicBrainz Release',
-                            //   (_) => launchUrl(Uri.parse(releaseUrl)),
-                            // ),
-                            // PopupItem.link(
-                            //   context,
-                            //   'MusicBrainz Release Group',
-                            //   (_) => launchUrl(Uri.parse(releaseGroupUrl)),
-                            // ),
-                            PopupItem.divider(),
-                            PopupItem.reload(
-                              context,
-                              (_) => reloadPage(context),
-                            ),
-                          ],
-                        ),
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsetsGeometry.all(20),
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                // Movie content
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: releaseSmallCover(
-                                        context,
-                                        state.image ?? '',
-                                      ),
-                                    ),
-
-                                    const SizedBox(width: 20),
-
-                                    // Artist details
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            artist.name,
-                                            style:
-                                                AppTextStyle.musicReleaseTitle,
-                                          ),
-
-                                          const SizedBox(height: 12),
-
-                                          // Text(
-                                          //      artist.country,
-                                          //      style: AppTextStyle.musicArtist
-                                          //          .copyWith(
-                                          //            decoration: .underline,
-                                          //          ),
-                                          //    ),
-                                          //
-                                          //  const SizedBox(height: 12),
-                                          Wrap(
-                                            children: [
-                                              Text(
-                                                '${parseYear(artist.date ?? '')}',
-                                                style: AppTextStyle.musicYear,
-                                              ),
-                                              SizedBox(width: 16),
-                                              Text(
-                                                '${artist.area}',
-                                                style: AppTextStyle.musicYear,
-                                              ),
-                                            ],
-                                          ),
-
-                                          if (state.artist.genre?.isNotEmpty ??
-                                              false) ...[
-                                            const SizedBox(height: 16),
-                                            Wrap(
-                                              spacing: 8,
-                                              runSpacing: 8,
-                                              children: [
-                                                MyChip(
-                                                  label:
-                                                      state.artist.genre ?? '',
-                                                  onPressed: () => _onGenre(
-                                                    context,
-                                                    state.artist.genre ?? '',
-                                                  ),
-                                                ),
-                                                MyChip(
-                                                  label: 'Singles',
-                                                  onPressed: () => _onSingles(
-                                                    context,
-                                                    state,
-                                                  ),
-                                                ),
-                                                MyChip(
-                                                  label: 'Popular',
-                                                  onPressed: () => _onPopular(
-                                                    context,
-                                                    state,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (state.releases.isNotEmpty) ...[
-                          SliverTitle(
-                            'Releases',
-                            style: AppTextStyle.musicRelatedTitle,
-                          ),
-                          SliverAlbumGrid(
-                            state.releases,
-                            padding: EdgeInsetsGeometry.only(
-                              left: albumGridEdgeInset,
-                              right: albumGridEdgeInset,
-                              bottom: albumGridEdgeInset,
-                            ),
-                          ),
-                        ],
-                        if (state.similar.isNotEmpty) ...[
-                          SliverTitle(
-                            'Related',
-                            style: AppTextStyle.musicRelatedTitle,
-                          ),
-                          SliverArtistGrid(
-                            state.similar,
-                            padding: EdgeInsetsGeometry.only(
-                              left: albumGridEdgeInset,
-                              right: albumGridEdgeInset,
-                              bottom: albumGridEdgeInset,
-                            ),
-                          ),
-                        ],
-                      ],
+            return SliverStack(
+              backdrop: state.background,
+              slivers: [
+                SliverMenuBar(
+                  items: [
+                    PopupItem.shuffle(context, (_) => _onShuffle(context)),
+                    PopupItem.radio(context, (_) => _onRadio(context)),
+                    PopupItem.playlistAppend(
+                      context,
+                      (_) => _onPlaylistAppend(context),
                     ),
+                    PopupItem.divider(),
+                    PopupItem.singles(context, (_) => _onSingles(context)),
+                    PopupItem.popular(context, (_) => _onPopular(context)),
+                    PopupItem.divider(),
+                    if (_artist.genre != null)
+                      PopupItem.genre(
+                        context,
+                        _artist.genre!.titleCased,
+                        (_) => _onGenre(context, _artist.genre!),
+                      ),
+                    if (_artist.area != null)
+                      PopupItem.area(
+                        context,
+                        _artist.area!,
+                        (_) => _onArea(context, _artist.area!),
+                      ),
+                    PopupItem.divider(),
+                    PopupItem.link(
+                      context,
+                      'MusicBrainz Artist',
+                      (_) => launchUrl(Uri.parse(artistUrl)),
+                    ),
+                    PopupItem.divider(),
+                    // PopupItem.wantList(context, (_) => _onWantList(context)),
+                    PopupItem.reload(context, (_) => reloadPage(context)),
+                  ],
+                ),
+                SliverBox(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      const posterWidth = 300.0;
+                      const minDetailsWidth = 300.0;
+                      final hasRoom =
+                          constraints.maxWidth >= posterWidth + minDetailsWidth;
+                      if (hasRoom) {
+                        // wide view
+                        return IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: .stretch,
+                            children: [
+                              SizedBox(
+                                width: posterWidth,
+                                child: _artistPoster(context, state),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    mainAxisAlignment: .spaceBetween,
+                                    children: [_artistDetails(context, state)],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      // tall view
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _artistPoster(context, state),
+                          const SizedBox(height: 16),
+                          _artistDetails(context, state),
+                        ],
+                      );
+                    },
                   ),
                 ),
+                if (state.releases.isNotEmpty) ...[
+                  SliverTitle(
+                    context.strings.releasesLabel,
+                    style: context.header2,
+                  ),
+                  SliverAlbumGrid(
+                    state.releases,
+                    padding: EdgeInsetsGeometry.only(
+                      left: albumGridEdgeInset,
+                      right: albumGridEdgeInset,
+                      bottom: albumGridEdgeInset,
+                    ),
+                  ),
+                ],
+                if (state.similar.isNotEmpty) ...[
+                  SliverTitle(
+                    context.strings.relatedLabel,
+                    style: context.header2,
+                  ),
+                  SliverArtistGrid(
+                    state.similar,
+                    padding: EdgeInsetsGeometry.only(
+                      left: albumGridEdgeInset,
+                      right: albumGridEdgeInset,
+                      bottom: albumGridEdgeInset,
+                    ),
+                  ),
+                ],
               ],
             );
           },
@@ -237,12 +160,83 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
     );
   }
 
+  Widget _artistPoster(BuildContext context, ArtistView state) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: artistSmallPoster(context, state.image ?? ''),
+    );
+  }
+
+  Widget _artistDetails(BuildContext context, ArtistView state) {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Text(artist.name, style: context.header1),
+        const SizedBox(height: 12),
+        Wrap(
+          children: [
+            Text('${parseYear(artist.date ?? '')}', style: context.body),
+            if (artist.area != null) ...[
+              SizedBox(width: 16),
+              GestureDetector(
+                onTap: () => _onArea(context, artist.area!),
+                child: Text('${artist.area}', style: context.bodyLink),
+              ),
+            ],
+          ],
+        ),
+        if (state.artist.genre?.isNotEmpty ?? false) ...[
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              MyChip(
+                label: state.artist.genre?.titleCased ?? '',
+                onTap: () => _onGenre(context, state.artist.genre ?? ''),
+              ),
+              MyChip(
+                label: context.strings.singlesLabel,
+                onTap: () => _onSingles(context),
+              ),
+              MyChip(
+                label: context.strings.popularLabel,
+                onTap: () => _onPopular(context),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
   void _onGenre(BuildContext context, String genre) {
     push(context, builder: (_) => AllArtistsGrid(genre: genre));
   }
 
-  void _onSingles(BuildContext context, ArtistView state) {
+  void _onRadio(BuildContext context) {
     pushSpiff(
+      title: context.strings.radioLabel,
+      ref: '/music/artists/${_artist.id}/radio',
+      context,
+      (client, {Duration? ttl}) =>
+          client.artistRadio(_artist.id, ttl: Duration.zero),
+    );
+  }
+
+  void _onShuffle(BuildContext context) {
+    pushSpiff(
+      title: context.strings.shuffleLabel,
+      ref: '/music/artists/${_artist.id}/shuffle',
+      context,
+      (client, {Duration? ttl}) =>
+          client.artistPlaylist(_artist.id, ttl: Duration.zero),
+    );
+  }
+
+  void _onSingles(BuildContext context) {
+    pushSpiff(
+      title: context.strings.singlesLabel,
       ref: '/music/artists/${_artist.id}/singles',
       context,
       (client, {Duration? ttl}) =>
@@ -250,8 +244,9 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
     );
   }
 
-  void _onPopular(BuildContext context, ArtistView state) {
+  void _onPopular(BuildContext context) {
     pushSpiff(
+      title: context.strings.popularLabel,
       ref: '/music/artists/${_artist.id}/popular',
       context,
       (client, {Duration? ttl}) =>
@@ -259,32 +254,16 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
     );
   }
 
-  // void _onPlay(BuildContext context, ReleaseView view) {
-  //   context.playlist.replace(
-  //     _release.reference,
-  //     creator: _release.creator,
-  //     title: _release.name,
-  //   );
+  void _onArea(BuildContext context, String area) {
+    push(context, builder: (_) => AllArtistsGrid(area: area));
+  }
+
+  // void _onWantList(BuildContext context) {
+  //   push(context, builder: (_) => ArtistWantListWidget(_artist));
   // }
-  //
-  // void _onArtist(BuildContext context, ReleaseView view) {
-  //   push(context, builder: (_) => ArtistWidget(view.artist));
-  // }
-  //
-  // void _onShufflePlay(BuildContext context) {
-  //   context.playlist.replace(
-  //     _release.reference,
-  //     creator: _release.creator,
-  //     title: _release.name,
-  //     shuffle: true,
-  //   );
-  // }
-  //
-  // void _onDownload(BuildContext context, ReleaseView view) {
-  //   context.downloadRelease(view.release);
-  // }
-  //
-  // void _onPlaylistAppend(BuildContext context, ReleaseView state) {
-  //   showPlaylistAppend(context, state.release.reference);
-  // }
+
+  void _onPlaylistAppend(BuildContext context) {
+    final ref = '/music/artists/${_artist.id}/playlist';
+    showPlaylistAppend(context, ref);
+  }
 }

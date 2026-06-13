@@ -1,20 +1,38 @@
+// Copyright 2026 defsub
+//
+// This file is part of TakeoutFM.
+//
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/track.dart';
-import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/track.dart';
-import 'package:takeout_mobile/app/text_style.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/film/play_movie.dart';
 import 'package:takeout_mobile/pages/people.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_grid.dart';
-import 'package:takeout_mobile/widgets/circle_button.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
+import 'package:takeout_mobile/widgets/sliver_box.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
 
 class PersonDetailsPage extends ClientPage<ProfileView> {
   final Person _person;
@@ -36,179 +54,118 @@ class PersonDetailsPage extends ClientPage<ProfileView> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // Background poster
-                // backdropImage(context, person.backdrop),
-
-                // Dark overlay
-                Container(color: Colors.black.withValues(alpha: 0.65)),
-
-                // Blur effect
-                // BackdropFilter(
-                //   filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), //12
-                //   child: Container(
-                //     color: Colors.black.withOpacity(0.2), // 0.2
-                //   ),
-                // ),
-                SafeArea(
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverAppBar(
-                        backgroundColor: Colors.transparent,
-                        surfaceTintColor: Colors.transparent,
-                        pinned: true,
-                        leading: CircleButton.back(
-                          onTap: () => Navigator.pop(context),
-                        ),
-                        actions: [CircleButton.favorite(onTap: () {})],
-                      ),
-                      SliverToBoxAdapter(
-                        child: Container(
-                          padding: const EdgeInsetsGeometry.all(20),
-                          child: Column(
-                            crossAxisAlignment: .start,
-                            children: [
-                              // Movie content
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  movieSmallPoster(context, person.image),
-
-                                  const SizedBox(width: 20),
-
-                                  // Movie details
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          person.name,
-                                          style: AppTextStyle.movieTitle,
-                                        ),
-
-                                        const SizedBox(height: 12),
-
-                                        Wrap(
-                                          children: [
-                                            Text(
-                                              ymd(person.birthday),
-                                              style: AppTextStyle.movieYear,
-                                            ),
-                                            SizedBox(width: 16),
-                                            Text(
-                                              '${person.birthplace}',
-                                              style: AppTextStyle.movieRuntime,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+            return SliverStack(
+              slivers: [
+                SliverFavoriteBar(onTap: () {}),
+                SliverBox(
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: .start,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: movieSmallPoster(context, person.image),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                Text(person.name, style: context.header1),
+                                const SizedBox(height: 12),
+                                Wrap(
+                                  children: [
+                                    Text(
+                                      ymd(person.birthday),
+                                      style: context.body,
                                     ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 40),
-
-                              // Synopsis
-                              const Text(
-                                'Bio',
-                                style: AppTextStyle.movieOverviewTitle,
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              Text(
-                                '${person.bio}',
-                                style: AppTextStyle.movieOverview,
-                              ),
-                            ],
+                                    SizedBox(width: 16),
+                                    Text(
+                                      '${person.birthplace}',
+                                      style: context.body,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-
-                      if (state.hasStarringMovies()) ...[
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsetsGeometry.all(20),
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                const SizedBox(height: 32),
-                                const Text(
-                                  'Starring',
-                                  style: AppTextStyle.movieRelatedTitle,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SliverMovieGrid(
-                          state.movies.starring,
-                          padding: EdgeInsetsGeometry.only(
-                            left: movieGridEdgeInset,
-                            right: movieGridEdgeInset,
-                            bottom: movieGridEdgeInset,
-                          ),
-                        ),
-                      ],
-
-                      if (state.hasStarringShows()) ...[
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsetsGeometry.all(20),
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                const SizedBox(height: 32),
-                                const Text(
-                                  'Starring Shows',
-                                  style: AppTextStyle.movieRelatedTitle,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SliverTVSeriesGrid(
-                          state.shows.starring,
-                          padding: EdgeInsetsGeometry.only(
-                            left: movieGridEdgeInset,
-                            right: movieGridEdgeInset,
-                            bottom: movieGridEdgeInset,
-                          ),
-                        ),
-                      ],
-
-                      if (state.hasDirecting()) ...[
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsetsGeometry.all(20),
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                const SizedBox(height: 32),
-                                const Text(
-                                  'Directing',
-                                  style: AppTextStyle.movieRelatedTitle,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SliverMovieGrid(
-                          state.movies.directing,
-                          padding: EdgeInsetsGeometry.only(
-                            left: movieGridEdgeInset,
-                            right: movieGridEdgeInset,
-                            bottom: movieGridEdgeInset,
-                          ),
-                        ),
-                      ],
+                      const SizedBox(height: 20),
+                      Text(
+                        context.strings.biographyLabel,
+                        style: context.header2,
+                      ),
+                      const SizedBox(height: 16),
+                      Text('${person.bio}', style: context.body),
                     ],
                   ),
                 ),
+                if (state.hasStarringMovies()) ...[
+                  SliverBox(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Text(
+                          context.strings.starringLabel,
+                          style: context.header2,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SliverMovieGrid(
+                    state.movies.starring,
+                    padding: EdgeInsetsGeometry.only(
+                      left: movieGridEdgeInset,
+                      right: movieGridEdgeInset,
+                      bottom: movieGridEdgeInset,
+                    ),
+                  ),
+                ],
+                if (state.hasStarringShows()) ...[
+                  SliverBox(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Text(
+                          context.strings.starringShowsLabel,
+                          style: context.header2,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SliverTVSeriesGrid(
+                    state.shows.starring,
+                    padding: EdgeInsetsGeometry.only(
+                      left: movieGridEdgeInset,
+                      right: movieGridEdgeInset,
+                      bottom: movieGridEdgeInset,
+                    ),
+                  ),
+                ],
+                if (state.hasDirecting()) ...[
+                  SliverBox(
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Text(
+                          context.strings.directingLabel,
+                          style: context.header2,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SliverMovieGrid(
+                    state.movies.directing,
+                    padding: EdgeInsetsGeometry.only(
+                      left: movieGridEdgeInset,
+                      right: movieGridEdgeInset,
+                      bottom: movieGridEdgeInset,
+                    ),
+                  ),
+                ],
               ],
             );
           },

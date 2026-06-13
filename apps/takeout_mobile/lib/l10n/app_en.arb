@@ -51,7 +51,9 @@
   "castLabel": "Cast",
   "crewLabel": "Crew",
   "starringLabel": "Starring",
+  "starringShowsLabel": "Starring Shows",
   "directingLabel": "Directing",
+  "directorLabel": "Director",
   "writingLabel": "Writing",
   "musicSwitchLabel": "Goto Music",
   "videoSwitchLabel": "Goto Movies",
@@ -102,6 +104,8 @@
   "activityLabel": "Activity",
   "streamHistory": "Stream History",
   "tvEpisodesLabel": "TV Episodes",
+  "synopsisLabel": "Synopsis",
+  "biographyLabel": "Bio",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

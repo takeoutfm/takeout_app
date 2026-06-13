@@ -61,15 +61,17 @@ class TakeoutApp extends StatelessWidget {
             builder: (context, orientation) {
               final index = context.app.state.index;
               if (orientation == .portrait) {
-                if (TakeoutMobileState.navigationIndices.contains(index) ==
-                    false) {
-                  context.app.home();
-                }
+                context.app.home();
+                // if (TakeoutMobileState.navigationIndices.contains(index) ==
+                //     false) {
+                //   context.app.home();
+                // }
               } else {
-                if (TakeoutDesktopState.navigationIndices.contains(index) ==
-                    false) {
-                  context.app.music();
-                }
+                // context.app.music();
+                // if (TakeoutDesktopState.navigationIndices.contains(index) ==
+                //     false) {
+                //   context.app.music();
+                // }
               }
               return MaterialApp(
                 key: globalAppKey,
@@ -125,8 +127,6 @@ class TakeoutMobileWidget extends StatefulWidget {
 class TakeoutMobileState extends TakeoutState<TakeoutMobileWidget> {
   @override
   Widget body(AppState state) {
-    debugPrint('TakeoutMobileState build');
-
     return Scaffold(
       floatingActionButton: RepaintBoundary(child: FabWidget()),
       body: IndexedStack(index: state.navigationIndex.index, children: pages),

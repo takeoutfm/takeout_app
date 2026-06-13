@@ -161,7 +161,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                                               ...state.genres!.map(
                                                 (genre) => MyChip(
                                                   label: genre,
-                                                  onPressed: () =>
+                                                  onTap: () =>
                                                       _onGenre(context, genre),
                                                 ),
                                               ),
@@ -178,7 +178,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                                             ...seasonsList.map(
                                                   (season) => MyChip(
                                                 label: context.strings.seasonLabel(season),
-                                                onPressed: () =>
+                                                onTap: () =>
                                                     _onSeason(context, season),
                                               ),
                                             ),
@@ -226,7 +226,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                                         (cast) => AvatarButton(
                                           name: cast.person.name,
                                           imageUrl: cast.person.image,
-                                          onPressed: () =>
+                                          onTap: () =>
                                               _onPerson(context, cast.person),
                                         ),
                                       ),

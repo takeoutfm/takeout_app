@@ -23,6 +23,15 @@ const textSeparator = ' \u2022 ';
 
 typedef VoidContextCallback = void Function(BuildContext);
 
+extension StringExtensions on String {
+  String get capitalized =>
+      this.isEmpty ? this : '${this[0].toUpperCase()}${substring(1)}';
+
+  String get titleCased => split(' ')
+      .map((word) => word.capitalized)
+      .join(' ');
+}
+
 extension TakeoutDuration on Duration {
   String get inHoursMinutes {
     final mins = inMinutes.remainder(60);

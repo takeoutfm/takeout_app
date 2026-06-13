@@ -44,6 +44,10 @@ Widget releaseSmallCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.cover(url), hero: true).build(context);
 }
 
+Widget artistSmallPoster(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.artistSmallPoster(url), hero: true).build(context);
+}
+
 Widget moviePoster(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.moviePoster(url), hero: true).build(context);
 }
@@ -56,6 +60,7 @@ Widget movieSmallPoster(BuildContext context, String url) {
 }
 
 Widget backdropImage(BuildContext context, String url) {
+  print('backdrop $url');
   return ArtworkBuilder(Artwork.background(url)).build(context);
 }
 

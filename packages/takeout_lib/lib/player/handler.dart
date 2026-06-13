@@ -101,9 +101,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     Duration? maxPositionPeriod,
   }) : _skipToBeginningInterval =
            skipToBeginningInterval ?? const Duration(seconds: 10),
-       _positionSteps = positionSteps ?? 100,
-       _minPositionPeriod = minPositionPeriod ?? const Duration(seconds: 1),
-       _maxPositionPeriod = maxPositionPeriod ?? const Duration(seconds: 5) {
+       _positionSteps = positionSteps ?? 800,
+       _minPositionPeriod =
+           minPositionPeriod ?? const Duration(milliseconds: 250),
+       _maxPositionPeriod =
+           maxPositionPeriod ?? const Duration(milliseconds: 250) {
     _init();
   }
 
@@ -214,8 +216,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     //   }
     // }));
 
-    // player position changes
-    // print('pos min=${_minPositionPeriod} max=${_maxPositionPeriod}');
+    // media_kit on linux seems to not follow min/max here. throttle is used
+    // in all cases now to keep updates at 250ms
     _subscriptions.add(
       _throttlePositionStream(
         _player.createPositionStream(
@@ -270,6 +272,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       _player.icyMetadataStream.listen((event) {
         // TODO icy events are sometimes sent for regular media so ignore them.
         if (_spiff.isLive && event != null) {
+          print('icy event $event');
           final title = event.info?.title;
           if (title == null || title == mediaItem.value?.title) {
             // only proceed if there's a new title
@@ -311,6 +314,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           );
 
           // update LiveTrack change
+          print('icy ${icyTrack.title}');
           onLiveTrackChange(_spiff, icyTrack);
         }
       }),
@@ -392,7 +396,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
   Stream<Duration> _throttlePositionStream(
     Stream<Duration> input, {
-    Duration interval = const Duration(milliseconds: 1000),
+    Duration interval = const Duration(milliseconds: 250),
   }) async* {
     Duration? latest;
     DateTime lastEmit = DateTime.fromMillisecondsSinceEpoch(0);
@@ -506,8 +510,8 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     IndexedAudioSource? audioSource;
 
     if (entry != null && entry.size > 0) {
-      // File? cacheFile = _checkPlaybackCache(item, entry, autoCache ?? false);
-      File? cacheFile = null;
+      File? cacheFile = _checkPlaybackCache(item, entry, autoCache ?? false);
+      // File? cacheFile = null;
       if (cacheFile != null) {
         // only create a caching audio source to create a new cache file
         // during playback, otherwise the uri source below will use the

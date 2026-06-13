@@ -100,28 +100,34 @@ abstract class TakeoutState<T> extends State
     return false;
   }
 
-  void onNavTapped(BuildContext context, int index) {
+  bool onNavTapped(
+    BuildContext context,
+    int index, {
+    bool selectNextMediaType = true,
+  }) {
     final currentIndex = context.app.state.navigationIndex;
-    print('tapped $index / $currentIndex ${currentIndex.index}');
+    bool popped = false;
     if (currentIndex.index == index) {
-      if (!popToFirst()) {
-        context.selectedMediaType.next();
+      popped = popToFirst();
+      if (!popped) {
+        if (selectNextMediaType) {
+          context.selectedMediaType.next();
+        }
       }
     } else {
       context.app.goto(index);
     }
+    return popped;
   }
 
   @override
   Widget build(final BuildContext context) {
-    debugPrint('takeout build');
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
         if (state.authenticated == false) {
           return LoginWidget();
         }
         final navIndex = context.app.state.index;
-        debugPrint('takeout build2');
         return PopScope(
           canPop: false,
           onPopInvokedWithResult: (didPop, _) async {
@@ -130,6 +136,7 @@ abstract class TakeoutState<T> extends State
             }
             NavigatorState? navState = _navigatorState(navIndex);
             if (navState != null) {
+              print('maybePop');
               final handled = await navState.maybePop();
               if (!handled && navIndex == NavigationIndex.home) {
                 // allow pop and app to exit

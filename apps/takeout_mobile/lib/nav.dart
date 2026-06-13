@@ -28,16 +28,26 @@ void push(BuildContext context, {required WidgetBuilder builder}) {
   Navigator.push(context, MaterialPageRoute<void>(builder: builder));
 }
 
-void pushSpiff(BuildContext context, FetchSpiff fetch, {String? ref}) {
+void pushSpiff(
+  BuildContext context,
+  FetchSpiff fetch, {
+  String? ref,
+  String? title,
+}) {
   push(
     context,
-    builder: (_) => SpiffDetailsPage(fetch: fetch, ref: ref),
+    builder: (_) => SpiffDetailsPage(fetch: fetch, ref: ref, title: title),
   );
 }
 
-void pushPlaylist(BuildContext context, FetchSpiff fetch, {String? ref}) {
+void pushPlaylist(
+  BuildContext context,
+  FetchSpiff fetch, {
+  String? ref,
+  String? title,
+}) {
   push(
     context,
-    builder: (_) => SpiffDetailsPage(fetch: fetch, ref: ref),
+    builder: (_) => SpiffDetailsPage(fetch: fetch, ref: ref, title: title),
   );
 }

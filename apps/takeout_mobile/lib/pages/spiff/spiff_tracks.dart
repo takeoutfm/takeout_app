@@ -1,3 +1,20 @@
+// Copyright 2026 defsub
+//
+// This file is part of TakeoutFM.
+//
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
@@ -38,7 +55,7 @@ class SpiffTracks extends StatelessWidget {
         final children = <Widget>[];
         final tracks = spiff.playlist.tracks;
         final sameArtwork = tracks.every((e) => e.image == tracks.first.image);
-        for (var i = 0; i < spiff.playlist.tracks.length; i++) {
+        for (var i = 0; i < spiff.length; i++) {
           final e = tracks[i];
           final subChildren = _subtitle(trackCache.state, offsets.state, e);
           final subtitle = Column(
@@ -58,7 +75,9 @@ class SpiffTracks extends StatelessWidget {
               // title: Text(e.title),
             ),
           );
-          children.add(Divider());
+          if (i + 1 != spiff.length) {
+            children.add(Divider());
+          }
         }
         return Column(crossAxisAlignment: .start, children: children);
       },

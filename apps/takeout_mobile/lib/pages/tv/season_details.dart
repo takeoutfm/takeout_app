@@ -27,6 +27,7 @@ class SeasonDetailsPage extends ClientPage<TVSeriesView> {
 
   @override
   Widget page(BuildContext context, TVSeriesView state) {
+    final episodes = state.episodes.where((e) => e.season == _season).toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
@@ -66,15 +67,11 @@ class SeasonDetailsPage extends ClientPage<TVSeriesView> {
                       ),
 
                       SliverTitle(
-                        'Episodes (${state.episodes.length})',
+                        'Episodes (${episodes.length})',
                         style: AppTextStyle.musicRelatedTitle,
                       ),
 
-                      SliverTVEpisodeGrid(
-                        state.episodes
-                            .where((e) => e.season == _season)
-                            .toList(),
-                      ),
+                      SliverTVEpisodeGrid(episodes),
                     ],
                   ),
                 ),

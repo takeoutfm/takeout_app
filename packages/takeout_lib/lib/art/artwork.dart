@@ -78,6 +78,14 @@ class Artwork {
     placeholder: const Icon(Icons.album),
   );
 
+  factory Artwork.artistSmallPoster(String url) => Artwork(
+    url,
+    300,
+    300,
+    BoxFit.fitHeight,
+    placeholder: const Icon(Icons.movie),
+  );
+
   factory Artwork.moviePoster(String url) => Artwork(
     url,
     342,

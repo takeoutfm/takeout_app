@@ -1,25 +1,45 @@
+// Copyright 2026 defsub
+//
+// This file is part of TakeoutFM.
+//
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/client.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
-import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
+import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/pages/spiff/spiff_tracks.dart';
-import 'package:takeout_mobile/widgets/circle_button.dart';
+import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
+import 'package:takeout_mobile/widgets/sliver_box.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
 
 typedef FetchSpiff = Future<void> Function(ClientCubit, {Duration? ttl});
 
 class SpiffDetailsPage extends ClientPage<Spiff> {
   final FetchSpiff? fetch;
   final String? ref;
+  final String? title;
 
-  SpiffDetailsPage({super.key, super.value, this.fetch, this.ref});
+  SpiffDetailsPage({super.key, super.value, this.fetch, this.ref, this.title});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) async {
@@ -28,219 +48,117 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
 
   @override
   Widget page(BuildContext context, Spiff state) {
+    return Builder(
+      builder: (context) {
+        final trackCache = context.watch<TrackCacheCubit>();
+        final spiffCache = context.watch<SpiffCacheCubit>();
+        final isDownloaded = spiffCache.state.contains(state);
+        final isCached = trackCache.state.containsAll(state.playlist.tracks);
+        return _body(context, state, isDownloaded || isCached);
+      },
+    );
+  }
+
+  Widget _body(BuildContext context, Spiff state, bool deleteAllowed) {
+    String? background = state.playlist.background;
+    if (background == null && state.isNotEmpty) {
+      final t = state[state.index < 0 ? 0 : state.index];
+      if (t.background.isNotEmpty) {
+        background = t.background;
+      }
+    }
+    final reference = ref;
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // Background poster
-                backdropImage(context, state.playlist.background ?? ''),
-
-                // Dark overlay
-                Container(color: Colors.black.withValues(alpha: 0.65)),
-
-                // Blur effect
-                // BackdropFilter(
-                //   filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), //12
-                //   child: Container(
-                //     color: Colors.black.withOpacity(0.2), // 0.2
-                //   ),
-                // ),
-                SafeArea(
-                  child: Focus(
-                    canRequestFocus: false,
-                    descendantsAreFocusable: true,
-                    child: CustomScrollView(
-                      slivers: [
-                        SliverAppBar(
-                          backgroundColor: Colors.transparent,
-                          surfaceTintColor: Colors.transparent,
-                          pinned: true,
-                          leading: CircleButton.back(
-                            onTap: () => Navigator.pop(context),
-                          ),
-                          actions: [
-                            popupMenu(
-                              context,
-                              [
-                                PopupItem.play(
-                                  context,
-                                  (_) => _onPlay(context, state),
-                                ),
-                                // PopupItem.shuffle(
-                                //   context,
-                                //   (_) => _onShufflePlay(context),
-                                // ),
-                                // PopupItem.download(
-                                //   context,
-                                //       (_) => _onDownload(context, state),
-                                // ),
-                                // PopupItem.playlistAppend(
-                                //   context,
-                                //       (_) => _onPlaylistAppend(context, state),
-                                // ),
-                                // PopupItem.divider(),
-                                // PopupItem.link(
-                                //   context,
-                                //   'MusicBrainz Release',
-                                //       (_) => launchUrl(Uri.parse(releaseUrl)),
-                                // ),
-                                // PopupItem.link(
-                                //   context,
-                                //   'MusicBrainz Release Group',
-                                //       (_) => launchUrl(Uri.parse(releaseGroupUrl)),
-                                // ),
-                                PopupItem.divider(),
-                                PopupItem.reload(
-                                  context,
-                                  (_) => reloadPage(context),
-                                ),
-                              ],
-                              icon: null,
-                              child: CircleButton.dropDown(),
-                            ),
-                          ],
-                        ),
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsetsGeometry.all(20),
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                // Movie content
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: releaseSmallCover(
-                                        context,
-                                        state.cover,
-                                      ),
-                                    ),
-
-                                    const SizedBox(width: 20),
-
-                                    // Movie details
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            state.playlist.title,
-                                            style:
-                                                AppTextStyle.musicReleaseTitle,
-                                          ),
-
-                                          const SizedBox(height: 12),
-
-                                          Text(
-                                            state.creator ?? 'none',
-                                            style: AppTextStyle.musicArtist
-                                                .copyWith(
-                                                  decoration: .underline,
-                                                ),
-                                          ),
-
-                                          const SizedBox(height: 12),
-
-                                          Wrap(
-                                            children: [
-                                              // Text(
-                                              //   'no year',
-                                              //   style: AppTextStyle.musicYear,
-                                              // ),
-                                              // SizedBox(width: 16),
-                                              Text(
-                                                context.strings.trackCount(
-                                                  state.playlist.tracks.length,
-                                                ),
-                                                style: AppTextStyle
-                                                    .musicTrackCount,
-                                              ),
-                                            ],
-                                          ),
-
-                                          // const SizedBox(height: 16),
-                                          // Wrap(
-                                          //   spacing: 8,
-                                          //   runSpacing: 8,
-                                          //   children: [
-                                          //     MyChip(
-                                          //       label: state.artist.genre ?? '',
-                                          //       onPressed: () => _onGenre(
-                                          //         context,
-                                          //         state.artist.genre ?? '',
-                                          //       ),
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 40),
-
-                                Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: [
-                                    FilledButton.icon(
-                                      onPressed: () => _onPlay(context, state),
-                                      label: Text('Play'),
-                                      icon: Icon(Icons.play_arrow),
-                                    ),
-                                  ],
-                                ),
-
-                                const SizedBox(height: 40),
-
-                                // Tracks
-                                // const Text(
-                                //   'Tracks',
-                                //   style: TextStyle(
-                                //     color: Colors.white,
-                                //     fontSize: 24,
-                                //     fontWeight: FontWeight.bold,
-                                //   ),
-                                // ),
-                                //
-                                // const SizedBox(height: 16),
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black.withValues(alpha: 0.50),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: SpiffTracks(state),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        //   if (state.similar.isNotEmpty) ...[
-                        //     SliverTitle(
-                        //       'Related',
-                        //       style: AppTextStyle.musicRelatedTitle,
-                        //     ),
-                        //     SliverAlbumGrid(
-                        //       state.similar,
-                        //       padding: EdgeInsetsGeometry.only(
-                        //         left: albumGridEdgeInset,
-                        //         right: albumGridEdgeInset,
-                        //         bottom: albumGridEdgeInset,
-                        //       ),
-                        //     ),
-                        //   ],
-                      ],
+            return SliverStack(
+              backdrop: background,
+              slivers: [
+                SliverMenuBar(
+                  title: title,
+                  items: [
+                    if (fetch != null)
+                      PopupItem.reload(context, (_) => reloadPage(context)),
+                    PopupItem.shuffle(
+                      context,
+                      (_) => _onShuffle(context, state),
                     ),
+                    if (reference != null)
+                      PopupItem.playlistAppend(
+                        context,
+                        (_) => _onPlaylistAppend(context, reference),
+                      ),
+                    if (deleteAllowed)
+                      PopupItem.delete(
+                        context,
+                        context.strings.deleteItem,
+                        (_) => _onDelete(context, state),
+                      ),
+                  ],
+                ),
+                SliverBox(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      const posterWidth = 223.0;
+                      const minDetailsWidth = 300.0;
+                      final hasRoom =
+                          constraints.maxWidth >= posterWidth + minDetailsWidth;
+                      if (hasRoom) {
+                        // wide view
+                        return IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: .stretch,
+                            children: [
+                              SizedBox(
+                                width: posterWidth,
+                                child: _spiffCover(context, state),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    mainAxisAlignment: .spaceBetween,
+                                    children: [
+                                      _spiffDetails(context, state),
+                                      SizedBox(height: 16),
+                                      _playButtons(context, state),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      // tall view
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _spiffCover(context, state),
+                          const SizedBox(height: 16),
+                          _playButtons(context, state),
+                          const SizedBox(height: 16),
+                          _spiffDetails(context, state),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+                SliverBox(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.50),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: SpiffTracks(state),
                   ),
                 ),
               ],
@@ -251,17 +169,57 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
     );
   }
 
-  void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => AllArtistsGrid(genre: genre));
+  Widget _playButtons(BuildContext context, Spiff state) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        FilledButton.icon(
+          onPressed: () => _onPlay(context, state),
+          label: Text('Play'),
+          icon: Icon(Icons.play_arrow),
+        ),
+      ],
+    );
   }
 
-  // void _onPlay(BuildContext context, ReleaseView view) {
-  //   context.playlist.replace(
-  //     _release.reference,
-  //     creator: _release.creator,
-  //     title: _release.name,
-  //   );
-  // }
+  Widget _spiffCover(BuildContext context, Spiff state) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: releaseSmallCover(context, state.cover),
+    );
+  }
+
+  Widget _spiffDetails(BuildContext context, Spiff state) {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Text(state.playlist.title, style: context.header1),
+        const SizedBox(height: 12),
+        Text(state.creator ?? 'none', style: context.body),
+        const SizedBox(height: 12),
+        Wrap(
+          children: [
+            Text(
+              context.strings.trackCount(state.playlist.tracks.length),
+              style: context.body,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            MyChip(
+              label: context.strings.shuffleLabel,
+              onTap: () => _onShuffle(context, state),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   void _onPlay(BuildContext context, Spiff spiff) {
     // final offsets = context.read<OffsetCacheCubit>();
@@ -274,24 +232,40 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
     }
   }
 
-  // void _onArtist(BuildContext context, Spiff spiff) {
-  //   push(context, builder: (_) => ArtistDetailsPage(spiff.creator ?? ''));
-  // }
+  void _onDelete(BuildContext context, Spiff spiff) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(context.strings.confirmDelete),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            TextButton(
+              onPressed: () {
+                _onDeleteConfirmed(context, spiff);
+                Navigator.pop(ctx);
+                Navigator.pop(context);
+              },
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  // void _onShufflePlay(BuildContext context) {
-  //   context.playlist.replace(
-  //     _release.reference,
-  //     creator: _release.creator,
-  //     title: _release.name,
-  //     shuffle: true,
-  //   );
-  // }
+  void _onDeleteConfirmed(BuildContext context, Spiff spiff) {
+    context.remove(spiff);
+  }
 
-  // void _onDownload(BuildContext context, ReleaseView view) {
-  //   context.downloadRelease(view.release);
-  // }
-  //
-  // void _onPlaylistAppend(BuildContext context, ReleaseView state) {
-  //   showPlaylistAppend(context, state.release.reference);
-  // }
+  void _onPlaylistAppend(BuildContext context, String reference) {
+    showPlaylistAppend(context, reference);
+  }
+
+  void _onShuffle(BuildContext context, Spiff spiff) {
+    context.client.result<Spiff>(spiff.shuffle());
+  }
 }

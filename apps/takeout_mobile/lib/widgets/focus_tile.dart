@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:takeout_mobile/widgets/custom_list_tile.dart';
 
 class FocusedListTile extends StatefulWidget {
@@ -55,38 +56,57 @@ class _FocusedListTileState extends State<FocusedListTile> {
   Widget build(BuildContext context) {
     final focused = focusNode.hasFocus;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 120),
+    return Focus(
+      focusNode: focusNode,
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.enter) {
+          widget.onTap?.call();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: GestureDetector(
+        onTap: () {
+          focusNode.requestFocus();
+          widget.onTap?.call();
+        },
+        // onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
 
-      decoration: BoxDecoration(
-        color: focused
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.transparent,
+          decoration: BoxDecoration(
+            color: focused
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.transparent,
 
-        borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12),
 
-        border: Border.all(
-          color: focused ? Colors.white : Colors.transparent,
-          width: 3,
-        ),
+            border: Border.all(
+              color: focused ? Colors.white : Colors.transparent,
+              width: 3,
+            ),
 
-        boxShadow: focused
-            ? [BoxShadow(blurRadius: 16, color: Colors.white24)]
-            : [],
-      ),
+            boxShadow: focused
+                ? [BoxShadow(blurRadius: 16, color: Colors.white24)]
+                : [],
+          ),
 
-      child: SizedBox(
-        height: 100,
-        child: CustomListTile(
-          focusNode: focusNode,
-          title: widget.title!,
-          subtitle: widget.subtitle,
-          leading: widget.leading,
-          trailing: widget.trailing,
-          onTap: widget.onTap,
-          onLongPress: widget.onLongPress,
-          selected: widget.selected,
-          tileColor: widget.tileColor,
+          child: SizedBox(
+            height: 100,
+            child: CustomListTile(
+              // focusNode: focusNode,
+              title: widget.title!,
+              subtitle: widget.subtitle,
+              leading: widget.leading,
+              trailing: widget.trailing,
+              onTap: widget.onTap,
+              onLongPress: widget.onLongPress,
+              selected: widget.selected,
+              tileColor: widget.tileColor,
+            ),
+          ),
         ),
       ),
     );

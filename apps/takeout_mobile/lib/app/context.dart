@@ -28,6 +28,47 @@ export 'package:takeout_lib/context/context.dart';
 extension AppContext on BuildContext {
   AppLocalizations get strings => AppLocalizations.of(this)!;
 
+  TextStyle? get displayLarge => Theme.of(this).textTheme.displayLarge;
+
+  TextStyle? get displayMedium => Theme.of(this).textTheme.displayMedium;
+
+  TextStyle? get displaySmall => Theme.of(this).textTheme.displaySmall;
+
+  TextStyle? get headlineLarge => Theme.of(this).textTheme.headlineLarge;
+
+  TextStyle? get headlineMedium => Theme.of(this).textTheme.headlineMedium;
+
+  TextStyle? get headlineSmall => Theme.of(this).textTheme.headlineSmall;
+
+  TextStyle? get titleLarge => Theme.of(this).textTheme.titleLarge;
+
+  TextStyle? get titleMedium => Theme.of(this).textTheme.titleMedium;
+
+  TextStyle? get titleSmall => Theme.of(this).textTheme.titleSmall;
+
+  TextStyle? get bodyLarge => Theme.of(this).textTheme.bodyLarge;
+
+  TextStyle? get bodyMedium => Theme.of(this).textTheme.bodyMedium;
+
+  TextStyle? get bodySmall => Theme.of(this).textTheme.bodySmall;
+
+  TextStyle? get labelLarge => Theme.of(this).textTheme.labelLarge;
+
+  TextStyle? get labelMedium => Theme.of(this).textTheme.labelMedium;
+
+  TextStyle? get labelSmall => Theme.of(this).textTheme.labelSmall;
+
+  /// used for main headers
+  TextStyle? get header1 => headlineMedium;
+
+  /// used for secondary headers
+  TextStyle? get header2 => headlineSmall;
+
+  /// used for basic text
+  TextStyle? get body => bodyMedium;
+
+  TextStyle? get bodyLink => bodyMedium?.copyWith(decoration: .underline);
+
   void logout() {
     tokens.removeAll();
     app.logout();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
+import 'package:takeout_mobile/widgets/text.dart';
 
 class SliverMenuBar extends StatelessWidget {
   final String? title;
@@ -23,7 +24,7 @@ class SliverMenuBar extends StatelessWidget {
       leading: allowBack
           ? CircleButton.back(onTap: () => Navigator.pop(context))
           : null,
-      title: title != null ? Text(title!) : null,
+      title: OptionalText(title),
       actions: [
         popupMenu(context, items, icon: null, child: CircleButton.dropDown()),
       ],

@@ -166,7 +166,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get starringLabel => 'Starring';
 
   @override
+  String get starringShowsLabel => 'Starring Shows';
+
+  @override
   String get directingLabel => 'Directing';
+
+  @override
+  String get directorLabel => 'Director';
 
   @override
   String get writingLabel => 'Writing';
@@ -317,6 +323,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tvEpisodesLabel => 'TV Episodes';
+
+  @override
+  String get synopsisLabel => 'Synopsis';
+
+  @override
+  String get biographyLabel => 'Bio';
 
   @override
   String deleteTitle(String title) {

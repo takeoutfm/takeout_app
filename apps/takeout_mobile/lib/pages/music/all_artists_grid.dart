@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/pages/music/artist_grid.dart';
+import 'package:takeout_mobile/widgets/menu.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
 class AllArtistsGrid extends ClientPage<ArtistsView> {
@@ -19,10 +22,16 @@ class AllArtistsGrid extends ClientPage<ArtistsView> {
   @override
   Widget page(BuildContext context, ArtistsView state) {
     return RefreshIndicator(
-        onRefresh: () => reloadPage(context),
-        child: CustomScrollView(
-          slivers: [SliverArtistGrid(_artists(state))],
-        ),
+      onRefresh: () => reloadPage(context),
+      child: CustomScrollView(
+        slivers: [
+          SliverMenuBar(
+            title: genre?.titleCased,
+            items: [PopupItem.reload(context, (_) => reloadPage(context))],
+          ),
+          SliverArtistGrid(_artists(state)),
+        ],
+      ),
     );
   }
 

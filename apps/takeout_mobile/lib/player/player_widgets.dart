@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/player/player.dart';
@@ -17,13 +16,13 @@ mixin PlayerWidgets {
     bool isBuffering = false;
     return BlocBuilder<Player, PlayerEvent>(
       buildWhen: (_, state) =>
-          state is PlayerPlay ||
-          state is PlayerPause ||
+          state is PlayerProcessingEvent &&
+              (isPlaying != state.playing || isBuffering != state.buffering) ||
           state is PlayerLoad ||
           state is PlayerIndexChange ||
           state is PlayerTrackChange,
       builder: (context, state) {
-        // debugPrint('playerImage');
+        debugPrint('playerImage');
         if (state is PlayerPositionEvent) {
           track = state.currentTrack;
           isPlaying = state.playing;
@@ -108,6 +107,24 @@ mixin PlayerWidgets {
     );
   }
 
+  Widget playPauseButton(BuildContext context, {double? iconSize}) {
+    bool playing = false;
+    return BlocBuilder<Player, PlayerEvent>(
+      buildWhen: (_, state) =>
+          state is PlayerPositionEvent && state.playing != playing,
+      builder: (context, state) {
+        if (state is PlayerPositionEvent) {
+          playing = state.playing;
+        }
+        return IconButton(
+          icon: Icon(playing ? Icons.pause : Icons.play_arrow, size: iconSize),
+          onPressed: () =>
+              playing ? context.player.pause() : context.player.play(),
+        );
+      },
+    );
+  }
+
   Widget playerProgressBar(BuildContext context) {
     double value = 0;
     return BlocBuilder<Player, PlayerEvent>(
@@ -133,7 +150,6 @@ mixin PlayerWidgets {
       buildWhen: (_, state) =>
           state is PlayerIndexChange || state is PlayerPositionEvent,
       builder: (context, state) {
-        // debugPrint('playerSeekbar');
         if (state.spiff.isEmpty || state.spiff.isLive) {
           // no seekbar streams
           return const EmptyWidget();
@@ -184,22 +200,48 @@ mixin PlayerWidgets {
 
   Widget remainingTime(BuildContext context) {
     String? text;
+    Duration position = Duration.zero;
     return BlocBuilder<Player, PlayerEvent>(
       buildWhen: (_, state) =>
-          state is PlayerIndexChange || state is PlayerPositionEvent,
+          state is PlayerIndexChange ||
+          (state is PlayerPositionEvent &&
+              state.position.inSeconds != position.inSeconds),
       builder: (context, state) {
         if (state is PlayerPositionEvent) {
-          final r = state.duration - state.position;
-          final minutes = r.inMinutes.remainder(60);
-          final seconds = r.inSeconds.remainder(60);
-          text =
-              '${minutes.toString().padLeft(2, '0')}:'
-              '${seconds.toString().padLeft(2, '0')}';
+          position = state.position;
+          final r = state.duration - position;
+          text = _durationText(r);
         }
         final t = text;
         return t != null ? Text(t) : EmptyWidget();
       },
     );
+  }
+
+  Widget positionTime(BuildContext context) {
+    String? text;
+    Duration position = Duration.zero;
+    return BlocBuilder<Player, PlayerEvent>(
+      buildWhen: (_, state) =>
+      state is PlayerIndexChange ||
+          (state is PlayerPositionEvent &&
+              state.position.inSeconds != position.inSeconds),
+      builder: (context, state) {
+        if (state is PlayerPositionEvent) {
+          position = state.position;
+          text = _durationText(position);
+        }
+        final t = text;
+        return t != null ? Text(t) : EmptyWidget();
+      },
+    );
+  }
+
+  String _durationText(Duration d) {
+    final minutes = d.inMinutes.remainder(60);
+    final seconds = d.inSeconds.remainder(60);
+    return'${minutes.toString().padLeft(2, '0')}:'
+        '${seconds.toString().padLeft(2, '0')}';
   }
 
   Widget _seekBar(

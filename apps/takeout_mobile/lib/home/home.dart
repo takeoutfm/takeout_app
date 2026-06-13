@@ -23,13 +23,9 @@ import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_mobile/home/grid.dart';
 import 'package:takeout_mobile/home/media_bar.dart';
-import 'package:takeout_mobile/pages/film.dart';
 import 'package:takeout_mobile/pages/film/movie_details.dart';
 import 'package:takeout_mobile/pages/music/release_details.dart';
 import 'package:takeout_mobile/pages/podcast/series_details.dart';
-import 'package:takeout_mobile/pages/podcasts.dart';
-import 'package:takeout_mobile/pages/release.dart';
-import 'package:takeout_mobile/pages/tv.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 

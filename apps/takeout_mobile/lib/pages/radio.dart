@@ -195,7 +195,9 @@ class RadioWidget extends ClientPage<RadioView> {
   }
 
   void _onStation(BuildContext context, Station station) {
+    print('/api/stations/${station.id}/playlist');
     pushSpiff(
+      title: 'Station: ${station.name}',
       ref: '/api/stations/${station.id}/playlist',
       context,
       (client, {Duration? ttl}) =>

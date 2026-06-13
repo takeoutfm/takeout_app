@@ -204,7 +204,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                                         (cast) => AvatarButton(
                                           name: cast.person.name,
                                           imageUrl: cast.person.image,
-                                          onPressed: () =>
+                                          onTap: () =>
                                               _onPerson(context, cast.person),
                                         ),
                                       ),

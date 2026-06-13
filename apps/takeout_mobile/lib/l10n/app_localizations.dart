@@ -406,11 +406,23 @@ abstract class AppLocalizations {
   /// **'Starring'**
   String get starringLabel;
 
+  /// No description provided for @starringShowsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Starring Shows'**
+  String get starringShowsLabel;
+
   /// No description provided for @directingLabel.
   ///
   /// In en, this message translates to:
   /// **'Directing'**
   String get directingLabel;
+
+  /// No description provided for @directorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Director'**
+  String get directorLabel;
 
   /// No description provided for @writingLabel.
   ///
@@ -711,6 +723,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'TV Episodes'**
   String get tvEpisodesLabel;
+
+  /// No description provided for @synopsisLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Synopsis'**
+  String get synopsisLabel;
+
+  /// No description provided for @biographyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get biographyLabel;
 
   /// No description provided for @deleteTitle.
   ///
