@@ -25,7 +25,7 @@ mixin _GridTile<T> {
     SpiffTrackCacheState cache, {
     String? subtitle,
   }) {
-    final title = Text(item.album, style: context.bodySmall);
+    final title = Text(item.album, style: context.gridTitle);
     final cached = cache.isCached(item);
     final downloaded = cache.isDownloaded(item);
     return Material(
@@ -38,7 +38,7 @@ mixin _GridTile<T> {
       child: GridTileBar(
         backgroundColor: Colors.black.withValues(alpha: 0.65),
         title: title,
-        subtitle: OptionalText(subtitle, style: context.bodySmall),
+        subtitle: OptionalText(subtitle, style: context.gridSubtitle),
         trailing: cached
             ? Icon(downloaded ? iconsDownloadDone : iconsDownload)
             : null,

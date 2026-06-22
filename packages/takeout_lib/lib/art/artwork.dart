@@ -243,7 +243,7 @@ class Artwork {
     url,
     null,
     null,
-    BoxFit.fill,
+    BoxFit.contain,
     placeholder: const Icon(Icons.image),
   );
 

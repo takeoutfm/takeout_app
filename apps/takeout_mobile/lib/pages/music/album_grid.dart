@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/model.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/music/release_details.dart';
 
@@ -40,8 +41,10 @@ class SliverAlbumGrid extends StatelessWidget {
                     clipBehavior: Clip.antiAlias,
                     child: GridTileBar(
                       backgroundColor: Colors.black.withValues(alpha: 0.65),
-                      title: Text(a.album),
-                      subtitle: subtitle ? Text(a.creator) : null,
+                      title: Text(a.album, style: context.gridTitle),
+                      subtitle: subtitle
+                          ? Text(a.creator, style: context.gridSubtitle)
+                          : null,
                     ),
                   ),
                   child: ClipRRect(

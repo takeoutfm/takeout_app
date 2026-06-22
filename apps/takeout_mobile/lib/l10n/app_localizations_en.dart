@@ -477,4 +477,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
     return 'Season $numString';
   }
+
+  @override
+  String episodesCount(int num) {
+    final intl.NumberFormat numNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String numString = numNumberFormat.format(num);
+
+    return 'Episodes ($numString)';
+  }
+
+  @override
+  String timeRemaining(String time) {
+    return '$time remaining';
+  }
 }

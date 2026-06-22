@@ -16,6 +16,20 @@ class MediaProgress extends StatelessWidget {
     super.key,
   }) : id = movie;
 
+  const MediaProgress.episode(
+      Episode episode,
+      this.image, {
+        this.color = Colors.red,
+        super.key,
+      }) : id = episode;
+
+  const MediaProgress.tvEpisode(
+      TVEpisode episode,
+      this.image, {
+        this.color = Colors.red,
+        super.key,
+      }) : id = episode;
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<OffsetCacheCubit>().state;

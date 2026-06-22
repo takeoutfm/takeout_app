@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/model.dart';
-import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/music/release_details.dart';
 import 'package:takeout_mobile/pages/podcast/episode_details.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -17,19 +14,14 @@ class SliverEpisodeGrid extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const SliverEpisodeGrid(
-      this._episodes, {
-        super.key,
-        this.subtitle = true,
-        this.padding = const EdgeInsetsGeometry.all(episodeGridEdgeInset),
-      });
+    this._episodes, {
+    super.key,
+    this.subtitle = true,
+    this.padding = const EdgeInsetsGeometry.all(episodeGridEdgeInset),
+  });
 
   @override
   Widget build(BuildContext context) {
-    _episodes.forEach((e) {
-      print(e.title);
-      print(e.author);
-      print(e.image);
-    });
     return SliverPadding(
       padding: padding,
       sliver: SliverGrid.extent(
@@ -38,7 +30,7 @@ class SliverEpisodeGrid extends StatelessWidget {
         mainAxisSpacing: episodeGridSpacing,
         children: [
           ..._episodes.map(
-                (e) => InkWell(
+            (e) => InkWell(
               onTap: () => _onTap(context, e),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -73,7 +65,7 @@ class SliverEpisodeGrid extends StatelessWidget {
     push(
       context,
       builder: (context) {
-          return EpisodeDetailsPage(e);
+        return EpisodeDetailsPage(e);
       },
     );
   }

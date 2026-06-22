@@ -113,7 +113,7 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           _releaseCover(context, state),
                           const SizedBox(height: 16),
@@ -166,6 +166,11 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
           onPressed: () => _onPlay(context, state),
           label: Text(context.strings.playLabel),
           icon: Icon(Icons.play_arrow),
+        ),
+        FilledButton.icon(
+          onPressed: () => _onShufflePlay(context),
+          label: Text(context.strings.shuffleLabel),
+          icon: Icon(Icons.shuffle),
         ),
       ],
     );

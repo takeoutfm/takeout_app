@@ -67,7 +67,24 @@ extension AppContext on BuildContext {
   /// used for basic text
   TextStyle? get body => bodyMedium;
 
+  /// used for body text that is hyperlink
   TextStyle? get bodyLink => bodyMedium?.copyWith(decoration: .underline);
+
+  /// used for grid item title
+  TextStyle? get gridTitle => labelLarge;
+
+  /// used for grid item subtitle
+  TextStyle? get gridSubtitle => labelLarge?.copyWith(color: Colors.white60);
+
+  /// used for film and show taglines
+  TextStyle? get tagline => bodyLarge?.copyWith(
+    fontStyle: .italic,
+    fontWeight: .w600,
+    color: Colors.white70,
+  );
+
+  /// used for media details
+  TextStyle? get details => bodyMedium;
 
   void logout() {
     tokens.removeAll();

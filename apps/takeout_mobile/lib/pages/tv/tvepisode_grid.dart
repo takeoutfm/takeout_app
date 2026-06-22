@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/tv/tvepisode_details.dart';
 import 'package:takeout_mobile/widgets/focus_item.dart';
+import 'package:takeout_mobile/widgets/media_progress.dart';
 
 const tvEpisodeGridEdgeInset = 20.0;
 const tvEpisodeGridSpacing = 12.0;
@@ -43,10 +45,16 @@ class SliverTVEpisodeGrid extends StatelessWidget {
                       clipBehavior: Clip.antiAlias,
                       child: GridTileBar(
                         backgroundColor: Colors.black.withValues(alpha: 0.65),
-                        title: Text('${e.episode}. ${e.name}'),
+                        title: Text(
+                          '${e.episode}. ${e.name}',
+                          style: context.gridTitle,
+                        ),
                       ),
                     ),
-                    child: gridTVEpisode(context, e.image),
+                    child: MediaProgress.tvEpisode(
+                      e,
+                      gridTVEpisode(context, e.image),
+                    ),
                   ),
                 ),
               ),

@@ -1276,6 +1276,8 @@ class TVEpisode extends DownloadIdentifier
 
   String get smallImage => _stillImageUrl(size: 'w185');
 
+  String get originalImage => _stillImageUrl(size: 'original');
+
   String get reference => '/tv/episodes/$id';
 
   String get vote {

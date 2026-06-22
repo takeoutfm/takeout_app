@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/video/track.dart';
@@ -13,6 +14,10 @@ import 'package:takeout_mobile/pages/film/person_details.dart';
 import 'package:takeout_mobile/pages/film/play_movie.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
+import 'package:takeout_mobile/widgets/media_progress.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
+import 'package:takeout_mobile/widgets/sliver_title.dart';
 
 class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
   final TVEpisode _episode;
@@ -35,188 +40,165 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            // final offsetState = context.watch<OffsetCacheCubit>().state;
-            // final hasProgress = offsetState.hasValue(_movie);
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                // Background poster
-                backdropImage(context, state.series.backdrop),
-
-                // Dark overlay
-                Container(color: Colors.black.withValues(alpha: 0.65)),
-
-                // Blur effect
-                // BackdropFilter(
-                //   filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1), //12
-                //   child: Container(
-                //     color: Colors.black.withOpacity(0.2), // 0.2
-                //   ),
-                // ),
-                SafeArea(
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverAppBar(
-                        backgroundColor: Colors.transparent,
-                        surfaceTintColor: Colors.transparent,
-                        pinned: true,
-                        leading: CircleButton.back(
-                          onTap: () => Navigator.pop(context),
+            final offsetState = context.watch<OffsetCacheCubit>().state;
+            final hasProgress = offsetState.hasValue(_episode);
+            return SliverStack(
+              backdrop: state.series.backdrop,
+              slivers: [
+                SliverFavoriteBar(
+                  title: '${state.episode.se}: ${state.episode.name}',
+                  onTap: () {},
+                ),
+                // SliverTitle(state.episode.name, style: context.header1),
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: const EdgeInsetsGeometry.all(20),
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              constraints: BoxConstraints(
+                                maxWidth: screen.width * .9,
+                                maxHeight: screen.height * .5,
+                              ),
+                              child: MediaProgress.tvEpisode(
+                                episode,
+                                fillImage(context, episode.originalImage),
+                              ),
+                            ),
+                          ],
                         ),
-                        title: Text(
-                          '${state.episode.se}: ${state.episode.name}',
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            if (hasProgress)
+                              FilledButton.icon(
+                                onPressed: () => {},
+                                // _onResume(context, state),
+                                label: Text(context.strings.resumeLabel),
+                                icon: Icon(Icons.play_arrow),
+                              ),
+                            FilledButton.icon(
+                              onPressed: () => _onPlay(context, state),
+                              label: Text('Play'),
+                              icon: Icon(Icons.play_arrow),
+                            ),
+                          ],
                         ),
-                        actions: [CircleButton.favorite(onTap: () {})],
-                      ),
-                      SliverToBoxAdapter(
-                        child: Container(
-                          padding: const EdgeInsetsGeometry.all(20),
-                          child: Column(
-                            crossAxisAlignment: .start,
-                            children: [
-                              // Movie content
-                              Row(
+
+                        const SizedBox(height: 20),
+
+                        Row(
+                          children: [
+                            // Movie details
+                            Expanded(
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth: screen.width * .9,
-                                    ),
-                                    height: screen.height * .5,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: fillImage(context, episode.image),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  FilledButton.icon(
-                                    onPressed: () => _onPlay(context, state),
-                                    label: Text('Play'),
-                                    icon: Icon(Icons.play_arrow),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              Row(
-                                children: [
-                                  // Movie details
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Text(
-                                        //   episode.name,
-                                        //   style: AppTextStyle.movieTitle,
-                                        // ),
-                                        //
-                                        // const SizedBox(height: 12),
-                                        Wrap(
-                                          children: [
-                                            if (episode.hasVotes) ...[
-                                              Icon(
-                                                Icons.star,
-                                                color: Colors.amber,
-                                                size: 20,
-                                              ),
-                                              SizedBox(width: 6),
-                                              Text(
-                                                episode.vote,
-                                                style: AppTextStyle.movieVote,
-                                              ),
-                                              SizedBox(width: 16),
-                                            ],
-                                            if (state.series.hasRating) ...[
-                                              Text(
-                                                state.series.rating,
-                                                style: AppTextStyle.movieRating,
-                                              ),
-                                              SizedBox(width: 16),
-                                            ],
-                                            Text(
-                                              '${episode.year}',
-                                              style: AppTextStyle.movieYear,
-                                            ),
-                                            SizedBox(width: 16),
-                                            Text(
-                                              context.strings.seasonLabel(
-                                                episode.season,
-                                              ),
-                                              style: AppTextStyle.movieYear,
-                                            ),
-                                            SizedBox(width: 16),
-                                            Text(
-                                              context.strings.episodeLabel(
-                                                episode.episode,
-                                              ),
-                                              style: AppTextStyle.movieYear,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 20),
-
-                              // Synopsis
-                              const Text(
-                                'Synopsis',
-                                style: AppTextStyle.movieOverviewTitle,
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              Text(
-                                episode.overview,
-                                style: AppTextStyle.movieOverview,
-                              ),
-
-                              // Cast section
-                              if (state.hasCast()) ...[
-                                const SizedBox(height: 32),
-
-                                const Text(
-                                  'Cast',
-                                  style: AppTextStyle.movieCastTitle,
-                                ),
-
-                                const SizedBox(height: 16),
-
-                                SizedBox(
-                                  height: 110,
-                                  child: ListView(
-                                    scrollDirection: Axis.horizontal,
+                                  // Text(
+                                  //   episode.name,
+                                  //   style: AppTextStyle.movieTitle,
+                                  // ),
+                                  //
+                                  // const SizedBox(height: 12),
+                                  Wrap(
                                     children: [
-                                      ...state.cast!.map(
-                                        (cast) => AvatarButton(
-                                          name: cast.person.name,
-                                          imageUrl: cast.person.image,
-                                          onTap: () =>
-                                              _onPerson(context, cast.person),
+                                      if (episode.hasVotes) ...[
+                                        Icon(
+                                          Icons.star,
+                                          color: Colors.amber,
+                                          size: 20,
                                         ),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          episode.vote,
+                                          style: AppTextStyle.movieVote,
+                                        ),
+                                        SizedBox(width: 16),
+                                      ],
+                                      if (state.series.hasRating) ...[
+                                        Text(
+                                          state.series.rating,
+                                          style: AppTextStyle.movieRating,
+                                        ),
+                                        SizedBox(width: 16),
+                                      ],
+                                      Text(
+                                        '${episode.year}',
+                                        style: AppTextStyle.movieYear,
+                                      ),
+                                      SizedBox(width: 16),
+                                      Text(
+                                        context.strings.seasonLabel(
+                                          episode.season,
+                                        ),
+                                        style: AppTextStyle.movieYear,
+                                      ),
+                                      SizedBox(width: 16),
+                                      Text(
+                                        context.strings.episodeLabel(
+                                          episode.episode,
+                                        ),
+                                        style: AppTextStyle.movieYear,
                                       ),
                                     ],
                                   ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Synopsis
+                        const Text(
+                          'Synopsis',
+                          style: AppTextStyle.movieOverviewTitle,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Text(
+                          episode.overview,
+                          style: AppTextStyle.movieOverview,
+                        ),
+
+                        // Cast section
+                        if (state.hasCast()) ...[
+                          const SizedBox(height: 32),
+
+                          const Text(
+                            'Cast',
+                            style: AppTextStyle.movieCastTitle,
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          SizedBox(
+                            height: 110,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                ...state.cast!.map(
+                                  (cast) => AvatarButton(
+                                    name: cast.person.name,
+                                    imageUrl: cast.person.image,
+                                    onTap: () =>
+                                        _onPerson(context, cast.person),
+                                  ),
                                 ),
                               ],
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
+                        ],
+                      ],
+                    ),
                   ),
                 ),
               ],

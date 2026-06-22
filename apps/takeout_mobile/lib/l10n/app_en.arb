@@ -228,6 +228,25 @@
         "example": "1"
       }
     }
+  },
+  "episodesCount": "Episodes ({num})",
+  "@episodesCount": {
+    "placeholders": {
+      "num": {
+        "type": "int",
+        "format": "compact",
+        "example": "1"
+      }
+    }
+  },
+  "timeRemaining": "{time} remaining",
+  "@timeRemaining": {
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "54 min"
+      }
+    }
   }
 }
 

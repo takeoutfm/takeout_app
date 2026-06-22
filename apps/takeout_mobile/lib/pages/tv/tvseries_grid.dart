@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
 import 'package:takeout_mobile/widgets/focus_item.dart';
@@ -43,7 +44,7 @@ class SliverTVSeriesGrid extends StatelessWidget {
                       clipBehavior: Clip.antiAlias,
                       child: GridTileBar(
                         backgroundColor: Colors.black.withValues(alpha: 0.65),
-                        title: Text(s.name),
+                        title: Text(s.name, style: context.gridTitle),
                       ),
                     ),
                     child: gridPoster(context, s.image),

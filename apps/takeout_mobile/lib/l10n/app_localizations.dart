@@ -825,6 +825,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Season {num}'**
   String seasonLabel(int num);
+
+  /// No description provided for @episodesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes ({num})'**
+  String episodesCount(int num);
+
+  /// No description provided for @timeRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} remaining'**
+  String timeRemaining(String time);
 }
 
 class _AppLocalizationsDelegate

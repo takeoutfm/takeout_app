@@ -25,7 +25,6 @@ import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
@@ -244,7 +243,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
         Text(movie.title, style: context.header1),
         const SizedBox(height: 12),
         if (movie.tagline.isNotEmpty) ...[
-          Text(movie.tagline, style: AppTextStyle.movieTagline),
+          Text(movie.tagline, style: context.tagline),
           const SizedBox(height: 12),
         ],
         Wrap(

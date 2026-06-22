@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/model.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/music/release_details.dart';
 import 'package:takeout_mobile/pages/podcast/series_details.dart';
 
 const seriesGridEdgeInset = 20.0;
@@ -15,12 +13,11 @@ class SliverSeriesGrid extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const SliverSeriesGrid(
-      this._series, {
-        super.key,
-
-        this.subtitle = true,
-        this.padding = const EdgeInsetsGeometry.all(seriesGridEdgeInset),
-      });
+    this._series, {
+    super.key,
+    this.subtitle = true,
+    this.padding = const EdgeInsetsGeometry.all(seriesGridEdgeInset),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +29,7 @@ class SliverSeriesGrid extends StatelessWidget {
         mainAxisSpacing: seriesGridSpacing,
         children: [
           ..._series.map(
-                (s) => InkWell(
+            (s) => InkWell(
               onTap: () => _onTap(context, s),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
