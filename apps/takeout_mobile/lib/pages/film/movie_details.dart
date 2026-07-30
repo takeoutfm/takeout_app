@@ -63,7 +63,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
             return SliverStack(
               backdrop: movie.backdrop,
               slivers: [
-                SliverFavoriteBar(title: movie.title, onTap: () {}),
+                SliverFavoriteBar(title: movie.titleYear, onTap: () {}),
                 SliverBox(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -136,7 +136,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                           color: Colors.black.withValues(alpha: 0.30),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Text(movie.overview, style: context.bodyLarge),
+                        child: Text(movie.overview, style: context.synopsis),
                       ),
                       // Cast section
                       if (state.hasCast()) ...[

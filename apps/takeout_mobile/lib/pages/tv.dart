@@ -39,10 +39,10 @@ import 'package:takeout_mobile/pages/people.dart';
 import 'package:takeout_mobile/widgets/buttons.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
-class TVSeriesWidget extends ClientPage<TVSeriesView> {
+class _TVSeriesWidget extends ClientPage<TVSeriesView> {
   final TVSeries _series;
 
-  TVSeriesWidget(this._series, {super.key});
+  _TVSeriesWidget(this._series, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -130,7 +130,7 @@ class TVSeriesWidget extends ClientPage<TVSeriesView> {
                 // if (state.hasCrew())
                 //   SliverToBoxAdapter(child: CrewListWidget(state.crew ?? [])),
                 // TVEpisodeGridWidget(state.episodes),
-                SliverToBoxAdapter(child: TVEpisodeListWidget(state.episodes)),
+                SliverToBoxAdapter(child: _TVEpisodeListWidget(state.episodes)),
               ],
             );
           },
@@ -248,10 +248,10 @@ class TVSeriesWidget extends ClientPage<TVSeriesView> {
   }
 }
 
-class TVSeriesGridWidget extends StatelessWidget {
+class _TVSeriesGridWidget extends StatelessWidget {
   final List<TVSeries> _series;
 
-  const TVSeriesGridWidget(this._series, {super.key});
+  const _TVSeriesGridWidget(this._series, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -286,14 +286,14 @@ class TVSeriesGridWidget extends StatelessWidget {
   }
 
   void _onTap(BuildContext context, TVSeries e) {
-    push(context, builder: (_) => TVSeriesWidget(e));
+    push(context, builder: (_) => _TVSeriesWidget(e));
   }
 }
 
-class TVEpisodeGridWidget extends StatelessWidget {
+class _TVEpisodeGridWidget extends StatelessWidget {
   final List<TVEpisode> _episodes;
 
-  const TVEpisodeGridWidget(this._episodes, {super.key});
+  const _TVEpisodeGridWidget(this._episodes, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -328,15 +328,15 @@ class TVEpisodeGridWidget extends StatelessWidget {
   }
 
   void _onTap(BuildContext context, TVEpisode e) {
-    push(context, builder: (_) => TVEpisodeWidget(e));
+    push(context, builder: (_) => _TVEpisodeWidget(e));
   }
 }
 
-class TVEpisodeListWidget extends StatelessWidget {
+class _TVEpisodeListWidget extends StatelessWidget {
   final List<TVEpisode> _episodes;
   final bool showSeasons;
 
-  const TVEpisodeListWidget(
+  const _TVEpisodeListWidget(
     this._episodes, {
     super.key,
     this.showSeasons = true,
@@ -369,14 +369,14 @@ class TVEpisodeListWidget extends StatelessWidget {
   }
 
   void _onTap(BuildContext context, TVEpisode e) {
-    push(context, builder: (_) => TVEpisodeWidget(e));
+    push(context, builder: (_) => _TVEpisodeWidget(e));
   }
 }
 
-class TVEpisodeWidget extends ClientPage<TVEpisodeView> {
+class _TVEpisodeWidget extends ClientPage<TVEpisodeView> {
   final TVEpisode _episode;
 
-  TVEpisodeWidget(this._episode, {super.key});
+  _TVEpisodeWidget(this._episode, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

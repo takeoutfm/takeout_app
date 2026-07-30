@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/model.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/music/artist_details.dart';
-import 'package:takeout_mobile/pages/music/release_details.dart';
 
 const artistGridEdgeInset = 20.0;
 const artistGridSpacing = 12.0;

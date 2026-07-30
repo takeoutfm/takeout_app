@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
@@ -7,17 +9,14 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
 import 'package:takeout_mobile/pages/film/play_movie.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
-import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
-import 'package:takeout_mobile/widgets/sliver_title.dart';
 
 class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
   final TVEpisode _episode;
@@ -34,6 +33,8 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
   @override
   Widget page(BuildContext context, TVEpisodeView state) {
     final screen = MediaQuery.of(context).size;
+    final imgWidth = min<double>(screen.width * .9, 1440);
+    final imgHeight = min<double>(screen.height * .5, 1080);
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
@@ -61,12 +62,17 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                           children: [
                             Container(
                               constraints: BoxConstraints(
-                                maxWidth: screen.width * .9,
-                                maxHeight: screen.height * .5,
+                                maxWidth: imgWidth,
+                                maxHeight: imgHeight,
                               ),
                               child: MediaProgress.tvEpisode(
                                 episode,
-                                fillImage(context, episode.originalImage),
+                                fillImage(
+                                  context,
+                                  episode.originalImage,
+                                  width: imgWidth,
+                                  height: imgHeight,
+                                ),
                               ),
                             ),
                           ],
@@ -90,22 +96,13 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
-
                         Row(
                           children: [
-                            // Movie details
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Text(
-                                  //   episode.name,
-                                  //   style: AppTextStyle.movieTitle,
-                                  // ),
-                                  //
-                                  // const SizedBox(height: 12),
                                   Wrap(
                                     children: [
                                       if (episode.hasVotes) ...[
@@ -115,36 +112,33 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                                           size: 20,
                                         ),
                                         SizedBox(width: 6),
-                                        Text(
-                                          episode.vote,
-                                          style: AppTextStyle.movieVote,
-                                        ),
+                                        Text(episode.vote, style: context.body),
                                         SizedBox(width: 16),
                                       ],
                                       if (state.series.hasRating) ...[
                                         Text(
                                           state.series.rating,
-                                          style: AppTextStyle.movieRating,
+                                          style: context.body,
                                         ),
                                         SizedBox(width: 16),
                                       ],
                                       Text(
                                         '${episode.year}',
-                                        style: AppTextStyle.movieYear,
+                                        style: context.body,
                                       ),
                                       SizedBox(width: 16),
                                       Text(
                                         context.strings.seasonLabel(
                                           episode.season,
                                         ),
-                                        style: AppTextStyle.movieYear,
+                                        style: context.body,
                                       ),
                                       SizedBox(width: 16),
                                       Text(
                                         context.strings.episodeLabel(
                                           episode.episode,
                                         ),
-                                        style: AppTextStyle.movieYear,
+                                        style: context.body,
                                       ),
                                     ],
                                   ),
@@ -153,33 +147,31 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
-
-                        // Synopsis
-                        const Text(
-                          'Synopsis',
-                          style: AppTextStyle.movieOverviewTitle,
-                        ),
-
-                        const SizedBox(height: 16),
-
                         Text(
-                          episode.overview,
-                          style: AppTextStyle.movieOverview,
+                          context.strings.synopsisLabel,
+                          style: context.header2,
                         ),
-
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.30),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            episode.overview,
+                            style: context.synopsis,
+                          ),
+                        ),
                         // Cast section
                         if (state.hasCast()) ...[
                           const SizedBox(height: 32),
-
-                          const Text(
-                            'Cast',
-                            style: AppTextStyle.movieCastTitle,
+                          Text(
+                            context.strings.castLabel,
+                            style: context.header2,
                           ),
-
                           const SizedBox(height: 16),
-
                           SizedBox(
                             height: 110,
                             child: ListView(

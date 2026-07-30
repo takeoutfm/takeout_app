@@ -47,6 +47,7 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
               backdrop: state.background ?? '',
               slivers: [
                 SliverMenuBar(
+                  title: '${release.name} (${release.year}) by ${release.artist}',
                   items: [
                     PopupItem.play(context, (_) => _onPlay(context, state)),
                     PopupItem.shuffle(context, (_) => _onShufflePlay(context)),

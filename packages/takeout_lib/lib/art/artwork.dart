@@ -239,11 +239,11 @@ class Artwork {
     placeholder: const Icon(Icons.person),
   );
 
-  factory Artwork.fillImage(String url) => Artwork(
+  factory Artwork.fillImage(String url, {double? width, double? height}) => Artwork(
     url,
-    null,
-    null,
-    BoxFit.contain,
+    width,
+    height,
+    BoxFit.fill,
     placeholder: const Icon(Icons.image),
   );
 

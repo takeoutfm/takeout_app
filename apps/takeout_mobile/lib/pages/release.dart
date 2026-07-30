@@ -36,10 +36,10 @@ import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ReleaseWidget extends ClientPage<ReleaseView> {
+class _ReleaseWidget extends ClientPage<ReleaseView> {
   final Release _release;
 
-  ReleaseWidget(this._release, {super.key});
+  _ReleaseWidget(this._release, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -47,7 +47,7 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
   }
 
   void _onArtist(BuildContext context, ReleaseView view) {
-    push(context, builder: (_) => ArtistWidget(view.artist));
+    // push(context, builder: (_) => ArtistWidget(view.artist));
   }
 
   void _onPlay(BuildContext context) {
@@ -187,7 +187,7 @@ class ReleaseWidget extends ClientPage<ReleaseView> {
                   SliverToBoxAdapter(
                     child: heading(context.strings.similarReleasesLabel),
                   ),
-                if (state.similar.isNotEmpty) AlbumGridWidget(state.similar),
+                if (state.similar.isNotEmpty) _AlbumGridWidget(state.similar),
               ],
             );
           },
@@ -327,11 +327,11 @@ class _ReleaseTracksWidget extends StatelessWidget {
   }
 }
 
-class AlbumGridWidget extends StatelessWidget {
+class _AlbumGridWidget extends StatelessWidget {
   final List<MediaAlbum> _albums;
   final bool subtitle;
 
-  const AlbumGridWidget(this._albums, {super.key, this.subtitle = true});
+  const _AlbumGridWidget(this._albums, {super.key, this.subtitle = true});
 
   @override
   Widget build(BuildContext context) {
@@ -369,7 +369,7 @@ class AlbumGridWidget extends StatelessWidget {
       context,
       builder: (context) {
         if (album is Release) {
-          return ReleaseWidget(album);
+          return _ReleaseWidget(album);
         }
         throw UnimplementedError;
       },
@@ -417,10 +417,10 @@ class AlbumGridWidget extends StatelessWidget {
 //   }
 // }
 
-class ReleaseListWidget extends StatelessWidget {
+class _ReleaseListWidget extends StatelessWidget {
   final List<Release> _releases;
 
-  const ReleaseListWidget(this._releases, {super.key});
+  const _ReleaseListWidget(this._releases, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -446,7 +446,7 @@ class ReleaseListWidget extends StatelessWidget {
   }
 
   void _onTap(BuildContext context, Release release) {
-    push(context, builder: (_) => ReleaseWidget(release));
+    push(context, builder: (_) => _ReleaseWidget(release));
   }
 
   void _onPlay(BuildContext context, Release release) {

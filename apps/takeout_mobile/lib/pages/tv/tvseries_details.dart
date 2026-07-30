@@ -48,7 +48,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
             return SliverStack(
               backdrop: series.backdrop,
               slivers: [
-                SliverFavoriteBar(title: series.name, onTap: () {}),
+                SliverFavoriteBar(title: series.nameYear, onTap: () {}),
                 SliverBox(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -112,7 +112,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                       color: Colors.white.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Text(series.overview),
+                    child: Text(series.overview, style: context.synopsis),
                   ),
                 ),
                 SliverBox(

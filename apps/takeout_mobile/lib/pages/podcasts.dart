@@ -35,10 +35,10 @@ import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class SeriesWidget extends ClientPage<SeriesView> {
+class _SeriesWidget extends ClientPage<SeriesView> {
   final Series _series;
 
-  SeriesWidget(this._series, {super.key});
+  _SeriesWidget(this._series, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -433,10 +433,10 @@ class _EpisodeWidgetState extends State<_EpisodeWidget> {
   }
 }
 
-class SeriesListWidget extends StatelessWidget {
+class _SeriesListWidget extends StatelessWidget {
   final List<Series> _list;
 
-  const SeriesListWidget(this._list, {super.key});
+  const _SeriesListWidget(this._list, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -458,14 +458,14 @@ class SeriesListWidget extends StatelessWidget {
   }
 
   void _onTapped(BuildContext context, Series series) {
-    push(context, builder: (_) => SeriesWidget(series));
+    push(context, builder: (_) => _SeriesWidget(series));
   }
 }
 
-class EpisodeListWidget extends StatelessWidget {
+class _EpisodeListWidget extends StatelessWidget {
   final List<Episode> _list;
 
-  const EpisodeListWidget(this._list, {super.key});
+  const _EpisodeListWidget(this._list, {super.key});
 
   @override
   Widget build(BuildContext context) {

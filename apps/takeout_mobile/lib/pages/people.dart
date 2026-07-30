@@ -25,6 +25,7 @@ import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/tv.dart';
+import 'package:takeout_mobile/pages/tv/tvseries_grid.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
 class ProfileWidget extends ClientPage<ProfileView> {
@@ -84,7 +85,7 @@ class ProfileWidget extends ClientPage<ProfileView> {
             if (state.hasStarringMovies())
               SliverMovieGrid(state.starringMovies()),
             if (state.hasStarringShows())
-              TVSeriesGridWidget(state.starringShows()),
+              SliverTVSeriesGrid(state.starringShows()),
             if (state.hasDirecting())
               SliverToBoxAdapter(
                 child: heading(context.strings.directingLabel),

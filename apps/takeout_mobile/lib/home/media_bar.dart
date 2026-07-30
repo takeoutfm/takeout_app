@@ -5,8 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/pages/search.dart';
 import 'package:takeout_mobile/home/menu.dart';
+import 'package:takeout_mobile/pages/search/search.dart';
+import 'package:takeout_mobile/pages/search/search_results.dart';
 
 class MediaActions {
   List<Widget> call(BuildContext context) {
@@ -15,7 +16,7 @@ class MediaActions {
 
     const iconSize = 22.0;
     final buttons = SplayTreeMap<MediaType, Widget>(
-          (a, b) => a.index.compareTo(b.index),
+      (a, b) => a.index.compareTo(b.index),
     );
     if (index.music) {
       buttons[MediaType.music] = IconButton(
@@ -56,10 +57,7 @@ class MediaActions {
     final iconBar = <Widget>[];
     iconBar.addAll(buttons.values);
 
-    return [
-        ...iconBar,
-       HomeMenu(),
-    ];
+    return [...iconBar, HomeMenu()];
   }
 
   void _onFilmSelected(BuildContext context) {
@@ -96,8 +94,17 @@ class MediaActions {
   }
 }
 
-class SliverMediaBar extends StatelessWidget {
+class SliverMediaBar extends StatefulWidget {
   const SliverMediaBar({super.key});
+
+  @override
+  SliverMediaState createState() => SliverMediaState();
+}
+
+class SliverMediaState extends State<SliverMediaBar> {
+  final TextEditingController _controller = TextEditingController();
+  List<String> _suggestions = [];
+  bool _showSuggestions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,15 +115,51 @@ class SliverMediaBar extends StatelessWidget {
       pinned: false,
       floating: true,
       snap: true,
-      leading: IconButton(
-        icon: const Icon(Icons.search),
-        onPressed: () => _onSearch(context),
+      title: SearchBar(
+        controller: _controller,
+        constraints: const BoxConstraints(
+          minHeight: 40,
+          maxWidth: double.infinity,
+        ),
+        hintText: 'Takeout Search',
+        leading: const Icon(Icons.search),
+        trailing: [
+          if (_controller.text.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _controller.clear();
+              },
+            ),
+        ],
+        onSubmitted: (query) => _onSearch(query),
       ),
       actions: actions(context),
     );
   }
 
-  void _onSearch(BuildContext context) => Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => SearchWidget()));
+  // void _onChanged(String query) {
+  //   setState(() {
+  //     if (query.trim().isEmpty) {
+  //       _showSuggestions = false;
+  //       _suggestions = [];
+  //     } else {
+  //       _suggestions = _allItems
+  //           .where((s) => s.toLowerCase().contains(query.toLowerCase()))
+  //           .take(8)
+  //           .toList();
+  //       _showSuggestions = _suggestions.isNotEmpty;
+  //     }
+  //   });
+  // }
+
+  void _onSearch(String query) {
+    query = query.trim();
+    if (query.isEmpty) {
+      return;
+    }
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => SearchResults(query)));
+  }
 }

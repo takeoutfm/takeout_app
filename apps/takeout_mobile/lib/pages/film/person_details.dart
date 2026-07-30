@@ -99,7 +99,7 @@ class PersonDetailsPage extends ClientPage<ProfileView> {
                         style: context.header2,
                       ),
                       const SizedBox(height: 16),
-                      Text('${person.bio}', style: context.body),
+                      Text('${person.bio}', style: context.synopsis),
                     ],
                   ),
                 ),

@@ -45,7 +45,10 @@ Widget releaseSmallCover(BuildContext context, String url) {
 }
 
 Widget artistSmallPoster(BuildContext context, String url) {
-  return ArtworkBuilder(Artwork.artistSmallPoster(url), hero: true).build(context);
+  return ArtworkBuilder(
+    Artwork.artistSmallPoster(url),
+    hero: true,
+  ).build(context);
 }
 
 Widget moviePoster(BuildContext context, String url) {
@@ -106,8 +109,16 @@ Widget avatar(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.avatar(url), hero: false).build(context);
 }
 
-Widget fillImage(BuildContext context, String url) {
-  return ArtworkBuilder(Artwork.fillImage(url), hero: false).build(context);
+Widget fillImage(
+  BuildContext context,
+  String url, {
+  double? width,
+  double? height,
+}) {
+  return ArtworkBuilder(
+    Artwork.fillImage(url, width: width, height: height),
+    hero: false,
+  ).build(context);
 }
 
 Widget? circleCover(

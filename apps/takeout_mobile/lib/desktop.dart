@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/empty.dart';
-import 'package:takeout_lib/player/player.dart';
-import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
+import 'package:takeout_mobile/pages/search/search_results.dart';
 import 'package:takeout_mobile/player/mini_player.dart';
 import 'package:takeout_mobile/takeout.dart';
 
@@ -21,6 +19,7 @@ class TakeoutDesktopWidget extends StatefulWidget {
 class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     with AppBlocState, WidgetsBindingObserver {
   bool extended = false;
+  final TextEditingController _controller = TextEditingController();
 
   void _toggleExtended() {
     setState(() {
@@ -30,13 +29,13 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
 
   @override
   Widget body(AppState state) {
-    debugPrint('desktopRebuild');
     return Shortcuts(
       shortcuts: _shortcutKeys(),
       child: Actions(
         actions: _shortcutActions(context),
         child: Scaffold(
           appBar: AppBar(
+            toolbarHeight: 78, // default is 56
             leading: IconButton(
               icon: extended
                   ? const Icon(Icons.menu_open_outlined)
@@ -45,7 +44,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                 _toggleExtended();
               },
             ),
-            title: Text('Takeout'),
+            title: _searchBar(),
             actions: [HomeMenu()],
             // actions: actions(context),
           ),
@@ -82,6 +81,51 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     );
   }
 
+  Widget _searchBar() {
+    return Focus(
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.enter) {
+          _onSearch(_controller.text);
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: SearchBar(
+        controller: _controller,
+        constraints: const BoxConstraints(
+          minHeight: 40,
+          maxWidth: double.infinity,
+        ),
+        hintText: 'Takeout Search',
+        leading: const Icon(Icons.search),
+        trailing: [
+          if (_controller.text.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _controller.clear();
+                // _onChanged('');
+              },
+            ),
+        ],
+        // onChanged: _onChanged,
+        onChanged: (v) => debugPrint('onChanged: $v'),
+        onSubmitted: (query) => _onSearch(query),
+      ),
+    );
+  }
+
+  void _onSearch(String query) {
+    query = query.trim();
+    if (query.isEmpty) {
+      return;
+    }
+    navigatorState(
+      context.app.state.index,
+    )?.push(MaterialPageRoute<void>(builder: (_) => SearchResults(query)));
+  }
+
   static const navigationIndices = [
     NavigationIndex.music,
     NavigationIndex.artists,
@@ -94,7 +138,6 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
   ];
 
   Widget _navigationRail() {
-    debugPrint('navrail build');
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
         final index = state.navigationIndex;
@@ -107,7 +150,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
               icon: index == NavigationIndex.music
                   ? const Icon(Icons.music_note)
                   : const Icon(Icons.music_note_outlined),
-              label: Text(context.strings.musicSwitchLabel),
+              label: Text(context.strings.navMusic),
             ),
             NavigationRailDestination(
               icon: index == NavigationIndex.artists
@@ -125,19 +168,19 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
               icon: index == NavigationIndex.film
                   ? const Icon(Icons.movie)
                   : const Icon(Icons.movie_outlined),
-              label: Text(context.strings.moviesLabel),
+              label: Text(context.strings.navMovies),
             ),
             NavigationRailDestination(
               icon: index == NavigationIndex.tv
                   ? const Icon(Icons.tv)
                   : const Icon(Icons.tv_outlined),
-              label: Text(context.strings.tvEpisodesLabel),
+              label: Text(context.strings.navTVShows),
             ),
             NavigationRailDestination(
               icon: index == NavigationIndex.podcast
                   ? const Icon(Icons.podcasts)
                   : const Icon(Icons.podcasts_outlined),
-              label: Text(context.strings.podcastsSwitchLabel),
+              label: Text(context.strings.navPodcasts),
             ),
             NavigationRailDestination(
               icon: index == NavigationIndex.history
@@ -150,10 +193,6 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                   ? const Icon(Icons.queue_music)
                   : const Icon(Icons.queue_music_outlined),
               label: Text(context.strings.navPlayer),
-            ),
-            NavigationRailDestination(
-              icon: const Icon(Icons.search),
-              label: Text(context.strings.searchLabel),
             ),
           ],
           selectedIndex: navigationIndices.indexOf(index),

@@ -76,6 +76,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navArtists => 'Artists';
 
   @override
+  String get navMusic => 'Music';
+
+  @override
   String get navSearch => 'Search';
 
   @override
@@ -92,6 +95,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navGenres => 'Genres';
+
+  @override
+  String get navTVShows => 'TV Shows';
+
+  @override
+  String get navPodcasts => 'Podcasts';
 
   @override
   String get similarArtists => 'Similar Artists';

@@ -312,6 +312,29 @@ class CoverTrackListTile extends _TrackListTile {
       nowPlaying: nowPlaying,
     );
   }
+
+  factory CoverTrackListTile.track(BuildContext context,
+      Track track, {
+        bool showCover = true,
+        VoidCallback? onTap,
+        VoidCallback? onLongPress,
+        Widget? trailing,
+        bool selected = false,
+        bool nowPlaying = false,
+      }) {
+    return CoverTrackListTile(
+      context,
+      track.trackArtist,
+      track.releaseTitle,
+      track.title,
+      showCover ? track.image.toString() : null,
+      onTap: onTap,
+      onLongPress: onLongPress,
+      trailing: trailing,
+      selected: selected,
+      nowPlaying: nowPlaying,
+    );
+  }
 }
 
 abstract class _ConnectivityTile extends StatelessWidget {

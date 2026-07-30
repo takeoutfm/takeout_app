@@ -226,6 +226,12 @@ abstract class AppLocalizations {
   /// **'Artists'**
   String get navArtists;
 
+  /// No description provided for @navMusic.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get navMusic;
+
   /// No description provided for @navSearch.
   ///
   /// In en, this message translates to:
@@ -261,6 +267,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Genres'**
   String get navGenres;
+
+  /// No description provided for @navTVShows.
+  ///
+  /// In en, this message translates to:
+  /// **'TV Shows'**
+  String get navTVShows;
+
+  /// No description provided for @navPodcasts.
+  ///
+  /// In en, this message translates to:
+  /// **'Podcasts'**
+  String get navPodcasts;
 
   /// No description provided for @similarArtists.
   ///

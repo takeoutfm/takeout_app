@@ -21,14 +21,17 @@ class AllArtistsGrid extends ClientPage<ArtistsView> {
 
   @override
   Widget page(BuildContext context, ArtistsView state) {
+    final isAllArtists = genre == null && area == null;
+    final title = isAllArtists ? null : genre?.titleCased ?? area?.titleCased;
     return RefreshIndicator(
       onRefresh: () => reloadPage(context),
       child: CustomScrollView(
         slivers: [
-          SliverMenuBar(
-            title: genre?.titleCased,
-            items: [PopupItem.reload(context, (_) => reloadPage(context))],
-          ),
+          if (!isAllArtists)
+            SliverMenuBar(
+              title: title,
+              items: [PopupItem.reload(context, (_) => reloadPage(context))],
+            ),
           SliverArtistGrid(_artists(state)),
         ],
       ),

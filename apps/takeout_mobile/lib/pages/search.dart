@@ -18,6 +18,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/page/page.dart';
@@ -26,9 +27,12 @@ import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/artists.dart';
 import 'package:takeout_mobile/pages/film.dart';
+import 'package:takeout_mobile/pages/music/artist_details.dart';
+import 'package:takeout_mobile/pages/music/release_details.dart';
 import 'package:takeout_mobile/pages/podcasts.dart';
 import 'package:takeout_mobile/pages/release.dart';
 import 'package:takeout_mobile/pages/tv.dart';
+import 'package:takeout_mobile/widgets/custom_list_tile.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tracks.dart';
 
@@ -79,7 +83,7 @@ class SearchWidget extends ClientPage<SearchView> {
                       if (Navigator.of(context).canPop()) {
                         Navigator.pop(context);
                       }
-                    }
+                    },
                   )
                 : null,
             title: Autocomplete<String>(
@@ -108,16 +112,21 @@ class SearchWidget extends ClientPage<SearchView> {
                   children: [
                     if (state.artists != null && state.artists!.isNotEmpty)
                       Column(
+                        crossAxisAlignment: .start,
                         children: [
-                          heading(context.strings.artistsLabel),
-                          _ArtistResultsWidget(state.artists!),
+                          Text(
+                            context.strings.artistsLabel,
+                            style: context.header2,
+                          ),
+                          _ArtistResults(state.artists!),
                         ],
                       ),
                     if (state.releases != null && state.releases!.isNotEmpty)
                       Column(
+                        crossAxisAlignment: .start,
                         children: [
-                          heading(context.strings.releasesLabel),
-                          ReleaseListWidget(state.releases!),
+                          Text(context.strings.releasesLabel, style: context.header2),
+                          _ReleaseResults(state.releases!),
                         ],
                       ),
                     if (state.tracks != null && state.tracks!.isNotEmpty)
@@ -142,38 +151,38 @@ class SearchWidget extends ClientPage<SearchView> {
                           TrackListWidget(state.tracks!),
                         ],
                       ),
-                    if (state.movies != null && state.movies!.isNotEmpty)
-                      Column(
-                        children: [
-                          heading(context.strings.moviesLabel),
-                          MovieListWidget(state.movies!),
-                        ],
-                      ),
-                    if (state.tvEpisodes != null &&
-                        state.tvEpisodes!.isNotEmpty)
-                      Column(
-                        children: [
-                          heading(context.strings.tvEpisodesLabel),
-                          TVEpisodeListWidget(
-                            state.tvEpisodes!,
-                            showSeasons: false,
-                          ),
-                        ],
-                      ),
-                    if (state.series != null && state.series!.isNotEmpty)
-                      Column(
-                        children: [
-                          heading(context.strings.seriesLabel),
-                          SeriesListWidget(state.series!),
-                        ],
-                      ),
-                    if (state.episodes != null && state.episodes!.isNotEmpty)
-                      Column(
-                        children: [
-                          heading(context.strings.episodesLabel),
-                          EpisodeListWidget(state.episodes!),
-                        ],
-                      ),
+                    // if (state.movies != null && state.movies!.isNotEmpty)
+                    //   Column(
+                    //     children: [
+                    //       heading(context.strings.moviesLabel),
+                    //       MovieListWidget(state.movies!),
+                    //     ],
+                    //   ),
+                    // if (state.tvEpisodes != null &&
+                    //     state.tvEpisodes!.isNotEmpty)
+                    //   Column(
+                    //     children: [
+                    //       heading(context.strings.tvEpisodesLabel),
+                    //       TVEpisodeListWidget(
+                    //         state.tvEpisodes!,
+                    //         showSeasons: false,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // if (state.series != null && state.series!.isNotEmpty)
+                    //   Column(
+                    //     children: [
+                    //       heading(context.strings.seriesLabel),
+                    //       SeriesListWidget(state.series!),
+                    //     ],
+                    //   ),
+                    // if (state.episodes != null && state.episodes!.isNotEmpty)
+                    //   Column(
+                    //     children: [
+                    //       heading(context.strings.episodesLabel),
+                    //       EpisodeListWidget(state.episodes!),
+                    //     ],
+                    //   ),
                   ],
                 ),
               ),
@@ -194,24 +203,50 @@ class SearchWidget extends ClientPage<SearchView> {
   }
 }
 
-class _ArtistResultsWidget extends StatelessWidget {
+class _ArtistResults extends StatelessWidget {
   final List<Artist> _artists;
 
-  const _ArtistResultsWidget(this._artists);
+  const _ArtistResults(this._artists);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         ..._artists.map(
-          (a) =>
-              ListTile(onTap: () => _onTapped(context, a), title: Text(a.name)),
+          (a) => CustomListTile(
+            onTap: () => _onTap(context, a),
+            title: Text(a.name),
+          ),
         ),
       ],
     );
   }
 
-  void _onTapped(BuildContext context, Artist artist) {
-    push(context, builder: (_) => ArtistWidget(artist));
+  void _onTap(BuildContext context, Artist artist) {
+    push(context, builder: (_) => ArtistDetailsPage(artist));
+  }
+}
+
+class _ReleaseResults extends StatelessWidget {
+  final List<Release> _releases;
+
+  const _ReleaseResults(this._releases);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ..._releases.map(
+          (r) => CustomListTile(
+            onTap: () => _onTap(context, r),
+            title: Text(r.name),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _onTap(BuildContext context, Release release) {
+    push(context, builder: (_) => ReleaseDetailsPage(release));
   }
 }

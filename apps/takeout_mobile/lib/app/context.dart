@@ -86,6 +86,9 @@ extension AppContext on BuildContext {
   /// used for media details
   TextStyle? get details => bodyMedium;
 
+  /// used for media synopsis
+  TextStyle? get synopsis => bodyLarge;
+
   void logout() {
     tokens.removeAll();
     app.logout();

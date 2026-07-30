@@ -34,11 +34,11 @@ import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ArtistsWidget extends ClientPage<ArtistsView> {
+class _ArtistsWidget extends ClientPage<ArtistsView> {
   final String? genre;
   final String? area;
 
-  ArtistsWidget({this.genre, this.area, super.key});
+  _ArtistsWidget({this.genre, this.area, super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -132,14 +132,14 @@ class ArtistListWidget extends StatelessWidget {
   }
 
   void _onArtist(BuildContext context, Artist artist) {
-    push(context, builder: (_) => ArtistWidget(artist));
+    push(context, builder: (_) => _ArtistWidget(artist));
   }
 }
 
-class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
+class _ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
   final Artist _artist;
 
-  ArtistWidget(this._artist, {super.key});
+  _ArtistWidget(this._artist, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -188,11 +188,11 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
   }
 
   void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => ArtistsWidget(genre: genre));
+    push(context, builder: (_) => _ArtistsWidget(genre: genre));
   }
 
   void _onArea(BuildContext context, String area) {
-    push(context, builder: (_) => ArtistsWidget(area: area));
+    push(context, builder: (_) => _ArtistsWidget(area: area));
   }
 
   void _onWantList(BuildContext context) {
@@ -264,7 +264,7 @@ class ArtistWidget extends ClientPage<ArtistView> with ArtistPage {
   List<Widget> slivers(BuildContext context, ArtistView view) {
     return [
       SliverToBoxAdapter(child: heading(context.strings.releasesLabel)),
-      AlbumGridWidget(view.releases, subtitle: false),
+      // AlbumGridWidget(view.releases, subtitle: false),
       if (view.similar.isNotEmpty)
         SliverToBoxAdapter(child: heading(context.strings.similarArtists)),
       if (view.similar.isNotEmpty)
@@ -294,7 +294,7 @@ class SimilarArtistListWidget extends StatelessWidget {
   }
 
   void _onArtist(BuildContext context, Artist artist) {
-    push(context, builder: (_) => ArtistWidget(artist));
+    push(context, builder: (_) => _ArtistWidget(artist));
   }
 }
 

@@ -7,12 +7,10 @@ import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/history/widget.dart';
 import 'package:takeout_mobile/home/home.dart';
-import 'package:takeout_mobile/pages/artists.dart';
 import 'package:takeout_mobile/pages/login.dart';
 import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/radio.dart';
 import 'package:takeout_mobile/player/player.dart';
-import 'package:takeout_mobile/player/widget.dart';
 
 abstract class TakeoutState<T> extends State
     with AppBlocState, WidgetsBindingObserver {
@@ -28,7 +26,8 @@ abstract class TakeoutState<T> extends State
     NavigationIndex.podcast: GlobalKey<NavigatorState>(),
   };
 
-  NavigatorState? _navigatorState(NavigationIndex index) =>
+  @protected
+  NavigatorState? navigatorState(NavigationIndex index) =>
       _navigators[index]?.currentState;
 
   List<Widget> pages = [];
@@ -36,8 +35,6 @@ abstract class TakeoutState<T> extends State
   @override
   void initState() {
     super.initState();
-
-    debugPrint('takeout initstate');
 
     pages = [
       navigatorPage(HomeWidget(), key: _navigators[NavigationIndex.home]),
@@ -92,7 +89,7 @@ abstract class TakeoutState<T> extends State
   }
 
   bool popToFirst() {
-    NavigatorState? navState = _navigatorState(context.app.state.index);
+    NavigatorState? navState = navigatorState(context.app.state.index);
     if (navState != null && navState.canPop()) {
       navState.popUntil((route) => route.isFirst);
       return true;
@@ -134,9 +131,8 @@ abstract class TakeoutState<T> extends State
             if (didPop) {
               return;
             }
-            NavigatorState? navState = _navigatorState(navIndex);
+            NavigatorState? navState = navigatorState(navIndex);
             if (navState != null) {
-              print('maybePop');
               final handled = await navState.maybePop();
               if (!handled && navIndex == NavigationIndex.home) {
                 // allow pop and app to exit

@@ -41,11 +41,11 @@ import 'package:takeout_mobile/widgets/buttons.dart';
 import 'package:takeout_mobile/pages/film/movie_details.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
-class MovieWidget extends ClientPage<MovieView> {
+class _MovieWidget extends ClientPage<MovieView> {
   final Movie _movie;
   final _relatedKey = GlobalKey();
 
-  MovieWidget(this._movie, {super.key});
+  _MovieWidget(this._movie, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -182,7 +182,7 @@ class MovieWidget extends ClientPage<MovieView> {
                     child: heading(context.strings.relatedLabel),
                   ),
                 if (state.hasRelated())
-                  MovieGridWidget(state.other!, key: _relatedKey),
+                  _MovieGridWidget(state.other!, key: _relatedKey),
               ],
             );
           },
@@ -340,14 +340,14 @@ class MovieWidget extends ClientPage<MovieView> {
   }
 
   void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => GenreWidget(genre));
+    push(context, builder: (_) => _GenreWidget(genre));
   }
 }
 
-class GenreWidget extends ClientPage<GenreView> {
+class _GenreWidget extends ClientPage<GenreView> {
   final String _genre;
 
-  GenreWidget(this._genre, {super.key});
+  _GenreWidget(this._genre, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -363,7 +363,7 @@ class GenreWidget extends ClientPage<GenreView> {
           slivers: [
             SliverAppBar(title: Text(_genre)),
             if (state.movies.isNotEmpty)
-              MovieGridWidget(_sortByTitle(state.movies)),
+              _MovieGridWidget(_sortByTitle(state.movies)),
           ],
         ),
       ),
@@ -371,10 +371,10 @@ class GenreWidget extends ClientPage<GenreView> {
   }
 }
 
-class MovieGridWidget extends StatelessWidget {
+class _MovieGridWidget extends StatelessWidget {
   final List<Movie> _movies;
 
-  const MovieGridWidget(this._movies, {super.key});
+  const _MovieGridWidget(this._movies, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -413,10 +413,10 @@ class MovieGridWidget extends StatelessWidget {
   }
 }
 
-class MovieListWidget extends StatelessWidget {
+class _MovieListWidget extends StatelessWidget {
   final List<Movie> _movies;
 
-  const MovieListWidget(this._movies, {super.key});
+  const _MovieListWidget(this._movies, {super.key});
 
   @override
   Widget build(BuildContext context) {

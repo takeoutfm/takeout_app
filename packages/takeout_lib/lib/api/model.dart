@@ -243,6 +243,38 @@ class SearchView {
       _$SearchViewFromJson(json);
 
   Map<String, dynamic> toJson() => _$SearchViewToJson(this);
+
+  bool get hasArtists => artists?.isNotEmpty ?? false;
+
+  bool get hasReleases => releases?.isNotEmpty ?? false;
+
+  bool get hasTracks => tracks?.isNotEmpty ?? false;
+
+  bool get hasMovies => movies?.isNotEmpty ?? false;
+
+  bool get hasSeries => series?.isNotEmpty ?? false;
+
+  bool get hasEpisodes => episodes?.isNotEmpty ?? false;
+
+  bool get hasStations => stations?.isNotEmpty ?? false;
+
+  bool get hasTVEpisodes => tvEpisodes?.isNotEmpty ?? false;
+
+  List<Artist> get artistList => artists ?? [];
+
+  List<Release> get releaseList => releases ?? [];
+
+  List<Track> get trackList => tracks ?? [];
+
+  List<Movie> get movieList => movies ?? [];
+
+  List<Series> get seriesList => series ?? [];
+
+  List<Episode> get episodeList => episodes ?? [];
+
+  List<Station> get stationList => stations ?? [];
+
+  List<TVEpisode> get tvEpisodeList => tvEpisodes ?? [];
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -1171,6 +1203,8 @@ class TVSeries extends MediaAlbum {
   String get backdrop => _seriesBackdropUrl();
 
   String get reference => '/tv/series/$id';
+
+  String get nameYear => '$name ($year)';
 
   String _seriesPosterUrl({String size = 'w342'}) {
     return '/img/tm/$size$posterPath';

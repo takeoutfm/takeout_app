@@ -22,11 +22,21 @@ class SliverMenuBar extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       pinned: true,
       leading: allowBack
-          ? CircleButton.back(onTap: () => Navigator.pop(context))
+          ? Center(
+              child: CircleButton.back(onTap: () => Navigator.pop(context)),
+            )
           : null,
       title: OptionalText(title),
       actions: [
-        popupMenu(context, items, icon: null, child: CircleButton.dropDown()),
+        popupMenu(
+          context,
+          items,
+          icon: null,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: CircleButton.dropDown(),
+          ),
+        ),
       ],
     );
   }
@@ -41,12 +51,21 @@ class SliverFavoriteBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      automaticallyImplyLeading: false,
+      automaticallyImplyActions: false,
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       pinned: true,
-      leading: CircleButton.back(onTap: () => Navigator.pop(context)),
+      leading: Center(
+        child: CircleButton.back(onTap: () => Navigator.pop(context)),
+      ),
       title: title != null ? Text(title!) : null,
-      actions: [CircleButton.favorite(onTap: onTap)],
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 6),
+          child: CircleButton.favorite(onTap: onTap),
+        ),
+      ],
     );
   }
 }
