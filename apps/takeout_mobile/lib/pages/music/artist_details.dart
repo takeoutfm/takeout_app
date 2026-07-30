@@ -44,6 +44,7 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
               backdrop: state.background,
               slivers: [
                 SliverMenuBar(
+                  title: artist.name,
                   items: [
                     PopupItem.shuffle(context, (_) => _onShuffle(context)),
                     PopupItem.radio(context, (_) => _onRadio(context)),

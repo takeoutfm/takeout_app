@@ -43,7 +43,7 @@ class PopupItem {
 
   PopupItem.music(BuildContext context, MenuCallback onSelected)
       : this(
-    const Icon(Icons.music_note),
+    const Icon(Icons.speaker),
     context.strings.musicSwitchLabel,
     onSelected,
   );
@@ -122,7 +122,7 @@ class PopupItem {
 
   PopupItem.popular(BuildContext context, MenuCallback onSelected)
       : this(
-    const Icon(Icons.music_note),
+    const Icon(Icons.speaker),
     context.strings.popularLabel,
     onSelected,
   );

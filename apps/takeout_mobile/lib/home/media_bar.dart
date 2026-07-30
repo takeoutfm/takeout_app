@@ -6,7 +6,6 @@ import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
-import 'package:takeout_mobile/pages/search/search.dart';
 import 'package:takeout_mobile/pages/search/search_results.dart';
 
 class MediaActions {
@@ -22,8 +21,8 @@ class MediaActions {
       buttons[MediaType.music] = IconButton(
         iconSize: iconSize,
         icon: mediaType == MediaType.music
-            ? const Icon(Icons.audiotrack)
-            : const Icon(Icons.audiotrack_outlined),
+            ? const Icon(Icons.speaker)
+            : const Icon(Icons.speaker_outlined),
         onPressed: () => _onMusicSelected(context),
       );
     }
@@ -103,8 +102,8 @@ class SliverMediaBar extends StatefulWidget {
 
 class SliverMediaState extends State<SliverMediaBar> {
   final TextEditingController _controller = TextEditingController();
-  List<String> _suggestions = [];
-  bool _showSuggestions = false;
+  // List<String> _suggestions = [];
+  // bool _showSuggestions = false;
 
   @override
   Widget build(BuildContext context) {

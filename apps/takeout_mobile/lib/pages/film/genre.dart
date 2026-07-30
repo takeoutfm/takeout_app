@@ -20,6 +20,7 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
 
 class GenrePage extends ClientPage<GenreView> {
   final String _genre;
@@ -38,7 +39,7 @@ class GenrePage extends ClientPage<GenreView> {
         onRefresh: () => reloadPage(context),
         child: CustomScrollView(
           slivers: [
-            SliverAppBar(title: Text(_genre)),
+            SliverTitleBar(title: _genre),
             if (state.movies.isNotEmpty)
               SliverMovieGrid(_sortByTitle(state.movies)),
           ],

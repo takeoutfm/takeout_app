@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
@@ -21,6 +23,14 @@ class SliverMenuBar extends StatelessWidget {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       pinned: true,
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: Colors.black.withValues(alpha: 0.1), // slight tint helps too
+          ),
+        ),
+      ),
       leading: allowBack
           ? Center(
               child: CircleButton.back(onTap: () => Navigator.pop(context)),
@@ -56,6 +66,14 @@ class SliverFavoriteBar extends StatelessWidget {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       pinned: true,
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: Colors.black.withValues(alpha: 0.1), // slight tint helps too
+          ),
+        ),
+      ),
       leading: Center(
         child: CircleButton.back(onTap: () => Navigator.pop(context)),
       ),
@@ -66,6 +84,35 @@ class SliverFavoriteBar extends StatelessWidget {
           child: CircleButton.favorite(onTap: onTap),
         ),
       ],
+    );
+  }
+}
+
+class SliverTitleBar extends StatelessWidget {
+  final String? title;
+
+  const SliverTitleBar({super.key, this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar(
+      automaticallyImplyLeading: false,
+      automaticallyImplyActions: false,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      pinned: true,
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: Colors.black.withValues(alpha: 0.1), // slight tint helps too
+          ),
+        ),
+      ),
+      leading: Center(
+        child: CircleButton.back(onTap: () => Navigator.pop(context)),
+      ),
+      title: title != null ? Text(title!) : null,
     );
   }
 }

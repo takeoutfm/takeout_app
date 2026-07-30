@@ -148,8 +148,8 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
           destinations: [
             NavigationRailDestination(
               icon: index == NavigationIndex.music
-                  ? const Icon(Icons.music_note)
-                  : const Icon(Icons.music_note_outlined),
+                  ? const Icon(Icons.speaker)
+                  : const Icon(Icons.speaker_outlined),
               label: Text(context.strings.navMusic),
             ),
             NavigationRailDestination(

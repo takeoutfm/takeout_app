@@ -83,7 +83,7 @@ class Artwork {
     300,
     300,
     BoxFit.fitHeight,
-    placeholder: const Icon(Icons.movie),
+    placeholder: const Icon(Icons.people),
   );
 
   factory Artwork.moviePoster(String url) => Artwork(

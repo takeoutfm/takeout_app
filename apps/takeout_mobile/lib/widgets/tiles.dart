@@ -169,7 +169,7 @@ class _TrackListTile extends StatelessWidget {
 
   Widget _nowPlaying(Widget? widget) {
     // widget ??= SizedBox(height: 40, width: 40)
-    widget ??= Icon(Icons.music_note);
+    widget ??= Icon(Icons.speaker);
     return Stack(
       children: [
         widget,

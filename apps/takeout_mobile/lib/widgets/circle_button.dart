@@ -3,28 +3,71 @@ import 'package:flutter/material.dart';
 class CircleButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
+  final double padding;
 
-  const CircleButton({super.key, required this.icon, required this.onTap});
+  static const double _defaultPadding = 12;
+  static const double _appBarPadding = 6;
 
-  const CircleButton.back({super.key, required this.onTap})
-    : icon = Icons.arrow_back;
+  const CircleButton({
+    super.key,
+    required this.icon,
+    required this.onTap,
+    this.padding = _defaultPadding,
+  });
 
-  const CircleButton.favorite({super.key, required this.onTap})
-    : icon = Icons.favorite_border;
+  const CircleButton.back({
+    Key? key,
+    required VoidCallback? onTap,
+    double? padding,
+  }) : this(
+         key: key,
+         icon: Icons.arrow_back,
+         onTap: onTap,
+         padding: padding ?? _appBarPadding,
+       );
 
-  const CircleButton.menu({super.key}) : icon = Icons.menu, onTap = null;
+  const CircleButton.favorite({
+    Key? key,
+    required VoidCallback? onTap,
+    double? padding,
+  }) : this(
+         key: key,
+         icon: Icons.favorite_border,
+         onTap: onTap,
+         padding: padding ?? _appBarPadding,
+       );
 
-  const CircleButton.moreHorizontal({super.key})
-    : icon = Icons.more_horiz,
-      onTap = null;
+  const CircleButton.menu({Key? key, double? padding})
+    : this(
+        key: key,
+        icon: Icons.menu,
+        onTap: null,
+        padding: padding ?? _defaultPadding,
+      );
 
-  const CircleButton.moreVertical({super.key})
-    : icon = Icons.more_vert,
-      onTap = null;
+  const CircleButton.moreHorizontal({Key? key, double? padding})
+    : this(
+        key: key,
+        icon: Icons.more_horiz,
+        onTap: null,
+        padding: padding ?? _defaultPadding,
+      );
 
-  const CircleButton.dropDown({super.key})
-      : icon = Icons.keyboard_arrow_down,
-        onTap = null;
+  const CircleButton.moreVertical({Key? key, double? padding})
+    : this(
+        key: key,
+        icon: Icons.more_vert,
+        onTap: null,
+        padding: padding ?? _defaultPadding,
+      );
+
+  const CircleButton.dropDown({Key? key, double? padding})
+    : this(
+        key: key,
+        icon: Icons.keyboard_arrow_down,
+        onTap: null,
+        padding: padding ?? _defaultPadding,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +80,7 @@ class CircleButton extends StatelessWidget {
         splashColor: Colors.white.withValues(alpha: 0.2),
         highlightColor: Colors.white.withValues(alpha: 0.1),
         child: Ink(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(padding),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.12),
             shape: BoxShape.circle,

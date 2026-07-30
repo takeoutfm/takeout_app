@@ -97,7 +97,7 @@ class HomePage extends ClientPage<HomeView> {
               onSelected: (context, state) => onPlaylists(context, state)),
         if (index.music)
           HomeEntry(Text(context.strings.musicLabel),
-              icon: const Icon(Icons.music_note),
+              icon: const Icon(Icons.speaker),
               onSelected: (context, state) => onMusic(context, state)),
         if (index.podcasts)
           HomeEntry(Text(context.strings.podcastsLabel),
