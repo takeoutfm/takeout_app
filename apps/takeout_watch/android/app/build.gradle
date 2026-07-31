@@ -55,8 +55,8 @@ android {
         applicationId "com.takeoutfm.watch"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 31 // Wear OS must be 30..33
-        versionCode 2503 // #versionCode#
-        versionName "0.25.3" // #version#
+        versionCode 2600 // #versionCode#
+        versionName "0.26.0" // #version#
     }
 
     signingConfigs {

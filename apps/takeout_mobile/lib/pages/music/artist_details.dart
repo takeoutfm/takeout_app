@@ -115,11 +115,11 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _artistPoster(context, state),
                           const SizedBox(height: 16),
-                          _artistDetails(context, state),
+                          _artistDetails(context, state, center: true),
                         ],
                       );
                     },
@@ -168,9 +168,13 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
     );
   }
 
-  Widget _artistDetails(BuildContext context, ArtistView state) {
+  Widget _artistDetails(
+    BuildContext context,
+    ArtistView state, {
+    bool center = false,
+  }) {
     return Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: center ? .center : .start,
       children: [
         Text(artist.name, style: context.header1),
         const SizedBox(height: 12),

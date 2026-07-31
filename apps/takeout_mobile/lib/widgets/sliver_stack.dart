@@ -7,12 +7,14 @@ class SliverStack extends StatelessWidget {
   final List<Widget> slivers;
   final String? backdrop;
   final bool blur;
+  final Widget? footer;
 
   const SliverStack({
     super.key,
     required this.slivers,
     this.backdrop,
     this.blur = false,
+    this.footer,
   });
 
   @override
@@ -35,7 +37,14 @@ class SliverStack extends StatelessWidget {
             ),
           ),
 
-        SafeArea(child: CustomScrollView(slivers: slivers)),
+        SafeArea(
+          child: Column(
+            children: [
+              Expanded(child: CustomScrollView(slivers: slivers)),
+              ?footer,
+            ],
+          ),
+        ),
       ],
     );
   }

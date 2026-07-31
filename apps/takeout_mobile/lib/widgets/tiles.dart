@@ -153,7 +153,7 @@ class _TrackListTile extends StatelessWidget {
       ],
     );
 
-    return FocusedListTile(
+    return ListTile(
       selected: selected,
       isThreeLine: artist.isNotEmpty,
       onTap: onTap,

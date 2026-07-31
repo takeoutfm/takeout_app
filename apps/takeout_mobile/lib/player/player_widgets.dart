@@ -10,7 +10,12 @@ import 'package:takeout_lib/player/seekbar.dart';
 import 'package:takeout_mobile/app/context.dart';
 
 mixin PlayerWidgets {
-  Widget playerImage(BuildContext context, {bool allowControl = false}) {
+  Widget playerImage(
+    BuildContext context, {
+    bool allowControl = false,
+    bool fill = false,
+  }) {
+    final screen = MediaQuery.of(context).size;
     MediaTrack? track = context.player.state.currentTrack;
     bool isPlaying = false;
     bool isBuffering = false;
@@ -22,7 +27,6 @@ mixin PlayerWidgets {
           state is PlayerIndexChange ||
           state is PlayerTrackChange,
       builder: (context, state) {
-        debugPrint('playerImage');
         if (state is PlayerPositionEvent) {
           track = state.currentTrack;
           isPlaying = state.playing;
@@ -33,7 +37,15 @@ mixin PlayerWidgets {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: tileCover(context, track?.image ?? ''),
+              child: fill
+                  ? Container(
+                      constraints: BoxConstraints(
+                        maxWidth: screen.width,
+                        maxHeight: screen.height,
+                      ),
+                      child: fillImage(context, track?.image ?? '', width: screen.width*.9),
+                    )
+                  : tileCover(context, track?.image ?? ''),
             ),
             if (allowControl)
               DecoratedBox(
@@ -68,7 +80,6 @@ mixin PlayerWidgets {
           state is PlayerIndexChange ||
           state is PlayerTrackChange,
       builder: (context, state) {
-        // debugPrint('playerTitle');
         if (state is PlayerLoad ||
             state is PlayerIndexChange ||
             state is PlayerTrackChange) {
@@ -95,7 +106,6 @@ mixin PlayerWidgets {
       buildWhen: (_, state) =>
           state is PlayerLoad || state is PlayerIndexChange,
       builder: (context, state) {
-        // debugPrint('playerArtist');
         if (state is PlayerLoad || state is PlayerIndexChange) {
           final currentTrack = state.currentTrack;
           if (currentTrack != null) {
@@ -172,7 +182,6 @@ mixin PlayerWidgets {
   Widget repeatButton() {
     return Builder(
       builder: (context) {
-        // debugPrint('repeatButton');
         final state = context.watch<NowPlayingCubit>().state;
         final nowPlaying = context.nowPlaying;
         switch (state.nowPlaying.repeat) {
@@ -223,7 +232,7 @@ mixin PlayerWidgets {
     Duration position = Duration.zero;
     return BlocBuilder<Player, PlayerEvent>(
       buildWhen: (_, state) =>
-      state is PlayerIndexChange ||
+          state is PlayerIndexChange ||
           (state is PlayerPositionEvent &&
               state.position.inSeconds != position.inSeconds),
       builder: (context, state) {
@@ -240,7 +249,7 @@ mixin PlayerWidgets {
   String _durationText(Duration d) {
     final minutes = d.inMinutes.remainder(60);
     final seconds = d.inSeconds.remainder(60);
-    return'${minutes.toString().padLeft(2, '0')}:'
+    return '${minutes.toString().padLeft(2, '0')}:'
         '${seconds.toString().padLeft(2, '0')}';
   }
 

@@ -28,6 +28,7 @@ import 'package:takeout_mobile/downloads.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/widgets/buttons.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -89,40 +90,49 @@ class RadioWidget extends ClientPage<RadioView> {
 
         final screen = MediaQuery.of(context).size;
 
-        return DefaultTabController(
-          length: hasDownloads ? 5 : 4, // TODO FIXME
-          child: RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  TabBar(
-                    tabs: [
-                      if (hasStream) Tab(text: context.strings.streamsLabel),
-                      if (hasGenre) Tab(text: context.strings.genresLabel),
-                      if (hasPeriod) Tab(text: context.strings.decadesLabel),
-                      if (hasSeries || hasOther)
-                        Tab(text: context.strings.otherLabel),
-                      if (hasDownloads)
-                        Tab(text: context.strings.downloadsLabel),
-                    ],
-                  ),
-                  SizedBox(
-                    height: screen.height * .85,
-                    child: TabBarView(
+        return SafeArea(child: Scaffold(
+          body: DefaultTabController(
+            length: hasDownloads ? 5 : 4, // TODO FIXME
+            child: RefreshIndicator(
+              onRefresh: () => reloadPage(context),
+              child: SliverStack(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Column(
                       children: [
-                        if (hasStream) _stations(state.stream!),
-                        if (hasGenre) _stations(state.genre!),
-                        if (hasPeriod) _stations(state.period!),
-                        if (hasSeries || hasOther)
-                          _stations(
-                            _merge(
-                              state.series != null ? state.series! : [],
-                              state.other != null ? state.other! : [],
-                            ),
+                        TabBar(
+                          tabs: [
+                            if (hasStream)
+                              Tab(text: context.strings.streamsLabel),
+                            if (hasGenre)
+                              Tab(text: context.strings.genresLabel),
+                            if (hasPeriod)
+                              Tab(text: context.strings.decadesLabel),
+                            if (hasSeries || hasOther)
+                              Tab(text: context.strings.otherLabel),
+                            if (hasDownloads)
+                              Tab(text: context.strings.downloadsLabel),
+                          ],
+                        ),
+                        SizedBox(
+                          height: screen.height * .85,
+                          child: TabBarView(
+                            children: [
+                              if (hasStream) _stations(state.stream!),
+                              if (hasGenre) _stations(state.genre!),
+                              if (hasPeriod) _stations(state.period!),
+                              if (hasSeries || hasOther)
+                                _stations(
+                                  _merge(
+                                    state.series != null ? state.series! : [],
+                                    state.other != null ? state.other! : [],
+                                  ),
+                                ),
+                              if (hasDownloads)
+                                DownloadListWidget(filter: _radioFilter),
+                            ],
                           ),
-                        if (hasDownloads)
-                          DownloadListWidget(filter: _radioFilter),
+                        ),
                       ],
                     ),
                   ),
@@ -130,7 +140,7 @@ class RadioWidget extends ClientPage<RadioView> {
               ),
             ),
           ),
-        );
+        ));
       },
     );
   }

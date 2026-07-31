@@ -103,6 +103,8 @@ class HomeViewGrid extends ViewGrid<HomeView> {
   final Iterable<MediaAlbum> Function(HomeView) itemsFunc;
   final Widget Function(BuildContext, MediaAlbum) coverFunc;
   final void Function(BuildContext, MediaAlbum) onTap;
+  final EdgeInsetsGeometry padding;
+  final double spacing;
 
   HomeViewGrid(
     this.state, {
@@ -112,6 +114,8 @@ class HomeViewGrid extends ViewGrid<HomeView> {
     required this.coverFunc,
     required this.onTap,
     this.childAspectRatio = 1.0,
+    this.padding = const EdgeInsetsGeometry.all(20),
+    this.spacing = 6,
     super.key,
   });
 
@@ -127,12 +131,12 @@ class HomeViewGrid extends ViewGrid<HomeView> {
     SpiffTrackCacheState cache,
   ) {
     return SliverPadding(
-      padding: EdgeInsetsGeometry.all(20),
+      padding: padding,
       sliver: SliverGrid.extent(
         childAspectRatio: childAspectRatio,
         maxCrossAxisExtent: maxCrossAxisExtent,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+        crossAxisSpacing: spacing,
+        mainAxisSpacing: spacing,
         children: [
           ...itemsFunc(state).map(
             (i) => FocusItem(

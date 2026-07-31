@@ -27,6 +27,7 @@ import 'package:takeout_mobile/widgets/focus_tile.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/spiff/widget.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -39,38 +40,36 @@ class HistoryListWidget extends StatelessWidget {
     final history = historyCubit.state.history;
     final spiffs = List<SpiffHistory>.from(history.spiffs);
     spiffs.sort((a, b) => b.dateTime.compareTo(a.dateTime));
-    final orientation = MediaQuery.of(context).orientation;
     return Scaffold(
-      appBar: orientation == .portrait
-          ? AppBar(
-              title: header(context.strings.historyLabel),
-              actions: [
-                popupMenu(context, [
-                  PopupItem.streamHistory(
-                    context,
-                    (ctx) => _onStreamHistory(ctx),
-                  ),
-                  PopupItem.delete(
-                    context,
-                    context.strings.deleteAll,
-                    (ctx) => _onDelete(ctx),
-                  ),
-                ]),
-              ],
-            )
-          : null,
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: spiffs.length,
-              itemBuilder: (buildContext, index) {
-                return SpiffHistoryTile(spiffs[index]);
-              },
-            ),
+      body: SliverStack(
+        slivers: [
+          SliverList.builder(
+            itemCount: spiffs.length,
+            itemBuilder: (buildContext, index) {
+              return SpiffHistoryTile(spiffs[index]);
+            },
           ),
         ],
       ),
+      // appBar: orientation == .portrait
+      //     ? AppBar(
+      //         title: header(context.strings.historyLabel),
+      //         actions: [
+      //           popupMenu(context, [
+      //             PopupItem.streamHistory(
+      //               context,
+      //               (ctx) => _onStreamHistory(ctx),
+      //             ),
+      //             PopupItem.delete(
+      //               context,
+      //               context.strings.deleteAll,
+      //               (ctx) => _onDelete(ctx),
+      //             ),
+      //           ]),
+      //         ],
+      //       )
+      //     : null,
+      // body:
     );
   }
 
@@ -189,7 +188,10 @@ class SpiffHistoryTile extends StatelessWidget {
       context,
       MaterialPageRoute<void>(
         // TODO consider making spiff refreshable. Need original reference or uri.
-        builder: (_) => SpiffDetailsPage(value: spiffHistory.spiff),
+        builder: (_) => SpiffDetailsPage(
+          title: spiffHistory.spiff.title,
+          value: spiffHistory.spiff,
+        ),
       ),
     );
   }

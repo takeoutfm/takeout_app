@@ -31,10 +31,13 @@ import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
+import 'package:takeout_mobile/player/player_sheet.dart';
 import 'package:takeout_mobile/player/player_widgets.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
+import 'package:takeout_mobile/widgets/sliver_box.dart';
+import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
 class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
@@ -73,32 +76,35 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('player2 build');
-    return PlayerScaffold(
-      body: (Color? color, {Spiff? spiff}) {
-        debugPrint('player2 pre build scaffold');
-        MediaTrack? track;
-        if (spiff?.isNotEmpty ?? false) {
-          track = spiff?[spiff.index];
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onVerticalDragEnd: (details) {
+        final velocity = details.primaryVelocity ?? 0;
+        if (velocity < -300) {
+          // swiping up
+          _showQueue(context);
         }
-        if (spiff == null || track == null) {
-          return EmptyWidget();
-        }
-        debugPrint('player2 build scaffold');
-        // return CustomScrollView(
-        //   slivers: [
-        //     SliverToBoxAdapter(
-        //       child: const SizedBox(
-        //         height: 500,
-        //         child: ColoredBox(color: Colors.blue),
-        //       ),
-        //     ),
-        //   ],
-        // );
-        return Focus(
-          canRequestFocus: false,
-          descendantsAreFocusable: true,
-          child: CustomScrollView(
+      },
+      child: PlayerScaffold(
+        body: (Color? color, {Spiff? spiff}) {
+          MediaTrack? track;
+          if (spiff?.isNotEmpty ?? false) {
+            track = spiff?[spiff.index];
+          }
+          if (spiff == null || track == null) {
+            return EmptyWidget();
+          }
+          // return CustomScrollView(
+          //   slivers: [
+          //     SliverToBoxAdapter(
+          //       child: const SizedBox(
+          //         height: 500,
+          //         child: ColoredBox(color: Colors.blue),
+          //       ),
+          //     ),
+          //   ],
+          // );
+          return SliverStack(
             slivers: [
               SliverMenuBar(
                 title: track.title,
@@ -138,92 +144,192 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                   // ),
                 ],
               ),
-              SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsetsGeometry.all(20),
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          playerImage(context, allowControl: true),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: SizedBox(
-                              height: 255,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    track.title,
-                                    style: AppTextStyle.musicReleaseTitle,
-                                  ),
-
-                                  const SizedBox(height: 12),
-
-                                  Text(
-                                    track.creator,
-                                    style: AppTextStyle.musicArtist.copyWith(
-                                      decoration: .underline,
-                                    ),
-                                  ),
-
-                                  const SizedBox(height: 12),
-
-                                  Wrap(
-                                    children: [
-                                      Text(
-                                        '${track.year}',
-                                        style: AppTextStyle.musicYear,
-                                      ),
-                                      SizedBox(width: 16),
-                                      Text(
-                                        track.album,
-                                        style: AppTextStyle.musicYear,
-                                      ),
-                                    ],
-                                  ),
-
-                                  if (spiff.isNotLive) ...[
-                                    // const SizedBox(height: 12),
-                                    Spacer(),
-                                    playerControls(context),
-                                  ],
-                                ],
+              SliverBox(
+                padding: EdgeInsets.all(6),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    const posterWidth = 223.0;
+                    const minDetailsWidth = 300.0;
+                    final hasRoom =
+                        constraints.maxWidth >= posterWidth + minDetailsWidth;
+                    if (hasRoom) {
+                      // wide view
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: .stretch,
+                          children: [
+                            SizedBox(
+                              width: posterWidth,
+                              child: playerImage(context, allowControl: true),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(minHeight: 0),
+                                child: Column(
+                                  crossAxisAlignment: .start,
+                                  mainAxisAlignment: .spaceBetween,
+                                  children: [playerControls(context)],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-
-                      if (spiff.isNotLive) ...[
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            repeatButton(),
-                            Expanded(child: playerSeekBar(context)),
-                            // Expanded(child: newSeekBar(context)),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.50),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: playerQueue(context),
+                      );
+                    }
+                    // tall view
+                    return Column(
+                      crossAxisAlignment: .center,
+                      children: [
+                        playerImage(context, allowControl: true, fill: true),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              // SliverBox(
+              //   child: Column(
+              //     children: [
+              //       if (spiff.isNotLive) ...[
+              //         // Row(
+              //         //   children: [
+              //         //     repeatButton(),
+              //         //     Expanded(child: playerSeekBar(context)),
+              //         //     // Expanded(child: newSeekBar(context)),
+              //         //   ],
+              //         // ),
+              //         // SizedBox(height: 20),
+              //         Container(
+              //           padding: const EdgeInsets.all(20),
+              //           decoration: BoxDecoration(
+              //             color: Colors.black.withValues(alpha: 0.50),
+              //             borderRadius: BorderRadius.circular(16),
+              //           ),
+              //           child: playerQueue(context),
+              //         ),
+              //       ],
+              //     ],
+              //   ),
+              // ),
+              // SliverToBoxAdapter(
+              //   child: Container(
+              //     padding: const EdgeInsetsGeometry.all(20),
+              //     child: Column(
+              //       crossAxisAlignment: .start,
+              //       children: [
+              // Row(
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: [
+              //     playerImage(context, allowControl: true),
+              //     const SizedBox(width: 20),
+              //     Expanded(
+              //       child: SizedBox(
+              //         height: 255,
+              //         child: Column(
+              //           crossAxisAlignment: CrossAxisAlignment.start,
+              //           children: [
+              //             Text(
+              //               track.title,
+              //               style: AppTextStyle.musicReleaseTitle,
+              //             ),
+              //
+              //             const SizedBox(height: 12),
+              //
+              //             Text(
+              //               track.creator,
+              //               style: AppTextStyle.musicArtist.copyWith(
+              //                 decoration: .underline,
+              //               ),
+              //             ),
+              //
+              //             const SizedBox(height: 12),
+              //
+              //             Wrap(
+              //               children: [
+              //                 Text(
+              //                   '${track.year}',
+              //                   style: AppTextStyle.musicYear,
+              //                 ),
+              //                 SizedBox(width: 16),
+              //                 Text(
+              //                   track.album,
+              //                   style: AppTextStyle.musicYear,
+              //                 ),
+              //               ],
+              //             ),
+              //
+              //             if (spiff.isNotLive) ...[
+              //               // const SizedBox(height: 12),
+              //               Spacer(),
+              //               playerControls(context),
+              //             ],
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              SliverBox(
+                padding: EdgeInsets.all(6),
+                child: Column(
+                  children: [
+                    Text(track.title, style: context.playerHeader),
+                    const SizedBox(height: 6),
+                    Text(track.creator, style: context.playerTitle),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      children: [
+                        Text(
+                          '${track.album} (${track.year}) ',
+                          style: context.playerSubtitle,
                         ),
                       ],
-                    ],
-                  ),
+                    ),
+                    SizedBox(height: 6),
+                    Row(
+                      children: [
+                        repeatButton(),
+                        Expanded(child: playerSeekBar(context)),
+                        // Expanded(child: newSeekBar(context)),
+                      ],
+                    ),
+                    SizedBox(height: 6),
+                    playerControls(context),
+                  ],
                 ),
               ),
             ],
-          ),
-        );
-      },
+            footer: Column(
+              crossAxisAlignment: .center,
+              mainAxisAlignment: .center,
+              children: [
+                // SizedBox(height: 2),
+                IconButton(
+                  icon: Icon(Icons.drag_handle),
+                  onPressed: () => _showQueue(context),
+                ),
+                // CircleButton.openSheet(onTap: () => _showQueue(context)),
+                // SizedBox(height: 2),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showQueue(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) =>
+            playerSheet(context, scrollController),
+      ),
     );
   }
 
@@ -279,6 +385,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
     final buffering = state.buffering;
     return Wrap(
       // mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 20,
       children: [
         // if (isMusic) _repeatButton(),
         if (!isLive)
@@ -317,7 +424,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
             iconSize: 32,
             onPressed: state.hasNext ? () => player.skipToNext() : null,
           ),
-        if (isMusic) _invisibleButton(),
+        // if (isMusic) _invisibleButton(),
       ],
     );
   }

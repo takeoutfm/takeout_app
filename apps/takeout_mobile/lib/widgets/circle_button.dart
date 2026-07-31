@@ -66,8 +66,19 @@ class CircleButton extends StatelessWidget {
         key: key,
         icon: Icons.keyboard_arrow_down,
         onTap: null,
-        padding: padding ?? _defaultPadding,
+        padding: padding ?? _appBarPadding,
       );
+
+  const CircleButton.openSheet({
+    Key? key,
+    required VoidCallback? onTap,
+    double? padding,
+  }) : this(
+    key: key,
+    icon: Icons.arrow_drop_up,
+    onTap: onTap,
+    padding: padding ?? _defaultPadding,
+  );
 
   @override
   Widget build(BuildContext context) {

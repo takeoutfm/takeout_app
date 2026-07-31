@@ -17,9 +17,18 @@ class MediaActions {
     final buttons = SplayTreeMap<MediaType, Widget>(
       (a, b) => a.index.compareTo(b.index),
     );
+
+    final style = IconButton.styleFrom(
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      visualDensity: VisualDensity.compact,
+      padding: const EdgeInsets.all(8),
+      minimumSize: const Size(36, 36),
+    );
+
     if (index.music) {
       buttons[MediaType.music] = IconButton(
         iconSize: iconSize,
+        style: style,
         icon: mediaType == MediaType.music
             ? const Icon(Icons.speaker)
             : const Icon(Icons.speaker_outlined),
@@ -29,6 +38,7 @@ class MediaActions {
     if (index.movies) {
       buttons[MediaType.film] = IconButton(
         iconSize: iconSize,
+        style: style,
         icon: mediaType == MediaType.film
             ? const Icon(Icons.movie)
             : const Icon(Icons.movie_outlined),
@@ -38,6 +48,7 @@ class MediaActions {
     if (index.shows) {
       buttons[MediaType.tv] = IconButton(
         iconSize: iconSize,
+        style: style,
         icon: mediaType == MediaType.tv
             ? const Icon(Icons.tv)
             : const Icon(Icons.tv_outlined),
@@ -47,6 +58,7 @@ class MediaActions {
     if (index.podcasts) {
       buttons[MediaType.podcast] = IconButton(
         iconSize: iconSize,
+        style: style,
         icon: mediaType == MediaType.podcast
             ? const Icon(Icons.podcasts)
             : const Icon(Icons.podcasts_outlined),
@@ -102,6 +114,7 @@ class SliverMediaBar extends StatefulWidget {
 
 class SliverMediaState extends State<SliverMediaBar> {
   final TextEditingController _controller = TextEditingController();
+
   // List<String> _suggestions = [];
   // bool _showSuggestions = false;
 
@@ -114,13 +127,14 @@ class SliverMediaState extends State<SliverMediaBar> {
       pinned: false,
       floating: true,
       snap: true,
+      // titleSpacing: 0,
       title: SearchBar(
         controller: _controller,
         constraints: const BoxConstraints(
           minHeight: 40,
           maxWidth: double.infinity,
         ),
-        hintText: 'Takeout Search',
+        hintText: 'Search',
         leading: const Icon(Icons.search),
         trailing: [
           if (_controller.text.isNotEmpty)
@@ -133,6 +147,8 @@ class SliverMediaState extends State<SliverMediaBar> {
         ],
         onSubmitted: (query) => _onSearch(query),
       ),
+      actionsPadding: EdgeInsets.zero,
+      actionsIconTheme: const IconThemeData(size: 22),
       actions: actions(context),
     );
   }

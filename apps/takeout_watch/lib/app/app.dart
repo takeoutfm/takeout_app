@@ -18,7 +18,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
-const appVersion = '0.25.3'; // #version#
+const appVersion = '0.26.0'; // #version#
 const appSource = 'https://takeoutfm.dev/';
 const appHome = 'https://takeoutfm.com/';
 

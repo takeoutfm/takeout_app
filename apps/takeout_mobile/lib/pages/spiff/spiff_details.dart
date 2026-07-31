@@ -139,13 +139,13 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _spiffCover(context, state),
                           const SizedBox(height: 16),
                           _playButtons(context, state),
                           const SizedBox(height: 16),
-                          _spiffDetails(context, state),
+                          _spiffDetails(context, state, center: true),
                         ],
                       );
                     },
@@ -190,9 +190,13 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
     );
   }
 
-  Widget _spiffDetails(BuildContext context, Spiff state) {
+  Widget _spiffDetails(
+    BuildContext context,
+    Spiff state, {
+    bool center = false,
+  }) {
     return Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: center ? .center : .start,
       children: [
         Text(state.playlist.title, style: context.header1),
         const SizedBox(height: 12),

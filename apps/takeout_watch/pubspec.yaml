@@ -11,7 +11,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  takeout_lib: ^0.25.2
+  takeout_lib: ^0.26.0
   android_intent_plus: ^6.0.0
   bloc: ^9.2.0
   flutter_bloc: ^9.1.1

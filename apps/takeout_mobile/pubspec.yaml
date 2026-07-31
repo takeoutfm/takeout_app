@@ -12,7 +12,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2
-  takeout_lib: ^0.25.2
+  takeout_lib: ^0.26.0
   cupertino_icons: ^1.0.8
   dynamic_color: ^1.8.1
   bloc: ^9.2.0

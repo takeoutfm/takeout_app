@@ -76,6 +76,12 @@ extension AppContext on BuildContext {
   /// used for grid item subtitle
   TextStyle? get gridSubtitle => labelLarge?.copyWith(color: Colors.white60);
 
+  TextStyle? get playerHeader => titleLarge;
+
+  TextStyle? get playerTitle => labelLarge;
+
+  TextStyle? get playerSubtitle => labelLarge?.copyWith(color: Colors.white60);
+
   /// used for film and show taglines
   TextStyle? get tagline => bodyLarge?.copyWith(
     fontStyle: .italic,

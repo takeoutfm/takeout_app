@@ -114,21 +114,22 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: .start,
+                        crossAxisAlignment: .center,
                         children: [
                           _releaseCover(context, state),
                           const SizedBox(height: 16),
                           _playButtons(context, state),
                           const SizedBox(height: 16),
-                          _releaseDetails(context, state),
+                          _releaseDetails(context, state, center: true),
                         ],
                       );
                     },
                   ),
                 ),
                 SliverBox(
+                  padding: EdgeInsetsGeometry.only(left: 20, right: 20),
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.50),
                       borderRadius: BorderRadius.circular(16),
@@ -184,9 +185,9 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
     );
   }
 
-  Widget _releaseDetails(BuildContext context, ReleaseView state) {
+  Widget _releaseDetails(BuildContext context, ReleaseView state, {bool center = false}) {
     return Column(
-      crossAxisAlignment: .start,
+      crossAxisAlignment: center ? .center : .start,
       children: [
         Text(release.name, style: context.header1),
         const SizedBox(height: 12),

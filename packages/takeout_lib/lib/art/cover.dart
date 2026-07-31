@@ -63,7 +63,6 @@ Widget movieSmallPoster(BuildContext context, String url) {
 }
 
 Widget backdropImage(BuildContext context, String url) {
-  print('backdrop $url');
   return ArtworkBuilder(Artwork.background(url)).build(context);
 }
 
