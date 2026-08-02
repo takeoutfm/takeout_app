@@ -151,16 +151,17 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
                     },
                   ),
                 ),
-                SliverBox(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.50),
-                      borderRadius: BorderRadius.circular(16),
+                if (state.isNotLive)
+                  SliverBox(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.50),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: SpiffTracks(state),
                     ),
-                    child: SpiffTracks(state),
                   ),
-                ),
               ],
             );
           },
@@ -202,25 +203,27 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
         const SizedBox(height: 12),
         Text(state.creator ?? 'none', style: context.body),
         const SizedBox(height: 12),
-        Wrap(
-          children: [
-            Text(
-              context.strings.trackCount(state.playlist.tracks.length),
-              style: context.body,
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            MyChip(
-              label: context.strings.shuffleLabel,
-              onTap: () => _onShuffle(context, state),
-            ),
-          ],
-        ),
+        if (state.isNotLive) ...[
+          Wrap(
+            children: [
+              Text(
+                context.strings.trackCount(state.playlist.tracks.length),
+                style: context.body,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              MyChip(
+                label: context.strings.shuffleLabel,
+                onTap: () => _onShuffle(context, state),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

@@ -15,6 +15,7 @@ import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/widgets/focus_item.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
+import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/text.dart';
 
@@ -130,6 +131,17 @@ class HomeViewGrid extends ViewGrid<HomeView> {
     HomeView state,
     SpiffTrackCacheState cache,
   ) {
+    // this grid supports multiple media types so need to see
+    // what this is to show the correct subtitle
+    final creator = (MediaAlbum i) {
+      if (i is Movie) {
+        return '${i.year}';
+      } else if (i is Series) {
+        return i.creator;
+      }
+      return i.creator;
+    };
+
     return SliverPadding(
       padding: padding,
       sliver: SliverGrid.extent(
@@ -140,12 +152,11 @@ class HomeViewGrid extends ViewGrid<HomeView> {
         children: [
           ...itemsFunc(state).map(
             (i) => FocusItem(
-              child: InkWell(
+              child: SliverGridTile(
+                image: coverFunc(context, i),
+                title: i.album,
+                subtitle: creator(i),
                 onTap: () => onTap(context, i),
-                child: GridTile(
-                  footer: _tile(context, i, cache, subtitle: i.creator),
-                  child: coverFunc(context, i),
-                ),
               ),
             ),
           ),
@@ -181,12 +192,11 @@ class MoviesViewGrid extends ViewGrid<MoviesView> {
         children: [
           ...state.movies.map(
             (i) => FocusItem(
-              child: InkWell(
+              child: SliverGridTile(
+                image: MediaProgress.movie(i, gridPoster(context, i.image)),
+                title: i.album,
+                subtitle: '${i.year}',
                 onTap: () => onTap(context, i),
-                child: GridTile(
-                  footer: _tile(context, i, cache),
-                  child: MediaProgress.movie(i, gridPoster(context, i.image)),
-                ),
               ),
             ),
           ),
@@ -222,15 +232,11 @@ class TVShowsViewGrid extends ViewGrid<TVShowsView> {
         children: [
           ...state.series.map(
             (i) => FocusItem(
-              child: InkWell(
+              child: SliverGridTile(
+                image: gridPoster(context, i.image),
+                title: i.album,
+                subtitle: '${i.year}',
                 onTap: () => onTap(context, i),
-                child: GridTile(
-                  footer: _tile(context, i, cache),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: gridPoster(context, i.image),
-                  ),
-                ),
               ),
             ),
           ),
@@ -273,19 +279,11 @@ class PodcastsViewGrid extends ViewGrid<PodcastsView> {
         children: [
           ...state.series.map(
             (i) => FocusItem(
-              child: GestureDetector(
+              child: SliverGridTile(
+                image: gridSeries(context, i.image),
+                title: i.album,
+                subtitle: i.creator,
                 onTap: () => onTap(context, i),
-                onLongPressStart: onLongPress != null
-                    ? (details) =>
-                          onLongPress(context, i, details.globalPosition)
-                    : null,
-                child: GridTile(
-                  footer: _tile(context, i, cache),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: gridSeries(context, i.image),
-                  ),
-                ),
               ),
             ),
           ),
@@ -346,15 +344,11 @@ class SubscribedPodcastsViewGrid extends StatelessWidget
         children: [
           ...state.series.map(
             (i) => FocusItem(
-              child: InkWell(
+              child: SliverGridTile(
+                image: gridSeries(context, i.image),
+                title: i.album,
+                subtitle: i.creator,
                 onTap: () => onTap(context, i),
-                child: GridTile(
-                  footer: _tile(context, i, cache),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: gridSeries(context, i.image),
-                  ),
-                ),
               ),
             ),
           ),

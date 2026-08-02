@@ -37,8 +37,7 @@ class SeasonDetailsPage extends ClientPage<TVSeriesView> {
               backdrop: series.backdrop,
               slivers: [
                 SliverFavoriteBar(
-                  title:
-                      '${series.name}: ${context.strings.seasonLabel(season)}',
+                  title: context.strings.seasonLabel(season),
                   onTap: () {},
                 ),
                 SliverTitle(

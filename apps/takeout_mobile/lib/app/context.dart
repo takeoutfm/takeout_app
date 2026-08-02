@@ -74,7 +74,7 @@ extension AppContext on BuildContext {
   TextStyle? get gridTitle => labelMedium;
 
   /// used for grid item subtitle
-  TextStyle? get gridSubtitle => labelLarge?.copyWith(color: Colors.white60);
+  TextStyle? get gridSubtitle => labelMedium?.copyWith(color: Colors.white60);
 
   TextStyle? get playerHeader => titleLarge;
 

@@ -185,7 +185,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                           children: [
                             SizedBox(
                               width: posterWidth,
-                              child: playerImage(context, allowControl: true),
+                              child: playerImage(context, allowControl: false),
                             ),
                             const SizedBox(width: 20),
                             Expanded(
@@ -206,7 +206,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                     return Column(
                       crossAxisAlignment: .center,
                       children: [
-                        playerImage(context, allowControl: true, fill: true),
+                        playerImage(context, allowControl: false, fill: true),
                       ],
                     );
                   },
@@ -311,6 +311,42 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                           ),
                         ],
                       ),
+                    if (spiff.isLive)
+                      Wrap(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: color?.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: color?.withValues(alpha: 0.5) ?? Colors.white),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'LIVE',
+                                  style: TextStyle(
+                                    color: color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     if (spiff.isMusic) ...[
                       SizedBox(height: 6),
                       Row(
@@ -320,9 +356,9 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                           // Expanded(child: newSeekBar(context)),
                         ],
                       ),
-                      SizedBox(height: 6),
-                      playerControls(context),
                     ],
+                    SizedBox(height: 12),
+                    playerControls(context),
                   ],
                 ),
               ),
