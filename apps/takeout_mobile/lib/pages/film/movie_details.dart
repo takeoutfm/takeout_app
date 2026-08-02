@@ -63,7 +63,8 @@ class MovieDetailsPage extends ClientPage<MovieView> {
             return SliverStack(
               backdrop: movie.backdrop,
               slivers: [
-                SliverFavoriteBar(title: movie.titleYear, onTap: () {}),
+                // SliverFavoriteBar(title: movie.titleYear, onTap: () {}),
+                SliverFavoriteBar(onTap: () {}),
                 SliverBox(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -144,7 +145,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                         Text(context.strings.castLabel, style: context.header2),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 110,
+                          height: 140,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
@@ -164,7 +165,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                         Text(context.strings.crewLabel, style: context.header2),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 110,
+                          height: 140,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
@@ -223,11 +224,18 @@ class MovieDetailsPage extends ClientPage<MovieView> {
             label: Text(context.strings.resumeLabel),
             icon: Icon(Icons.play_arrow),
           ),
-        FilledButton.icon(
-          onPressed: () => _onPlay(context, state),
-          label: Text(context.strings.playLabel),
-          icon: Icon(Icons.play_arrow),
-        ),
+        if (hasProgress)
+          OutlinedButton.icon(
+            onPressed: () => _onPlay(context, state),
+            label: const Text('Play from start'),
+            icon: const Icon(Icons.replay),
+          )
+        else
+          FilledButton.icon(
+            onPressed: () => _onPlay(context, state),
+            label: const Text('Play'),
+            icon: const Icon(Icons.play_arrow),
+          ),
       ],
     );
   }
@@ -293,6 +301,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                   .where((t) => t.official)
                   .map(
                     (trailer) => MyChip(
+                      icon: Icons.play_arrow,
                       label: trailer.name,
                       overflow: .ellipsis,
                       onTap: () {

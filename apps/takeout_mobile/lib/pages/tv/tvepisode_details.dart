@@ -46,10 +46,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
             return SliverStack(
               backdrop: state.series.backdrop,
               slivers: [
-                SliverFavoriteBar(
-                  title: '${state.episode.se}: ${state.episode.name}',
-                  onTap: () {},
-                ),
+                SliverFavoriteBar(title: state.episode.name, onTap: () {}),
                 // SliverTitle(state.episode.name, style: context.header1),
                 SliverToBoxAdapter(
                   child: Container(
@@ -71,7 +68,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                                   context,
                                   episode.originalImage,
                                   width: imgWidth,
-                                  height: imgHeight,
+                                  // height: imgHeight,
                                 ),
                               ),
                             ),
@@ -84,16 +81,22 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                           children: [
                             if (hasProgress)
                               FilledButton.icon(
-                                onPressed: () => {},
-                                // _onResume(context, state),
+                                onPressed: () => _onResume(context, state),
                                 label: Text(context.strings.resumeLabel),
                                 icon: Icon(Icons.play_arrow),
                               ),
-                            FilledButton.icon(
-                              onPressed: () => _onPlay(context, state),
-                              label: Text('Play'),
-                              icon: Icon(Icons.play_arrow),
-                            ),
+                            if (hasProgress)
+                              OutlinedButton.icon(
+                                onPressed: () => _onPlay(context, state),
+                                label: const Text('Play from start'),
+                                icon: const Icon(Icons.replay),
+                              )
+                            else
+                              FilledButton.icon(
+                                onPressed: () => _onPlay(context, state),
+                                label: const Text('Play'),
+                                icon: const Icon(Icons.play_arrow),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -173,7 +176,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                           ),
                           const SizedBox(height: 16),
                           SizedBox(
-                            height: 110,
+                            height: 140,
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: [
@@ -213,11 +216,11 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
     playMovie(context, TVEpisodeMediaTrack(view));
   }
 
-  void _onResume(BuildContext context, MovieView view) {
+  void _onResume(BuildContext context, TVEpisodeView view) {
     playMovie(
       context,
-      MovieMediaTrack(view),
-      startOffset: context.offsets.state.position(view.movie),
+      TVEpisodeMediaTrack(view),
+      startOffset: context.offsets.state.position(view.episode),
     );
   }
 

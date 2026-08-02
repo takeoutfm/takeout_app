@@ -72,6 +72,9 @@ Widget _liveTrackListView(
       final history = context.watch<HistoryCubit>();
       // final player = context.watch<Player>();
       final tracks = List<StreamHistory>.from(history.state.history.stream);
+      if (tracks.isEmpty) {
+        return EmptyWidget();
+      }
       tracks.sort((a, b) => b.dateTime.compareTo(a.dateTime));
       final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
       return ListView.builder(

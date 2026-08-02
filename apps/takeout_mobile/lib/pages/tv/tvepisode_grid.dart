@@ -40,23 +40,71 @@ class SliverTVEpisodeGrid extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: GridTile(
-                    footer: Material(
-                      color: Colors.transparent,
-                      clipBehavior: Clip.antiAlias,
-                      child: GridTileBar(
-                        backgroundColor: Colors.black.withValues(alpha: 0.65),
-                        title: Text(
-                          '${e.episode}. ${e.name}',
-                          style: context.gridTitle,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        MediaProgress.tvEpisode(e, gridTVEpisode(context, e.image)),
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.65),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${e.episode}',
+                              style: context.labelSmall?.copyWith(color: Colors.white),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    child: MediaProgress.tvEpisode(
-                      e,
-                      gridTVEpisode(context, e.image),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 44,
+                            color: Colors.black.withValues(alpha: 0.65),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            child: Text(
+                              e.name,
+                              style: context.gridTitle,
+                              maxLines: 2,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+
+                // child: ClipRRect(
+                //   borderRadius: BorderRadius.circular(16),
+                //   child: GridTile(
+                //
+                //
+                //     footer: Material(
+                //       color: Colors.transparent,
+                //       clipBehavior: Clip.antiAlias,
+                //       child: GridTileBar(
+                //         backgroundColor: Colors.black.withValues(alpha: 0.65),
+                //         title: Text(
+                //           e.name,
+                //           style: context.gridTitle,
+                //           maxLines: 2,
+                //           softWrap: true,
+                //         ),
+                //       ),
+                //     ),
+                //     child: MediaProgress.tvEpisode(
+                //       e,
+                //       gridTVEpisode(context, e.image),
+                //     ),
+                //   ),
+                // ),
               ),
             ),
           ),

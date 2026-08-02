@@ -44,7 +44,7 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
               backdrop: state.background,
               slivers: [
                 SliverMenuBar(
-                  title: artist.name,
+                  // title: artist.name,
                   items: [
                     PopupItem.shuffle(context, (_) => _onShuffle(context)),
                     PopupItem.radio(context, (_) => _onRadio(context)),
@@ -115,11 +115,11 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _artistPoster(context, state),
                           const SizedBox(height: 16),
-                          _artistDetails(context, state, center: true),
+                          _artistDetails(context, state, center: false),
                         ],
                       );
                     },

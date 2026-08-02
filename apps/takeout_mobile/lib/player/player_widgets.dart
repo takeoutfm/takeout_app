@@ -16,6 +16,12 @@ mixin PlayerWidgets {
     bool fill = false,
   }) {
     final screen = MediaQuery.of(context).size;
+    var coverWidth = screen.width * .9;
+    final actualHeight =
+        screen.height - kToolbarHeight - kBottomNavigationBarHeight;
+    if (coverWidth > actualHeight * .55) {
+      coverWidth = actualHeight * .55;
+    }
     MediaTrack? track = context.player.state.currentTrack;
     bool isPlaying = false;
     bool isBuffering = false;
@@ -43,7 +49,11 @@ mixin PlayerWidgets {
                         maxWidth: screen.width,
                         maxHeight: screen.height,
                       ),
-                      child: fillImage(context, track?.image ?? '', width: screen.width*.9),
+                      child: fillImage(
+                        context,
+                        track?.image ?? '',
+                        width: coverWidth,
+                      ),
                     )
                   : tileCover(context, track?.image ?? ''),
             ),
@@ -70,7 +80,7 @@ mixin PlayerWidgets {
     );
   }
 
-  Widget playerTitle(BuildContext context) {
+  Widget playerTitle(BuildContext context, {TextStyle? style}) {
     final track = context.player.state.currentTrack;
     String title = track?.title ?? '';
     String artist = track?.creator ?? '';
@@ -92,14 +102,14 @@ mixin PlayerWidgets {
         return title.isNotEmpty
             ? GestureDetector(
                 onTap: () => context.showArtist(artist),
-                child: Text(title),
+                child: Text(title, style: style),
               )
             : const EmptyWidget();
       },
     );
   }
 
-  Widget playerArtist(BuildContext context) {
+  Widget playerArtist(BuildContext context, {TextStyle? style}) {
     final track = context.player.state.currentTrack;
     String artist = track?.creator ?? '';
     return BlocBuilder<Player, PlayerEvent>(
@@ -112,7 +122,9 @@ mixin PlayerWidgets {
             artist = currentTrack.creator;
           }
         }
-        return artist.isNotEmpty ? Text(artist) : const EmptyWidget();
+        return artist.isNotEmpty
+            ? Text(artist, style: style)
+            : const EmptyWidget();
       },
     );
   }

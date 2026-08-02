@@ -106,8 +106,33 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
           // );
           return SliverStack(
             slivers: [
+              // SliverToBoxAdapter(
+              //   child: Row(
+              //     mainAxisAlignment: .end,
+              //     children: [
+              //       IconButtonTheme(
+              //         data: IconButtonThemeData(
+              //           style: IconButton.styleFrom(
+              //             minimumSize: const Size(28, 28),
+              //             // tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              //             // visualDensity: VisualDensity.compact,
+              //             padding: EdgeInsets.zero,
+              //           ),
+              //         ),
+              //         child: popupMenu(
+              //           context,
+              //           [PopupItem.divider()],
+              //           icon: Icon(Icons.more_vert),
+              //           // iconSize: 20,
+              //           // splashRadius: 18,
+              //           // padding: EdgeInsets.zero,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               SliverMenuBar(
-                title: track.title,
+                // title: track.title,
                 allowBack: false,
                 items: [
                   // PopupItem.play(
@@ -273,28 +298,31 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                 padding: EdgeInsets.all(6),
                 child: Column(
                   children: [
-                    Text(track.title, style: context.playerHeader),
+                    playerTitle(context, style: context.playerHeader),
                     const SizedBox(height: 6),
-                    Text(track.creator, style: context.playerTitle),
+                    playerArtist(context, style: context.playerTitle),
                     const SizedBox(height: 6),
-                    Wrap(
-                      children: [
-                        Text(
-                          '${track.album} (${track.year}) ',
-                          style: context.playerSubtitle,
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 6),
-                    Row(
-                      children: [
-                        repeatButton(),
-                        Expanded(child: playerSeekBar(context)),
-                        // Expanded(child: newSeekBar(context)),
-                      ],
-                    ),
-                    SizedBox(height: 6),
-                    playerControls(context),
+                    if (spiff.isMusic)
+                      Wrap(
+                        children: [
+                          Text(
+                            '${track.album} (${track.year}) ',
+                            style: context.playerSubtitle,
+                          ),
+                        ],
+                      ),
+                    if (spiff.isMusic) ...[
+                      SizedBox(height: 6),
+                      Row(
+                        children: [
+                          repeatButton(),
+                          Expanded(child: playerSeekBar(context)),
+                          // Expanded(child: newSeekBar(context)),
+                        ],
+                      ),
+                      SizedBox(height: 6),
+                      playerControls(context),
+                    ],
                   ],
                 ),
               ),
@@ -305,7 +333,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
               children: [
                 // SizedBox(height: 2),
                 IconButton(
-                  icon: Icon(Icons.drag_handle),
+                  icon: Icon(Icons.keyboard_arrow_up),
                   onPressed: () => _showQueue(context),
                 ),
                 // CircleButton.openSheet(onTap: () => _showQueue(context)),

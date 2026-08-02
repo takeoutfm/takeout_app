@@ -61,13 +61,14 @@ class FabWidget extends StatelessWidget {
                   ? const Icon(Icons.pause)
                   : const Icon(Icons.play_arrow),
             ),
-            IgnorePointer(
-              child: SizedBox(
-                width: 52, // non-mini FAB is 56, progress is 4
-                height: 52,
-                child: CircularProgressIndicator(value: progress),
+            if (state.spiff.isMusic)
+              IgnorePointer(
+                child: SizedBox(
+                  width: 52, // non-mini FAB is 56, progress is 4
+                  height: 52,
+                  child: CircularProgressIndicator(value: progress),
+                ),
               ),
-            ),
           ],
         );
       },

@@ -21,7 +21,7 @@ class AvatarButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        width: 80,
+        width: 96,
         margin: const EdgeInsets.only(right: 16),
         child: Column(
           children: [
@@ -29,14 +29,16 @@ class AvatarButton extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               name,
-              maxLines: 1,
+              textAlign: TextAlign.center,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: context.labelMedium?.copyWith(color: Colors.white),
             ),
             if (subtitle != null)
               Text(
                 subtitle!,
-                maxLines: 1,
+                textAlign: TextAlign.center,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: context.labelSmall?.copyWith(color: Colors.white70),
               ),

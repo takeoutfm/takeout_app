@@ -48,7 +48,8 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
             return SliverStack(
               backdrop: series.backdrop,
               slivers: [
-                SliverFavoriteBar(title: series.nameYear, onTap: () {}),
+                // SliverFavoriteBar(title: series.nameYear, onTap: () {}),
+                SliverFavoriteBar(onTap: () {}),
                 SliverBox(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -123,7 +124,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                         Text(context.strings.castLabel, style: context.header2),
                         const SizedBox(height: 16),
                         SizedBox(
-                          height: 110,
+                          height: 140,
                           child: ListView(
                             scrollDirection: Axis.horizontal,
                             children: [
@@ -216,6 +217,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
       children: [
         ...seasonsList.map(
           (season) => MyChip(
+            icon: Icons.chevron_right,
             label: context.strings.seasonLabel(season),
             onTap: () => _onSeason(context, season),
           ),

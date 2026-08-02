@@ -203,12 +203,18 @@ Widget popupMenu(BuildContext context,
     List<PopupItem> items, {
       Widget? child,
       Widget? icon,
+      double? iconSize,
+      double? splashRadius,
+      EdgeInsetsGeometry? padding,
     }) {
   if (child == null && icon == null) {
     icon = const Icon(Icons.more_vert);
   }
   return PopupMenuButton<int>(
     icon: icon,
+    iconSize: iconSize,
+    splashRadius: splashRadius,
+    padding: padding ?? const EdgeInsets.all(8),
     child: child,
     itemBuilder: (_) {
       List<PopupMenuEntry<int>> entries = [];

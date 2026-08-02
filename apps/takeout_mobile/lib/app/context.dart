@@ -71,7 +71,7 @@ extension AppContext on BuildContext {
   TextStyle? get bodyLink => bodyMedium?.copyWith(decoration: .underline);
 
   /// used for grid item title
-  TextStyle? get gridTitle => labelLarge;
+  TextStyle? get gridTitle => labelMedium;
 
   /// used for grid item subtitle
   TextStyle? get gridSubtitle => labelLarge?.copyWith(color: Colors.white60);

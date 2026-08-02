@@ -154,6 +154,7 @@ class _TrackListTile extends StatelessWidget {
     );
 
     return ListTile(
+      titleAlignment: .center,
       selected: selected,
       isThreeLine: artist.isNotEmpty,
       onTap: onTap,

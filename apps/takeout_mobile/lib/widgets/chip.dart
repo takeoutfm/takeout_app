@@ -6,11 +6,13 @@ class MyChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final TextOverflow? overflow;
+  final IconData? icon;
 
   const MyChip({
     super.key,
     required this.label,
     required this.onTap,
+    this.icon,
     this.overflow,
   });
 
@@ -31,10 +33,19 @@ class MyChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white24),
           ),
-          child: Text(
-            label,
-            style: context.labelLarge?.copyWith(overflow: overflow),
-          ),
+          child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 16, color: Colors.white),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: context.labelLarge?.copyWith(overflow: overflow),
+            ),
+          ],
+        ),
         ),
       ),
     );

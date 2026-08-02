@@ -78,7 +78,7 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
               backdrop: background,
               slivers: [
                 SliverMenuBar(
-                  title: title,
+                  // title: title,
                   items: [
                     if (fetch != null)
                       PopupItem.reload(context, (_) => reloadPage(context)),
@@ -139,13 +139,13 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _spiffCover(context, state),
                           const SizedBox(height: 16),
                           _playButtons(context, state),
                           const SizedBox(height: 16),
-                          _spiffDetails(context, state, center: true),
+                          _spiffDetails(context, state, center: false),
                         ],
                       );
                     },

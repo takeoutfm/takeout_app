@@ -47,7 +47,7 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
               backdrop: state.background ?? '',
               slivers: [
                 SliverMenuBar(
-                  title: '${release.name} (${release.year}) by ${release.artist}',
+                  // title: '${release.name} (${release.year}) by ${release.artist}',
                   items: [
                     PopupItem.play(context, (_) => _onPlay(context, state)),
                     PopupItem.shuffle(context, (_) => _onShufflePlay(context)),
@@ -114,13 +114,13 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
                       }
                       // tall view
                       return Column(
-                        crossAxisAlignment: .center,
+                        crossAxisAlignment: .start,
                         children: [
                           _releaseCover(context, state),
                           const SizedBox(height: 16),
                           _playButtons(context, state),
                           const SizedBox(height: 16),
-                          _releaseDetails(context, state, center: true),
+                          _releaseDetails(context, state, center: false),
                         ],
                       );
                     },

@@ -23,14 +23,18 @@ class SliverMenuBar extends StatelessWidget {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       pinned: true,
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: Colors.black.withValues(alpha: 0.1), // slight tint helps too
-          ),
-        ),
-      ),
+      flexibleSpace: title != null
+          ? ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: Colors.black.withValues(
+                    alpha: 0.1,
+                  ), // slight tint helps too
+                ),
+              ),
+            )
+          : null,
       leading: allowBack
           ? Center(
               child: CircleButton.back(onTap: () => Navigator.pop(context)),
@@ -66,14 +70,18 @@ class SliverFavoriteBar extends StatelessWidget {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       pinned: true,
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: Colors.black.withValues(alpha: 0.1), // slight tint helps too
-          ),
-        ),
-      ),
+      flexibleSpace: title != null
+          ? ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: Colors.black.withValues(
+                    alpha: 0.1,
+                  ), // slight tint helps too
+                ),
+              ),
+            )
+          : null,
       leading: Center(
         child: CircleButton.back(onTap: () => Navigator.pop(context)),
       ),
