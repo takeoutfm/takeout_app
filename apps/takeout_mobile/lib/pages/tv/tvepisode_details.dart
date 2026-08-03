@@ -33,6 +33,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
   @override
   Widget page(BuildContext context, TVEpisodeView state) {
     final screen = MediaQuery.of(context).size;
+    final landscape = screen.width > screen.height;
     final imgWidth = min<double>(screen.width * .9, 1440);
     final imgHeight = min<double>(screen.height * .5, 1080);
     return Scaffold(
@@ -67,8 +68,8 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                                 fillImage(
                                   context,
                                   episode.originalImage,
-                                  width: imgWidth,
-                                  // height: imgHeight,
+                                  width: landscape ? null : imgWidth,
+                                  height: landscape ? imgHeight : null,
                                 ),
                               ),
                             ),

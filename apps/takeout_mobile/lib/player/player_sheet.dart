@@ -52,8 +52,10 @@ Widget _trackListView(
               //!sameArtwork,
               // trailing: _cachedIcon(),
               nowPlaying: index == state.currentIndex,
-              // TODO
-              onTap: () => player.playIndex(index),
+              onTap: () {
+                player.playIndex(index);
+                Navigator.pop(context);
+              },
               // onLongPress: () {
               //   _onArtist(context, tracks[index].creator);
               // },

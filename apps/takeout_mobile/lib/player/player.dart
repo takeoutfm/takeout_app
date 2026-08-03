@@ -62,20 +62,10 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
     });
   }
 
-  List<Widget> actions(BuildContext context) {
-    return <Widget>[
-      popupMenu(context, [
-        PopupItem.syncPlaylist(context, _onSyncPlaylist),
-        PopupItem.playlists(context, _onPlaylists),
-        PopupItem.delete(context, 'Stop', (context) {
-          context.player.stop();
-        }),
-      ]),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+    final isWide = size.width >= size.height;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onVerticalDragEnd: (details) {
@@ -106,99 +96,51 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
           // );
           return SliverStack(
             slivers: [
-              // SliverToBoxAdapter(
-              //   child: Row(
-              //     mainAxisAlignment: .end,
-              //     children: [
-              //       IconButtonTheme(
-              //         data: IconButtonThemeData(
-              //           style: IconButton.styleFrom(
-              //             minimumSize: const Size(28, 28),
-              //             // tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              //             // visualDensity: VisualDensity.compact,
-              //             padding: EdgeInsets.zero,
-              //           ),
-              //         ),
-              //         child: popupMenu(
-              //           context,
-              //           [PopupItem.divider()],
-              //           icon: Icon(Icons.more_vert),
-              //           // iconSize: 20,
-              //           // splashRadius: 18,
-              //           // padding: EdgeInsets.zero,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
               SliverMenuBar(
                 // title: track.title,
                 allowBack: false,
                 items: [
-                  // PopupItem.play(
-                  //   context,
-                  //       (_) => _onPlay(context, state),
-                  // ),
-                  // PopupItem.shuffle(
-                  //   context,
-                  //       (_) => _onShufflePlay(context),
-                  // ),
-                  // PopupItem.download(
-                  //   context,
-                  //       (_) => _onDownload(context, state),
-                  // ),
-                  // PopupItem.playlistAppend(
-                  //   context,
-                  //       (_) => _onPlaylistAppend(context, state),
-                  // ),
-                  // PopupItem.divider(),
-                  // PopupItem.link(
-                  //   context,
-                  //   'MusicBrainz Release',
-                  //       (_) => launchUrl(Uri.parse(releaseUrl)),
-                  // ),
-                  // PopupItem.link(
-                  //   context,
-                  //   'MusicBrainz Release Group',
-                  //       (_) => launchUrl(Uri.parse(releaseGroupUrl)),
-                  // ),
-                  PopupItem.divider(),
-                  // PopupItem.reload(
-                  //   context,
-                  //       (_) => reloadPage(context),
-                  // ),
+                  PopupItem.syncPlaylist(context, _onSyncPlaylist),
+                  PopupItem.playlists(context, _onPlaylists),
+                  PopupItem.stop(context, 'Stop', (context) {
+                    context.player.stop();
+                  }),
                 ],
               ),
               SliverBox(
                 padding: EdgeInsets.all(6),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    const posterWidth = 223.0;
-                    const minDetailsWidth = 300.0;
-                    final hasRoom =
-                        constraints.maxWidth >= posterWidth + minDetailsWidth;
-                    if (hasRoom) {
+                child: Builder(
+                  builder: (context) {
+                    if (isWide) {
                       // wide view
                       return IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: .stretch,
-                          children: [
-                            SizedBox(
-                              width: posterWidth,
-                              child: playerImage(context, allowControl: false),
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(minHeight: 0),
-                                child: Column(
-                                  crossAxisAlignment: .start,
-                                  mainAxisAlignment: .spaceBetween,
-                                  children: [playerControls(context)],
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(20),
+                          child: Row(
+                            // crossAxisAlignment: .center,
+                            children: [
+                              playerImage(
+                                context,
+                                allowControl: false,
+                                fill: true,
+                              ),
+                              const SizedBox(width: 40),
+                              Expanded(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 0,
+                                  ),
+                                  child: _details(
+                                    context,
+                                    spiff,
+                                    color,
+                                    center: true,
+                                    spacing: 20,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     }
@@ -212,154 +154,16 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                   },
                 ),
               ),
-              // SliverBox(
-              //   child: Column(
-              //     children: [
-              //       if (spiff.isNotLive) ...[
-              //         // Row(
-              //         //   children: [
-              //         //     repeatButton(),
-              //         //     Expanded(child: playerSeekBar(context)),
-              //         //     // Expanded(child: newSeekBar(context)),
-              //         //   ],
-              //         // ),
-              //         // SizedBox(height: 20),
-              //         Container(
-              //           padding: const EdgeInsets.all(20),
-              //           decoration: BoxDecoration(
-              //             color: Colors.black.withValues(alpha: 0.50),
-              //             borderRadius: BorderRadius.circular(16),
-              //           ),
-              //           child: playerQueue(context),
-              //         ),
-              //       ],
-              //     ],
-              //   ),
-              // ),
-              // SliverToBoxAdapter(
-              //   child: Container(
-              //     padding: const EdgeInsetsGeometry.all(20),
-              //     child: Column(
-              //       crossAxisAlignment: .start,
-              //       children: [
-              // Row(
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: [
-              //     playerImage(context, allowControl: true),
-              //     const SizedBox(width: 20),
-              //     Expanded(
-              //       child: SizedBox(
-              //         height: 255,
-              //         child: Column(
-              //           crossAxisAlignment: CrossAxisAlignment.start,
-              //           children: [
-              //             Text(
-              //               track.title,
-              //               style: AppTextStyle.musicReleaseTitle,
-              //             ),
-              //
-              //             const SizedBox(height: 12),
-              //
-              //             Text(
-              //               track.creator,
-              //               style: AppTextStyle.musicArtist.copyWith(
-              //                 decoration: .underline,
-              //               ),
-              //             ),
-              //
-              //             const SizedBox(height: 12),
-              //
-              //             Wrap(
-              //               children: [
-              //                 Text(
-              //                   '${track.year}',
-              //                   style: AppTextStyle.musicYear,
-              //                 ),
-              //                 SizedBox(width: 16),
-              //                 Text(
-              //                   track.album,
-              //                   style: AppTextStyle.musicYear,
-              //                 ),
-              //               ],
-              //             ),
-              //
-              //             if (spiff.isNotLive) ...[
-              //               // const SizedBox(height: 12),
-              //               Spacer(),
-              //               playerControls(context),
-              //             ],
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              SliverBox(
-                padding: EdgeInsets.all(6),
-                child: Column(
-                  children: [
-                    playerTitle(context, style: context.playerHeader),
-                    const SizedBox(height: 6),
-                    playerArtist(context, style: context.playerTitle),
-                    const SizedBox(height: 6),
-                    if (spiff.isMusic)
-                      Wrap(
-                        children: [
-                          Text(
-                            '${track.album} (${track.year}) ',
-                            style: context.playerSubtitle,
-                          ),
-                        ],
-                      ),
-                    if (spiff.isLive)
-                      Wrap(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: color?.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: color?.withValues(alpha: 0.5) ?? Colors.white),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    color: color,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  'LIVE',
-                                  style: TextStyle(
-                                    color: color,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    if (spiff.isMusic) ...[
-                      SizedBox(height: 6),
-                      Row(
-                        children: [
-                          repeatButton(),
-                          Expanded(child: playerSeekBar(context)),
-                          // Expanded(child: newSeekBar(context)),
-                        ],
-                      ),
-                    ],
-                    SizedBox(height: 12),
-                    playerControls(context),
-                  ],
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Builder(
+                    builder: (context) {
+                      return isWide
+                          ? const EmptyWidget()
+                          : _details(context, spiff, color);
+                    },
+                  ),
                 ),
               ),
             ],
@@ -379,6 +183,90 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
           );
         },
       ),
+    );
+  }
+
+  Widget _details(
+    BuildContext context,
+    Spiff spiff,
+    Color? color, {
+    bool center = false,
+    double spacing = 6,
+  }) {
+    MediaTrack? track;
+    if (spiff.isNotEmpty) {
+      track = spiff[spiff.index];
+    }
+    return Column(
+      mainAxisAlignment: center ? .center : .start,
+      children: [
+        playerTitle(context, style: context.playerHeader),
+        SizedBox(height: spacing),
+        playerArtist(context, style: context.playerTitle),
+        SizedBox(height: spacing),
+        if (spiff.isMusic)
+          Wrap(
+            children: [
+              Text(
+                '${track?.album} (${track?.year}) ',
+                style: context.playerSubtitle,
+              ),
+            ],
+          ),
+        if (spiff.isLive)
+          Wrap(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: color?.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color?.withValues(alpha: 0.5) ?? Colors.white,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'LIVE',
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        if (spiff.isMusic) ...[
+          SizedBox(height: spacing),
+          Row(
+            children: [
+              repeatButton(),
+              Expanded(child: playerSeekBar(context)),
+              // Expanded(child: newSeekBar(context)),
+            ],
+          ),
+        ],
+        SizedBox(height: spacing * 2),
+        playerControls(context),
+      ],
     );
   }
 
@@ -467,9 +355,13 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
         if (buffering)
           // CircularProgressIndicator is 64 by default
           // 22 padding keeps the screen in-place
-          Container(
-            padding: const EdgeInsets.all(22.0),
-            child: const CircularProgressIndicator(),
+          Padding(
+            padding: EdgeInsetsGeometry.all(12),
+            child: SizedBox(
+              width: 24,
+              height: 24,
+              child: const CircularProgressIndicator(),
+            ),
           )
         else if (playing)
           CircleButton(icon: Icons.pause, onTap: () => player.pause())

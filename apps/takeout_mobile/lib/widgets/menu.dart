@@ -113,6 +113,9 @@ class PopupItem {
   PopupItem.delete(BuildContext context, String text, MenuCallback onSelected)
       : this(const Icon(Icons.delete), text, onSelected);
 
+  PopupItem.stop(BuildContext context, String text, MenuCallback onSelected)
+      : this(const Icon(Icons.stop), text, onSelected);
+
   PopupItem.singles(BuildContext context, MenuCallback onSelected)
       : this(
     const Icon(Icons.audiotrack_outlined),
