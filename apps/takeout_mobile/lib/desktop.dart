@@ -141,61 +141,66 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
         final index = state.navigationIndex;
-        // popToFirst(); TODO check if needed
+        final destinations = [
+          NavigationRailDestination(
+            icon: index == NavigationIndex.music
+                ? const Icon(Icons.speaker)
+                : const Icon(Icons.speaker_outlined),
+            label: Text(context.strings.navMusic),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.artists
+                ? const Icon(Icons.people_alt)
+                : const Icon(Icons.people_alt_outlined),
+            label: Text(context.strings.navArtists),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.radio
+                ? const Icon(Icons.radio)
+                : const Icon(Icons.radio_outlined),
+            label: Text(context.strings.navRadio),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.film
+                ? const Icon(Icons.movie)
+                : const Icon(Icons.movie_outlined),
+            label: Text(context.strings.navMovies),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.tv
+                ? const Icon(Icons.tv)
+                : const Icon(Icons.tv_outlined),
+            label: Text(context.strings.navTVShows),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.podcast
+                ? const Icon(Icons.podcasts)
+                : const Icon(Icons.podcasts_outlined),
+            label: Text(context.strings.navPodcasts),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.history
+                ? const Icon(Icons.history)
+                : const Icon(Icons.history_outlined),
+            label: Text(context.strings.navHistory),
+          ),
+          NavigationRailDestination(
+            icon: index == NavigationIndex.player
+                ? const Icon(Icons.queue_music)
+                : const Icon(Icons.queue_music_outlined),
+            label: Text(context.strings.navPlayer),
+          ),
+        ];
+        var selectedIndex = navigationIndices.indexOf(index);
+        if (selectedIndex < 0 || selectedIndex >= destinations.length) {
+          // handle screen rotation or resizing
+          selectedIndex = 0;
+        }
         return NavigationRail(
           extended: extended,
           labelType: NavigationRailLabelType.none,
-          destinations: [
-            NavigationRailDestination(
-              icon: index == NavigationIndex.music
-                  ? const Icon(Icons.speaker)
-                  : const Icon(Icons.speaker_outlined),
-              label: Text(context.strings.navMusic),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.artists
-                  ? const Icon(Icons.people_alt)
-                  : const Icon(Icons.people_alt_outlined),
-              label: Text(context.strings.navArtists),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.radio
-                  ? const Icon(Icons.radio)
-                  : const Icon(Icons.radio_outlined),
-              label: Text(context.strings.navRadio),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.film
-                  ? const Icon(Icons.movie)
-                  : const Icon(Icons.movie_outlined),
-              label: Text(context.strings.navMovies),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.tv
-                  ? const Icon(Icons.tv)
-                  : const Icon(Icons.tv_outlined),
-              label: Text(context.strings.navTVShows),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.podcast
-                  ? const Icon(Icons.podcasts)
-                  : const Icon(Icons.podcasts_outlined),
-              label: Text(context.strings.navPodcasts),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.history
-                  ? const Icon(Icons.history)
-                  : const Icon(Icons.history_outlined),
-              label: Text(context.strings.navHistory),
-            ),
-            NavigationRailDestination(
-              icon: index == NavigationIndex.player
-                  ? const Icon(Icons.queue_music)
-                  : const Icon(Icons.queue_music_outlined),
-              label: Text(context.strings.navPlayer),
-            ),
-          ],
-          selectedIndex: navigationIndices.indexOf(index),
+          destinations: destinations,
+          selectedIndex: selectedIndex,
           onDestinationSelected: (index) {
             final navIndex = navigationIndices[index];
             final popped = onNavTapped(
