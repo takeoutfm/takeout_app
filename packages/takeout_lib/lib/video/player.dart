@@ -25,6 +25,7 @@ import 'package:takeout_lib/tokens/repository.dart';
 
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:takeout_lib/video/controls.dart';
 
 import 'track_selection.dart';
 
@@ -37,6 +38,7 @@ class VideoPlayer extends StatefulWidget {
   final bool autoPlay;
   final bool allowedScreenSleep;
   final bool fullScreenByDefault;
+  final bool desktop;
   final void Function(Duration, Duration)? onPause;
 
   static void init() {
@@ -53,6 +55,7 @@ class VideoPlayer extends StatefulWidget {
     this.allowedScreenSleep = false,
     this.fullScreenByDefault = true,
     this.onPause,
+    this.desktop = false,
     super.key,
   });
 
@@ -118,7 +121,36 @@ class VideoPlayerState extends State<VideoPlayer> {
     setState(() {});
   }
 
-  List<Widget> _topControls() => [
+  List<Widget> _controls() => [
+    MaterialCustomButton(
+      onPressed: () async {
+        // await player.stop();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      },
+      icon: Icon(Icons.arrow_back),
+    ),
+    const Spacer(),
+    MaterialCustomButton(
+      onPressed: () => showDialog<void>(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: Text('Tracks'),
+          children: [
+            TrackSelection(player),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Close'),
+            ),
+          ],
+        ),
+      ),
+      icon: const Icon(Icons.settings),
+    ),
+  ];
+
+  List<Widget> _desktopControls() => [
     MaterialCustomButton(
       onPressed: () async {
         // await player.stop();
@@ -165,24 +197,10 @@ class VideoPlayerState extends State<VideoPlayer> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final topButtonBar = _topControls();
-    return MaterialVideoControlsTheme(
-      normal: MaterialVideoControlsThemeData(topButtonBar: topButtonBar),
-      fullscreen: MaterialVideoControlsThemeData(topButtonBar: topButtonBar),
-      child: MaterialDesktopVideoControlsTheme(
-        normal: MaterialDesktopVideoControlsThemeData(
-          topButtonBar: topButtonBar,
-        ),
-        fullscreen: MaterialDesktopVideoControlsThemeData(
-          topButtonBar: topButtonBar,
-        ),
-        child: Scaffold(
-          body: Video(
-            controller: videoController,
-            controls: MaterialDesktopVideoControls,
-          ),
-        ),
-      ),
+    final video = Video(
+      controller: videoController,
+      controls: AdaptiveVideoControls,
     );
+    return Scaffold(body: withControls(context, video));
   }
 }

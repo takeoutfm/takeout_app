@@ -272,6 +272,8 @@ class MovieDetailsPage extends ClientPage<MovieView> {
               Duration(minutes: movie.runtime).inHoursMinutes,
               style: context.body,
             ),
+            SizedBox(width: 16),
+            Text(storage(movie.size), style: context.body),
           ],
         ),
         if (state.hasDirecting()) ...[

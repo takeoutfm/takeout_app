@@ -20,20 +20,28 @@ class SearchResults extends ClientPage<SearchView> {
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) async {
-    if (_query.isNotEmpty) {
-      await context.client.search(_query.toString(), ttl: ttl ?? Duration.zero);
+    var query = _query.trim();
+    if (query.isNotEmpty) {
+      if (query.contains(':') == false &&
+          query.contains('"') == false &&
+          query.contains("'") == false) {
+        // assume quoted search to improve results
+        query = '"$query"';
+      }
+      await context.client.search(query, ttl: ttl ?? Duration.zero);
     }
   }
 
   @override
   Widget page(BuildContext context, SearchView state) {
+    final padding = const EdgeInsetsGeometry.only(left: 20, top: 20);
     return SliverStack(
       slivers: [
         SliverMenuBar(title: 'Search Results', items: []),
         if (state.hasArtists) ...[
           SliverTitle(
             context.strings.artistsLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverArtistGrid(state.artistList),
@@ -41,7 +49,7 @@ class SearchResults extends ClientPage<SearchView> {
         if (state.hasReleases) ...[
           SliverTitle(
             context.strings.releasesLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverAlbumGrid(state.releaseList),
@@ -49,7 +57,7 @@ class SearchResults extends ClientPage<SearchView> {
         if (state.hasTracks) ...[
           SliverTitle(
             context.strings.tracksLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverTrackList(state.trackList),
@@ -57,7 +65,7 @@ class SearchResults extends ClientPage<SearchView> {
         if (state.hasMovies) ...[
           SliverTitle(
             context.strings.moviesLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverMovieGrid(state.movieList),
@@ -65,7 +73,7 @@ class SearchResults extends ClientPage<SearchView> {
         if (state.hasSeries) ...[
           SliverTitle(
             context.strings.seriesLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverSeriesGrid(state.seriesList),
@@ -73,7 +81,7 @@ class SearchResults extends ClientPage<SearchView> {
         if (state.hasEpisodes) ...[
           SliverTitle(
             context.strings.episodesLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverEpisodeGrid(state.episodeList),
@@ -81,7 +89,7 @@ class SearchResults extends ClientPage<SearchView> {
         if (state.hasTVEpisodes) ...[
           SliverTitle(
             context.strings.tvEpisodesLabel,
-            padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+            padding: padding,
             style: context.header2,
           ),
           SliverTVEpisodeGrid(state.tvEpisodeList),

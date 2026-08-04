@@ -83,6 +83,7 @@ class SearchPage extends ClientPage<SearchView> {
         final searches = List<SearchHistory>.from(history.searches);
         searches.sort((a, b) => b.dateTime.compareTo(a.dateTime));
         final words = searches.map((e) => e.search);
+        final padding = const EdgeInsetsGeometry.only(left: 20, top: 20);
         return Scaffold(
           appBar: AppBar(
             leading: allowBack
@@ -119,7 +120,7 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasArtists) ...[
                 SliverTitle(
                   context.strings.artistsLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverArtistGrid(state.artistList),
@@ -127,7 +128,7 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasReleases) ...[
                 SliverTitle(
                   context.strings.releasesLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverAlbumGrid(state.releaseList),
@@ -135,7 +136,7 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasTracks) ...[
                 SliverTitle(
                   context.strings.tracksLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverTrackList(state.trackList),
@@ -143,7 +144,7 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasMovies) ...[
                 SliverTitle(
                   context.strings.moviesLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverMovieGrid(state.movieList),
@@ -151,7 +152,7 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasSeries) ...[
                 SliverTitle(
                   context.strings.seriesLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverSeriesGrid(state.seriesList),
@@ -159,7 +160,7 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasEpisodes) ...[
                 SliverTitle(
                   context.strings.episodesLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverEpisodeGrid(state.episodeList),
@@ -167,95 +168,13 @@ class SearchPage extends ClientPage<SearchView> {
               if (state.hasTVEpisodes) ...[
                 SliverTitle(
                   context.strings.tvEpisodesLabel,
-                  padding: EdgeInsetsGeometry.only(left: 20, top: 20),
+                  padding: padding,
                   style: context.header2,
                 ),
                 SliverTVEpisodeGrid(state.tvEpisodeList),
-              ]
+              ],
             ],
           ),
-          // Column(
-          //   children: [
-          //     Flexible(
-          //       child: ListView(
-          //         children: [
-          //           if (state.artists != null && state.artists!.isNotEmpty)
-          //             Column(
-          //               crossAxisAlignment: .start,
-          //               children: [
-          //                 Text(
-          //                   context.strings.artistsLabel,
-          //                   style: context.header2,
-          //                 ),
-          //                 _ArtistResults(state.artists!),
-          //               ],
-          //             ),
-          //           if (state.releases != null && state.releases!.isNotEmpty)
-          //             Column(
-          //               crossAxisAlignment: .start,
-          //               children: [
-          //                 Text(context.strings.releasesLabel, style: context.header2),
-          //                 _ReleaseResults(state.releases!),
-          //               ],
-          //             ),
-          //           if (state.tracks != null && state.tracks!.isNotEmpty)
-          //             Column(
-          //               children: [
-          //                 heading(context.strings.tracksLabel),
-          //                 Row(
-          //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //                   children: [
-          //                     OutlinedButton.icon(
-          //                       label: Text(context.strings.playLabel),
-          //                       icon: const Icon(Icons.play_arrow),
-          //                       onPressed: () => _onPlay(context, state),
-          //                     ),
-          //                     OutlinedButton.icon(
-          //                       label: Text(context.strings.downloadLabel),
-          //                       icon: const Icon(Icons.radio),
-          //                       onPressed: () => _onDownload(context, state),
-          //                     ),
-          //                   ],
-          //                 ),
-          //                 TrackListWidget(state.tracks!),
-          //               ],
-          //             ),
-          //           // if (state.movies != null && state.movies!.isNotEmpty)
-          //           //   Column(
-          //           //     children: [
-          //           //       heading(context.strings.moviesLabel),
-          //           //       MovieListWidget(state.movies!),
-          //           //     ],
-          //           //   ),
-          //           // if (state.tvEpisodes != null &&
-          //           //     state.tvEpisodes!.isNotEmpty)
-          //           //   Column(
-          //           //     children: [
-          //           //       heading(context.strings.tvEpisodesLabel),
-          //           //       TVEpisodeListWidget(
-          //           //         state.tvEpisodes!,
-          //           //         showSeasons: false,
-          //           //       ),
-          //           //     ],
-          //           //   ),
-          //           // if (state.series != null && state.series!.isNotEmpty)
-          //           //   Column(
-          //           //     children: [
-          //           //       heading(context.strings.seriesLabel),
-          //           //       SeriesListWidget(state.series!),
-          //           //     ],
-          //           //   ),
-          //           // if (state.episodes != null && state.episodes!.isNotEmpty)
-          //           //   Column(
-          //           //     children: [
-          //           //       heading(context.strings.episodesLabel),
-          //           //       EpisodeListWidget(state.episodes!),
-          //           //     ],
-          //           //   ),
-          //         ],
-          //       ),
-          //     ),
-          //   ],
         );
       },
     );
