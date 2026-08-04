@@ -27,8 +27,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:takeout_lib/video/controls.dart';
 
-import 'track_selection.dart';
-
 class VideoPlayer extends StatefulWidget {
   final MediaTrack media;
   final MediaTrackResolver mediaTrackResolver;
@@ -101,13 +99,11 @@ class VideoPlayerState extends State<VideoPlayer> {
     await player.setSubtitleTrack(SubtitleTrack.auto());
 
     completedSubscription = player.stream.completed.listen((completed) {
-      print('completed $completed ${player.state.position}');
       if (completed) {
         widget.onPause?.call(player.state.position, player.state.duration);
       }
     });
     playingSubscription = player.stream.playing.listen((playing) {
-      print('playing $playing ${player.state.position}');
       if (playing == false && player.state.duration > Duration.zero) {
         // false and zero can happen before or while loading so ignore
         widget.onPause?.call(player.state.position, player.state.duration);
@@ -120,64 +116,6 @@ class VideoPlayerState extends State<VideoPlayer> {
 
     setState(() {});
   }
-
-  List<Widget> _controls() => [
-    MaterialCustomButton(
-      onPressed: () async {
-        // await player.stop();
-        if (mounted) {
-          Navigator.pop(context);
-        }
-      },
-      icon: Icon(Icons.arrow_back),
-    ),
-    const Spacer(),
-    MaterialCustomButton(
-      onPressed: () => showDialog<void>(
-        context: context,
-        builder: (context) => SimpleDialog(
-          title: Text('Tracks'),
-          children: [
-            TrackSelection(player),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Close'),
-            ),
-          ],
-        ),
-      ),
-      icon: const Icon(Icons.settings),
-    ),
-  ];
-
-  List<Widget> _desktopControls() => [
-    MaterialCustomButton(
-      onPressed: () async {
-        // await player.stop();
-        if (mounted) {
-          Navigator.pop(context);
-        }
-      },
-      icon: Icon(Icons.arrow_back),
-    ),
-    const Spacer(),
-    MaterialDesktopCustomButton(
-      onPressed: () => showDialog<void>(
-        context: context,
-        builder: (context) => SimpleDialog(
-          title: Text('Tracks'),
-          children: [
-            TrackSelection(player),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Close'),
-            ),
-          ],
-        ),
-      ),
-      icon: const Icon(Icons.settings),
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
