@@ -151,13 +151,11 @@ class HomeViewGrid extends ViewGrid<HomeView> {
         mainAxisSpacing: spacing,
         children: [
           ...itemsFunc(state).map(
-            (i) => FocusItem(
-              child: SliverGridTile(
-                image: coverFunc(context, i),
-                title: i.album,
-                subtitle: creator(i),
-                onTap: () => onTap(context, i),
-              ),
+            (i) => SliverGridTile(
+              image: coverFunc(context, i),
+              title: i.album,
+              subtitle: creator(i),
+              onTap: () => onTap(context, i),
             ),
           ),
         ],
@@ -191,13 +189,11 @@ class MoviesViewGrid extends ViewGrid<MoviesView> {
         mainAxisSpacing: 12,
         children: [
           ...state.movies.map(
-            (i) => FocusItem(
-              child: SliverGridTile(
-                image: MediaProgress.movie(i, gridPoster(context, i.image)),
-                title: i.album,
-                subtitle: '${i.year}',
-                onTap: () => onTap(context, i),
-              ),
+            (i) => SliverGridTile(
+              image: MediaProgress.movie(i, gridPoster(context, i.image)),
+              title: i.album,
+              subtitle: '${i.year}',
+              onTap: () => onTap(context, i),
             ),
           ),
         ],
@@ -231,13 +227,11 @@ class TVShowsViewGrid extends ViewGrid<TVShowsView> {
         mainAxisSpacing: 12,
         children: [
           ...state.series.map(
-            (i) => FocusItem(
-              child: SliverGridTile(
-                image: gridPoster(context, i.image),
-                title: i.album,
-                subtitle: '${i.year}',
-                onTap: () => onTap(context, i),
-              ),
+            (i) => SliverGridTile(
+              image: gridPoster(context, i.image),
+              title: i.album,
+              subtitle: '${i.year}',
+              onTap: () => onTap(context, i),
             ),
           ),
         ],
@@ -278,13 +272,11 @@ class PodcastsViewGrid extends ViewGrid<PodcastsView> {
         mainAxisSpacing: 12,
         children: [
           ...state.series.map(
-            (i) => FocusItem(
-              child: SliverGridTile(
-                image: gridSeries(context, i.image),
-                title: i.album,
-                subtitle: i.creator,
-                onTap: () => onTap(context, i),
-              ),
+            (i) => SliverGridTile(
+              image: gridSeries(context, i.image),
+              title: i.album,
+              subtitle: i.creator,
+              onTap: () => onTap(context, i),
             ),
           ),
         ],
@@ -343,13 +335,11 @@ class SubscribedPodcastsViewGrid extends StatelessWidget
         mainAxisSpacing: 12,
         children: [
           ...state.series.map(
-            (i) => FocusItem(
-              child: SliverGridTile(
-                image: gridSeries(context, i.image),
-                title: i.album,
-                subtitle: i.creator,
-                onTap: () => onTap(context, i),
-              ),
+            (i) => SliverGridTile(
+              image: gridSeries(context, i.image),
+              title: i.album,
+              subtitle: i.creator,
+              onTap: () => onTap(context, i),
             ),
           ),
         ],

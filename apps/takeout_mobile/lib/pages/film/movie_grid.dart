@@ -49,14 +49,11 @@ class SliverMovieGrid extends StatelessWidget {
         mainAxisSpacing: movieGridSpacing,
         children: [
           ..._movies.map(
-            (m) => FocusItem(
+            (m) => SliverGridTile(
+              image: MediaProgress.movie(m, gridPoster(context, m.image)),
+              title: m.album,
+              subtitle: '${m.year}',
               onTap: () => _onTap(context, m),
-              child: SliverGridTile(
-                image: MediaProgress.movie(m, gridPoster(context, m.image)),
-                title: m.album,
-                subtitle: '${m.year}',
-                onTap: () => _onTap(context, m),
-              ),
             ),
           ),
         ],

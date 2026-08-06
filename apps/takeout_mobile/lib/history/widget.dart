@@ -157,29 +157,12 @@ class SpiffHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          spiffHistory.spiff.playlist.creator ?? 'no creator',
-          overflow: TextOverflow.ellipsis,
-        ),
-        RelativeDateWidget(spiffHistory.dateTime),
-      ],
-    );
-
-    return FocusedListTile(
-      selected: false,
-      isThreeLine: true,
+    return AlbumListTile(
+      context,
+      spiffHistory.spiff.playlist.creator ?? 'none',
+      spiffHistory.spiff.playlist.title,
+      _cover,
       onTap: () => _onTap(context, spiffHistory),
-      onLongPress: null,
-      leading: tileCover(context, _cover),
-      trailing: null,
-      subtitle: subtitle,
-      title: Text(
-        spiffHistory.spiff.playlist.title,
-        overflow: TextOverflow.ellipsis,
-      ),
     );
   }
 

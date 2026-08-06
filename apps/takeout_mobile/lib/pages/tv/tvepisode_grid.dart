@@ -33,18 +33,16 @@ class SliverTVEpisodeGrid extends StatelessWidget {
         mainAxisSpacing: tvEpisodeGridSpacing,
         children: [
           ..._episodes.map(
-            (e) => FocusItem(
-              child: SliverGridTile(
-                image: MediaProgress.tvEpisode(
-                  e,
-                  gridTVEpisode(context, e.image),
-                ),
-                title: e.name,
-                titleMaxLines: 2,
-                height: 44,
-                badge: '${e.episode}',
-                onTap: () => _onTap(context, e),
+            (e) => SliverGridTile(
+              image: MediaProgress.tvEpisode(
+                e,
+                gridTVEpisode(context, e.image),
               ),
+              title: e.name,
+              titleMaxLines: 2,
+              height: 44,
+              badge: '${e.episode}',
+              onTap: () => _onTap(context, e),
             ),
           ),
         ],

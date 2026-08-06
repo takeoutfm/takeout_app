@@ -31,24 +31,22 @@ class SliverTVSeriesGrid extends StatelessWidget {
         mainAxisSpacing: tvSeriesGridSpacing,
         children: [
           ..._series.map(
-            (s) => FocusItem(
-              child: InkWell(
-                onTap: () => _onTap(context, s),
-                // TODO figure out how to add material splash it seemed
-                // be happening underneath the image
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: GridTile(
-                    footer: Material(
-                      color: Colors.transparent,
-                      clipBehavior: Clip.antiAlias,
-                      child: GridTileBar(
-                        backgroundColor: Colors.black.withValues(alpha: 0.65),
-                        title: Text(s.name, style: context.gridTitle),
-                      ),
+            (s) => InkWell(
+              onTap: () => _onTap(context, s),
+              // TODO figure out how to add material splash it seemed
+              // be happening underneath the image
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: GridTile(
+                  footer: Material(
+                    color: Colors.transparent,
+                    clipBehavior: Clip.antiAlias,
+                    child: GridTileBar(
+                      backgroundColor: Colors.black.withValues(alpha: 0.65),
+                      title: Text(s.name, style: context.gridTitle),
                     ),
-                    child: gridPoster(context, s.image),
                   ),
+                  child: gridPoster(context, s.image),
                 ),
               ),
             ),

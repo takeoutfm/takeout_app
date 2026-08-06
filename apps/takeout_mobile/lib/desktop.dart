@@ -29,54 +29,48 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
 
   @override
   Widget body(AppState state) {
-    return Shortcuts(
-      shortcuts: _shortcutKeys(),
-      child: Actions(
-        actions: _shortcutActions(context),
-        child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 78, // default is 56
-            leading: IconButton(
-              icon: extended
-                  ? const Icon(Icons.menu_open_outlined)
-                  : const Icon(Icons.menu),
-              onPressed: () {
-                _toggleExtended();
-              },
-            ),
-            title: _searchBar(),
-            actions: [HomeMenu()],
-            // actions: actions(context),
-          ),
-          body: Row(
-            children: [
-              _navigationRail(),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Expanded(
-                      child: IndexedStack(
-                        index: state.navigationIndex.index,
-                        children: pages,
-                      ),
-                    ),
-                    if (context.app.state.navigationIndex != .player) ...[
-                      SizedBox(height: 5),
-                      RepaintBoundary(
-                        child: SizedBox(
-                          height: MiniPlayer.height,
-                          child: MiniPlayer(),
-                        ),
-                      ),
-                    ],
-                    SizedBox(height: 8),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 78, // default is 56
+        leading: IconButton(
+          icon: extended
+              ? const Icon(Icons.menu_open_outlined)
+              : const Icon(Icons.menu),
+          onPressed: () {
+            _toggleExtended();
+          },
         ),
+        title: _searchBar(),
+        actions: [HomeMenu()],
+        // actions: actions(context),
+      ),
+      body: Row(
+        children: [
+          _navigationRail(),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Expanded(
+                  child: IndexedStack(
+                    index: state.navigationIndex.index,
+                    children: pages,
+                  ),
+                ),
+                if (context.app.state.navigationIndex != .player) ...[
+                  SizedBox(height: 5),
+                  RepaintBoundary(
+                    child: SizedBox(
+                      height: MiniPlayer.height,
+                      child: MiniPlayer(),
+                    ),
+                  ),
+                ],
+                SizedBox(height: 8),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -240,106 +234,4 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
       },
     );
   }
-}
-
-// class HomeDesktopWidget extends StatelessWidget {
-//   const HomeDesktopWidget({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final indexState = context.watch<IndexCubit>().state;
-//     final mediaTypeState = context.watch<MediaTypeCubit>().state;
-//     return EmptyWidget();
-//   }
-// }
-
-class BackIntent extends Intent {}
-
-class PlayPauseIntent extends Intent {}
-
-class NextFieldIntent extends Intent {}
-
-// class UpIntent extends Intent {}
-//
-// class DownIntent extends Intent {}
-//
-// class LeftIntent extends Intent {}
-//
-// class RightIntent extends Intent {}
-
-class PlayIntent extends Intent {}
-
-class PauseIntent extends Intent {}
-
-class TrackNextIntent extends Intent {}
-
-class TrackPreviousIntent extends Intent {}
-
-Map<ShortcutActivator, Intent> _shortcutKeys() {
-  return {
-    LogicalKeySet(LogicalKeyboardKey.escape): BackIntent(),
-    LogicalKeySet(LogicalKeyboardKey.space): PlayPauseIntent(),
-    LogicalKeySet(LogicalKeyboardKey.tab): NextFieldIntent(),
-    // LogicalKeySet(LogicalKeyboardKey.arrowUp): UpIntent(),
-    // LogicalKeySet(LogicalKeyboardKey.arrowDown): DownIntent(),
-    // LogicalKeySet(LogicalKeyboardKey.arrowLeft): LeftIntent(),
-    // LogicalKeySet(LogicalKeyboardKey.arrowRight): RightIntent(),
-    LogicalKeySet(LogicalKeyboardKey.select): ActivateIntent(),
-    LogicalKeySet(LogicalKeyboardKey.enter): ActivateIntent(),
-    LogicalKeySet(LogicalKeyboardKey.mediaPlayPause): PlayPauseIntent(),
-    LogicalKeySet(LogicalKeyboardKey.mediaPlay): PlayIntent(),
-    LogicalKeySet(LogicalKeyboardKey.mediaPause): PlayIntent(),
-    LogicalKeySet(LogicalKeyboardKey.mediaTrackNext): TrackNextIntent(),
-    LogicalKeySet(LogicalKeyboardKey.mediaTrackPrevious): TrackPreviousIntent(),
-
-    // LogicalKeyboardKey.mediaFastForward
-    // LogicalKeyboardKey.mediaRewind
-  };
-}
-
-Map<Type, Action<Intent>> _shortcutActions(BuildContext context) {
-  return {
-    BackIntent: CallbackAction<BackIntent>(
-      onInvoke: (intent) {
-        Navigator.of(context).maybePop();
-        return null;
-      },
-    ),
-    PlayPauseIntent: CallbackAction<PlayPauseIntent>(
-      onInvoke: (intent) {
-        context.player.toggle();
-        return null;
-      },
-    ),
-    NextFieldIntent: CallbackAction<NextFieldIntent>(
-      onInvoke: (intent) {
-        FocusScope.of(context).nextFocus();
-        return null;
-      },
-    ),
-    PlayIntent: CallbackAction<PlayIntent>(
-      onInvoke: (intent) {
-        context.player.play();
-        return null;
-      },
-    ),
-    PauseIntent: CallbackAction<PauseIntent>(
-      onInvoke: (intent) {
-        context.player.pause();
-        return null;
-      },
-    ),
-    TrackNextIntent: CallbackAction<TrackNextIntent>(
-      onInvoke: (intent) {
-        context.player.skipToNext();
-        return null;
-      },
-    ),
-    TrackPreviousIntent: CallbackAction<TrackPreviousIntent>(
-      onInvoke: (intent) {
-        context.player.skipToPrevious();
-        return null;
-      },
-    ),
-  };
 }

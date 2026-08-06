@@ -78,6 +78,15 @@ abstract class TakeoutState<T> extends State
     }
   }
 
+  bool handleBack() {
+    final navState = navigatorState(context.app.state.index);
+    if (navState != null && navState.canPop()) {
+      navState.pop();
+      return true;
+    }
+    return false;
+  }
+
   Widget navigatorPage(Widget page, {Key? key}) {
     return Navigator(
       key: key,

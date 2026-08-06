@@ -17,6 +17,7 @@
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:logger/logger.dart';
@@ -31,6 +32,7 @@ import 'package:takeout_mobile/l10n/app_localizations.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/takeout.dart';
 import 'package:takeout_mobile/widgets/fab.dart';
+import 'package:dpad/dpad.dart';
 
 void main() async {
   // setup the logger
@@ -45,6 +47,9 @@ void main() async {
 
   runApp(const TakeoutApp());
 }
+
+final _desktopKey = GlobalKey<TakeoutState<TakeoutDesktopWidget>>();
+final _mobileKey = GlobalKey<TakeoutState<TakeoutMobileState>>();
 
 class TakeoutApp extends StatelessWidget {
   const TakeoutApp({super.key});
@@ -73,6 +78,10 @@ class TakeoutApp extends StatelessWidget {
                 //   context.app.music();
                 // }
               }
+              final home = orientation == .landscape
+                  ? TakeoutDesktopWidget(key: _desktopKey)
+                  : TakeoutMobileWidget(key: _mobileKey);
+
               return MaterialApp(
                 key: globalAppKey,
                 debugShowCheckedModeBanner: false,
@@ -84,9 +93,19 @@ class TakeoutApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 supportedLocales: const [Locale('en', '')],
-                home: orientation == .landscape
-                    ? const TakeoutDesktopWidget()
-                    : const TakeoutMobileWidget(),
+                builder: Dpad.wrap(
+                  onBack: () {
+                    final handled = orientation == .landscape
+                        ? (_desktopKey.currentState?.handleBack() ?? false)
+                        : (_mobileKey.currentState?.handleBack() ?? false);
+                    return handled;
+                  },
+                  shortcuts: {
+                    LogicalKeyboardKey.play: () => context.player.toggle(),
+                    LogicalKeyboardKey.pause: () => context.player.toggle(),
+                  },
+                ),
+                home: home,
                 theme: light.copyWith(
                   colorScheme: lightDynamic,
                   // appBarTheme:
