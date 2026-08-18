@@ -33,6 +33,7 @@ import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/player.dart';
+import 'package:takeout_lib/video/source.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
@@ -88,18 +89,21 @@ class _MovieWidget extends ClientPage<MovieView> {
                                 isCached,
                                 color,
                               ),
-                                SquareButton(
-                                  onPressed: () {
-                                    // Scrollable.ensureVisible(
-                                    //   _relatedKey.currentContext!,
-                                    //   duration: Duration(milliseconds: 500),
-                                    //   curve: Curves.easeOut,
-                                    // );
-                                    push(context, builder: (_) => MovieDetailsPage(_movie));
-                                  },
-                                  title: 'Related',
-                                  color: color,
-                                ),
+                              SquareButton(
+                                onPressed: () {
+                                  // Scrollable.ensureVisible(
+                                  //   _relatedKey.currentContext!,
+                                  //   duration: Duration(milliseconds: 500),
+                                  //   curve: Curves.easeOut,
+                                  // );
+                                  push(
+                                    context,
+                                    builder: (_) => MovieDetailsPage(_movie),
+                                  );
+                                },
+                                title: 'Related',
+                                color: color,
+                              ),
                             ],
                           ),
                         ],
@@ -448,15 +452,20 @@ void playMovie(
 }) {
   Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute<void>(
-      builder: (_) => VideoPlayer(
-        movie,
-        settingsRepository: context.read<SettingsRepository>(),
-        tokenRepository: context.read<TokenRepository>(),
-        mediaTrackResolver: context.read<MediaTrackResolver>(),
-        startOffset: startOffset,
-        onPause: (position, duration) =>
-            onPause(context, movie, position, duration),
-      ),
+      builder: (_) {
+        final media = VideoMedia(
+          media: movie,
+          settingsRepository: context.read<SettingsRepository>(),
+          tokenRepository: context.read<TokenRepository>(),
+          mediaTrackResolver: context.read<MediaTrackResolver>(),
+          startOffset: startOffset,
+        );
+        return VideoPlayer.create(
+          media: media,
+          onPause: (position, duration) =>
+              onPause(context, movie, position, duration),
+        );
+      },
     ),
   );
 }

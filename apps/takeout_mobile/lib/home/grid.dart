@@ -116,7 +116,7 @@ class HomeViewGrid extends ViewGrid<HomeView> {
     required this.onTap,
     this.childAspectRatio = 1.0,
     this.padding = const EdgeInsetsGeometry.all(20),
-    this.spacing = 6,
+    this.spacing = 12,
     super.key,
   });
 

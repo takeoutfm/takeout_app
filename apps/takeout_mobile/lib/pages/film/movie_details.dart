@@ -23,13 +23,13 @@ import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
-import 'package:takeout_mobile/pages/film/play_movie.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/person_avatar.dart';
@@ -220,6 +220,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
       children: [
         if (hasProgress)
           FilledButton.icon(
+            autofocus: true,
             onPressed: () => _onResume(context, state),
             label: Text(context.strings.resumeLabel),
             icon: Icon(Icons.play_arrow),
@@ -232,6 +233,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
           )
         else
           FilledButton.icon(
+            autofocus: true,
             onPressed: () => _onPlay(context, state),
             label: const Text('Play'),
             icon: const Icon(Icons.play_arrow),

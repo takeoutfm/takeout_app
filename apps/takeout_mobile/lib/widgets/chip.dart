@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 
 class MyChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final TextOverflow? overflow;
   final IconData? icon;
+  final bool autofocus;
 
   const MyChip({
     super.key,
@@ -14,6 +14,7 @@ class MyChip extends StatelessWidget {
     required this.onTap,
     this.icon,
     this.overflow,
+    this.autofocus = false,
   });
 
   @override
@@ -24,6 +25,7 @@ class MyChip extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
+        autofocus: autofocus,
         splashColor: Colors.white.withValues(alpha: 0.2),
         highlightColor: Colors.white.withValues(alpha: 0.1),
         child: Ink(

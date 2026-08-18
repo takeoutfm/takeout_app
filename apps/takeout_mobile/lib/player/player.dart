@@ -259,7 +259,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
           Row(
             children: [
               repeatButton(),
-              Expanded(child: playerSeekBar(context)),
+              Expanded(child: ExcludeFocus(child: playerSeekBar(context))),
               // Expanded(child: newSeekBar(context)),
             ],
           ),
@@ -296,6 +296,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
           return _controlButtons(context, state as PlayerPositionEvent);
         } else {
           return IconButton(
+            autofocus: true,
             icon: const Icon(Icons.play_arrow),
             // iconSize: 64.0,
             onPressed: () => context.player.play(),
@@ -364,9 +365,17 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
             ),
           )
         else if (playing)
-          CircleButton(icon: Icons.pause, onTap: () => player.pause())
+          CircleButton(
+            autofocus: true,
+            icon: Icons.pause,
+            onTap: () => player.pause(),
+          )
         else
-          CircleButton(icon: Icons.play_arrow, onTap: () => player.play()),
+          CircleButton(
+            autofocus: true,
+            icon: Icons.play_arrow,
+            onTap: () => player.play(),
+          ),
         // stopButton(),
         if (isPodcast)
           IconButton(

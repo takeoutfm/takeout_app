@@ -7,12 +7,12 @@ import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
-import 'package:takeout_mobile/pages/film/play_movie.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
@@ -82,6 +82,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                           children: [
                             if (hasProgress)
                               FilledButton.icon(
+                                autofocus: true,
                                 onPressed: () => _onResume(context, state),
                                 label: Text(context.strings.resumeLabel),
                                 icon: Icon(Icons.play_arrow),
@@ -94,6 +95,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                               )
                             else
                               FilledButton.icon(
+                                autofocus: true,
                                 onPressed: () => _onPlay(context, state),
                                 label: const Text('Play'),
                                 icon: const Icon(Icons.play_arrow),

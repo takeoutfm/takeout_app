@@ -165,6 +165,7 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
       runSpacing: 8,
       children: [
         FilledButton.icon(
+          autofocus: true,
           onPressed: () => _onPlay(context, state),
           label: Text(context.strings.playLabel),
           icon: Icon(Icons.play_arrow),

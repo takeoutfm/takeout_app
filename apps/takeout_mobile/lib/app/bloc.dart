@@ -33,6 +33,7 @@ import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/video/player.dart';
+import 'package:takeout_lib/video/source.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
@@ -231,12 +232,15 @@ class DefaultMediaPlayer extends BaseMediaPlayer {
   void playMovie(Movie movie) {
     clientRepository.movie(movie.id).then((view) {
       globalPush(
-        builder: (_) => VideoPlayer(
-          MovieMediaTrack(view),
-          mediaTrackResolver: mediaTrackResolver,
-          tokenRepository: tokenRepository,
-          settingsRepository: settingsRepository,
-        ),
+        builder: (_) {
+          final media = VideoMedia(
+            media: MovieMediaTrack(view),
+            mediaTrackResolver: mediaTrackResolver,
+            tokenRepository: tokenRepository,
+            settingsRepository: settingsRepository,
+          );
+          return VideoPlayer.create(media: media);
+        },
       );
     });
   }

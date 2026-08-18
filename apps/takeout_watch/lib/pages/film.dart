@@ -17,16 +17,11 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
-import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/settings/repository.dart';
-import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
-import 'package:takeout_lib/video/player.dart';
-import 'package:takeout_lib/video/track.dart';
+import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/pages/media.dart';
@@ -59,10 +54,12 @@ class FilmPage extends StatelessWidget {
         // TODO all not supported yet
         movies = [];
     }
-    return MediaPage(movies,
-        title: context.strings.moviesLabel,
-        onLongPress: (context, entry) => _onDownload(context, entry as Movie),
-        onTap: (context, entry) => _onMovie(context, entry as Movie));
+    return MediaPage(
+      movies,
+      title: context.strings.moviesLabel,
+      onLongPress: (context, entry) => _onDownload(context, entry as Movie),
+      onTap: (context, entry) => _onMovie(context, entry as Movie),
+    );
   }
 }
 
@@ -91,38 +88,46 @@ class MoviePage extends ClientPage<MovieView> {
     final entries = [
       if (offset != null)
         MovieEntry(
-            icon: const Icon(Icons.play_arrow),
-            title: context.strings.resumeLabel,
-            onSelected: onResume),
-      MovieEntry(
           icon: const Icon(Icons.play_arrow),
-          title: context.strings.playLabel,
-          onSelected: onPlay),
+          title: context.strings.resumeLabel,
+          onSelected: onResume,
+        ),
+      MovieEntry(
+        icon: const Icon(Icons.play_arrow),
+        title: context.strings.playLabel,
+        onSelected: onPlay,
+      ),
       if (state.hasGenres())
         MovieEntry(
-            icon: const Icon(Icons.video_library_outlined),
-            title: context.strings.genresLabel,
-            onSelected: onGenres),
+          icon: const Icon(Icons.video_library_outlined),
+          title: context.strings.genresLabel,
+          onSelected: onGenres,
+        ),
       if (state.hasRelated())
         MovieEntry(
-            icon: const Icon(Icons.movie),
-            title: context.strings.relatedLabel,
-            onSelected: onRelated),
+          icon: const Icon(Icons.movie),
+          title: context.strings.relatedLabel,
+          onSelected: onRelated,
+        ),
       if (state.hasStarring())
         MovieEntry(
-            icon: const Icon(Icons.people),
-            title: context.strings.starringLabel,
-            onSelected: onStarring),
+          icon: const Icon(Icons.people),
+          title: context.strings.starringLabel,
+          onSelected: onStarring,
+        ),
     ];
     return Scaffold(
-        body: RefreshIndicator(
-            onRefresh: () => reloadPage(context),
-            child: RotaryList<MovieEntry>(entries,
-                title: state.movie.title,
-                subtitle:
-                    '${Duration(minutes: state.movie.runtime).inHoursMinutes} \u2022 ${parseYear(state.movie.date)}',
-                tileBuilder: (context, entry) =>
-                    movieTile(context, entry, state))));
+      body: RefreshIndicator(
+        onRefresh: () => reloadPage(context),
+        child: RotaryList<MovieEntry>(
+          entries,
+          title: state.movie.title,
+          subtitle:
+              '${Duration(minutes: state.movie.runtime).inHoursMinutes} \u2022 ${parseYear(state.movie.date)}',
+          tileBuilder: (context, entry) => movieTile(context, entry, state),
+        ),
+      ),
+    );
   }
 
   Widget movieTile(BuildContext context, MovieEntry entry, MovieView state) {
@@ -130,51 +135,54 @@ class MoviePage extends ClientPage<MovieView> {
     final title = entry.title;
     final subtitle = entry.subtitle;
     return ListTile(
-        enabled: enableStreaming,
-        leading: entry.icon,
-        title: title != null ? Text(title) : null,
-        subtitle: subtitle != null ? Text(subtitle) : null,
-        onTap: () => entry.onSelected?.call(context, state));
+      enabled: enableStreaming,
+      leading: entry.icon,
+      title: title != null ? Text(title) : null,
+      subtitle: subtitle != null ? Text(subtitle) : null,
+      onTap: () => entry.onSelected?.call(context, state),
+    );
   }
 
   void onPlay(BuildContext context, MovieView state) {
-    Navigator.push(context,
-        CupertinoPageRoute<void>(builder: (_) => _VideoPlayerPage(state)));
+    playMovie(context, movie);
   }
 
   void onResume(BuildContext context, MovieView state) {
     final offset = context.offsets.state.get(state.movie);
-    final startOffset =
-        offset != null ? Duration(seconds: offset.offset) : null;
-    Navigator.push(
-        context,
-        CupertinoPageRoute<void>(
-            builder: (_) => _VideoPlayerPage(state, startOffset: startOffset)));
+    final startOffset = offset != null
+        ? Duration(seconds: offset.offset)
+        : null;
+    playMovie(context, movie, startOffset: startOffset);
   }
 
   void onGenres(BuildContext context, MovieView state) {
     Navigator.push(
-        context,
-        CupertinoPageRoute<void>(
-            builder: (_) => GenresPage(state.genres ?? [])));
+      context,
+      CupertinoPageRoute<void>(builder: (_) => GenresPage(state.genres ?? [])),
+    );
   }
 
   void onRelated(BuildContext context, MovieView state) {
     Navigator.push(
-        context,
-        CupertinoPageRoute<void>(
-            builder: (_) => MoviesPage(
-                context.strings.relatedLabel, state.relatedMovies())));
+      context,
+      CupertinoPageRoute<void>(
+        builder: (_) =>
+            MoviesPage(context.strings.relatedLabel, state.relatedMovies()),
+      ),
+    );
   }
 
   void onStarring(BuildContext context, MovieView state) {
     Navigator.push(
-        context,
-        CupertinoPageRoute<void>(
-            builder: (_) => PeoplePage(
-                context.strings.starringLabel,
-                state.starringPeople(),
-                (context, media) => _onDownload(context, media as Movie))));
+      context,
+      CupertinoPageRoute<void>(
+        builder: (_) => PeoplePage(
+          context.strings.starringLabel,
+          state.starringPeople(),
+          (context, media) => _onDownload(context, media as Movie),
+        ),
+      ),
+    );
   }
 }
 
@@ -187,44 +195,24 @@ class MoviesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: RotaryList<Movie>(movies, title: title, tileBuilder: movieTile));
+      body: RotaryList<Movie>(movies, title: title, tileBuilder: movieTile),
+    );
   }
 
   Widget movieTile(BuildContext context, Movie movie) {
     return ListTile(
-        leading: const Icon(Icons.movie),
-        title: Text(movie.title),
-        subtitle: Text('${parseYear(movie.date)}'),
-        onTap: () => onMovie(context, movie));
+      leading: const Icon(Icons.movie),
+      title: Text(movie.title),
+      subtitle: Text('${parseYear(movie.date)}'),
+      onTap: () => onMovie(context, movie),
+    );
   }
 
   void onMovie(BuildContext context, Movie movie) {
     Navigator.push(
-        context, CupertinoPageRoute<void>(builder: (_) => MoviePage(movie)));
-  }
-}
-
-class _VideoPlayerPage extends StatelessWidget {
-  final MovieView state;
-  final Duration? startOffset;
-
-  const _VideoPlayerPage(this.state, {this.startOffset});
-
-  @override
-  Widget build(BuildContext context) {
-    return VideoPlayer(
-      MovieMediaTrack(state),
-      startOffset: startOffset,
-      mediaTrackResolver: context.read<MediaTrackResolver>(),
-      tokenRepository: context.read<TokenRepository>(),
-      settingsRepository: context.read<SettingsRepository>(),
-      onPause: (position, duration) => onPause(context, position, duration),
+      context,
+      CupertinoPageRoute<void>(builder: (_) => MoviePage(movie)),
     );
-  }
-
-  void onPause(BuildContext context, Duration position, Duration duration) {
-    context.updateProgress(state.movie.etag,
-        position: position, duration: duration);
   }
 }
 
@@ -236,20 +224,27 @@ class GenresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: RotaryList<String>(genres,
-            title: context.strings.genresLabel, tileBuilder: genreTile));
+      body: RotaryList<String>(
+        genres,
+        title: context.strings.genresLabel,
+        tileBuilder: genreTile,
+      ),
+    );
   }
 
   Widget genreTile(BuildContext context, String genre) {
     return ListTile(
-        leading: const Icon(Icons.video_library_outlined),
-        title: Text(genre),
-        onTap: () => onGenre(context, genre));
+      leading: const Icon(Icons.video_library_outlined),
+      title: Text(genre),
+      onTap: () => onGenre(context, genre),
+    );
   }
 
   void onGenre(BuildContext context, String genre) {
     Navigator.push(
-        context, CupertinoPageRoute<void>(builder: (_) => GenrePage(genre)));
+      context,
+      CupertinoPageRoute<void>(builder: (_) => GenrePage(genre)),
+    );
   }
 }
 
@@ -271,14 +266,18 @@ class GenrePage extends ClientPage<GenreView> {
 
 void _onMovie(BuildContext context, Movie movie) {
   Navigator.push(
-      context, CupertinoPageRoute<void>(builder: (_) => MoviePage(movie)));
+    context,
+    CupertinoPageRoute<void>(builder: (_) => MoviePage(movie)),
+  );
 }
 
 void _onDownload(BuildContext context, Movie movie) {
   if (allowDownload(context)) {
-    confirmDialog(context,
-            title: context.strings.confirmDownload, body: movie.title)
-        .then((confirmed) {
+    confirmDialog(
+      context,
+      title: context.strings.confirmDownload,
+      body: movie.title,
+    ).then((confirmed) {
       if (confirmed != null && confirmed) {
         final context = globalAppKey.currentContext;
         if (context != null && context.mounted) {

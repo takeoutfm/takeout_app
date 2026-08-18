@@ -21,7 +21,6 @@ import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/movie_details.dart';
-import 'package:takeout_mobile/widgets/focus_item.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 

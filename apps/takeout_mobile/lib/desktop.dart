@@ -1,3 +1,4 @@
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,15 +47,47 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
       ),
       body: Row(
         children: [
-          _navigationRail(),
+          DpadRegion(
+            verticalEdge: DpadEdgeBehavior.stop,
+            child: _navigationRail(),
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: .start,
               children: [
                 Expanded(
-                  child: IndexedStack(
-                    index: state.navigationIndex.index,
-                    children: pages,
+                  child: DpadRegion(
+                    horizontalEdge: .leave,
+                    verticalEdge: .leave,
+                    child: Focus(
+                      onKeyEvent: (node, event) {
+                        if (event is KeyDownEvent &&
+                            event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                          final before = FocusManager.instance.primaryFocus;
+                          // Let dpad attempt its own handling first (this
+                          // callback fires on the bubble/ancestor pass, after
+                          // descendants have already had a chance). Check on
+                          // the next frame whether focus actually changed; if
+                          // not, dpad found no exit target, so redirect to the
+                          // sidebar ourselves.
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (FocusManager.instance.primaryFocus == before) {
+                              final focus = navigationFocusNodes[state.index];
+                              focus?.requestFocus();
+                              // TODO need to help move focus from icon
+                              // to outer nav rail dest
+                              // context.app.goto(state.index.index);
+                            }
+                          });
+                        }
+                        // Always ignore so dpad still gets/keeps normal handling.
+                        return KeyEventResult.ignored;
+                      },
+                      child: IndexedStack(
+                        index: state.navigationIndex.index,
+                        children: pages,
+                      ),
+                    ),
                   ),
                 ),
                 if (context.app.state.navigationIndex != .player) ...[
@@ -131,59 +164,73 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     NavigationIndex.player,
   ];
 
+  static final navigationFocusNodes = <NavigationIndex, FocusNode>{
+    NavigationIndex.music: FocusNode(),
+    NavigationIndex.artists: FocusNode(),
+    NavigationIndex.radio: FocusNode(),
+    NavigationIndex.film: FocusNode(),
+    NavigationIndex.tv: FocusNode(),
+    NavigationIndex.podcast: FocusNode(),
+    NavigationIndex.history: FocusNode(),
+    NavigationIndex.player: FocusNode(),
+  };
+
+  static final navigationIcons = <NavigationIndex, List<IconData>>{
+    NavigationIndex.music: [Icons.speaker, Icons.speaker_outlined],
+    NavigationIndex.artists: [Icons.people, Icons.people_outline],
+    NavigationIndex.radio: [Icons.radio, Icons.radio_outlined],
+    NavigationIndex.film: [Icons.movie, Icons.movie_outlined],
+    NavigationIndex.tv: [Icons.live_tv, Icons.live_tv],
+    NavigationIndex.podcast: [Icons.podcasts, Icons.podcasts_outlined],
+    NavigationIndex.history: [Icons.history, Icons.history_outlined],
+    NavigationIndex.player: [Icons.playlist_play, Icons.playlist_play_outlined],
+  };
+
+  NavigationRailDestination destination(
+    NavigationIndex selectedIndex,
+    NavigationIndex index,
+  ) {
+    final icons = navigationIcons[index] ?? [Icons.error, Icons.error_outline];
+    final icon = selectedIndex == index ? icons[0] : icons[1];
+    final label = switch (index) {
+      .music => context.strings.navMovies,
+      .artists => context.strings.navArtists,
+      .radio => context.strings.navRadio,
+      .film => context.strings.navMovies,
+      .tv => context.strings.navTVShows,
+      .podcast => context.strings.navPodcasts,
+      .history => context.strings.navHistory,
+      .player => context.strings.navPlayer,
+      .home => context.strings.navHome, // unused
+    };
+    return NavigationRailDestination(
+      icon: Focus(
+        focusNode: navigationFocusNodes[index],
+        // onFocusChange: (focused) {
+        //   if (focused) {
+        //     print('focusChange $index');
+        //     lastSidebarFocus = navigationFocusNodes[index];
+        //   }
+        // },
+        child: Icon(icon),
+      ),
+      label: Text(label),
+    );
+  }
+
   Widget _navigationRail() {
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
         final index = state.navigationIndex;
         final destinations = [
-          NavigationRailDestination(
-            icon: index == NavigationIndex.music
-                ? const Icon(Icons.speaker)
-                : const Icon(Icons.speaker_outlined),
-            label: Text(context.strings.navMusic),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.artists
-                ? const Icon(Icons.people_alt)
-                : const Icon(Icons.people_alt_outlined),
-            label: Text(context.strings.navArtists),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.radio
-                ? const Icon(Icons.radio)
-                : const Icon(Icons.radio_outlined),
-            label: Text(context.strings.navRadio),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.film
-                ? const Icon(Icons.movie)
-                : const Icon(Icons.movie_outlined),
-            label: Text(context.strings.navMovies),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.tv
-                ? const Icon(Icons.tv)
-                : const Icon(Icons.tv_outlined),
-            label: Text(context.strings.navTVShows),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.podcast
-                ? const Icon(Icons.podcasts)
-                : const Icon(Icons.podcasts_outlined),
-            label: Text(context.strings.navPodcasts),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.history
-                ? const Icon(Icons.history)
-                : const Icon(Icons.history_outlined),
-            label: Text(context.strings.navHistory),
-          ),
-          NavigationRailDestination(
-            icon: index == NavigationIndex.player
-                ? const Icon(Icons.queue_music)
-                : const Icon(Icons.queue_music_outlined),
-            label: Text(context.strings.navPlayer),
-          ),
+          destination(index, NavigationIndex.music),
+          destination(index, NavigationIndex.artists),
+          destination(index, NavigationIndex.radio),
+          destination(index, NavigationIndex.film),
+          destination(index, NavigationIndex.tv),
+          destination(index, NavigationIndex.podcast),
+          destination(index, NavigationIndex.history),
+          destination(index, NavigationIndex.player),
         ];
         var selectedIndex = navigationIndices.indexOf(index);
         if (selectedIndex < 0 || selectedIndex >= destinations.length) {

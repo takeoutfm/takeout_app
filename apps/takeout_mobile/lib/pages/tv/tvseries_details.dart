@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
+import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
-import 'package:takeout_mobile/pages/film/play_movie.dart';
 import 'package:takeout_mobile/pages/tv/season_details.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
@@ -217,6 +218,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
       children: [
         ...seasonsList.map(
           (season) => MyChip(
+            autofocus: season == 1,
             icon: Icons.chevron_right,
             label: context.strings.seasonLabel(season),
             onTap: () => _onSeason(context, season),

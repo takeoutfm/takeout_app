@@ -17,14 +17,10 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
-import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/settings/repository.dart';
-import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
-import 'package:takeout_lib/video/player.dart';
+import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/pages/media.dart';
@@ -184,10 +180,7 @@ class TVEpisodePage extends ClientPage<TVEpisodeView> {
   }
 
   void onPlay(BuildContext context, TVEpisodeView state) {
-    Navigator.push(
-      context,
-      CupertinoPageRoute<void>(builder: (_) => _VideoPlayerPage(state)),
-    );
+    playMovie(context, TVEpisodeMediaTrack(state));
   }
 
   void onResume(BuildContext context, TVEpisodeView state) {
@@ -195,38 +188,6 @@ class TVEpisodePage extends ClientPage<TVEpisodeView> {
     final startOffset = offset != null
         ? Duration(seconds: offset.offset)
         : null;
-    Navigator.push(
-      context,
-      CupertinoPageRoute<void>(
-        builder: (_) => _VideoPlayerPage(state, startOffset: startOffset),
-      ),
-    );
-  }
-}
-
-class _VideoPlayerPage extends StatelessWidget {
-  final TVEpisodeView state;
-  final Duration? startOffset;
-
-  const _VideoPlayerPage(this.state, {this.startOffset});
-
-  @override
-  Widget build(BuildContext context) {
-    return VideoPlayer(
-      TVEpisodeMediaTrack(state),
-      startOffset: startOffset,
-      mediaTrackResolver: context.read<MediaTrackResolver>(),
-      tokenRepository: context.read<TokenRepository>(),
-      settingsRepository: context.read<SettingsRepository>(),
-      onPause: (position, duration) => onPause(context, position, duration),
-    );
-  }
-
-  void onPause(BuildContext context, Duration position, Duration duration) {
-    context.updateProgress(
-      state.episode.etag,
-      position: position,
-      duration: duration,
-    );
+    playMovie(context, TVEpisodeMediaTrack(state), startOffset: startOffset);
   }
 }

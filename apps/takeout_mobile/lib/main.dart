@@ -94,6 +94,7 @@ class TakeoutApp extends StatelessWidget {
                 ],
                 supportedLocales: const [Locale('en', '')],
                 builder: Dpad.wrap(
+                  debugOverlay: true,
                   onBack: () {
                     final handled = orientation == .landscape
                         ? (_desktopKey.currentState?.handleBack() ?? false)

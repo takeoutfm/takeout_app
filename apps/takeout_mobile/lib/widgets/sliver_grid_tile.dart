@@ -26,78 +26,71 @@ class SliverGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return DpadFocusable(
       onSelect: onTap,
-      child: InkWell(
-        onTap: onTap,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: GridTile(
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: image,
-                ),
-                if (badge != null)
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.65),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        badge!,
-                        style: context.labelSmall?.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: GridTile(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClipRRect(borderRadius: BorderRadius.circular(16), child: image),
+              if (badge != null)
                 Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
+                  top: 8,
+                  left: 8,
                   child: Container(
-                    height: height,
-                    color: Colors.black.withValues(alpha: 0.65),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
-                      vertical: 6,
+                      vertical: 3,
                     ),
-                    child: Column(
-                      mainAxisAlignment: .start,
-                      crossAxisAlignment: .start,
-                      children: [
-                        Text(
-                          title,
-                          style: context.gridTitle,
-                          maxLines: titleMaxLines,
-                          softWrap: titleMaxLines > 1 ? true : null,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (subtitle != null)
-                          Text(
-                            subtitle!,
-                            style: context.gridSubtitle,
-                            maxLines: 1,
-                            // softWrap: true,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.65),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      badge!,
+                      style: context.labelSmall?.copyWith(color: Colors.white),
                     ),
                   ),
                 ),
-              ],
-            ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: height,
+                  color: Colors.black.withValues(alpha: 0.65),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: .start,
+                    crossAxisAlignment: .start,
+                    children: [
+                      Text(
+                        title,
+                        style: context.gridTitle,
+                        maxLines: titleMaxLines,
+                        softWrap: titleMaxLines > 1 ? true : null,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (subtitle != null)
+                        Text(
+                          subtitle!,
+                          style: context.gridSubtitle,
+                          maxLines: 1,
+                          // softWrap: true,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
+      // ),
     );
   }
 }

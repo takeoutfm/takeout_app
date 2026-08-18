@@ -176,6 +176,7 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
       runSpacing: 8,
       children: [
         FilledButton.icon(
+          autofocus: true,
           onPressed: () => _onPlay(context, state),
           label: Text('Play'),
           icon: Icon(Icons.play_arrow),

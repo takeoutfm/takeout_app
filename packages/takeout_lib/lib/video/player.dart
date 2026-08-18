@@ -15,130 +15,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
-import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:takeout_lib/client/resolver.dart';
-import 'package:takeout_lib/model.dart';
-import 'package:takeout_lib/settings/repository.dart';
-import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/video/media_kit_player.dart';
+import 'package:takeout_lib/video/native_player.dart';
+import 'package:takeout_lib/video/source.dart';
 
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
-import 'package:takeout_lib/video/controls.dart';
-
-class VideoPlayer extends StatefulWidget {
-  final MediaTrack media;
-  final MediaTrackResolver mediaTrackResolver;
-  final TokenRepository tokenRepository;
-  final SettingsRepository settingsRepository;
-  final Duration? startOffset;
-  final bool autoPlay;
-  final bool allowedScreenSleep;
-  final bool fullScreenByDefault;
-  final bool desktop;
-  final void Function(Duration, Duration)? onPause;
+abstract class VideoPlayer extends StatefulWidget {
+  factory VideoPlayer.create({
+    required VideoMedia media,
+    void Function(Duration, Duration)? onPause,
+    Key? key,
+  }) {
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      return MediaKitVideoPlayer(media: media, onPause: onPause, key: key);
+    }
+    return NativeVideoPlayer(media: media, onPause: onPause, key: key);
+  }
 
   static void init() {
-    MediaKit.ensureInitialized();
-  }
-
-  const VideoPlayer(
-    this.media, {
-    required this.mediaTrackResolver,
-    required this.tokenRepository,
-    required this.settingsRepository,
-    this.startOffset,
-    this.autoPlay = true,
-    this.allowedScreenSleep = false,
-    this.fullScreenByDefault = true,
-    this.onPause,
-    this.desktop = false,
-    super.key,
-  });
-
-  @override
-  State<VideoPlayer> createState() => VideoPlayerState();
-}
-
-class VideoPlayerState extends State<VideoPlayer> {
-  VideoController? controller;
-  Player player = Player(configuration: PlayerConfiguration(libass: true));
-  Exception? error;
-  StreamSubscription<bool>? completedSubscription;
-  StreamSubscription<bool>? playingSubscription;
-
-  // static const _networkCachingMs = 2000;
-  // static const _subtitlesFontSize = 30;
-
-  // static const _height = 400.0;
-
-  @override
-  void initState() {
-    super.initState();
-    prepareController();
-  }
-
-  @override
-  void dispose() {
-    player.dispose();
-    completedSubscription?.cancel();
-    playingSubscription?.cancel();
-    super.dispose();
-  }
-
-  Future<void> prepareController() async {
-    final uri = await widget.mediaTrackResolver.resolve(widget.media);
-    String url = uri.toString();
-    if (url.startsWith('/api/')) {
-      url = '${widget.settingsRepository.settings?.endpoint}$url';
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      MediaKitVideoPlayer.init();
     }
-    final headers = widget.tokenRepository.addMediaToken();
-
-    controller = VideoController(player);
-    await player.setSubtitleTrack(SubtitleTrack.auto());
-
-    completedSubscription = player.stream.completed.listen((completed) {
-      if (completed) {
-        widget.onPause?.call(player.state.position, player.state.duration);
-      }
-    });
-    playingSubscription = player.stream.playing.listen((playing) {
-      if (playing == false && player.state.duration > Duration.zero) {
-        // false and zero can happen before or while loading so ignore
-        widget.onPause?.call(player.state.position, player.state.duration);
-      }
-    });
-
-    await player.open(
-      Media(url, start: widget.startOffset, httpHeaders: headers),
-    );
-
-    setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (error != null) {
-      return Center(
-        child: TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text(error!.toString()),
-        ),
-      );
-    }
+  final VideoMedia media;
+  final void Function(Duration, Duration)? onPause;
 
-    final videoController = controller;
-    if (videoController == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final video = Video(
-      controller: videoController,
-      controls: AdaptiveVideoControls,
-    );
-    return Scaffold(body: withControls(context, video));
-  }
+  const VideoPlayer({required this.media, this.onPause, super.key});
 }

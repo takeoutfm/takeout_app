@@ -78,11 +78,13 @@ class EpisodeDetailsPage extends StatelessWidget {
                       children: [
                         if (hasProgress)
                           FilledButton.icon(
+                            autofocus: true,
                             onPressed: () => {}, // _onResume(context, state),
                             label: Text(context.strings.resumeLabel),
                             icon: Icon(Icons.play_arrow),
                           ),
                         FilledButton.icon(
+                          autofocus: hasProgress == false,
                           onPressed: () => _onPlay(context, state),
                           label: Text(context.strings.playLabel),
                           icon: Icon(Icons.play_arrow),

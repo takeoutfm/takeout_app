@@ -32,6 +32,7 @@ import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/player.dart';
+import 'package:takeout_lib/video/source.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
@@ -544,7 +545,7 @@ class _TVEpisodeWidget extends ClientPage<TVEpisodeView> {
   }
 
   void _onPlay(BuildContext context, TVEpisodeView view, Duration startOffset) {
-    playMovie(context, TVEpisodeMediaTrack(view), startOffset: startOffset);
+    playShow(context, TVEpisodeMediaTrack(view), startOffset: startOffset);
   }
 
   void _onDownload(BuildContext context) {
@@ -574,20 +575,23 @@ class _TVEpisodeWidget extends ClientPage<TVEpisodeView> {
 //   }
 // }
 
-void playMovie(
-  BuildContext context,
-  MediaTrack movie, {
-  Duration? startOffset,
-}) {
+void playShow(BuildContext context, MediaTrack show, {Duration? startOffset}) {
   Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute<void>(
-      builder: (_) => VideoPlayer(
-        movie,
-        settingsRepository: context.read<SettingsRepository>(),
-        tokenRepository: context.read<TokenRepository>(),
-        mediaTrackResolver: context.read<MediaTrackResolver>(),
-        startOffset: startOffset,
-      ),
+      builder: (_) {
+        final media = VideoMedia(
+          media: show,
+          settingsRepository: context.read<SettingsRepository>(),
+          tokenRepository: context.read<TokenRepository>(),
+          mediaTrackResolver: context.read<MediaTrackResolver>(),
+          startOffset: startOffset,
+        );
+        return VideoPlayer.create(
+          media: media,
+          onPause: (position, duration) =>
+              onPause(context, show, position, duration),
+        );
+      },
     ),
   );
 }
@@ -597,3 +601,12 @@ void playMovie(
 //   movies.sort((a, b) => a.sortTitle.compareTo(b.sortTitle));
 //   return movies;
 // }
+
+void onPause(
+  BuildContext context,
+  MediaTrack show,
+  Duration position,
+  Duration duration,
+) {
+  context.updateProgress(show.etag, position: position, duration: duration);
+}

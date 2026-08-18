@@ -15,6 +15,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density"
             android:exported="true"
             android:hardwareAccelerated="true"
+            android:supportsPictureInPicture="true"
             android:launchMode="singleTask"
             android:theme="@style/LaunchTheme"
             android:windowSoftInputMode="adjustResize">

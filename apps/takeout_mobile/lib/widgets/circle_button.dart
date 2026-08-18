@@ -4,6 +4,7 @@ class CircleButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
   final double padding;
+  final bool autofocus;
 
   static const double _defaultPadding = 12;
   static const double _appBarPadding = 6;
@@ -13,6 +14,7 @@ class CircleButton extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.padding = _defaultPadding,
+    this.autofocus = false,
   });
 
   const CircleButton.back({
@@ -87,6 +89,7 @@ class CircleButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(999),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
+        autofocus: autofocus,
         onTap: onTap,
         splashColor: Colors.white.withValues(alpha: 0.2),
         highlightColor: Colors.white.withValues(alpha: 0.1),
