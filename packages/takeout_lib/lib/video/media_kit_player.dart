@@ -36,7 +36,7 @@ class MediaKitVideoPlayer extends VideoPlayer {
 
 class _DesktopVideoPlayerState extends State<MediaKitVideoPlayer> {
   final Player _player = Player(
-    configuration: PlayerConfiguration(libass: false),
+    configuration: PlayerConfiguration(libass: true),
   );
   VideoController? _controller;
   Exception? error;
@@ -59,22 +59,14 @@ class _DesktopVideoPlayerState extends State<MediaKitVideoPlayer> {
 
   Future<void> prepareController() async {
     final source = await widget.media.resolve();
-
-    final config = VideoControllerConfiguration(
-      // vo: 'mediacodec_embed',
-      // hwdec: 'mediacodec',
-      // vo: 'gpu',
-      // hwdec: 'mediacodec', // android only
-    );
-
-    _controller = VideoController(_player, configuration: config);
-    await _player.setSubtitleTrack(SubtitleTrack.auto());
+    final controller = VideoController(_player);
 
     _completedSubscription = _player.stream.completed.listen((completed) {
       if (completed) {
         widget.onPause?.call(_player.state.position, _player.state.duration);
       }
     });
+
     _playingSubscription = _player.stream.playing.listen((playing) {
       if (playing == false && _player.state.duration > Duration.zero) {
         // false and zero can happen before or while loading so ignore
@@ -89,8 +81,11 @@ class _DesktopVideoPlayerState extends State<MediaKitVideoPlayer> {
         httpHeaders: source.headers,
       ),
     );
+    await _player.setSubtitleTrack(SubtitleTrack.auto());
 
-    setState(() {});
+    setState(() {
+      _controller = controller;
+    });
   }
 
   @override
