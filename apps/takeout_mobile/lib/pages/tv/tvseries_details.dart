@@ -18,6 +18,7 @@ import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/sliver_title.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 
 class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
   final TVSeries _series;
@@ -46,104 +47,116 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
           builder: (context, cacheState) {
             // final offsetState = context.watch<OffsetCacheCubit>().state;
             // final hasProgress = offsetState.hasValue(_movie);
-            return SliverStack(
-              backdrop: series.backdrop,
-              slivers: [
-                // SliverFavoriteBar(title: series.nameYear, onTap: () {}),
-                SliverFavoriteBar(onTap: () {}),
-                SliverBox(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      const posterWidth = 223.0;
-                      const minDetailsWidth = 225.0;
-                      final hasRoom =
-                          constraints.maxWidth >= posterWidth + minDetailsWidth;
-                      if (hasRoom) {
-                        // wide view
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: .stretch,
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  backdrop: series.backdrop,
+                  slivers: [
+                    // SliverFavoriteBar(title: series.nameYear, onTap: () {}),
+                    SliverFavoriteBar(onTap: () {}),
+                    SliverBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const posterWidth = 223.0;
+                          const minDetailsWidth = 225.0;
+                          final hasRoom =
+                              constraints.maxWidth >=
+                              posterWidth + minDetailsWidth;
+                          if (hasRoom) {
+                            // wide view
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: .stretch,
+                                children: [
+                                  SizedBox(
+                                    width: posterWidth,
+                                    child: _seriesPoster(context),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          _seriesDetails(context, state),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // tall view
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                width: posterWidth,
-                                child: _seriesPoster(context),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [_seriesDetails(context, state)],
-                                  ),
-                                ),
-                              ),
+                              _seriesPoster(context),
+                              const SizedBox(height: 16),
+                              _seriesDetails(context, state),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                        );
-                      }
-                      // tall view
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _seriesPoster(context),
-                          const SizedBox(height: 16),
-                          _seriesDetails(context, state),
-                          const SizedBox(height: 16),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                SliverBox(
-                  padding: EdgeInsets.only(left: 20, bottom: 20, right: 20),
-                  child: _seasons(context, seasonsList),
-                ),
-                SliverTitle(
-                  context.strings.synopsisLabel,
-                  padding: EdgeInsets.only(left: 20),
-                  style: context.header2,
-                ),
-                SliverBox(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(16),
+                          );
+                        },
+                      ),
                     ),
-                    child: Text(series.overview, style: context.synopsis),
-                  ),
-                ),
-                SliverBox(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      if (state.hasCast()) ...[
-                        Text(context.strings.castLabel, style: context.header2),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 140,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              ...state.cast!.map(
-                                (cast) => AvatarButton(
-                                  name: cast.person.name,
-                                  imageUrl: cast.person.image,
-                                  onTap: () => _onPerson(context, cast.person),
-                                ),
-                              ),
-                            ],
-                          ),
+                    SliverBox(
+                      padding: EdgeInsets.only(left: 20, bottom: 20, right: 20),
+                      child: _seasons(context, seasonsList),
+                    ),
+                    SliverTitle(
+                      context.strings.synopsisLabel,
+                      padding: EdgeInsets.only(left: 20),
+                      style: context.header2,
+                    ),
+                    SliverBox(
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.10),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      ],
-                    ],
-                  ),
+                        child: Text(series.overview, style: context.synopsis),
+                      ),
+                    ),
+                    SliverBox(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          if (state.hasCast()) ...[
+                            Text(
+                              context.strings.castLabel,
+                              style: context.header2,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 140,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  ...state.cast!.map(
+                                    (cast) => AvatarButton(
+                                      name: cast.person.name,
+                                      imageUrl: cast.person.image,
+                                      onTap: () =>
+                                          _onPerson(context, cast.person),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         ),
@@ -236,17 +249,17 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
     push(context, builder: (_) => SeasonDetailsPage(series, season));
   }
 
-  void _onPlay(BuildContext context, MovieView view) {
-    playMovie(context, MovieMediaTrack(view));
-  }
-
-  void _onResume(BuildContext context, MovieView view) {
-    playMovie(
-      context,
-      MovieMediaTrack(view),
-      startOffset: context.offsets.state.position(view.movie),
-    );
-  }
+  // void _onPlay(BuildContext context, MovieView view) {
+  //   playMovie(context, MovieMediaTrack(view));
+  // }
+  //
+  // void _onResume(BuildContext context, MovieView view) {
+  //   playMovie(
+  //     context,
+  //     MovieMediaTrack(view),
+  //     startOffset: context.offsets.state.position(view.movie),
+  //   );
+  // }
 
   void _onPerson(BuildContext context, Person person) {
     push(context, builder: (_) => PersonDetailsPage(person));

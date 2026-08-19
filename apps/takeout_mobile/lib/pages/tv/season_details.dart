@@ -8,6 +8,7 @@ import 'package:takeout_mobile/pages/tv/tvepisode_grid.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/sliver_title.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 
 class SeasonDetailsPage extends ClientPage<TVSeriesView> {
   final TVSeries _series;
@@ -33,19 +34,24 @@ class SeasonDetailsPage extends ClientPage<TVSeriesView> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return SliverStack(
-              backdrop: series.backdrop,
-              slivers: [
-                SliverFavoriteBar(
-                  title: context.strings.seasonLabel(season),
-                  onTap: () {},
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  backdrop: series.backdrop,
+                  slivers: [
+                    SliverFavoriteBar(
+                      title: context.strings.seasonLabel(season),
+                      onTap: () {},
+                    ),
+                    SliverTitle(
+                      context.strings.episodesCount(episodes.length),
+                      style: context.header1,
+                    ),
+                    SliverTVEpisodeGrid(episodes),
+                  ],
                 ),
-                SliverTitle(
-                  context.strings.episodesCount(episodes.length),
-                  style: context.header1,
-                ),
-                SliverTVEpisodeGrid(episodes),
-              ],
+              ),
             );
           },
         ),

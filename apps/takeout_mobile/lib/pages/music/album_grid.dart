@@ -5,6 +5,7 @@ import 'package:takeout_lib/model.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/music/release_details.dart';
+import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 
 const albumGridEdgeInset = 20.0;
 const albumGridSpacing = 12.0;
@@ -31,28 +32,11 @@ class SliverAlbumGrid extends StatelessWidget {
         mainAxisSpacing: albumGridSpacing,
         children: [
           ..._albums.map(
-            (a) => InkWell(
+            (a) => SliverGridTile(
+              image: gridCover(context, a.image),
+              title: a.album,
+              subtitle: a.creator,
               onTap: () => _onTap(context, a),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: GridTile(
-                  footer: Material(
-                    color: Colors.transparent,
-                    clipBehavior: Clip.antiAlias,
-                    child: GridTileBar(
-                      backgroundColor: Colors.black.withValues(alpha: 0.65),
-                      title: Text(a.album, style: context.gridTitle),
-                      subtitle: subtitle
-                          ? Text(a.creator, style: context.gridSubtitle)
-                          : null,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: gridCover(context, a.image),
-                  ),
-                ),
-              ),
             ),
           ),
         ],

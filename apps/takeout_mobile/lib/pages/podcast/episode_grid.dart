@@ -3,6 +3,7 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/podcast/episode_details.dart';
+import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
 const episodeGridEdgeInset = 20.0;
@@ -30,26 +31,11 @@ class SliverEpisodeGrid extends StatelessWidget {
         mainAxisSpacing: episodeGridSpacing,
         children: [
           ..._episodes.map(
-            (e) => InkWell(
+            (e) => SliverGridTile(
+              title: e.title,
+              subtitle: 'FIXME',
+              image: gridPodcastEpisode(context, e.image),
               onTap: () => _onTap(context, e),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: GridTile(
-                  footer: Material(
-                    color: Colors.transparent,
-                    clipBehavior: Clip.antiAlias,
-                    child: GridTileBar(
-                      backgroundColor: Colors.black.withValues(alpha: 0.65),
-                      title: Text(e.title),
-                      subtitle: subtitle ? _subtitle(e) : null,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: gridPodcastEpisode(context, e.image),
-                  ),
-                ),
-              ),
             ),
           ),
         ],

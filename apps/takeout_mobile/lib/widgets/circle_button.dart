@@ -1,3 +1,4 @@
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 
 class CircleButton extends StatelessWidget {
@@ -76,31 +77,35 @@ class CircleButton extends StatelessWidget {
     required VoidCallback? onTap,
     double? padding,
   }) : this(
-    key: key,
-    icon: Icons.arrow_drop_up,
-    onTap: onTap,
-    padding: padding ?? _defaultPadding,
-  );
+         key: key,
+         icon: Icons.arrow_drop_up,
+         onTap: onTap,
+         padding: padding ?? _defaultPadding,
+       );
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(999),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        autofocus: autofocus,
-        onTap: onTap,
-        splashColor: Colors.white.withValues(alpha: 0.2),
-        highlightColor: Colors.white.withValues(alpha: 0.1),
-        child: Ink(
-          padding: EdgeInsets.all(padding),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.12),
-            shape: BoxShape.circle,
-            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+    final color = Theme.of(context).colorScheme.onSurface;
+    return DpadFocusable(
+      onSelect: onTap,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(999),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          autofocus: autofocus,
+          onTap: onTap,
+          splashColor: Colors.white.withValues(alpha: 0.2),
+          highlightColor: Colors.white.withValues(alpha: 0.1),
+          child: Ink(
+            padding: EdgeInsets.all(padding),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+              border: Border.all(color: color.withValues(alpha: 0.2)),
+            ),
+            child: Icon(icon, color: color),
           ),
-          child: Icon(icon, color: Colors.white),
         ),
       ),
     );

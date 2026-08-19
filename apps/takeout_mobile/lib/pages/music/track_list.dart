@@ -1,3 +1,4 @@
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
@@ -47,17 +48,19 @@ class SliverTrackList extends StatelessWidget {
         for (var i = 0; i < tracks.length; i++) {
           final e = tracks[i];
           children.add(
-            GestureDetector(
-              onDoubleTapDown: (d) {
-                final offset = d.globalPosition;
-                final pos = RelativeRect.fromLTRB(
-                  offset.dx,
-                  offset.dy,
-                  MediaQuery.of(context).size.width - offset.dx,
-                  MediaQuery.of(context).size.height - offset.dy,
-                );
-                _onLongPress(context, e, pos);
-              },
+            // GestureDetector(
+            //   onDoubleTapDown: (d) {
+            //     final offset = d.globalPosition;
+            //     final pos = RelativeRect.fromLTRB(
+            //       offset.dx,
+            //       offset.dy,
+            //       MediaQuery.of(context).size.width - offset.dx,
+            //       MediaQuery.of(context).size.height - offset.dy,
+            //     );
+            //     _onLongPress(context, e, pos);
+            //   },
+            DpadFocusable(
+              onSelect: () => _onPlay(context, i),
               child: CoverTrackListTile.track(
                 context,
                 e,

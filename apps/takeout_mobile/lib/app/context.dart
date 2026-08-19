@@ -70,17 +70,26 @@ extension AppContext on BuildContext {
   /// used for body text that is hyperlink
   TextStyle? get bodyLink => bodyMedium?.copyWith(decoration: .underline);
 
-  /// used for grid item title
-  TextStyle? get gridTitle => labelMedium;
+  /// used for grid item title - always dark bg
+  TextStyle? get gridTitle {
+    final scheme = ColorScheme.dark();
+    return labelMedium?.copyWith(color: scheme.onSurface);
+  }
 
-  /// used for grid item subtitle
-  TextStyle? get gridSubtitle => labelMedium?.copyWith(color: Colors.white60);
+  /// used for grid item subtitle - always dark bg
+  TextStyle? get gridSubtitle {
+    final scheme = ColorScheme.dark();
+    return labelMedium?.copyWith(color: scheme.onSurface.withAlpha(140));
+  }
 
   TextStyle? get playerHeader => titleLarge;
 
   TextStyle? get playerTitle => labelLarge;
 
-  TextStyle? get playerSubtitle => labelLarge?.copyWith(color: Colors.white60);
+  TextStyle? get playerSubtitle {
+    final color = labelLarge?.color;
+    return labelLarge?.copyWith(color: color?.withAlpha(175));
+  }
 
   /// used for film and show taglines
   TextStyle? get tagline => bodyLarge?.copyWith(

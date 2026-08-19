@@ -17,6 +17,7 @@ import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/sliver_title.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ArtistDetailsPage extends ClientPage<ArtistView> {
@@ -40,120 +41,128 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return SliverStack(
-              backdrop: state.background,
-              slivers: [
-                SliverMenuBar(
-                  // title: artist.name,
-                  items: [
-                    PopupItem.shuffle(context, (_) => _onShuffle(context)),
-                    PopupItem.radio(context, (_) => _onRadio(context)),
-                    PopupItem.playlistAppend(
-                      context,
-                      (_) => _onPlaylistAppend(context),
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  backdrop: state.background,
+                  slivers: [
+                    SliverMenuBar(
+                      // title: artist.name,
+                      items: [
+                        PopupItem.shuffle(context, (_) => _onShuffle(context)),
+                        PopupItem.radio(context, (_) => _onRadio(context)),
+                        PopupItem.playlistAppend(
+                          context,
+                          (_) => _onPlaylistAppend(context),
+                        ),
+                        PopupItem.divider(),
+                        PopupItem.singles(context, (_) => _onSingles(context)),
+                        PopupItem.popular(context, (_) => _onPopular(context)),
+                        PopupItem.divider(),
+                        if (_artist.genre != null)
+                          PopupItem.genre(
+                            context,
+                            _artist.genre!.titleCased,
+                            (_) => _onGenre(context, _artist.genre!),
+                          ),
+                        if (_artist.area != null)
+                          PopupItem.area(
+                            context,
+                            _artist.area!,
+                            (_) => _onArea(context, _artist.area!),
+                          ),
+                        PopupItem.divider(),
+                        PopupItem.link(
+                          context,
+                          'MusicBrainz Artist',
+                          (_) => launchUrl(Uri.parse(artistUrl)),
+                        ),
+                        PopupItem.divider(),
+                        // PopupItem.wantList(context, (_) => _onWantList(context)),
+                        PopupItem.reload(context, (_) => reloadPage(context)),
+                      ],
                     ),
-                    PopupItem.divider(),
-                    PopupItem.singles(context, (_) => _onSingles(context)),
-                    PopupItem.popular(context, (_) => _onPopular(context)),
-                    PopupItem.divider(),
-                    if (_artist.genre != null)
-                      PopupItem.genre(
-                        context,
-                        _artist.genre!.titleCased,
-                        (_) => _onGenre(context, _artist.genre!),
+                    SliverBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const posterWidth = 300.0;
+                          const minDetailsWidth = 300.0;
+                          final hasRoom =
+                              constraints.maxWidth >=
+                              posterWidth + minDetailsWidth;
+                          if (hasRoom) {
+                            // wide view
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: .stretch,
+                                children: [
+                                  SizedBox(
+                                    width: posterWidth,
+                                    child: _artistPoster(context, state),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          _artistDetails(context, state),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // tall view
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _artistPoster(context, state),
+                              const SizedBox(height: 16),
+                              _artistDetails(context, state, center: false),
+                            ],
+                          );
+                        },
                       ),
-                    if (_artist.area != null)
-                      PopupItem.area(
-                        context,
-                        _artist.area!,
-                        (_) => _onArea(context, _artist.area!),
-                      ),
-                    PopupItem.divider(),
-                    PopupItem.link(
-                      context,
-                      'MusicBrainz Artist',
-                      (_) => launchUrl(Uri.parse(artistUrl)),
                     ),
-                    PopupItem.divider(),
-                    // PopupItem.wantList(context, (_) => _onWantList(context)),
-                    PopupItem.reload(context, (_) => reloadPage(context)),
+                    if (state.releases.isNotEmpty) ...[
+                      SliverTitle(
+                        context.strings.releasesLabel,
+                        style: context.header2,
+                      ),
+                      SliverAlbumGrid(
+                        state.releases,
+                        padding: EdgeInsetsGeometry.only(
+                          left: albumGridEdgeInset,
+                          right: albumGridEdgeInset,
+                          bottom: albumGridEdgeInset,
+                        ),
+                      ),
+                    ],
+                    if (state.similar.isNotEmpty) ...[
+                      SliverTitle(
+                        context.strings.relatedLabel,
+                        style: context.header2,
+                      ),
+                      SliverArtistGrid(
+                        state.similar,
+                        padding: EdgeInsetsGeometry.only(
+                          left: albumGridEdgeInset,
+                          right: albumGridEdgeInset,
+                          bottom: albumGridEdgeInset,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                SliverBox(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      const posterWidth = 300.0;
-                      const minDetailsWidth = 300.0;
-                      final hasRoom =
-                          constraints.maxWidth >= posterWidth + minDetailsWidth;
-                      if (hasRoom) {
-                        // wide view
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: .stretch,
-                            children: [
-                              SizedBox(
-                                width: posterWidth,
-                                child: _artistPoster(context, state),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [_artistDetails(context, state)],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      // tall view
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _artistPoster(context, state),
-                          const SizedBox(height: 16),
-                          _artistDetails(context, state, center: false),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                if (state.releases.isNotEmpty) ...[
-                  SliverTitle(
-                    context.strings.releasesLabel,
-                    style: context.header2,
-                  ),
-                  SliverAlbumGrid(
-                    state.releases,
-                    padding: EdgeInsetsGeometry.only(
-                      left: albumGridEdgeInset,
-                      right: albumGridEdgeInset,
-                      bottom: albumGridEdgeInset,
-                    ),
-                  ),
-                ],
-                if (state.similar.isNotEmpty) ...[
-                  SliverTitle(
-                    context.strings.relatedLabel,
-                    style: context.header2,
-                  ),
-                  SliverArtistGrid(
-                    state.similar,
-                    padding: EdgeInsetsGeometry.only(
-                      left: albumGridEdgeInset,
-                      right: albumGridEdgeInset,
-                      bottom: albumGridEdgeInset,
-                    ),
-                  ),
-                ],
-              ],
+              ),
             );
           },
         ),

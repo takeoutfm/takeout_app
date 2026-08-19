@@ -1,3 +1,4 @@
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
@@ -18,6 +19,7 @@ import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/sliver_title.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ReleaseDetailsPage extends ClientPage<ReleaseView> {
@@ -43,115 +45,124 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return SliverStack(
-              backdrop: state.background ?? '',
-              slivers: [
-                SliverMenuBar(
-                  // title: '${release.name} (${release.year}) by ${release.artist}',
-                  items: [
-                    PopupItem.play(context, (_) => _onPlay(context, state)),
-                    PopupItem.shuffle(context, (_) => _onShufflePlay(context)),
-                    PopupItem.download(
-                      context,
-                      (_) => _onDownload(context, state),
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  backdrop: state.background ?? '',
+                  slivers: [
+                    SliverMenuBar(
+                      // title: '${release.name} (${release.year}) by ${release.artist}',
+                      items: [
+                        PopupItem.play(context, (_) => _onPlay(context, state)),
+                        PopupItem.shuffle(
+                          context,
+                          (_) => _onShufflePlay(context),
+                        ),
+                        PopupItem.download(
+                          context,
+                          (_) => _onDownload(context, state),
+                        ),
+                        PopupItem.playlistAppend(
+                          context,
+                          (_) => _onPlaylistAppend(context, state),
+                        ),
+                        PopupItem.divider(),
+                        PopupItem.link(
+                          context,
+                          'MusicBrainz Release',
+                          (_) => launchUrl(Uri.parse(releaseUrl)),
+                        ),
+                        PopupItem.link(
+                          context,
+                          'MusicBrainz Release Group',
+                          (_) => launchUrl(Uri.parse(releaseGroupUrl)),
+                        ),
+                        PopupItem.divider(),
+                        PopupItem.reload(context, (_) => reloadPage(context)),
+                      ],
                     ),
-                    PopupItem.playlistAppend(
-                      context,
-                      (_) => _onPlaylistAppend(context, state),
+                    SliverBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const posterWidth = 223.0;
+                          const minDetailsWidth = 300.0;
+                          final hasRoom =
+                              constraints.maxWidth >=
+                              posterWidth + minDetailsWidth;
+                          if (hasRoom) {
+                            // wide view
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: .stretch,
+                                children: [
+                                  SizedBox(
+                                    width: posterWidth,
+                                    child: _releaseCover(context, state),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          _releaseDetails(context, state),
+                                          SizedBox(height: 16),
+                                          _playButtons(context, state),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // tall view
+                          return Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              _releaseCover(context, state),
+                              const SizedBox(height: 16),
+                              _playButtons(context, state),
+                              const SizedBox(height: 16),
+                              _releaseDetails(context, state, center: false),
+                            ],
+                          );
+                        },
+                      ),
                     ),
-                    PopupItem.divider(),
-                    PopupItem.link(
-                      context,
-                      'MusicBrainz Release',
-                      (_) => launchUrl(Uri.parse(releaseUrl)),
+                    SliverBox(
+                      padding: EdgeInsetsGeometry.only(left: 20, right: 20),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.50),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: ReleaseTracks(state),
+                      ),
                     ),
-                    PopupItem.link(
-                      context,
-                      'MusicBrainz Release Group',
-                      (_) => launchUrl(Uri.parse(releaseGroupUrl)),
-                    ),
-                    PopupItem.divider(),
-                    PopupItem.reload(context, (_) => reloadPage(context)),
+                    if (state.similar.isNotEmpty) ...[
+                      SliverTitle(
+                        context.strings.relatedLabel,
+                        style: context.header2,
+                      ),
+                      SliverAlbumGrid(
+                        state.similar,
+                        padding: EdgeInsetsGeometry.only(
+                          left: albumGridEdgeInset,
+                          right: albumGridEdgeInset,
+                          bottom: albumGridEdgeInset,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                SliverBox(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      const posterWidth = 223.0;
-                      const minDetailsWidth = 300.0;
-                      final hasRoom =
-                          constraints.maxWidth >= posterWidth + minDetailsWidth;
-                      if (hasRoom) {
-                        // wide view
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: .stretch,
-                            children: [
-                              SizedBox(
-                                width: posterWidth,
-                                child: _releaseCover(context, state),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [
-                                      _releaseDetails(context, state),
-                                      SizedBox(height: 16),
-                                      _playButtons(context, state),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      // tall view
-                      return Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          _releaseCover(context, state),
-                          const SizedBox(height: 16),
-                          _playButtons(context, state),
-                          const SizedBox(height: 16),
-                          _releaseDetails(context, state, center: false),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                SliverBox(
-                  padding: EdgeInsetsGeometry.only(left: 20, right: 20),
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.50),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ReleaseTracks(state),
-                  ),
-                ),
-                if (state.similar.isNotEmpty) ...[
-                  SliverTitle(
-                    context.strings.relatedLabel,
-                    style: context.header2,
-                  ),
-                  SliverAlbumGrid(
-                    state.similar,
-                    padding: EdgeInsetsGeometry.only(
-                      left: albumGridEdgeInset,
-                      right: albumGridEdgeInset,
-                      bottom: albumGridEdgeInset,
-                    ),
-                  ),
-                ],
-              ],
+              ),
             );
           },
         ),
@@ -164,16 +175,22 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
       spacing: 8,
       runSpacing: 8,
       children: [
-        FilledButton.icon(
-          autofocus: true,
-          onPressed: () => _onPlay(context, state),
-          label: Text(context.strings.playLabel),
-          icon: Icon(Icons.play_arrow),
+        DpadFocusable(
+          onSelect: () => _onPlay(context, state),
+          child: FilledButton.icon(
+            autofocus: true,
+            onPressed: () => _onPlay(context, state),
+            label: Text(context.strings.playLabel),
+            icon: Icon(Icons.play_arrow),
+          ),
         ),
-        FilledButton.icon(
-          onPressed: () => _onShufflePlay(context),
-          label: Text(context.strings.shuffleLabel),
-          icon: Icon(Icons.shuffle),
+        DpadFocusable(
+          onSelect: () => _onShufflePlay(context),
+          child: FilledButton.icon(
+            onPressed: () => _onShufflePlay(context),
+            label: Text(context.strings.shuffleLabel),
+            icon: Icon(Icons.shuffle),
+          ),
         ),
       ],
     );
@@ -186,7 +203,11 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
     );
   }
 
-  Widget _releaseDetails(BuildContext context, ReleaseView state, {bool center = false}) {
+  Widget _releaseDetails(
+    BuildContext context,
+    ReleaseView state, {
+    bool center = false,
+  }) {
     return Column(
       crossAxisAlignment: center ? .center : .start,
       children: [

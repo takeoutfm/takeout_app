@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -8,16 +11,12 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
-import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
-import 'package:takeout_mobile/widgets/tiles.dart';
 
 class EpisodeDetailsPage extends StatelessWidget {
   final Episode _episode;
@@ -31,16 +30,12 @@ class EpisodeDetailsPage extends StatelessWidget {
     final state = _episode;
     final screen = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.green,
       body: BlocBuilder<TrackCacheCubit, TrackCacheState>(
         builder: (context, cacheState) {
           final offsetCache = context.watch<OffsetCacheCubit>().state;
-          final trackCache = context.watch<TrackCacheCubit>().state;
           final hasProgress = offsetCache.hasValue(_episode);
-          // final when = offsetCache.when(episode);
           final duration = offsetCache.duration(episode);
           final remaining = offsetCache.remaining(episode);
-          // final isCached = trackCache.contains(episode);
           return SliverStack(
             slivers: [
               SliverMenuBar(
@@ -77,18 +72,28 @@ class EpisodeDetailsPage extends StatelessWidget {
                       runSpacing: 8,
                       children: [
                         if (hasProgress)
+                          DpadFocusable(
+                            onSelect: () => _onResume(context, state),
+                            child: FilledButton.icon(
+                              autofocus: true,
+                              onPressed: () => _onResume(context, state),
+                              label: Text(context.strings.resumeLabel),
+                              icon: Icon(Icons.play_arrow),
+                            ),
+                          ),
+                        if (hasProgress)
+                          OutlinedButton.icon(
+                            onPressed: () => _onPlay(context, state),
+                            label: Text('Play from start'),
+                            icon: Icon(Icons.replay),
+                          )
+                        else
                           FilledButton.icon(
                             autofocus: true,
-                            onPressed: () => {}, // _onResume(context, state),
-                            label: Text(context.strings.resumeLabel),
-                            icon: Icon(Icons.play_arrow),
+                            onPressed: () => _onPlay(context, state),
+                            label: Text('Play'),
+                            icon: Icon(Icons.replay),
                           ),
-                        FilledButton.icon(
-                          autofocus: hasProgress == false,
-                          onPressed: () => _onPlay(context, state),
-                          label: Text(context.strings.playLabel),
-                          icon: Icon(Icons.play_arrow),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -139,13 +144,19 @@ class EpisodeDetailsPage extends StatelessWidget {
     );
   }
 
-  void _onPlay(BuildContext context, Episode episode) {
+  void _onPlay(BuildContext context, Episode episode, {Duration? position}) {
     context.playlist.replace(
       episode.reference,
       creator: episode.creator,
       mediaType: MediaType.podcast,
       title: episode.title,
+      position: position?.inSeconds.toDouble() ?? 0.0,
     );
+  }
+
+  void _onResume(BuildContext context, Episode episode) {
+    final position = context.offsets.state.position(episode);
+    _onPlay(context, episode, position: position);
   }
 
   void _onDownload(BuildContext context, Episode episode) {

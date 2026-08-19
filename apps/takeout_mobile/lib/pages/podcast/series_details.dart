@@ -32,7 +32,6 @@ class SeriesDetailsPage extends ClientPage<SeriesView> {
       ),
     );
     return Scaffold(
-      backgroundColor: Colors.black,
       body: RefreshIndicator(
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(

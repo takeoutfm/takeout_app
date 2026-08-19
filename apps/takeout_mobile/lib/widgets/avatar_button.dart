@@ -1,3 +1,4 @@
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_mobile/app/context.dart';
@@ -18,33 +19,61 @@ class AvatarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        width: 96,
-        margin: const EdgeInsets.only(right: 16),
-        child: Column(
-          children: [
-            avatar(context, imageUrl),
-            const SizedBox(height: 8),
+    return Container(
+      width: 96,
+      margin: const EdgeInsets.only(right: 16),
+      child: Column(
+        children: [
+          DpadFocusable(
+            onSelect: onTap,
+            child: InkWell(onTap: onTap, child: avatar(context, imageUrl)),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: context.labelMedium?.copyWith(color: Colors.white),
+          ),
+          if (subtitle != null)
             Text(
-              name,
+              subtitle!,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: context.labelMedium?.copyWith(color: Colors.white),
+              style: context.labelSmall?.copyWith(color: Colors.white70),
             ),
-            if (subtitle != null)
-              Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: context.labelSmall?.copyWith(color: Colors.white70),
-              ),
-          ],
-        ),
+        ],
       ),
     );
+    // return InkWell(
+    //   onTap: onTap,
+    //   child: Container(
+    //     width: 96,
+    //     margin: const EdgeInsets.only(right: 16),
+    //     child: Column(
+    //       children: [
+    //         avatar(context, imageUrl),
+    //         const SizedBox(height: 8),
+    //         Text(
+    //           name,
+    //           textAlign: TextAlign.center,
+    //           maxLines: 2,
+    //           overflow: TextOverflow.ellipsis,
+    //           style: context.labelMedium?.copyWith(color: Colors.white),
+    //         ),
+    //         if (subtitle != null)
+    //           Text(
+    //             subtitle!,
+    //             textAlign: TextAlign.center,
+    //             maxLines: 2,
+    //             overflow: TextOverflow.ellipsis,
+    //             style: context.labelSmall?.copyWith(color: Colors.white70),
+    //           ),
+    //       ],
+    //     ),
+    //   ),
+    // );
   }
 }

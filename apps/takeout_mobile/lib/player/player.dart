@@ -197,6 +197,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
     if (spiff.isNotEmpty) {
       track = spiff[spiff.index];
     }
+    final scheme = ColorScheme.of(context);
     return Column(
       mainAxisAlignment: center ? .center : .start,
       children: [
@@ -222,10 +223,10 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: color?.withValues(alpha: 0.15),
+                  color: scheme.surfaceDim,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: color?.withValues(alpha: 0.5) ?? Colors.white,
+                    color: scheme.onSurface,
                   ),
                 ),
                 child: Row(
@@ -235,7 +236,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                       width: 6,
                       height: 6,
                       decoration: BoxDecoration(
-                        color: color,
+                        color: Colors.red,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -243,7 +244,7 @@ class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
                     Text(
                       'LIVE',
                       style: TextStyle(
-                        color: color,
+                        // color: color,
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                         letterSpacing: 0.5,

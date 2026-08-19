@@ -85,7 +85,7 @@ class SliverFavoriteBar extends StatelessWidget {
       leading: Center(
         child: CircleButton.back(onTap: () => Navigator.pop(context)),
       ),
-      title: title != null ? Text(title!) : null,
+      title: OptionalText(title),
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 6),
@@ -120,7 +120,7 @@ class SliverTitleBar extends StatelessWidget {
       leading: Center(
         child: CircleButton.back(onTap: () => Navigator.pop(context)),
       ),
-      title: title != null ? Text(title!) : null,
+      title: OptionalText(title),
     );
   }
 }

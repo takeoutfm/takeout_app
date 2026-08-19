@@ -31,6 +31,7 @@ import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 
 typedef FetchSpiff = Future<void> Function(ClientCubit, {Duration? ttl});
 
@@ -74,95 +75,101 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return SliverStack(
-              backdrop: background,
-              slivers: [
-                SliverMenuBar(
-                  // title: title,
-                  items: [
-                    if (fetch != null)
-                      PopupItem.reload(context, (_) => reloadPage(context)),
-                    PopupItem.shuffle(
-                      context,
-                      (_) => _onShuffle(context, state),
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  backdrop: background,
+                  slivers: [
+                    SliverMenuBar(
+                      // title: title,
+                      items: [
+                        if (fetch != null)
+                          PopupItem.reload(context, (_) => reloadPage(context)),
+                        PopupItem.shuffle(
+                          context,
+                          (_) => _onShuffle(context, state),
+                        ),
+                        if (reference != null)
+                          PopupItem.playlistAppend(
+                            context,
+                            (_) => _onPlaylistAppend(context, reference),
+                          ),
+                        if (deleteAllowed)
+                          PopupItem.delete(
+                            context,
+                            context.strings.deleteItem,
+                            (_) => _onDelete(context, state),
+                          ),
+                      ],
                     ),
-                    if (reference != null)
-                      PopupItem.playlistAppend(
-                        context,
-                        (_) => _onPlaylistAppend(context, reference),
+                    SliverBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const posterWidth = 223.0;
+                          const minDetailsWidth = 300.0;
+                          final hasRoom =
+                              constraints.maxWidth >=
+                              posterWidth + minDetailsWidth;
+                          if (hasRoom) {
+                            // wide view
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: .stretch,
+                                children: [
+                                  SizedBox(
+                                    width: posterWidth,
+                                    child: _spiffCover(context, state),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          _spiffDetails(context, state),
+                                          SizedBox(height: 16),
+                                          _playButtons(context, state),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // tall view
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _spiffCover(context, state),
+                              const SizedBox(height: 16),
+                              _playButtons(context, state),
+                              const SizedBox(height: 16),
+                              _spiffDetails(context, state, center: false),
+                            ],
+                          );
+                        },
                       ),
-                    if (deleteAllowed)
-                      PopupItem.delete(
-                        context,
-                        context.strings.deleteItem,
-                        (_) => _onDelete(context, state),
+                    ),
+                    if (state.isNotLive)
+                      SliverBox(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.50),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: SpiffTracks(state),
+                        ),
                       ),
                   ],
                 ),
-                SliverBox(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      const posterWidth = 223.0;
-                      const minDetailsWidth = 300.0;
-                      final hasRoom =
-                          constraints.maxWidth >= posterWidth + minDetailsWidth;
-                      if (hasRoom) {
-                        // wide view
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: .stretch,
-                            children: [
-                              SizedBox(
-                                width: posterWidth,
-                                child: _spiffCover(context, state),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [
-                                      _spiffDetails(context, state),
-                                      SizedBox(height: 16),
-                                      _playButtons(context, state),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      // tall view
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _spiffCover(context, state),
-                          const SizedBox(height: 16),
-                          _playButtons(context, state),
-                          const SizedBox(height: 16),
-                          _spiffDetails(context, state, center: false),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                if (state.isNotLive)
-                  SliverBox(
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.50),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: SpiffTracks(state),
-                    ),
-                  ),
-              ],
+              ),
             );
           },
         ),

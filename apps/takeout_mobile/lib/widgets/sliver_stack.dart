@@ -26,7 +26,8 @@ class SliverStack extends StatelessWidget {
         if (backdrop != null) backdropImage(context, backdrop!),
 
         // Dark overlay
-        Container(color: Colors.black.withValues(alpha: 0.65)),
+        if (backdrop != null)
+          Container(color: Colors.black.withValues(alpha: 0.65)),
 
         // Blur effect
         if (blur)

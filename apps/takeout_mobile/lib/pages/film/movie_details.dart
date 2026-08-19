@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
@@ -36,6 +37,7 @@ import 'package:takeout_mobile/widgets/person_avatar.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MovieDetailsPage extends ClientPage<MovieView> {
@@ -60,152 +62,171 @@ class MovieDetailsPage extends ClientPage<MovieView> {
           builder: (context, cacheState) {
             final offsetState = context.watch<OffsetCacheCubit>().state;
             final hasProgress = offsetState.hasValue(_movie);
-            return SliverStack(
-              backdrop: movie.backdrop,
-              slivers: [
-                // SliverFavoriteBar(title: movie.titleYear, onTap: () {}),
-                SliverFavoriteBar(onTap: () {}),
-                SliverBox(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      const posterWidth = 223.0;
-                      const minDetailsWidth = 300.0;
-                      final hasRoom =
-                          constraints.maxWidth >= posterWidth + minDetailsWidth;
-                      if (hasRoom) {
-                        // wide view
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: .stretch,
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  backdrop: movie.backdrop,
+                  slivers: [
+                    // SliverFavoriteBar(title: movie.titleYear, onTap: () {}),
+                    SliverFavoriteBar(onTap: () {}),
+                    SliverBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const posterWidth = 223.0;
+                          const minDetailsWidth = 300.0;
+                          final hasRoom =
+                              constraints.maxWidth >=
+                              posterWidth + minDetailsWidth;
+                          if (hasRoom) {
+                            // wide view
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: .stretch,
+                                children: [
+                                  SizedBox(
+                                    width: posterWidth,
+                                    child: _moviePoster(context, state),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          _movieDetails(context, state),
+                                          SizedBox(height: 16),
+                                          _playButtons(
+                                            context,
+                                            state,
+                                            hasProgress,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // tall view
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                width: posterWidth,
-                                child: _moviePoster(context, state),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [
-                                      _movieDetails(context, state),
-                                      SizedBox(height: 16),
-                                      _playButtons(context, state, hasProgress),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              _moviePoster(context, state),
+                              const SizedBox(height: 16),
+                              _playButtons(context, state, hasProgress),
+                              const SizedBox(height: 16),
+                              _movieDetails(context, state),
                             ],
-                          ),
-                        );
-                      }
-                      // tall view
-                      return Column(
+                          );
+                        },
+                      ),
+                    ),
+                    SliverBox(
+                      padding: EdgeInsetsGeometry.only(
+                        left: SliverBox.edgePadding,
+                        right: SliverBox.edgePadding,
+                      ),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _moviePoster(context, state),
+                          // Synopsis
+                          Text(
+                            context.strings.synopsisLabel,
+                            style: context.header2,
+                          ),
                           const SizedBox(height: 16),
-                          _playButtons(context, state, hasProgress),
-                          const SizedBox(height: 16),
-                          _movieDetails(context, state),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.30),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              movie.overview,
+                              style: context.synopsis,
+                            ),
+                          ),
+                          // Cast section
+                          if (state.hasCast()) ...[
+                            const SizedBox(height: 32),
+                            Text(
+                              context.strings.castLabel,
+                              style: context.header2,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 140,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  ...state.cast!.map(
+                                    (c) => PersonAvatar(
+                                      c.person,
+                                      subtitle: c.role,
+                                      onTap: () => _onPerson(context, c.person),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          if (state.hasCrew()) ...[
+                            const SizedBox(height: 32),
+                            Text(
+                              context.strings.crewLabel,
+                              style: context.header2,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              height: 140,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  ...state.crew!.map(
+                                    (c) => PersonAvatar(
+                                      c.person,
+                                      subtitle: c.job,
+                                      onTap: () => _onPerson(context, c.person),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
-                      );
-                    },
-                  ),
-                ),
-                SliverBox(
-                  padding: EdgeInsetsGeometry.only(
-                    left: SliverBox.edgePadding,
-                    right: SliverBox.edgePadding,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Synopsis
-                      Text(
-                        context.strings.synopsisLabel,
-                        style: context.header2,
                       ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.30),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(movie.overview, style: context.synopsis),
-                      ),
-                      // Cast section
-                      if (state.hasCast()) ...[
-                        const SizedBox(height: 32),
-                        Text(context.strings.castLabel, style: context.header2),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 140,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              ...state.cast!.map(
-                                (c) => PersonAvatar(
-                                  c.person,
-                                  subtitle: c.role,
-                                  onTap: () => _onPerson(context, c.person),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      if (state.hasCrew()) ...[
-                        const SizedBox(height: 32),
-                        Text(context.strings.crewLabel, style: context.header2),
-                        const SizedBox(height: 16),
-                        SizedBox(
-                          height: 140,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            children: [
-                              ...state.crew!.map(
-                                (c) => PersonAvatar(
-                                  c.person,
-                                  subtitle: c.job,
-                                  onTap: () => _onPerson(context, c.person),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (state.hasRelated()) ...[
-                  SliverBox(
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        const SizedBox(height: 32),
-                        Text(
-                          context.strings.relatedLabel,
-                          style: context.header2,
-                        ),
-                      ],
                     ),
-                  ),
-                ],
-                SliverMovieGrid(
-                  state.relatedMovies(),
-                  padding: EdgeInsetsGeometry.only(
-                    left: movieGridEdgeInset,
-                    right: movieGridEdgeInset,
-                    bottom: movieGridEdgeInset,
-                  ),
+                    if (state.hasRelated()) ...[
+                      SliverBox(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            const SizedBox(height: 32),
+                            Text(
+                              context.strings.relatedLabel,
+                              style: context.header2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    SliverMovieGrid(
+                      state.relatedMovies(),
+                      padding: EdgeInsetsGeometry.only(
+                        left: movieGridEdgeInset,
+                        right: movieGridEdgeInset,
+                        bottom: movieGridEdgeInset,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             );
           },
         ),
@@ -219,24 +240,33 @@ class MovieDetailsPage extends ClientPage<MovieView> {
       runSpacing: 8,
       children: [
         if (hasProgress)
-          FilledButton.icon(
-            autofocus: true,
-            onPressed: () => _onResume(context, state),
-            label: Text(context.strings.resumeLabel),
-            icon: Icon(Icons.play_arrow),
+          DpadFocusable(
+            onSelect: () => _onResume(context, state),
+            child: FilledButton.icon(
+              autofocus: true,
+              onPressed: () => _onResume(context, state),
+              label: Text(context.strings.resumeLabel),
+              icon: Icon(Icons.play_arrow),
+            ),
           ),
         if (hasProgress)
-          OutlinedButton.icon(
-            onPressed: () => _onPlay(context, state),
-            label: const Text('Play from start'),
-            icon: const Icon(Icons.replay),
+          DpadFocusable(
+            onSelect: () => _onPlay(context, state),
+            child: OutlinedButton.icon(
+              onPressed: () => _onPlay(context, state),
+              label: const Text('Play from start'),
+              icon: const Icon(Icons.replay),
+            ),
           )
         else
-          FilledButton.icon(
-            autofocus: true,
-            onPressed: () => _onPlay(context, state),
-            label: const Text('Play'),
-            icon: const Icon(Icons.play_arrow),
+          DpadFocusable(
+            onSelect: () => _onPlay(context, state),
+            child: FilledButton.icon(
+              autofocus: true,
+              onPressed: () => _onPlay(context, state),
+              label: const Text('Play'),
+              icon: const Icon(Icons.play_arrow),
+            ),
           ),
       ],
     );

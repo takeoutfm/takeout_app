@@ -94,7 +94,15 @@ class TakeoutApp extends StatelessWidget {
                 ],
                 supportedLocales: const [Locale('en', '')],
                 builder: Dpad.wrap(
-                  debugOverlay: true,
+                  // debugOverlay: true,
+                  theme: const DpadThemeData(
+                    effects: [
+                      DpadScaleEffect(scale: 1.06),
+                      DpadBorderEffect(),
+                      DpadGlowEffect(),
+                    ],
+                    scrollPadding: 48,
+                  ),
                   onBack: () {
                     final handled = orientation == .landscape
                         ? (_desktopKey.currentState?.handleBack() ?? false)
