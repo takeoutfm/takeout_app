@@ -15,6 +15,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,14 +48,32 @@ void main() async {
 
   await TakeoutBloc.initStorage();
 
-  runApp(const TakeoutApp());
+  final dpad = await checkDpadNavigation();
+
+  runApp(TakeoutApp(preferDpadNavigation: dpad));
 }
 
 final _desktopKey = GlobalKey<TakeoutState<TakeoutDesktopWidget>>();
 final _mobileKey = GlobalKey<TakeoutState<TakeoutMobileState>>();
 
+/// returns true if primary navigation is using dpad/keyboard
+Future<bool> checkDpadNavigation() async {
+  if (Platform.isAndroid) {
+    // check for Android with Android TV
+    final deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.systemFeatures.contains('android.software.leanback');
+  } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+    // check for Desktop
+    return true;
+  }
+  return false;
+}
+
 class TakeoutApp extends StatelessWidget {
-  const TakeoutApp({super.key});
+  final bool preferDpadNavigation;
+
+  const TakeoutApp({this.preferDpadNavigation = false, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +116,8 @@ class TakeoutApp extends StatelessWidget {
                 supportedLocales: const [Locale('en', '')],
                 builder: Dpad.wrap(
                   // debugOverlay: true,
-                  theme: const DpadThemeData(
+                  enabled: preferDpadNavigation,
+                  theme: DpadThemeData(
                     effects: [
                       DpadScaleEffect(scale: 1.06),
                       DpadBorderEffect(),

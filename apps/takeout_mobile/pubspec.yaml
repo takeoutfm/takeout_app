@@ -16,6 +16,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   dynamic_color: ^1.8.1
   bloc: ^9.2.0
+  device_info_plus: ^13.2.0
   flutter_bloc: ^9.1.1
   json_annotation: ^4.9.0
   logger: ^2.6.2

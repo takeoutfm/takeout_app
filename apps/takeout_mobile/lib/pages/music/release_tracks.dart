@@ -6,8 +6,6 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/download.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/app/text_style.dart';
-import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -25,18 +23,18 @@ class ReleaseTracks extends StatelessWidget {
     );
   }
 
-  void _onLongPress(BuildContext context, Track t, RelativeRect pos) {
-    showPopupMenu(context, pos, [
-      PopupItem.trackPlaylist(context, (_) {
-        pushSpiff(
-          ref: '/music/tracks/${t.id}/playlist',
-          context,
-          (client, {Duration? ttl}) =>
-              client.trackPlaylist('${t.id}', ttl: Duration.zero),
-        );
-      }),
-    ]);
-  }
+  // void _onLongPress(BuildContext context, Track t, RelativeRect pos) {
+  //   showPopupMenu(context, pos, [
+  //     PopupItem.trackPlaylist(context, (_) {
+  //       pushSpiff(
+  //         ref: '/music/tracks/${t.id}/playlist',
+  //         context,
+  //         (client, {Duration? ttl}) =>
+  //             client.trackPlaylist('${t.id}', ttl: Duration.zero),
+  //       );
+  //     }),
+  //   ]);
+  // }
 
   @override
   Widget build(BuildContext context) {
