@@ -11,23 +11,23 @@ dependencies:
   flutter:
     sdk: flutter
 
-  audio_service: ^0.18.18
-  audio_session: ^0.2.2
+  audio_service: ^0.18.19
+  audio_session: ^0.2.4
   cached_network_image: ^3.4.1
-  connectivity_plus: ^7.0.0
+  connectivity_plus: ^7.3.1
   crypto: ^3.0.7
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   dpad: ^3.0.0
-  equatable: ^2.0.8
-  bloc: ^9.2.0
+  equatable: ^2.1.0
+  bloc: ^9.2.1
   flutter_bloc: ^9.1.1
-  flutter_cache_manager: ^3.4.1
-  hive_ce: ^2.16.0
+  flutter_cache_manager: ^3.4.2
+  hive_ce: ^2.19.3
   http: ^1.6.0
   hydrated_bloc: ^10.1.1
-  logger: ^2.6.2
-  json_annotation: ^4.9.0
-  just_audio: ^0.10.5
+  logger: ^2.7.0
+  json_annotation: ^4.12.0
+  just_audio: ^0.10.6
   just_audio_media_kit: ^2.1.0
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
@@ -39,20 +39,21 @@ dependencies:
   octo_image: ^2.1.0
   palette_generator: ^0.3.3+7
   path: ^1.9.1
-  path_provider: ^2.1.5
-  receive_intent: ^0.2.7
+  path_provider: ^2.1.6
+  receive_intent: ^0.2.8
   rxdart: ^0.28.0
   listenbrainz_dart: ^0.0.4
-  storage_space: ^1.2.0
+#  storage_space: ^1.2.0
+  disk_space_2: ^1.0.13
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.10.4
-  json_serializable: ^6.11.2
+  build_runner: ^2.15.1
+  json_serializable: ^6.14.1
   flutter_lints: ^6.0.0
-  test: ^1.26.3
-  hive_ce_generator: ^1.10.0
+  test: ^1.31.1
+  hive_ce_generator: ^1.11.2
 
 # need this since 7.4.0 is broken
 # https://github.com/google/json_serializable.dart/issues/1485

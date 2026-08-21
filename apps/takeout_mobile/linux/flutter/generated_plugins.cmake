@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  disk_space_2
   dynamic_color
   media_kit_libs_linux
   media_kit_video

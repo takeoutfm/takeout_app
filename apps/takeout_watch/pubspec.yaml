@@ -12,19 +12,19 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   takeout_lib: ^0.26.0
-  android_intent_plus: ^6.0.0
-  bloc: ^9.2.0
+  android_intent_plus: ^6.1.0
+  bloc: ^9.2.1
   flutter_bloc: ^9.1.1
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   nested: ^1.0.0
   device_info_plus: ^13.2.0
   percent_indicator: ^4.2.5
   rotary_scrollbar: ^1.1.0
   timeago: ^3.7.1
-  wear_plus: ^1.2.4
-  wearable_rotary: ^2.0.3
+  wear_plus: ^1.2.5
+  wearable_rotary: ^2.0.4
 
-  intl: ^0.20.2
+  intl: ^0.20.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
