@@ -1,6 +1,17 @@
 ## 0.26.0
 
-- enable Linux (and windows; untested) audio support
+- enable desktop support for Linux, MacOS, and Windows (untested)
+- Android TV support with dpad navigation
+- dual video support for desktop and mobile/tv
+  - media_kit for Linux, MacOS, Windows
+  - native player for Android, Android TV, iOS
+  - subtitle support is mixed, depends on internal support
+  - control overlays support audio and subtitle selection
+- UI supports landscape and portrait, with left/bottom navigation
+- Focus support on Android TY and desktop
+- redesigned user experience
+- removed unpopulated podcasts recent
+- flutter, gradle, and related ecosystem updates to latest possible versions
 
 ## 0.25.3
 

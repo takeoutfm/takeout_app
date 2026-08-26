@@ -193,7 +193,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     final icons = navigationIcons[index] ?? [Icons.error, Icons.error_outline];
     final icon = selectedIndex == index ? icons[0] : icons[1];
     final label = switch (index) {
-      .music => context.strings.navMovies,
+      .music => context.strings.navMusic,
       .artists => context.strings.navArtists,
       .radio => context.strings.navRadio,
       .film => context.strings.navMovies,

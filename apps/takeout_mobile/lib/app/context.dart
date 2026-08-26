@@ -19,9 +19,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/model.dart';
+import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/l10n/app_localizations.dart';
-import 'package:takeout_mobile/pages/film.dart';
 
 export 'package:takeout_lib/context/context.dart';
 

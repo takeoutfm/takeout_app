@@ -14,7 +14,7 @@ dependencies:
   intl: ^0.20.3
   takeout_lib: ^0.26.0
   cupertino_icons: ^1.0.9
-  dynamic_color: ^1.9.0
+  dynamic_color: ^1.9.0 # updates required material_ui
   bloc: ^9.2.1
   device_info_plus: ^13.2.0
   flutter_bloc: ^9.1.1
@@ -32,6 +32,7 @@ dependencies:
   swipeable_tile: ^2.0.1
   flutter_widget_from_html: ^0.16.1
   dpad: ^3.0.0
+  equatable: ^2.1.0
 
 dev_dependencies:
   flutter_test:

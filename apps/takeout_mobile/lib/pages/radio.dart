@@ -36,7 +36,7 @@ const radioCreator = 'Radio';
 const radioStream = 'stream';
 
 class RadioWidget extends ClientPage<RadioView> {
-  RadioWidget({super.key});
+  const RadioWidget({super.key});
 
   List<Spiff> _radioFilter(Iterable<Spiff> entries) {
     final list = List<Spiff>.from(entries);

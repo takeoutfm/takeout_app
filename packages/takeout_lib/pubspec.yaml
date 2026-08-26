@@ -24,7 +24,7 @@ dependencies:
   flutter_cache_manager: ^3.4.2
   hive_ce: ^2.19.3
   http: ^1.6.0
-  hydrated_bloc: ^10.1.1
+  hydrated_bloc: ^11.0.0
   logger: ^2.7.0
   json_annotation: ^4.12.0
   just_audio: ^0.10.6

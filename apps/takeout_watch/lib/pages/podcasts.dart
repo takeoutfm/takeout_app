@@ -41,8 +41,8 @@ class PodcastsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Series> series;
     switch (context.selectedMediaType.state.podcastType) {
-      case PodcastType.recent:
-        series = state.newSeries ?? [];
+      // case PodcastType.recent:
+      //   series = state.newSeries ?? [];
       case PodcastType.subscribed:
         series = context.subscribed.state.series;
       default:

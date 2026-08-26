@@ -24,6 +24,8 @@ class IndexState {
   final bool podcasts;
   final bool playlists;
   final bool shows;
+  final bool recommendMovies;
+  final List<String> movieGenres;
 
   IndexState({
     required this.movies,
@@ -31,6 +33,8 @@ class IndexState {
     required this.podcasts,
     required this.playlists,
     required this.shows,
+    required this.recommendMovies,
+    required this.movieGenres,
   });
 
   factory IndexState.initial() => IndexState(
@@ -39,6 +43,8 @@ class IndexState {
     podcasts: false,
     playlists: false,
     shows: false,
+    recommendMovies: false,
+    movieGenres: [],
   );
 }
 
@@ -53,6 +59,7 @@ class IndexCubit extends Cubit<IndexState> {
     await clientRepository
         .index(ttl: ttl)
         .then((view) {
+          print('got $view');
           emit(
             IndexState(
               movies: view.hasMovies,
@@ -60,10 +67,13 @@ class IndexCubit extends Cubit<IndexState> {
               podcasts: view.hasPodcasts,
               playlists: view.hasPlaylists,
               shows: view.hasShows,
+              recommendMovies: view.hasRecommendMovies,
+              movieGenres: view.movieGenres,
             ),
           );
         })
         .onError((error, stackTrace) {
+          print('got $error');
           Future.delayed(const Duration(minutes: 3), () => _load());
         });
   }

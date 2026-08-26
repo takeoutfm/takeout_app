@@ -18,15 +18,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
-import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/artists.dart';
-import 'package:takeout_mobile/pages/film.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/music/album_grid.dart';
 import 'package:takeout_mobile/pages/music/artist_details.dart';
@@ -35,15 +32,10 @@ import 'package:takeout_mobile/pages/music/release_details.dart';
 import 'package:takeout_mobile/pages/music/track_list.dart';
 import 'package:takeout_mobile/pages/podcast/episode_grid.dart';
 import 'package:takeout_mobile/pages/podcast/series_grid.dart';
-import 'package:takeout_mobile/pages/podcasts.dart';
-import 'package:takeout_mobile/pages/release.dart';
-import 'package:takeout_mobile/pages/tv.dart';
 import 'package:takeout_mobile/pages/tv/tvepisode_grid.dart';
 import 'package:takeout_mobile/widgets/custom_list_tile.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/sliver_title.dart';
-import 'package:takeout_mobile/widgets/style.dart';
-import 'package:takeout_mobile/widgets/tracks.dart';
 
 class SearchPage extends ClientPage<SearchView> {
   final _query = StringBuffer();

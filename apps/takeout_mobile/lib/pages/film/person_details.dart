@@ -26,7 +26,7 @@ import 'package:takeout_lib/video/play_movie.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/film/genre.dart';
+import 'package:takeout_mobile/pages/film/genre_page.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
 import 'package:takeout_mobile/pages/people.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_grid.dart';

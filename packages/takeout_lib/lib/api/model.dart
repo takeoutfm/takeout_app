@@ -83,6 +83,8 @@ class IndexView {
   final bool hasPodcasts;
   final bool hasPlaylists;
   final bool hasShows;
+  final bool hasRecommendMovies;
+  final List<String> movieGenres;
 
   IndexView({
     required this.time,
@@ -91,6 +93,8 @@ class IndexView {
     required this.hasPodcasts,
     this.hasPlaylists = false,
     this.hasShows = false,
+    this.hasRecommendMovies = false,
+    this.movieGenres = const [],
   });
 
   factory IndexView.fromJson(Map<String, dynamic> json) =>

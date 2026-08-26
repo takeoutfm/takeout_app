@@ -616,6 +616,7 @@ class DefaultMediaProvider implements MediaProvider {
           movies = recommended.first.movies ?? [];
         }
       case FilmType.all:
+      case FilmType.genre: // TODO support genres
         final view = await clientRepository.movies();
         movies = List<Movie>.from(view.movies);
     }
@@ -637,12 +638,14 @@ class DefaultMediaProvider implements MediaProvider {
       series = subscribedRepository.series;
     } else {
       final home = await clientRepository.home();
-      if (podcastType == PodcastType.recent) {
-        series = home.newSeries ?? [];
-      } else {
-        // TODO support all
-        series = home.newSeries ?? [];
-      }
+      // if (podcastType == PodcastType.recent) {
+      //   series = home.newSeries ?? [];
+      // } else {
+      //   // TODO support all
+      //   series = home.newSeries ?? [];
+      // }
+      // TODO support all
+      series = [];
     }
     for (var s in series) {
       items.add(_series(s));

@@ -40,8 +40,8 @@ import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
-class PlayerWidget2 extends StatelessWidget with PlayerWidgets {
-  const PlayerWidget2({super.key});
+class PlayerWidget extends StatelessWidget with PlayerWidgets {
+  const PlayerWidget({super.key});
 
   void _onSyncPlaylist(BuildContext context) {
     context.playlist.sync();

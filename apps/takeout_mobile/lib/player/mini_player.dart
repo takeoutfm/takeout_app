@@ -17,7 +17,6 @@ class MiniPlayer extends StatelessWidget with PlayerWidgets {
   @override
   Widget build(BuildContext context) {
     MediaTrack? track;
-    debugPrint('miniplayer build');
     track = context.player.state.currentTrack;
     return BlocBuilder<Player, PlayerEvent>(
       buildWhen: (_, state) =>
@@ -31,7 +30,6 @@ class MiniPlayer extends StatelessWidget with PlayerWidgets {
           track = state.currentTrack;
         }
         final t = track;
-        debugPrint('track ${t?.title}');
         return t != null
             ? FutureBuilder(
                 future: getImageBackgroundColor(context, t.image),

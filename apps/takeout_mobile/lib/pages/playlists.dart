@@ -61,7 +61,7 @@ Future<PlaylistView?> showPlaylistsBottomSheet(BuildContext context) {
 class _SelectPlaylistWidget extends ClientPage<PlaylistsView> {
   final void Function(PlaylistView) onSelected;
 
-  _SelectPlaylistWidget({required this.onSelected});
+  const _SelectPlaylistWidget({required this.onSelected});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

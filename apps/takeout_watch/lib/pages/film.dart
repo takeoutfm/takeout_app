@@ -51,7 +51,8 @@ class FilmPage extends StatelessWidget {
           movies = [];
         }
       case FilmType.all:
-        // TODO all not supported yet
+      case FilmType.genre:
+        // TODO not supported yet
         movies = [];
     }
     return MediaPage(
@@ -75,7 +76,7 @@ class MovieEntry {
 class MoviePage extends ClientPage<MovieView> {
   final Movie movie;
 
-  MoviePage(this.movie, {super.key});
+  const MoviePage(this.movie, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

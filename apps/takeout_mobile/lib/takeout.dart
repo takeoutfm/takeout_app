@@ -47,7 +47,7 @@ abstract class TakeoutState<T> extends State
         key: _navigators[NavigationIndex.history],
       ),
       navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),
-      navigatorPage(PlayerWidget2(), key: _navigators[NavigationIndex.player]),
+      navigatorPage(PlayerWidget(), key: _navigators[NavigationIndex.player]),
       navigatorPage(
         MusicMediaWidget(),
         key: _navigators[NavigationIndex.music],

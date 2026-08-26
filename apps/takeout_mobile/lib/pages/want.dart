@@ -27,7 +27,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ArtistWantListWidget extends ClientPage<WantListView> {
   final Artist _artist;
 
-  ArtistWantListWidget(this._artist, {super.key});
+  const ArtistWantListWidget(this._artist, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

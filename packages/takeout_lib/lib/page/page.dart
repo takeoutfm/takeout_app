@@ -21,9 +21,85 @@ import 'package:takeout_lib/client/client.dart';
 import 'package:takeout_lib/context/context.dart';
 import 'package:takeout_lib/empty.dart';
 
-abstract mixin class ClientPageBuilder<T> {
+// abstract mixin class ClientPageBuilder<T> {
+//   WidgetBuilder builder(BuildContext context, {T? value}) {
+//     final builder = (context) => BlocProvider(
+//       create: (context) => ClientCubit(context.clientRepository),
+//       child: BlocBuilder<ClientCubit, ClientState>(
+//         builder: (context, state) {
+//           if (state is ClientReady) {
+//             if (value != null) {
+//               return page(context, value);
+//             } else {
+//               load(context);
+//               // TODO upon first load ClientLoading is delayed so show some
+//               //  progress now
+//               return loading();
+//             }
+//           } else if (state is ClientLoading) {
+//             return loading();
+//           } else if (state is ClientResult<T>) {
+//             return page(context, state.result);
+//           } else if (state is ClientError) {
+//             return errorPage(context, state);
+//           }
+//           return const EmptyWidget();
+//         },
+//       ),
+//     );
+//     return builder;
+//   }
+//
+//   Widget loading() {
+//     return const Center(child: CircularProgressIndicator());
+//   }
+//
+//   Widget page(BuildContext context, T state);
+//
+//   PreferredSizeWidget? appBar(
+//     BuildContext context, {
+//     Widget? title,
+//     List<Widget>? actions,
+//     PreferredSizeWidget? bottom,
+//   }) {
+//     final orientation = MediaQuery.of(context).orientation;
+//     return orientation == .portrait
+//         ? AppBar(title: title, actions: actions, bottom: bottom)
+//         : null;
+//   }
+//
+//   Widget errorPage(BuildContext context, ClientError error) {
+//     return Center(
+//       child: TextButton(
+//         child: Text('Try Again (${error.error})'),
+//         onPressed: () => reloadPage(context),
+//       ),
+//     );
+//   }
+//
+//   Future<void> reloadPage(BuildContext context) {
+//     return reload(context);
+//   }
+//
+//   Future<void> load(BuildContext context, {Duration? ttl});
+//
+//   Future<void> reload(BuildContext context) {
+//     return load(context, ttl: Duration.zero);
+//   }
+// }
+
+abstract class ClientPage<T> extends StatelessWidget {
+  final T? value;
+
+  const ClientPage({super.key, this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return builder(context, value: value)(context);
+  }
+
   WidgetBuilder builder(BuildContext context, {T? value}) {
-    final builder = (context) => BlocProvider(
+    return (context) => BlocProvider(
       create: (context) => ClientCubit(context.clientRepository),
       child: BlocBuilder<ClientCubit, ClientState>(
         builder: (context, state) {
@@ -34,21 +110,24 @@ abstract mixin class ClientPageBuilder<T> {
               load(context);
               // TODO upon first load ClientLoading is delayed so show some
               //  progress now
-              return const Center(child: CircularProgressIndicator());
+              return loading();
             }
           } else if (state is ClientLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return loading();
           } else if (state is ClientResult<T>) {
             return page(context, state.result);
           } else if (state is ClientError) {
             return errorPage(context, state);
           }
-          return const EmptyWidget();
+          return emptyPage();
         },
       ),
     );
-    return builder;
   }
+
+  Widget emptyPage() => const EmptyWidget();
+
+  Widget loading() => const Center(child: CircularProgressIndicator());
 
   Widget page(BuildContext context, T state);
 
@@ -81,16 +160,5 @@ abstract mixin class ClientPageBuilder<T> {
 
   Future<void> reload(BuildContext context) {
     return load(context, ttl: Duration.zero);
-  }
-}
-
-abstract class ClientPage<T> extends StatelessWidget with ClientPageBuilder<T> {
-  final T? value;
-
-  ClientPage({super.key, this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(context, value: value)(context);
   }
 }

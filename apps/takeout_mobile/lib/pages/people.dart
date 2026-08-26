@@ -22,16 +22,14 @@ import 'package:takeout_lib/art/scaffold.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/film.dart';
 import 'package:takeout_mobile/pages/film/movie_grid.dart';
-import 'package:takeout_mobile/pages/tv.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_grid.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 
 class ProfileWidget extends ClientPage<ProfileView> {
   final Person _person;
 
-  ProfileWidget(this._person, {super.key});
+  const ProfileWidget(this._person, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

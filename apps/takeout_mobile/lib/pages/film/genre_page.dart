@@ -25,7 +25,7 @@ import 'package:takeout_mobile/widgets/sliver_bar.dart';
 class GenrePage extends ClientPage<GenreView> {
   final String _genre;
 
-  GenrePage(this._genre, {super.key});
+  const GenrePage(this._genre, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -34,6 +34,8 @@ class GenrePage extends ClientPage<GenreView> {
 
   @override
   Widget page(BuildContext context, GenreView state) {
+    print('genre page');
+    print(state);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => reloadPage(context),

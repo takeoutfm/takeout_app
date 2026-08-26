@@ -30,7 +30,7 @@ import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
 class TrackStatsWidget extends ClientPage<TrackStatsView> {
-  TrackStatsWidget({super.key});
+  const TrackStatsWidget({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

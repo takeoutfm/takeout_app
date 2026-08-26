@@ -35,9 +35,9 @@ enum MediaType {
   }
 }
 
-enum PodcastType { all, recent, subscribed }
+enum PodcastType { all, subscribed }
 
-enum FilmType { all, recent, added, recommended }
+enum FilmType { all, recent, added, recommended, genre }
 
 enum MusicType { recent, added }
 
@@ -50,7 +50,7 @@ class MediaTypeState {
 
   factory MediaTypeState.initial() => MediaTypeState(
     MediaType.music,
-    podcastType: .recent,
+    podcastType: .all,
     filmType: .added,
     musicType: .added,
   );
@@ -58,7 +58,7 @@ class MediaTypeState {
   // provide defaults for older state w/o all types
   MediaTypeState(
     this.mediaType, {
-    this.podcastType = .recent,
+    this.podcastType = .all,
     this.filmType = .added,
     this.musicType = .added,
   });
@@ -136,15 +136,13 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
   void nextPodcastType() {
     switch (state.podcastType) {
       case .all:
-        emit(state.copyWith(podcastType: .recent));
-      case .recent:
         emit(state.copyWith(podcastType: .subscribed));
       case .subscribed:
         emit(state.copyWith(podcastType: .all));
     }
   }
 
-  // all -> recent -> added -> recommended
+  // all -> recent -> added -> recommended -> genre
   void nextFilmType() {
     switch (state.filmType) {
       case .all:
@@ -154,6 +152,8 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
       case .added:
         emit(state.copyWith(filmType: .recommended));
       case .recommended:
+        emit(state.copyWith(filmType: .genre));
+      case .genre:
         emit(state.copyWith(filmType: .all));
     }
   }

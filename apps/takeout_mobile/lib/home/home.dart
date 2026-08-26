@@ -17,17 +17,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/api/model.dart' hide Offset;
-import 'package:takeout_lib/art/artwork.dart';
-import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_mobile/home/grid.dart';
-import 'package:takeout_mobile/home/media_bar.dart';
-import 'package:takeout_mobile/pages/film/movie_details.dart';
-import 'package:takeout_mobile/pages/music/release_details.dart';
-import 'package:takeout_mobile/pages/podcast/series_details.dart';
-import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
-import 'package:takeout_mobile/widgets/media_progress.dart';
 
 class HomeWidget extends StatelessWidget {
   const HomeWidget({super.key});
@@ -35,7 +26,7 @@ class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MediaTypeCubit>().state;
-    return MediaTypeWidget(state);
+    return _MediaWidget(state);
   }
 }
 
@@ -45,7 +36,7 @@ class MusicMediaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MediaTypeCubit>().state;
-    return MediaTypeWidget(state.copyWith(mediaType: .music));
+    return _MediaWidget(state.copyWith(mediaType: .music));
   }
 }
 
@@ -55,7 +46,7 @@ class FilmMediaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MediaTypeCubit>().state;
-    return MediaTypeWidget(state.copyWith(mediaType: .film));
+    return _MediaWidget(state.copyWith(mediaType: .film));
   }
 }
 
@@ -65,7 +56,7 @@ class TVMediaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MediaTypeCubit>().state;
-    return MediaTypeWidget(state.copyWith(mediaType: .tv));
+    return _MediaWidget(state.copyWith(mediaType: .tv));
   }
 }
 
@@ -75,126 +66,15 @@ class PodcastMediaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<MediaTypeCubit>().state;
-    return MediaTypeWidget(state.copyWith(mediaType: .podcast));
+    return _MediaWidget(state.copyWith(mediaType: .podcast));
   }
 }
 
-class MediaTypeWidget extends StatelessWidget {
+class _MediaWidget extends StatelessWidget {
   final MediaTypeState state;
 
-  const MediaTypeWidget(this.state, {super.key});
+  const _MediaWidget(this.state);
 
   @override
-  Widget build(BuildContext context) {
-    return _grid(context, state);
-  }
-
-  void _onMovie(BuildContext context, Movie movie) => Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => MovieDetailsPage(movie)));
-
-  void _onTVSeries(BuildContext context, TVSeries series) => Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => TVSeriesDetailsPage(series)));
-
-  void _onRelease(BuildContext context, Release release) => Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => ReleaseDetailsPage(release)));
-
-  void _onSeries(BuildContext context, Series series) => Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => SeriesDetailsPage(series)));
-
-  Widget _grid(BuildContext context, MediaTypeState mediaTypeState) {
-    final mediaType = mediaTypeState.mediaType;
-    final mediaBar = MediaQuery.of(context).orientation == .portrait
-        ? SliverMediaBar()
-        : null;
-    switch (mediaType) {
-      case MediaType.music:
-      case MediaType.stream:
-        return HomeViewGrid(
-          mediaTypeState,
-          sliverAppBar: mediaBar,
-          itemsFunc: (view) => mediaTypeState.musicType == MusicType.recent
-              ? view.released
-              : view.added,
-          coverFunc: (context, item) => ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: gridCover(context, item.image),
-          ),
-          onTap: (context, item) => _onRelease(context, item as Release),
-          childAspectRatio: coverAspectRatio,
-          maxCrossAxisExtent: coverGridWidth,
-        );
-      case MediaType.film:
-        final filmType = mediaTypeState.filmType;
-        return filmType == FilmType.all
-            ? MoviesViewGrid(
-                sliverAppBar: mediaBar,
-                onTap: (context, item) => _onMovie(context, item),
-              )
-            : HomeViewGrid(
-                mediaTypeState,
-                sliverAppBar: mediaBar,
-                itemsFunc: (view) {
-                  List<Movie> result = [];
-                  switch (filmType) {
-                    case FilmType.recent:
-                      result = view.newMovies;
-                    case FilmType.added:
-                      result = view.addedMovies;
-                    case FilmType.recommended:
-                      final recommended = view.recommendMovies;
-                      if (recommended != null && recommended.isNotEmpty) {
-                        // TODO only takes first recommendation
-                        result = recommended.first.movies ?? [];
-                      }
-                    default:
-                      result = [];
-                  }
-                  return result;
-                },
-                coverFunc: (context, item) => MediaProgress.movie(
-                  item as Movie,
-                  gridPoster(context, item.image),
-                ),
-                onTap: (context, item) => _onMovie(context, item as Movie),
-                childAspectRatio: posterAspectRatio,
-                maxCrossAxisExtent: posterGridWidth,
-              );
-      case MediaType.tv:
-        return TVShowsViewGrid(
-          sliverAppBar: mediaBar,
-          onTap: (context, item) => _onTVSeries(context, item),
-        ); // XXX TODO
-      case MediaType.podcast:
-        final podcastType = mediaTypeState.podcastType;
-        switch (podcastType) {
-          case PodcastType.all:
-            return PodcastsViewGrid(
-              sliverAppBar: mediaBar,
-              onTap: (context, series) => _onSeries(context, series),
-            );
-          case PodcastType.subscribed:
-            return SubscribedPodcastsViewGrid(
-              appBar: mediaBar,
-              onTap: (context, series) => _onSeries(context, series),
-            );
-          default: // recent
-            return HomeViewGrid(
-              mediaTypeState,
-              sliverAppBar: mediaBar,
-              itemsFunc: (view) => view.newSeries ?? [],
-              coverFunc: (context, item) => ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: gridSeries(context, item.image),
-              ),
-              onTap: (context, item) => _onSeries(context, item as Series),
-              childAspectRatio: seriesAspectRatio,
-              maxCrossAxisExtent: seriesGridWidth,
-            );
-        }
-    }
-  }
+  Widget build(BuildContext context) => GridClientPage.create(context, state);
 }

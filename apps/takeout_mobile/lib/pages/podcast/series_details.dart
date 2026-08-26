@@ -14,7 +14,7 @@ import 'package:takeout_mobile/widgets/sliver_title.dart';
 class SeriesDetailsPage extends ClientPage<SeriesView> {
   final Series _series;
 
-  SeriesDetailsPage(this._series, {super.key});
+    const SeriesDetailsPage(this._series, {super.key});
 
   Series get series => _series;
 
@@ -41,6 +41,16 @@ class SeriesDetailsPage extends ClientPage<SeriesView> {
                 SliverMenuBar(
                   title: series.title,
                   items: [
+                    if (context.subscribed.state.isSubscribed(state.series))
+                      PopupItem.unsubscribe(
+                        context,
+                            (context) => _onUnsubscribe(context, state.series),
+                      )
+                    else
+                      PopupItem.subscribe(
+                        context,
+                            (context) => _onSubscribe(context, state.series),
+                      ),
                     PopupItem.divider(),
                     PopupItem.reload(context, (_) => reloadPage(context)),
                   ],
@@ -67,54 +77,11 @@ class SeriesDetailsPage extends ClientPage<SeriesView> {
     );
   }
 
-  // void _onGenre(BuildContext context, String genre) {
-  //   push(context, builder: (_) => AllArtistsGrid(genre: genre));
-  // }
-  //
-  // void _onSingles(BuildContext context, ArtistView state) {
-  //   pushSpiff(
-  //     ref: '/music/artists/${_artist.id}/singles',
-  //     context,
-  //         (client, {Duration? ttl}) =>
-  //         client.artistSinglesPlaylist(_artist.id, ttl: ttl),
-  //   );
-  // }
-  //
-  // void _onPopular(BuildContext context, ArtistView state) {
-  //   pushSpiff(
-  //     ref: '/music/artists/${_artist.id}/popular',
-  //     context,
-  //         (client, {Duration? ttl}) =>
-  //         client.artistPopularPlaylist(_artist.id, ttl: ttl),
-  //   );
-  // }
+  void _onSubscribe(BuildContext context, Series series) {
+    context.subscribed.subscribe(series);
+  }
 
-  // void _onPlay(BuildContext context, ReleaseView view) {
-  //   context.playlist.replace(
-  //     _release.reference,
-  //     creator: _release.creator,
-  //     title: _release.name,
-  //   );
-  // }
-  //
-  // void _onArtist(BuildContext context, ReleaseView view) {
-  //   push(context, builder: (_) => ArtistWidget(view.artist));
-  // }
-  //
-  // void _onShufflePlay(BuildContext context) {
-  //   context.playlist.replace(
-  //     _release.reference,
-  //     creator: _release.creator,
-  //     title: _release.name,
-  //     shuffle: true,
-  //   );
-  // }
-  //
-  // void _onDownload(BuildContext context, ReleaseView view) {
-  //   context.downloadRelease(view.release);
-  // }
-  //
-  // void _onPlaylistAppend(BuildContext context, ReleaseView state) {
-  //   showPlaylistAppend(context, state.release.reference);
-  // }
+  void _onUnsubscribe(BuildContext context, Series series) {
+    context.subscribed.unsubscribe(series);
+  }
 }
