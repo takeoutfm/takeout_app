@@ -26,7 +26,6 @@ import 'package:takeout_mobile/pages/film/movie_details.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
 import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 
-
 import 'package:flutter/material.dart';
 
 class Genre {
@@ -36,27 +35,31 @@ class Genre {
 
   const Genre({required this.name, this.icon, this.imageUrl});
 
-  static const _genres = {
-    'Action': Genre(name: 'Action', icon: Icons.surfing),
-    'Adventure': Genre(name: 'Adventure', icon: Icons.hiking),
-    'Animation': Genre(name: 'Animation', icon: Icons.brush),
-    'Comedy': Genre(name: 'Comedy', icon: Icons.mood),
-    'Crime': Genre(name: 'Crime', icon: Icons.local_atm),
-    'Documentary': Genre(name: 'Documentary', icon: Icons.book),
-    'Drama': Genre(name: 'Drama', icon: Icons.theater_comedy),
-    'Family': Genre(name: 'Family', icon: Icons.child_friendly_rounded),
-    'Fantasy': Genre(name: 'Fantasy', icon: Icons.local_attraction),
-    'History': Genre(name: 'History', icon: Icons.history_edu),
-    'Horror': Genre(name: 'Horror', icon: Icons.dark_mode),
-    'Music': Genre(name: 'Music', icon: Icons.music_note),
-    'Mystery': Genre(name: 'Mystery', icon: Icons.question_mark),
-    'Romance': Genre(name: 'Romance', icon: Icons.favorite),
-    'Science Fiction': Genre(name: 'Science Fiction', icon: Icons.rocket_launch),
-    'TV Movie': Genre(name: 'TV Movie', icon: Icons.tv),
-    'Thriller': Genre(name: 'Thriller', icon: Icons.bolt),
-    'War': Genre(name: 'War', icon: Icons.flag),
-    'Western': Genre(name: 'Western', icon: Icons.star),
+  static const Map<String, IconData> _genreIcons = {
+    'Action': Icons.sports_martial_arts,
+    'Adventure': Icons.explore,
+    'Animation': Icons.movie_filter,
+    'Comedy': Icons.mood,
+    'Crime': Icons.gavel,
+    'Documentary': Icons.videocam,
+    'Drama': Icons.theater_comedy,
+    'Family': Icons.diversity_3,
+    'Fantasy': Icons.auto_fix_high,
+    'History': Icons.history_edu,
+    'Horror': Icons.dark_mode,
+    'Music': Icons.music_note,
+    'Mystery': Icons.fingerprint,
+    'Romance': Icons.favorite,
+    'Science Fiction': Icons.rocket_launch,
+    'TV Movie': Icons.tv,
+    'Thriller': Icons.timer_outlined,
+    'War': Icons.military_tech,
+    'Western': Icons.landscape,
   };
+
+  static final Map<String, Genre> _genres = _genreIcons.map(
+    (name, icon) => MapEntry(name, Genre(name: name, icon: icon)),
+  );
 
   static Genre of(String name) {
     return _genres[name] ?? Genre(name: name, icon: Icons.movie);
@@ -86,7 +89,7 @@ class GenreCard extends StatelessWidget {
                 genre.imageUrl!,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) =>
-                const SizedBox.shrink(),
+                    const SizedBox.shrink(),
               ),
 
             // Dark scrim so text stays legible over an image

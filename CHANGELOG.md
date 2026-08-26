@@ -11,6 +11,7 @@
 - Focus support on Android TY and desktop
 - redesigned user experience
 - removed unpopulated podcasts recent
+- support movie genre grid
 - flutter, gradle, and related ecosystem updates to latest possible versions
 
 ## 0.25.3
