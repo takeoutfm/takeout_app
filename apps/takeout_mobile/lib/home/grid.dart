@@ -569,6 +569,14 @@ class _SliverFilmAppBar extends _SliverAppBar {
     final state = context.selectedMediaType.state;
     final index = context.index.state;
     return [
+      if (index.recommendMovies)
+        MyChip(
+          icon: state.filmType == .recent ? selectedIcon : null,
+          label: 'Recommended',
+          onTap: () {
+            context.selectedMediaType.select(.film, filmType: .recommended);
+          },
+        ),
       MyChip(
         icon: state.filmType == .all ? selectedIcon : null,
         label: 'All Movies',
@@ -582,14 +590,6 @@ class _SliverFilmAppBar extends _SliverAppBar {
           label: 'Genres',
           onTap: () {
             context.selectedMediaType.select(.film, filmType: .genre);
-          },
-        ),
-      if (index.recommendMovies)
-        MyChip(
-          icon: state.filmType == .recent ? selectedIcon : null,
-          label: 'Recommended',
-          onTap: () {
-            context.selectedMediaType.select(.film, filmType: .recent);
           },
         ),
       MyChip(

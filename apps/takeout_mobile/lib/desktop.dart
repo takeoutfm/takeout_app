@@ -242,8 +242,8 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
           labelType: NavigationRailLabelType.none,
           destinations: destinations,
           selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
-            final navIndex = navigationIndices[index];
+          onDestinationSelected: (destIndex) {
+            final navIndex = navigationIndices[destIndex];
             final popped = onNavTapped(
               context,
               navIndex.index,
@@ -253,19 +253,19 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
               // no pop so update selection or next type
               switch (navIndex) {
                 case .music:
-                  if (context.selectedMediaType.state.isMusic()) {
+                  if (index == navIndex) {
                     context.selectedMediaType.nextMusicType();
                   } else {
                     context.selectedMediaType.select(.music);
                   }
                 case .film:
-                  if (context.selectedMediaType.state.isFilm()) {
+                  if (index == navIndex) {
                     context.selectedMediaType.nextFilmType();
                   } else {
                     context.selectedMediaType.select(.film);
                   }
                 case .podcast:
-                  if (context.selectedMediaType.state.isPodcast()) {
+                  if (index == navIndex) {
                     context.selectedMediaType.nextPodcastType();
                   } else {
                     context.selectedMediaType.select(.podcast);
@@ -274,7 +274,6 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                   context.selectedMediaType.select(.tv);
                 default:
               }
-              // print(context.selectedMediaType.state.toJson());
             }
           },
         );

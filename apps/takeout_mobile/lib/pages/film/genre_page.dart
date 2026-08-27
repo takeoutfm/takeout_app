@@ -34,8 +34,6 @@ class GenrePage extends ClientPage<GenreView> {
 
   @override
   Widget page(BuildContext context, GenreView state) {
-    print('genre page');
-    print(state);
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => reloadPage(context),

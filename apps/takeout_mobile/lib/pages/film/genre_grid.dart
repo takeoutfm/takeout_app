@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
@@ -52,7 +53,7 @@ class Genre {
     'Romance': Icons.favorite,
     'Science Fiction': Icons.rocket_launch,
     'TV Movie': Icons.tv,
-    'Thriller': Icons.timer_outlined,
+    'Thriller': Icons.crisis_alert,
     'War': Icons.military_tech,
     'Western': Icons.landscape,
   };
@@ -74,61 +75,64 @@ class GenreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.08),
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Background image, if provided
-            if (genre.imageUrl != null)
-              Image.network(
-                genre.imageUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const SizedBox.shrink(),
-              ),
-
-            // Dark scrim so text stays legible over an image
-            if (genre.imageUrl != null)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.5),
-                    ],
-                  ),
+    return DpadFocusable(
+      onSelect: onTap,
+      child: Material(
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Background image, if provided
+              if (genre.imageUrl != null)
+                Image.network(
+                  genre.imageUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
                 ),
-              ),
 
-            // Content: icon + name
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (genre.icon != null)
-                    Icon(genre.icon, color: Colors.white, size: 28),
-                  if (genre.icon != null) const SizedBox(height: 8),
-                  Text(
-                    genre.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+              // Dark scrim so text stays legible over an image
+              if (genre.imageUrl != null)
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.5),
+                      ],
                     ),
                   ),
-                ],
+                ),
+
+              // Content: icon + name
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (genre.icon != null)
+                      Icon(genre.icon, color: Colors.white, size: 28),
+                    if (genre.icon != null) const SizedBox(height: 8),
+                    Text(
+                      genre.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
