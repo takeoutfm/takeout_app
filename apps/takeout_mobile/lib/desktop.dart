@@ -1,5 +1,6 @@
 import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_mobile/app/app.dart';
@@ -62,25 +63,21 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                     child: Focus(
                       onKeyEvent: (node, event) {
                         if (event is KeyDownEvent &&
-                            event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                            (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
+                                event.logicalKey == LogicalKeyboardKey.goBack)) {
                           final before = FocusManager.instance.primaryFocus;
-                          // Let dpad attempt its own handling first (this
-                          // callback fires on the bubble/ancestor pass, after
-                          // descendants have already had a chance). Check on
-                          // the next frame whether focus actually changed; if
-                          // not, dpad found no exit target, so redirect to the
-                          // sidebar ourselves.
+
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (FocusManager.instance.primaryFocus == before) {
                               final focus = navigationFocusNodes[state.index];
                               focus?.requestFocus();
-                              // TODO need to help move focus from icon
-                              // to outer nav rail dest
-                              // context.app.goto(state.index.index);
                             }
                           });
+
+                          // Force a frame to actually happen, since nothing else may trigger
+                          // one — this is what the debug overlay was accidentally doing for us.
+                          SchedulerBinding.instance.scheduleFrame();
                         }
-                        // Always ignore so dpad still gets/keeps normal handling.
                         return KeyEventResult.ignored;
                       },
                       child: IndexedStack(
