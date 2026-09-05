@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
+import 'dart:async';
+
 import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +51,7 @@ class SearchPage extends ClientPage<SearchView> {
 
   @override
   Widget page(BuildContext context, SearchView state) {
+    Timer? debounce;
     return Builder(
       builder: (context) {
         final orientation = MediaQuery.of(context).orientation;
@@ -127,7 +130,20 @@ class SearchPage extends ClientPage<SearchView> {
                               return TextField(
                                 controller: controller,
                                 focusNode: focusNode,
+                                textInputAction: .search,
                                 onSubmitted: (value) => onFieldSubmitted(),
+                                onChanged: (q) {
+                                  if (q.length > 3) {
+                                    // auto submit
+                                    debounce?.cancel();
+                                    debounce = Timer(
+                                      const Duration(milliseconds: 750),
+                                      () {
+                                        _onSubmit(context, q);
+                                      },
+                                    );
+                                  }
+                                },
                                 decoration: InputDecoration(
                                   hintText: 'Takeout Search',
                                   filled: true,
