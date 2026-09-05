@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:takeout_lib/page/reload.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/downloads.dart';
@@ -16,6 +18,7 @@ class HomeMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return popupMenu(context, [
+      PopupItem.reload(context, (context) => _onReload(context)),
       PopupItem.playlist(context, (context) => _onRecentTracks(context)),
       PopupItem.activity(context, (context) => _onTrackStats(context)),
       PopupItem.playlists(context, (context) => _onPlaylists(context)),
@@ -27,6 +30,11 @@ class HomeMenu extends StatelessWidget {
       PopupItem.divider(),
       PopupItem.about(context, (context) => _onAbout(context)),
     ]);
+  }
+
+  void _onReload(BuildContext context) {
+    context.reload();
+    context.read<ReloadCubit>().reload();
   }
 
   void _onDownloads(BuildContext context) {

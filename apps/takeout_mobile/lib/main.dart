@@ -85,24 +85,12 @@ class TakeoutApp extends StatelessWidget {
           final dark = ThemeData.dark(useMaterial3: true);
           return OrientationBuilder(
             builder: (context, orientation) {
-              final index = context.app.state.index;
               if (orientation == .portrait) {
                 context.app.home();
-                // if (TakeoutMobileState.navigationIndices.contains(index) ==
-                //     false) {
-                //   context.app.home();
-                // }
-              } else {
-                // context.app.music();
-                // if (TakeoutDesktopState.navigationIndices.contains(index) ==
-                //     false) {
-                //   context.app.music();
-                // }
               }
               final home = orientation == .landscape
                   ? TakeoutDesktopWidget(key: _desktopKey)
                   : TakeoutMobileWidget(key: _mobileKey);
-
               return MaterialApp(
                 key: globalAppKey,
                 debugShowCheckedModeBanner: false,
@@ -125,12 +113,15 @@ class TakeoutApp extends StatelessWidget {
                     ],
                     scrollPadding: 48,
                   ),
-                  onBack: () {
-                    final handled = orientation == .landscape
-                        ? (_desktopKey.currentState?.handleBack() ?? false)
-                        : (_mobileKey.currentState?.handleBack() ?? false);
-                    return handled;
-                  },
+                  // onBack: () {
+                  //   // final handled = orientation == .landscape
+                  //   //     ? (_desktopKey.currentState?.handleBack() ?? false)
+                  //   //     : (_mobileKey.currentState?.handleBack() ?? false);
+                  //   // return handled;
+                  //   return false;
+                  // },
+                  keySet: DpadKeySet().copyWith(back: []),
+                  onBack: null,
                   shortcuts: {
                     LogicalKeyboardKey.play: () => context.player.toggle(),
                     LogicalKeyboardKey.pause: () => context.player.toggle(),
@@ -184,13 +175,13 @@ class TakeoutMobileState extends TakeoutState<TakeoutMobileWidget> {
     );
   }
 
-  static const navigationIndices = [
-    NavigationIndex.home,
-    NavigationIndex.artists,
-    NavigationIndex.history,
-    NavigationIndex.radio,
-    NavigationIndex.player,
-  ];
+  // static const navigationIndices = [
+  //   NavigationIndex.home,
+  //   NavigationIndex.artists,
+  //   NavigationIndex.history,
+  //   NavigationIndex.radio,
+  //   NavigationIndex.player,
+  // ];
 
   Widget _bottomNavigation() {
     return Stack(
@@ -199,40 +190,42 @@ class TakeoutMobileState extends TakeoutState<TakeoutMobileWidget> {
           builder: (context, state) {
             var index = state.navigationIndex;
             return NavigationBar(
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+              labelBehavior: .alwaysHide,
               destinations: [
                 NavigationDestination(
-                  icon: index == NavigationIndex.home
+                  icon: index == .home
                       ? const Icon(Icons.home)
                       : const Icon(Icons.home_outlined),
                   label: context.strings.navHome,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.artists
+                  icon: index == .artists
                       ? const Icon(Icons.people_alt)
                       : const Icon(Icons.people_alt_outlined),
                   label: context.strings.navArtists,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.history
+                  icon: index == .history
                       ? const Icon(Icons.history)
                       : const Icon(Icons.history_outlined),
                   label: context.strings.navHistory,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.radio
+                  icon: index == .radio
                       ? const Icon(Icons.radio)
                       : const Icon(Icons.radio_outlined),
                   label: context.strings.navRadio,
                 ),
                 NavigationDestination(
-                  icon: index == NavigationIndex.player
+                  icon: index == .player
                       ? const Icon(Icons.queue_music)
                       : const Icon(Icons.queue_music_outlined),
                   label: context.strings.navPlayer,
                 ),
               ],
-              selectedIndex: index.index,
+              selectedIndex: index == .search
+                  ? NavigationIndex.home.index
+                  : index.index,
               onDestinationSelected: (index) => onNavTapped(context, index),
             );
           },

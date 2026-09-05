@@ -43,7 +43,7 @@ import 'package:url_launcher/url_launcher.dart';
 class MovieDetailsPage extends ClientPage<MovieView> {
   final Movie _movie;
 
-  MovieDetailsPage(this._movie, {super.key});
+  const MovieDetailsPage(this._movie, {super.key});
 
   Movie get movie => _movie;
 

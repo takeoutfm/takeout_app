@@ -77,7 +77,7 @@ class ArtworkBuilder {
       fit: artwork.fit,
       placeholderBuilder: (_) => artwork.placeholder ?? placeholder,
       errorBuilder: (context, error, stack) {
-        log.w('OctoImage error', error: error);
+        // log.w('OctoImage error', error: error);
         artworkErrors.add(imageProvider.url);
         if (imageProvider.url == primary?.url && secondary != null) {
           // primary failed, forget it and use secondary

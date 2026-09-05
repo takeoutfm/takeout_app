@@ -40,7 +40,13 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
   final String? ref;
   final String? title;
 
-  SpiffDetailsPage({super.key, super.value, this.fetch, this.ref, this.title});
+  const SpiffDetailsPage({
+    super.key,
+    super.value,
+    this.fetch,
+    this.ref,
+    this.title,
+  });
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) async {
@@ -158,12 +164,10 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
                     ),
                     if (state.isNotLive)
                       SliverBox(
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.50),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                        padding: EdgeInsetsGeometry.all(16),
+                        child: Material(
+                          color: Colors.black.withValues(alpha: 0.50),
+                          borderRadius: BorderRadius.circular(16),
                           child: SpiffTracks(state),
                         ),
                       ),

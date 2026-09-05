@@ -18,25 +18,42 @@
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/db/artist.dart';
+import 'package:takeout_lib/db/movie.dart';
 
 class Search {
   final ClientRepository clientRepository;
   final ArtistRepository artistRepository;
+  final MovieRepository movieRepository;
 
-  Search({required this.clientRepository, ArtistRepository? artistRepository})
-    : artistRepository =
-          artistRepository ??
-          ArtistRepository(clientRepository: clientRepository);
+  Search({
+    required this.clientRepository,
+    ArtistRepository? artistRepository,
+    MovieRepository? movieRepository,
+  }) : artistRepository =
+           artistRepository ??
+           ArtistRepository(clientRepository: clientRepository),
+       movieRepository =
+           movieRepository ??
+           MovieRepository(clientRepository: clientRepository);
 
   Iterable<String> findArtistsByName(String query) {
     return artistRepository.findByName(query);
+  }
+
+  Iterable<String> findMoviesByTitle(String query) {
+    return movieRepository.findByTitle(query);
   }
 
   Artist? findArtist(String name) {
     return artistRepository.findArtist(name);
   }
 
-  Future<void> reload() {
-    return artistRepository.reload();
+  Movie? findMovie(String title) {
+    return movieRepository.findMovie(title);
+  }
+
+  Future<void> reload() async {
+    await artistRepository.reload();
+    await movieRepository.reload();
   }
 }

@@ -60,6 +60,7 @@ import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
 
+import '../page/reload.dart';
 import 'context.dart';
 
 class TakeoutBloc {
@@ -258,6 +259,9 @@ class TakeoutBloc {
           context.read<StatsRepository>().init(stats);
           return stats;
         },
+      ),
+      BlocProvider(
+        create: (context) => ReloadCubit(),
       ),
     ];
   }

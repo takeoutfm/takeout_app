@@ -1,3 +1,20 @@
+// Copyright 2026 defsub
+//
+// This file is part of TakeoutFM.
+//
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +27,7 @@ import 'package:takeout_mobile/home/home.dart';
 import 'package:takeout_mobile/pages/login.dart';
 import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/radio.dart';
+import 'package:takeout_mobile/pages/search/search.dart';
 import 'package:takeout_mobile/player/player.dart';
 
 abstract class TakeoutState<T> extends State
@@ -24,6 +42,7 @@ abstract class TakeoutState<T> extends State
     NavigationIndex.film: GlobalKey<NavigatorState>(),
     NavigationIndex.tv: GlobalKey<NavigatorState>(),
     NavigationIndex.podcast: GlobalKey<NavigatorState>(),
+    NavigationIndex.search: GlobalKey<NavigatorState>(),
   };
 
   @protected
@@ -58,6 +77,7 @@ abstract class TakeoutState<T> extends State
         PodcastMediaWidget(),
         key: _navigators[NavigationIndex.podcast],
       ),
+      navigatorPage(SearchPage(), key: _navigators[NavigationIndex.search]),
     ];
 
     WidgetsBinding.instance.addObserver(this);
@@ -78,13 +98,11 @@ abstract class TakeoutState<T> extends State
     }
   }
 
-  bool handleBack() {
+  void handleBack() {
     final navState = navigatorState(context.app.state.index);
-    if (navState != null && navState.canPop()) {
-      navState.pop();
-      return true;
+    if (navState != null) {
+      navState.maybePop();
     }
-    return false;
   }
 
   Widget navigatorPage(Widget page, {Key? key}) {
@@ -140,7 +158,7 @@ abstract class TakeoutState<T> extends State
             if (didPop) {
               return;
             }
-            NavigatorState? navState = navigatorState(navIndex);
+            final navState = navigatorState(navIndex);
             if (navState != null) {
               final handled = await navState.maybePop();
               if (!handled && navIndex == NavigationIndex.home) {

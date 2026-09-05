@@ -88,7 +88,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navRadio => 'Radio';
 
   @override
-  String get navPlayer => 'Player';
+  String get navPlayer => 'Now Playing';
 
   @override
   String get navMovies => 'Movies';

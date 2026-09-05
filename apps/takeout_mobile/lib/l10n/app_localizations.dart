@@ -253,7 +253,7 @@ abstract class AppLocalizations {
   /// No description provided for @navPlayer.
   ///
   /// In en, this message translates to:
-  /// **'Player'**
+  /// **'Now Playing'**
   String get navPlayer;
 
   /// No description provided for @navMovies.

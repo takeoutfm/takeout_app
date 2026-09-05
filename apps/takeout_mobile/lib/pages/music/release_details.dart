@@ -137,12 +137,9 @@ class ReleaseDetailsPage extends ClientPage<ReleaseView> {
                     ),
                     SliverBox(
                       padding: EdgeInsetsGeometry.only(left: 20, right: 20),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.50),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                      child: Material(
+                        color: Colors.black.withValues(alpha: 0.50),
+                        borderRadius: BorderRadius.circular(16),
                         child: ReleaseTracks(state),
                       ),
                     ),

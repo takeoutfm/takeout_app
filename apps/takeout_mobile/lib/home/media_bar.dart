@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
+import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
 import 'package:takeout_mobile/pages/search/search_results.dart';
@@ -113,11 +114,6 @@ class SliverMediaBar extends StatefulWidget {
 }
 
 class SliverMediaState extends State<SliverMediaBar> {
-  final TextEditingController _controller = TextEditingController();
-
-  // List<String> _suggestions = [];
-  // bool _showSuggestions = false;
-
   @override
   Widget build(BuildContext context) {
     context.watch<IndexCubit>().state;
@@ -127,54 +123,15 @@ class SliverMediaState extends State<SliverMediaBar> {
       pinned: false,
       floating: true,
       snap: true,
-      // titleSpacing: 0,
-      title: SearchBar(
-        controller: _controller,
-        constraints: const BoxConstraints(
-          minHeight: 40,
-          maxWidth: double.infinity,
-        ),
-        hintText: 'Search',
-        leading: const Icon(Icons.search),
-        trailing: [
-          if (_controller.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                _controller.clear();
-              },
-            ),
-        ],
-        onSubmitted: (query) => _onSearch(query),
+      leading: IconButton(
+        onPressed: () {
+          context.app.goto(NavigationIndex.search.index);
+        },
+        icon: Icon(Icons.search),
       ),
       actionsPadding: EdgeInsets.zero,
       actionsIconTheme: const IconThemeData(size: 22),
       actions: actions(context),
     );
-  }
-
-  // void _onChanged(String query) {
-  //   setState(() {
-  //     if (query.trim().isEmpty) {
-  //       _showSuggestions = false;
-  //       _suggestions = [];
-  //     } else {
-  //       _suggestions = _allItems
-  //           .where((s) => s.toLowerCase().contains(query.toLowerCase()))
-  //           .take(8)
-  //           .toList();
-  //       _showSuggestions = _suggestions.isNotEmpty;
-  //     }
-  //   });
-  // }
-
-  void _onSearch(String query) {
-    query = query.trim();
-    if (query.isEmpty) {
-      return;
-    }
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute<void>(builder: (_) => SearchResults(query)));
   }
 }

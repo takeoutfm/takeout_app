@@ -31,6 +31,7 @@ enum NavigationIndex {
   film,
   tv,
   podcast,
+  search
 }
 
 class AppState {

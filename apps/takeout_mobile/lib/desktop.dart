@@ -1,3 +1,20 @@
+// Copyright 2026 defsub
+//
+// This file is part of TakeoutFM.
+//
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -7,7 +24,6 @@ import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
-import 'package:takeout_mobile/pages/search/search_results.dart';
 import 'package:takeout_mobile/player/mini_player.dart';
 import 'package:takeout_mobile/takeout.dart';
 
@@ -20,36 +36,19 @@ class TakeoutDesktopWidget extends StatefulWidget {
 
 class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     with AppBlocState, WidgetsBindingObserver {
-  bool extended = false;
-  final TextEditingController _controller = TextEditingController();
-
-  void _toggleExtended() {
-    setState(() {
-      extended = !extended;
-    });
-  }
-
   @override
   Widget body(AppState state) {
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 78, // default is 56
-        leading: IconButton(
-          icon: extended
-              ? const Icon(Icons.menu_open_outlined)
-              : const Icon(Icons.menu),
-          onPressed: () {
-            _toggleExtended();
-          },
-        ),
-        title: _searchBar(),
+        leading: _searchButton(context),
+        title: _NavTitleWidget(),
         actions: [HomeMenu()],
         // actions: actions(context),
       ),
       body: Row(
         children: [
           DpadRegion(
-            verticalEdge: DpadEdgeBehavior.stop,
+            verticalEdge: DpadEdgeBehavior.leave,
             child: _navigationRail(),
           ),
           Expanded(
@@ -63,8 +62,8 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                     child: Focus(
                       onKeyEvent: (node, event) {
                         if (event is KeyDownEvent &&
-                            (event.logicalKey == LogicalKeyboardKey.arrowLeft ||
-                                event.logicalKey == LogicalKeyboardKey.goBack)) {
+                            (event.logicalKey == .arrowLeft ||
+                                event.logicalKey == .goBack)) {
                           final before = FocusManager.instance.primaryFocus;
 
                           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -77,6 +76,11 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                           // Force a frame to actually happen, since nothing else may trigger
                           // one — this is what the debug overlay was accidentally doing for us.
                           SchedulerBinding.instance.scheduleFrame();
+                          return KeyEventResult.ignored;
+                        } else if (event is KeyDownEvent &&
+                            event.logicalKey == .escape) {
+                          handleBack();
+                          return KeyEventResult.handled;
                         }
                         return KeyEventResult.ignored;
                       },
@@ -87,7 +91,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                     ),
                   ),
                 ),
-                if (context.app.state.navigationIndex != .player) ...[
+                if (_showMiniPlayer(context)) ...[
                   SizedBox(height: 5),
                   RepaintBoundary(
                     child: SizedBox(
@@ -105,49 +109,13 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     );
   }
 
-  Widget _searchBar() {
-    return Focus(
-      onKeyEvent: (node, event) {
-        if (event is KeyDownEvent &&
-            event.logicalKey == LogicalKeyboardKey.enter) {
-          _onSearch(_controller.text);
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: SearchBar(
-        controller: _controller,
-        constraints: const BoxConstraints(
-          minHeight: 40,
-          maxWidth: double.infinity,
-        ),
-        hintText: 'Takeout Search',
-        leading: const Icon(Icons.search),
-        trailing: [
-          if (_controller.text.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                _controller.clear();
-                // _onChanged('');
-              },
-            ),
-        ],
-        // onChanged: _onChanged,
-        onChanged: (v) => debugPrint('onChanged: $v'),
-        onSubmitted: (query) => _onSearch(query),
-      ),
-    );
-  }
-
-  void _onSearch(String query) {
-    query = query.trim();
-    if (query.isEmpty) {
-      return;
+  bool _showMiniPlayer(BuildContext context) {
+    switch (context.app.state.navigationIndex) {
+      case .music || .radio || .podcast || .artists || .history:
+        return true;
+      default:
+        return false;
     }
-    navigatorState(
-      context.app.state.index,
-    )?.push(MaterialPageRoute<void>(builder: (_) => SearchResults(query)));
   }
 
   static const navigationIndices = [
@@ -159,6 +127,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     NavigationIndex.podcast,
     NavigationIndex.history,
     NavigationIndex.player,
+    // NavigationIndex.search,
   ];
 
   static final navigationFocusNodes = <NavigationIndex, FocusNode>{
@@ -170,6 +139,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     NavigationIndex.podcast: FocusNode(),
     NavigationIndex.history: FocusNode(),
     NavigationIndex.player: FocusNode(),
+    NavigationIndex.search: FocusNode(),
   };
 
   static final navigationIcons = <NavigationIndex, List<IconData>>{
@@ -181,6 +151,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     NavigationIndex.podcast: [Icons.podcasts, Icons.podcasts_outlined],
     NavigationIndex.history: [Icons.history, Icons.history_outlined],
     NavigationIndex.player: [Icons.playlist_play, Icons.playlist_play_outlined],
+    // NavigationIndex.search: [Icons.search, Icons.search],
   };
 
   NavigationRailDestination destination(
@@ -198,17 +169,12 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
       .podcast => context.strings.navPodcasts,
       .history => context.strings.navHistory,
       .player => context.strings.navPlayer,
+      .search => context.strings.navSearch, // unused
       .home => context.strings.navHome, // unused
     };
     return NavigationRailDestination(
       icon: Focus(
         focusNode: navigationFocusNodes[index],
-        // onFocusChange: (focused) {
-        //   if (focused) {
-        //     print('focusChange $index');
-        //     lastSidebarFocus = navigationFocusNodes[index];
-        //   }
-        // },
         child: Icon(icon),
       ),
       label: Text(label),
@@ -228,6 +194,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
           destination(index, NavigationIndex.podcast),
           destination(index, NavigationIndex.history),
           destination(index, NavigationIndex.player),
+          // destination(index, NavigationIndex.search),
         ];
         var selectedIndex = navigationIndices.indexOf(index);
         if (selectedIndex < 0 || selectedIndex >= destinations.length) {
@@ -235,7 +202,6 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
           selectedIndex = 0;
         }
         return NavigationRail(
-          extended: extended,
           labelType: NavigationRailLabelType.none,
           destinations: destinations,
           selectedIndex: selectedIndex,
@@ -270,11 +236,47 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
                 case .tv:
                   context.selectedMediaType.select(.tv);
                 default:
+                // nada
               }
             }
           },
         );
       },
     );
+  }
+
+  Widget _searchButton(BuildContext context) {
+    final onSearch = () {
+      onNavTapped(
+        context,
+        NavigationIndex.search.index,
+        selectNextMediaType: false,
+      );
+    };
+    return DpadFocusable(
+      focusNode: navigationFocusNodes[NavigationIndex.search],
+      onSelect: onSearch,
+      child: IconButton(icon: const Icon(Icons.search), onPressed: onSearch),
+    );
+  }
+}
+
+class _NavTitleWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<AppCubit>().state;
+    final title = switch (state.navigationIndex) {
+      .music => context.strings.navMusic,
+      .artists => context.strings.navArtists,
+      .radio => context.strings.navRadio,
+      .film => context.strings.navMovies,
+      .tv => context.strings.navTVShows,
+      .podcast => context.strings.navPodcasts,
+      .history => context.strings.navHistory,
+      .player => context.strings.navPlayer,
+      .search => context.strings.navSearch,
+      _ => 'Takeout',
+    };
+    return Text(title);
   }
 }

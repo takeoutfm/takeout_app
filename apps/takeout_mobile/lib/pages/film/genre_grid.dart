@@ -82,7 +82,6 @@ class GenreCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: onTap,
           child: Stack(
             fit: StackFit.expand,
             children: [
