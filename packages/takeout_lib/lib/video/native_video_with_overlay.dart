@@ -6,15 +6,19 @@ import 'package:better_native_video_player/better_native_video_player.dart';
 import 'native_video_overlay.dart';
 
 class VideoWithOverlayScreen extends StatefulWidget {
-  final VideoMedia video;
+  final PlayerState state;
   final VideoSource source;
   final void Function(Duration, Duration)? onPause;
+  final void Function(int)? onAudioTrackChange;
+  final void Function(int)? onSubtitleTrackChange;
 
   const VideoWithOverlayScreen({
     super.key,
-    required this.video,
+    required this.state,
     required this.source,
     this.onPause,
+    this.onAudioTrackChange,
+    this.onSubtitleTrackChange,
   });
 
   @override
@@ -67,9 +71,9 @@ class _VideoWithOverlayScreenState extends State<VideoWithOverlayScreen> {
         lockToLandscape: false,
         showNativeControls: false,
         mediaInfo: NativeVideoPlayerMediaInfo(
-          title: widget.video.media.title,
-          subtitle: widget.video.media.title,
-          artworkUrl: widget.video.media.image,
+          title: widget.state.video.title,
+          subtitle: widget.state.video.title,
+          artworkUrl: widget.state.video.image,
         ),
       );
 
@@ -89,13 +93,14 @@ class _VideoWithOverlayScreenState extends State<VideoWithOverlayScreen> {
       await controller.load(
         url: widget.source.url,
         headers: widget.source.headers,
-        startAt: widget.video.startOffset,
+        startAt: widget.state.startOffset,
       );
 
       final subtitles = await controller.getAvailableSubtitleTracks();
       final selectedTrack = subtitles.firstOrNull;
       if (selectedTrack != null) {
         await controller.setSubtitleTrack(selectedTrack);
+        widget.onSubtitleTrackChange?.call(selectedTrack.index);
       }
     } catch (e, st) {
       print('INIT FAILED: $e');
@@ -178,6 +183,8 @@ class _VideoWithOverlayScreenState extends State<VideoWithOverlayScreen> {
                       child: CustomVideoOverlay(
                         controller: videoController,
                         onPause: widget.onPause,
+                        onAudioTrackChange: widget.onAudioTrackChange,
+                        onSubtitleTrackChange: widget.onSubtitleTrackChange,
                         onUserInteraction: _scheduleAutoHide,
                         onSeekHoldStart: _holdControls,
                         onSeekHoldEnd: _releaseControls,

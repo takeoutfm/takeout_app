@@ -3,9 +3,14 @@ import 'package:better_native_video_player/better_native_video_player.dart';
 
 /// A modal bottom sheet for selecting audio tracks
 class AudioPickerModal extends StatefulWidget {
-  const AudioPickerModal({super.key, required this.controller});
+  const AudioPickerModal({
+    super.key,
+    required this.controller,
+    this.onAudioTrackChange,
+  });
 
   final NativeVideoPlayerController controller;
+  final void Function(int)? onAudioTrackChange;
 
   @override
   State<AudioPickerModal> createState() => _AudioPickerModalState();
@@ -35,9 +40,9 @@ class _AudioPickerModalState extends State<AudioPickerModal> {
         _selectedTrack = tracks.isEmpty
             ? null
             : tracks.firstWhere(
-              (track) => track.isSelected,
-          orElse: () => tracks.first,
-        );
+                (track) => track.isSelected,
+                orElse: () => tracks.first,
+              );
         _isLoading = false;
       });
     } catch (e) {
@@ -45,9 +50,9 @@ class _AudioPickerModalState extends State<AudioPickerModal> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading audio tracks: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading audio tracks: $e')),
+        );
       }
     }
   }
@@ -59,6 +64,8 @@ class _AudioPickerModalState extends State<AudioPickerModal> {
         _selectedTrack = track;
       });
 
+      widget.onAudioTrackChange?.call(track.index);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -69,9 +76,9 @@ class _AudioPickerModalState extends State<AudioPickerModal> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error selecting audio track: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error selecting audio track: $e')),
+        );
       }
     }
   }
@@ -186,11 +193,15 @@ class _AudioPickerModalState extends State<AudioPickerModal> {
 Future<void> showAudioTrackPicker({
   required BuildContext context,
   required NativeVideoPlayerController controller,
+  final void Function(int)? onAudioTrackChanged,
 }) {
   return showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (context) => AudioPickerModal(controller: controller),
+    builder: (context) => AudioPickerModal(
+      controller: controller,
+      onAudioTrackChange: onAudioTrackChanged,
+    ),
   );
 }

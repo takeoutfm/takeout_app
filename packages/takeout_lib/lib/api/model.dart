@@ -1348,7 +1348,6 @@ class TVListView {
 @JsonSerializable(fieldRename: FieldRename.pascal)
 class TVShowsView {
   final List<TVSeries> series;
-
   TVShowsView({required this.series});
 
   factory TVShowsView.fromJson(Map<String, dynamic> json) =>

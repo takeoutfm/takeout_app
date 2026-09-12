@@ -1,6 +1,7 @@
 import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
 import 'package:takeout_mobile/app/context.dart';
+import 'package:takeout_mobile/widgets/tiles.dart';
 
 class SliverGridTile extends StatelessWidget {
   final Widget image;
@@ -10,6 +11,7 @@ class SliverGridTile extends StatelessWidget {
   final GestureTapCallback? onTap;
   final int titleMaxLines;
   final double height;
+  final DateTime? dateTime;
 
   const SliverGridTile({
     required this.image,
@@ -19,6 +21,7 @@ class SliverGridTile extends StatelessWidget {
     this.titleMaxLines = 1,
     this.height = 50,
     this.badge,
+    this.dateTime,
     super.key,
   });
 
@@ -81,6 +84,11 @@ class SliverGridTile extends StatelessWidget {
                           maxLines: 1,
                           // softWrap: true,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                      if (subtitle == null && dateTime != null)
+                        RelativeDateWidget(
+                          dateTime!,
+                          style: context.gridSubtitle,
                         ),
                     ],
                   ),

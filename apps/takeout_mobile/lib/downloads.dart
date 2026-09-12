@@ -21,9 +21,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/spiff/widget.dart';
+import 'package:takeout_mobile/pages/spiff/spiff_details.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -156,7 +157,7 @@ class DownloadListState extends State<DownloadListWidget> {
   }
 
   void _onTap(BuildContext context, Spiff spiff) {
-    push(context, builder: (_) => SpiffWidget(value: spiff));
+    push(context, builder: (_) => SpiffDetailsPage(value: spiff));
   }
 
   void _onPlay(BuildContext context, Spiff spiff) {
@@ -164,7 +165,7 @@ class DownloadListState extends State<DownloadListWidget> {
       context.play(spiff);
     } else if (spiff.isVideo) {
       final entry = spiff.playlist.tracks.first;
-      context.showMovie(entry);
+      context.showMovie(VideoTrack.fromEntry(entry));
     }
   }
 }

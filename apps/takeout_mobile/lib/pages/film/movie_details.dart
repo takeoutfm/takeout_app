@@ -24,7 +24,7 @@ import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
-import 'package:takeout_lib/video/play_movie.dart';
+import 'package:takeout_lib/video/play_video.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
@@ -254,7 +254,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
             onSelect: () => _onPlay(context, state),
             child: OutlinedButton.icon(
               onPressed: () => _onPlay(context, state),
-              label: const Text('Play from start'),
+              label: Text(context.strings.playFromStartLabel),
               icon: const Icon(Icons.replay),
             ),
           )
@@ -264,7 +264,7 @@ class MovieDetailsPage extends ClientPage<MovieView> {
             child: FilledButton.icon(
               autofocus: true,
               onPressed: () => _onPlay(context, state),
-              label: const Text('Play'),
+              label: Text(context.strings.playLabel),
               icon: const Icon(Icons.play_arrow),
             ),
           ),
@@ -371,13 +371,13 @@ class MovieDetailsPage extends ClientPage<MovieView> {
   }
 
   void _onPlay(BuildContext context, MovieView view) {
-    playMovie(context, MovieMediaTrack(view));
+    playVideo(context, VideoTrack.fromMovie(view));
   }
 
   void _onResume(BuildContext context, MovieView view) {
-    playMovie(
+    playVideo(
       context,
-      MovieMediaTrack(view),
+      VideoTrack.fromMovie(view),
       startOffset: context.offsets.state.position(view.movie),
     );
   }

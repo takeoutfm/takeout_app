@@ -19,22 +19,28 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/db/artist.dart';
 import 'package:takeout_lib/db/movie.dart';
+import 'package:takeout_lib/db/tv.dart';
 
 class Search {
   final ClientRepository clientRepository;
   final ArtistRepository artistRepository;
   final MovieRepository movieRepository;
+  final TVRepository tvRepository;
 
   Search({
     required this.clientRepository,
     ArtistRepository? artistRepository,
     MovieRepository? movieRepository,
-  }) : artistRepository =
-           artistRepository ??
-           ArtistRepository(clientRepository: clientRepository),
-       movieRepository =
-           movieRepository ??
-           MovieRepository(clientRepository: clientRepository);
+    TVRepository? tvRepository,
+  })
+      : artistRepository =
+      artistRepository ??
+          ArtistRepository(clientRepository: clientRepository),
+        movieRepository =
+            movieRepository ??
+                MovieRepository(clientRepository: clientRepository),
+        tvRepository =
+            tvRepository ?? TVRepository(clientRepository: clientRepository);
 
   Iterable<String> findArtistsByName(String query) {
     return artistRepository.findByName(query);
@@ -48,12 +54,18 @@ class Search {
     return artistRepository.findArtist(name);
   }
 
-  Movie? findMovie(String title) {
-    return movieRepository.findMovie(title);
+  Movie? findMovie(String title, {int? year}) {
+    return movieRepository.findMovie(title, year: year);
+  }
+
+  TVEpisode? findTVEpisode(String name, {int? year, int? season, int? episode}) {
+    return tvRepository.findTVEpisode(
+        name, year: year, season: season, episode: episode);
   }
 
   Future<void> reload() async {
     await artistRepository.reload();
     await movieRepository.reload();
+    await tvRepository.reload();
   }
 }

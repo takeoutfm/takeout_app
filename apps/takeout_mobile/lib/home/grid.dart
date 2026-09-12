@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart' hide Offset;
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/spiff_track.dart';
 import 'package:takeout_lib/cache/track.dart';
@@ -92,6 +93,8 @@ abstract class GridClientPage<T> extends ClientPage<T> {
                 // TODO only takes first recommendation
                 result = recommended.first.movies ?? [];
               }
+            case .watched:
+              result = _recentlyWatched(context);
             default:
               result = [];
           }
@@ -189,6 +192,18 @@ abstract class GridClientPage<T> extends ClientPage<T> {
   }
 
   Widget _grid(BuildContext context, T state, SpiffTrackCacheState cache);
+
+  static List<Movie> _recentlyWatched(BuildContext context) {
+    final result = <Movie>[];
+    final entries = context.history.state.history.videos;
+    for (var entry in entries) {
+      final movie = context.search.findMovie(entry.title, year: entry.year);
+      if (movie != null) {
+        result.insert(0, movie);
+      }
+    }
+    return result;
+  }
 }
 
 class HomeViewGrid extends GridClientPage<HomeView> {
@@ -605,6 +620,13 @@ class _SliverFilmAppBar extends _SliverAppBar {
         label: 'Recently Added',
         onTap: () {
           context.selectedMediaType.select(.film, filmType: .added);
+        },
+      ),
+      MyChip(
+        icon: state.filmType == .added ? selectedIcon : null,
+        label: 'Recently Watched',
+        onTap: () {
+          context.selectedMediaType.select(.film, filmType: .watched);
         },
       ),
     ];

@@ -62,7 +62,7 @@ abstract class TakeoutState<T> extends State
         key: _navigators[NavigationIndex.artists],
       ),
       navigatorPage(
-        HistoryListWidget(),
+        HistoryWidget(),
         key: _navigators[NavigationIndex.history],
       ),
       navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),

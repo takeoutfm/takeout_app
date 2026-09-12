@@ -617,6 +617,7 @@ class DefaultMediaProvider implements MediaProvider {
         }
       case FilmType.all:
       case FilmType.genre: // TODO support genres
+      case FilmType.watched: // TODO support watched
         final view = await clientRepository.movies();
         movies = List<Movie>.from(view.movies);
     }

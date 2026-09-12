@@ -8,11 +8,13 @@ class SubtitlePickerModal extends StatefulWidget {
     required this.controller,
     this.fontSize = 16.0,
     this.onFontSizeChanged,
+    this.onSubtitleTrackChanged,
   });
 
   final NativeVideoPlayerController controller;
   final double fontSize;
   final ValueChanged<double>? onFontSizeChanged;
+  final void Function(int)? onSubtitleTrackChanged;
 
   @override
   State<SubtitlePickerModal> createState() => _SubtitlePickerModalState();
@@ -65,6 +67,8 @@ class _SubtitlePickerModalState extends State<SubtitlePickerModal> {
       setState(() {
         _selectedTrack = track;
       });
+
+      widget.onSubtitleTrackChanged?.call(track.index);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -262,6 +266,7 @@ Future<void> showSubtitlePicker({
   required NativeVideoPlayerController controller,
   double fontSize = 16.0,
   ValueChanged<double>? onFontSizeChanged,
+  void Function(int)? onSubtitleTrackChanged,
 }) {
   return showModalBottomSheet(
     context: context,
@@ -271,6 +276,7 @@ Future<void> showSubtitlePicker({
       controller: controller,
       fontSize: fontSize,
       onFontSizeChanged: onFontSizeChanged,
+      onSubtitleTrackChanged: onSubtitleTrackChanged,
     ),
   );
 }

@@ -30,8 +30,8 @@ class MovieRepository {
     return _provider.findByTitle(query);
   }
 
-  Movie? findMovie(String title) {
-    return _provider.findMovie(title);
+  Movie? findMovie(String title, {int? year}) {
+    return _provider.findMovie(title, year: year);
   }
 
   Future<void> reload() {
@@ -42,14 +42,14 @@ class MovieRepository {
 abstract class MovieProvider {
   Iterable<String> findByTitle(String query);
 
-  Movie? findMovie(String title);
+  Movie? findMovie(String title, {int? year});
 
   Future<void> reload();
 }
 
 class DefaultMovieProvider extends MovieProvider {
   final ClientRepository clientRepository;
-  final movies = <String, Movie>{};
+  final movies = <int, Movie>{};
   final titles = <String>[];
 
   DefaultMovieProvider(this.clientRepository) {
@@ -68,7 +68,7 @@ class DefaultMovieProvider extends MovieProvider {
           movies.clear();
           titles.clear();
           for (var movie in view.movies) {
-            movies[movie.title.toLowerCase()] = movie;
+            movies[movie.tmid] = movie;
             titles.add(movie.title);
           }
         })
@@ -86,7 +86,14 @@ class DefaultMovieProvider extends MovieProvider {
   }
 
   @override
-  Movie? findMovie(String title) {
-    return movies[title.toLowerCase()];
+  Movie? findMovie(String title, {int? year}) {
+    title = title.toLowerCase();
+    for (var m in movies.values) {
+      // TODO slow search but should be ok
+      if (m.title.toLowerCase() == title && (year == null || year == m.year)) {
+        return m;
+      }
+    }
+    return null;
   }
 }

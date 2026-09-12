@@ -18,11 +18,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
+import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/client.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/pages/spiff/spiff_tracks.dart';
@@ -162,7 +164,7 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
                         },
                       ),
                     ),
-                    if (state.isNotLive)
+                    if (state.isNotLive && state.isNotPodcast)
                       SliverBox(
                         padding: EdgeInsetsGeometry.all(16),
                         child: Material(
@@ -182,16 +184,32 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
   }
 
   Widget _playButtons(BuildContext context, Spiff state) {
+    final hasProgress = state.position > 0;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        FilledButton.icon(
-          autofocus: true,
-          onPressed: () => _onPlay(context, state),
-          label: Text('Play'),
-          icon: Icon(Icons.play_arrow),
-        ),
+        if (hasProgress)
+          FilledButton.icon(
+            autofocus: true,
+            onPressed: () => _onPlay(context, state),
+            label: Text(context.strings.resumeLabel),
+            icon: Icon(Icons.play_arrow),
+          ),
+        if (hasProgress)
+          OutlinedButton.icon(
+            autofocus: true,
+            onPressed: () => _onPlay(context, state.copyWith(position: 0)),
+            label: Text(context.strings.playFromStartLabel),
+            icon: Icon(Icons.replay),
+          )
+        else
+          FilledButton.icon(
+            autofocus: true,
+            onPressed: () => _onPlay(context, state),
+            label: Text(context.strings.playLabel),
+            icon: Icon(Icons.play_arrow),
+          ),
       ],
     );
   }
@@ -215,7 +233,7 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
         const SizedBox(height: 12),
         Text(state.creator ?? 'none', style: context.body),
         const SizedBox(height: 12),
-        if (state.isNotLive) ...[
+        if (state.isNotLive && state.isNotPodcast) ...[
           Wrap(
             children: [
               Text(
@@ -241,11 +259,9 @@ class SpiffDetailsPage extends ClientPage<Spiff> {
   }
 
   void _onPlay(BuildContext context, Spiff spiff) {
-    // final offsets = context.read<OffsetCacheCubit>();
     if (spiff.isVideo) {
       final entry = spiff.playlist.tracks.first;
-      // final pos = offsets.state.position(entry);
-      context.showMovie(entry);
+      context.showMovie(VideoTrack.fromEntry(entry));
     } else {
       context.play(spiff);
     }

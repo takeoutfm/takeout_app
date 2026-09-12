@@ -18,8 +18,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/video/track.dart';
 
 import 'model.dart';
 
@@ -29,6 +31,8 @@ abstract class HistoryProvider {
     Spiff? spiff,
     MediaTrack? track,
     LiveTrack? liveTrack,
+    VideoTrack? video,
+    Offset? offset,
     DateTime? dateTime,
   });
 
@@ -51,6 +55,8 @@ class JsonHistoryProvider implements HistoryProvider {
     Spiff? spiff,
     MediaTrack? track,
     LiveTrack? liveTrack,
+    VideoTrack? video,
+    Offset? offset,
     DateTime? dateTime,
   }) async {
     dateTime ??= DateTime.now();
@@ -69,7 +75,7 @@ class JsonHistoryProvider implements HistoryProvider {
       if (last != null && last.spiff == spiff) {
         // update last entry with new index (or position, etc.)
         final entry = last.copyWith(spiff: spiff);
-        history.spiffs[history.spiffs.length - 1] = entry;
+        history.spiffs.last = entry;
       } else {
         // add history entry
         final entry = SpiffHistory(spiff, dateTime);
@@ -80,16 +86,8 @@ class JsonHistoryProvider implements HistoryProvider {
       // maintain map of unique tracks by etag with play counts
       final entry = history.tracks[track.etag];
       history.tracks[track.etag] = entry == null
-          ? TrackHistory(
-              track.creator,
-              track.album,
-              track.title,
-              track.image,
-              track.etag,
-              1,
-              dateTime,
-            )
-          : entry.copyWith(count: entry.count + 1, dateTime: dateTime);
+          ? TrackHistory.from(track, dateTime: dateTime)
+          : entry.increment(1, dateTime: dateTime);
     }
     if (liveTrack != null) {
       final last = history.lastStreamHistory;
@@ -97,10 +95,29 @@ class JsonHistoryProvider implements HistoryProvider {
           last.name == liveTrack.name &&
           last.title == liveTrack.title) {
         final entry = last.copyWith(dateTime);
-        history.stream[history.stream.length - 1] = entry;
+        history.stream.last = entry;
+        history.stream.first;
+        history.stream.last;
       } else {
-        final entry = StreamHistory.fromTrack(liveTrack, dateTime);
+        final entry = StreamHistory.from(liveTrack, dateTime: dateTime);
         history.stream.add(entry);
+      }
+    }
+    if (video != null) {
+      final latest = history.latestVideo;
+      print('video latest is ${latest?.title} ${latest?.video.etag} ${offset}');
+      if (latest != null && video.etag == latest.video.etag) {
+        // updated latest movie with new offset as needed
+        final entry = latest.copyWith(offset: offset, dateTime: dateTime);
+        history.videos.last = entry;
+      } else {
+        final entry = VideoHistory.from(
+          video,
+          offset: offset,
+          dateTime: dateTime,
+        );
+        print('adding new entry $entry');
+        history.videos.add(entry);
       }
     }
     _prune(history);
@@ -120,7 +137,7 @@ class JsonHistoryProvider implements HistoryProvider {
 
   Future<History> _load(File file) async {
     if (file.existsSync() == false || file.lengthSync() == 0) {
-      return History(spiffs: [], searches: [], tracks: {}, stream: []);
+      return History(spiffs: [], searches: [], tracks: {}, stream: [], videos: []);
     }
 
     final json = await file.readAsBytes().then(
@@ -134,12 +151,17 @@ class JsonHistoryProvider implements HistoryProvider {
     if (json.containsKey('Stream') == false) {
       json['Stream'] = <StreamHistory>[];
     }
+    // Allow for older version w/o movies
+    if (json.containsKey('Videos') == false) {
+      json['Videos'] = <VideoHistory>[];
+    }
 
     final history = History.fromJson(json);
     // load with oldest first
     history.searches.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     history.spiffs.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     history.stream.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+    history.videos.sort((a, b) => a.dateTime.compareTo(b.dateTime));
     return history;
   }
 
@@ -147,6 +169,7 @@ class JsonHistoryProvider implements HistoryProvider {
   static const maxSpiffHistory = 25;
   static const maxTrackHistory = 500;
   static const maxRadioHistory = 100;
+  static const maxVideoHistory = 100;
 
   void _prune(History history) {
     if (history.searches.length > maxSearchHistory) {
@@ -175,6 +198,10 @@ class JsonHistoryProvider implements HistoryProvider {
       // remove oldest first
       history.stream.removeRange(0, history.stream.length - maxRadioHistory);
     }
+    if (history.videos.length > maxVideoHistory) {
+      // remove oldest first
+      history.videos.removeRange(0, history.videos.length - maxVideoHistory);
+    }
   }
 
   Future<void> _save(File file, History history) async {
@@ -193,6 +220,7 @@ class JsonHistoryProvider implements HistoryProvider {
     history.spiffs.clear();
     history.tracks.clear();
     history.stream.clear();
+    history.videos.clear();
     await _save(_file, history);
     return history;
   }

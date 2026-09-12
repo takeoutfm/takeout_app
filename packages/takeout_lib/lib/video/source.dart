@@ -2,6 +2,7 @@ import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
+import 'package:takeout_lib/video/track.dart';
 
 class VideoSource {
   final String url;
@@ -10,15 +11,15 @@ class VideoSource {
   VideoSource(this.url, this.headers);
 }
 
-class VideoMedia {
-  final MediaTrack media;
+class PlayerState {
+  final VideoTrack video;
   final MediaTrackResolver mediaTrackResolver;
   final TokenRepository tokenRepository;
   final SettingsRepository settingsRepository;
   final Duration? startOffset;
 
-  VideoMedia({
-    required this.media,
+  PlayerState({
+    required this.video,
     required this.mediaTrackResolver,
     required this.tokenRepository,
     required this.settingsRepository,
@@ -26,7 +27,7 @@ class VideoMedia {
   });
 
   Future<VideoSource> resolve() async {
-    final uri = await mediaTrackResolver.resolve(media);
+    final uri = await mediaTrackResolver.resolve(video);
     String url = uri.toString();
     if (url.startsWith('/api/')) {
       url = '${settingsRepository.settings?.endpoint}$url';

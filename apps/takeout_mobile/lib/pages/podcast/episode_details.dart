@@ -84,15 +84,15 @@ class EpisodeDetailsPage extends StatelessWidget {
                         if (hasProgress)
                           OutlinedButton.icon(
                             onPressed: () => _onPlay(context, state),
-                            label: Text('Play from start'),
+                            label: Text(context.strings.playFromStartLabel),
                             icon: Icon(Icons.replay),
                           )
                         else
                           FilledButton.icon(
                             autofocus: true,
                             onPressed: () => _onPlay(context, state),
-                            label: Text('Play'),
-                            icon: Icon(Icons.replay),
+                            label: Text(context.strings.playLabel),
+                            icon: Icon(Icons.play_arrow),
                           ),
                       ],
                     ),

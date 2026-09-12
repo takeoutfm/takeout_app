@@ -24,7 +24,7 @@ import 'package:takeout_lib/video/media_kit_controls.dart';
 import 'player.dart';
 
 class MediaKitVideoPlayer extends VideoPlayer {
-  const MediaKitVideoPlayer({required super.media, super.onPause, super.key});
+  const MediaKitVideoPlayer({required super.state, super.onPause, super.key});
 
   @override
   State<MediaKitVideoPlayer> createState() => _DesktopVideoPlayerState();
@@ -58,7 +58,7 @@ class _DesktopVideoPlayerState extends State<MediaKitVideoPlayer> {
   }
 
   Future<void> prepareController() async {
-    final source = await widget.media.resolve();
+    final source = await widget.state.resolve();
     final controller = VideoController(_player);
 
     _completedSubscription = _player.stream.completed.listen((completed) {
@@ -77,7 +77,7 @@ class _DesktopVideoPlayerState extends State<MediaKitVideoPlayer> {
     await _player.open(
       Media(
         source.url,
-        start: widget.media.startOffset,
+        start: widget.state.startOffset,
         httpHeaders: source.headers,
       ),
     );

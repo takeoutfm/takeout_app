@@ -24,14 +24,22 @@ import 'package:takeout_lib/video/source.dart';
 
 abstract class VideoPlayer extends StatefulWidget {
   factory VideoPlayer.create({
-    required VideoMedia media,
+    required PlayerState state,
     void Function(Duration, Duration)? onPause,
+    void Function(int)? onAudioTrackChange,
+    void Function(int)? onSubtitleTrackChange,
     Key? key,
   }) {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      return MediaKitVideoPlayer(media: media, onPause: onPause, key: key);
+      return MediaKitVideoPlayer(state: state, onPause: onPause, key: key);
     }
-    return NativeVideoPlayer(media: media, onPause: onPause, key: key);
+    return NativeVideoPlayer(
+      state: state,
+      onPause: onPause,
+      onAudioTrackChange: onAudioTrackChange,
+      onSubtitleTrackChange: onSubtitleTrackChange,
+      key: key,
+    );
   }
 
   static void init() {
@@ -40,8 +48,16 @@ abstract class VideoPlayer extends StatefulWidget {
     }
   }
 
-  final VideoMedia media;
+  final PlayerState state;
   final void Function(Duration, Duration)? onPause;
+  final void Function(int)? onAudioTrackChange;
+  final void Function(int)? onSubtitleTrackChange;
 
-  const VideoPlayer({required this.media, this.onPause, super.key});
+  const VideoPlayer({
+    required this.state,
+    this.onPause,
+    this.onAudioTrackChange,
+    this.onSubtitleTrackChange,
+    super.key,
+  });
 }

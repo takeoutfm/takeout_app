@@ -129,6 +129,10 @@ class Spiff {
     return type != MediaType.stream.name;
   }
 
+  bool get isNotPodcast {
+    return type != MediaType.podcast.name;
+  }
+
   // MediaType get mediaType {
   //   if (type.isEmpty) {
   //     FIXME remove after transition to require type is done

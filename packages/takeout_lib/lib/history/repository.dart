@@ -17,8 +17,10 @@
 
 import 'dart:io';
 
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/video/track.dart';
 
 import 'model.dart';
 import 'provider.dart';
@@ -39,14 +41,18 @@ class HistoryRepository {
     Spiff? spiff,
     MediaTrack? track,
     LiveTrack? liveTrack,
+    VideoTrack? video,
+    Offset? offset,
     DateTime? dateTime,
   }) async {
     return _provider.add(
       search: search,
       spiff: spiff,
       track: track,
-      dateTime: dateTime,
       liveTrack: liveTrack,
+      video: video,
+      offset: offset,
+      dateTime: dateTime,
     );
   }
 

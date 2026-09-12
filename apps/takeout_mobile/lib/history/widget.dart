@@ -17,89 +17,48 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/pages/spiff/spiff_details.dart';
-import 'package:takeout_mobile/widgets/custom_list_tile.dart';
-import 'package:takeout_mobile/widgets/focus_tile.dart';
-import 'package:takeout_mobile/widgets/menu.dart';
+import 'package:takeout_mobile/history/history_grid.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/spiff/widget.dart';
-import 'package:takeout_mobile/widgets/sliver_stack.dart';
+import 'package:takeout_mobile/pages/spiff/spiff_details.dart';
+import 'package:takeout_mobile/widgets/menu.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
-class HistoryListWidget extends StatelessWidget {
-  const HistoryListWidget({super.key});
+class HistoryWidget extends StatelessWidget {
+  const HistoryWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final historyCubit = context.watch<HistoryCubit>();
     final history = historyCubit.state.history;
-    final spiffs = List<SpiffHistory>.from(history.spiffs);
-    spiffs.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    final List<HistoryEntry> entries = [];
+    entries.addAll(history.spiffs);
+    entries.addAll(history.videos);
+    entries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return page(context, entries);
+  }
+
+  Widget page(BuildContext context, List<HistoryEntry> entries) {
     return Scaffold(
-      body: SliverStack(
+      body: CustomScrollView(
         slivers: [
-          SliverList.builder(
-            itemCount: spiffs.length,
-            itemBuilder: (buildContext, index) {
-              return SpiffHistoryTile(spiffs[index]);
-            },
+          SliverMenuBar(
+            allowBack: false,
+            items: [
+              PopupItem.streamHistory(
+                context,
+                (context) => _onStreamHistory(context),
+              ),
+            ],
           ),
+          SliverHistoryGrid(entries),
         ],
       ),
-      // appBar: orientation == .portrait
-      //     ? AppBar(
-      //         title: header(context.strings.historyLabel),
-      //         actions: [
-      //           popupMenu(context, [
-      //             PopupItem.streamHistory(
-      //               context,
-      //               (ctx) => _onStreamHistory(ctx),
-      //             ),
-      //             PopupItem.delete(
-      //               context,
-      //               context.strings.deleteAll,
-      //               (ctx) => _onDelete(ctx),
-      //             ),
-      //           ]),
-      //         ],
-      //       )
-      //     : null,
-      // body:
     );
-  }
-
-  void _onDelete(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: Text(context.strings.confirmDelete),
-          content: Text(context.strings.deleteHistory),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-                _onDeleteConfirmed(ctx);
-              },
-              child: Text(MaterialLocalizations.of(context).okButtonLabel),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _onDeleteConfirmed(BuildContext context) async {
-    context.history.remove();
   }
 
   void _onStreamHistory(BuildContext context) {

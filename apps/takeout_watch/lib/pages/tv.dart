@@ -20,7 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
-import 'package:takeout_lib/video/play_movie.dart';
+import 'package:takeout_lib/video/play_video.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/pages/media.dart';
@@ -180,7 +180,7 @@ class TVEpisodePage extends ClientPage<TVEpisodeView> {
   }
 
   void onPlay(BuildContext context, TVEpisodeView state) {
-    playMovie(context, TVEpisodeMediaTrack(state));
+    playVideo(context, VideoTrack.fromTVEpisode(state));
   }
 
   void onResume(BuildContext context, TVEpisodeView state) {
@@ -188,6 +188,6 @@ class TVEpisodePage extends ClientPage<TVEpisodeView> {
     final startOffset = offset != null
         ? Duration(seconds: offset.offset)
         : null;
-    playMovie(context, TVEpisodeMediaTrack(state), startOffset: startOffset);
+    playVideo(context, VideoTrack.fromTVEpisode(state), startOffset: startOffset);
   }
 }

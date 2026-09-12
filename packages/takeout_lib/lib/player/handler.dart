@@ -176,6 +176,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   }
 
   Future<void> _init() async {
+    print('_init');
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
 
@@ -323,6 +324,10 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     // send state from the audio player to AudioService clients.
     _subscriptions.add(
       _player.playbackEventStream.listen((state) {
+        if (state.processingState == .idle) {
+          // ignore idle, nothing loaded yet
+          return;
+        }
         final index = state.currentIndex;
         if (index != null) {
           if (index != _spiff.index) {
@@ -444,7 +449,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   bool considerListened(Duration position, Duration duration) {
     // ListenBrainz guidance:
     // Listens should be submitted for tracks when the user has listened
-    // to half the track or 4 minutes of the track, whichever is lower. If the
+    // to half the track or 4 minutes of the track, whichever is lo_wer. If the
     // user hasn't listened to 4 minutes or half the track, it doesn't fully
     // count as a listen and should not be submitted.
     if (position > const Duration(minutes: 4)) {

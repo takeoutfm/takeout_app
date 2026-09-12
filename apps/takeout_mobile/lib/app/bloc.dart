@@ -233,13 +233,13 @@ class DefaultMediaPlayer extends BaseMediaPlayer {
     clientRepository.movie(movie.id).then((view) {
       globalPush(
         builder: (_) {
-          final media = VideoMedia(
-            media: MovieMediaTrack(view),
+          final state = PlayerState(
+            video: VideoTrack.fromMovie(view),
             mediaTrackResolver: mediaTrackResolver,
             tokenRepository: tokenRepository,
             settingsRepository: settingsRepository,
           );
-          return VideoPlayer.create(media: media);
+          return VideoPlayer.create(state: state);
         },
       );
     });

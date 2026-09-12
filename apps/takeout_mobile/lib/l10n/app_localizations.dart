@@ -298,6 +298,12 @@ abstract class AppLocalizations {
   /// **'Resume'**
   String get resumeLabel;
 
+  /// No description provided for @playFromStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Play from start'**
+  String get playFromStartLabel;
+
   /// No description provided for @refreshLabel.
   ///
   /// In en, this message translates to:

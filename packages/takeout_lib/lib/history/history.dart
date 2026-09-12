@@ -16,8 +16,10 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:bloc/bloc.dart';
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/spiff/model.dart';
+import 'package:takeout_lib/video/track.dart';
 
 import 'model.dart';
 import 'repository.dart';
@@ -46,6 +48,8 @@ class HistoryCubit extends Cubit<HistoryState> {
     Spiff? spiff,
     MediaTrack? track,
     LiveTrack? liveTrack,
+    VideoTrack? video,
+    Offset? offset,
     DateTime? dateTime,
   }) {
     repository
@@ -54,6 +58,8 @@ class HistoryCubit extends Cubit<HistoryState> {
           spiff: spiff,
           track: track,
           liveTrack: liveTrack,
+          video: video,
+          offset: offset,
           dateTime: dateTime,
         )
         .then((history) => emit(HistoryState(history.unmodifiableCopy())));

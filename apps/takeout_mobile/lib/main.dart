@@ -48,9 +48,10 @@ void main() async {
 
   await TakeoutBloc.initStorage();
 
+  final androidTV = await isAndroidTV();
   final dpad = await checkDpadNavigation();
 
-  runApp(TakeoutApp(preferDpadNavigation: dpad));
+  runApp(TakeoutApp(preferDpadNavigation: dpad, androidTV: androidTV));
 }
 
 final _desktopKey = GlobalKey<TakeoutState<TakeoutDesktopWidget>>();
@@ -60,9 +61,7 @@ final _mobileKey = GlobalKey<TakeoutState<TakeoutMobileState>>();
 Future<bool> checkDpadNavigation() async {
   if (Platform.isAndroid) {
     // check for Android with Android TV
-    final deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    return androidInfo.systemFeatures.contains('android.software.leanback');
+    return await isAndroidTV();
   } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
     // check for Desktop
     return true;
@@ -70,10 +69,24 @@ Future<bool> checkDpadNavigation() async {
   return false;
 }
 
+Future<bool> isAndroidTV() async {
+  if (Platform.isAndroid) {
+    final deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.systemFeatures.contains('android.software.leanback');
+  }
+  return false;
+}
+
 class TakeoutApp extends StatelessWidget {
   final bool preferDpadNavigation;
+  final bool androidTV;
 
-  const TakeoutApp({this.preferDpadNavigation = false, super.key});
+  const TakeoutApp({
+    this.preferDpadNavigation = false,
+    this.androidTV = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -128,23 +141,15 @@ class TakeoutApp extends StatelessWidget {
                   },
                 ),
                 home: home,
+                themeMode: androidTV ? .dark : .system,
                 theme: light.copyWith(
                   colorScheme: lightDynamic,
-                  // appBarTheme:
-                  //     light.appBarTheme.copyWith(iconTheme: light.iconTheme),
-                  // iconButtonTheme: IconButtonThemeData(
-                  //     style: IconButton.styleFrom(
-                  //         foregroundColor: light.iconTheme.color)),
                   listTileTheme: light.listTileTheme.copyWith(
                     iconColor: light.iconTheme.color,
                   ),
                 ),
                 darkTheme: dark.copyWith(
                   colorScheme: darkDynamic,
-                  // appBarTheme: dark.appBarTheme.copyWith(iconTheme: dark.iconTheme),
-                  // iconButtonTheme: IconButtonThemeData(
-                  //     style: IconButton.styleFrom(
-                  //         foregroundColor: dark.iconTheme.color)),
                   listTileTheme: dark.listTileTheme.copyWith(
                     iconColor: dark.iconTheme.color,
                   ),

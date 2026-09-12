@@ -43,6 +43,7 @@ import 'package:takeout_lib/stats/stats.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
+import 'package:takeout_lib/video/watching.dart';
 
 extension TakeoutContext on BuildContext {
   void play(Spiff spiff, {bool? autoPlay, bool? autoCache}) {
@@ -198,6 +199,8 @@ extension TakeoutContext on BuildContext {
   StatsCubit get stats => read<StatsCubit>();
 
   StatsRepository get statsRepository => read<StatsRepository>();
+
+  NowWatchingCubit get nowWatching => read<NowWatchingCubit>();
 
   bool get allowMobileDownload {
     return settings.state.settings.allowMobileDownload;

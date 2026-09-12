@@ -18,8 +18,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/context/context.dart';
-import 'package:takeout_lib/model.dart';
-import 'package:takeout_lib/video/play_movie.dart';
+import 'package:takeout_lib/video/play_video.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/l10n/app_localizations.dart';
 
@@ -109,8 +109,8 @@ extension AppContext on BuildContext {
     app.logout();
   }
 
-  void showMovie(MediaTrack movie) {
-    playMovie(this, movie);
+  void showMovie(VideoTrack video) {
+    playVideo(this, video);
   }
 
   void showArtist(String artist) {

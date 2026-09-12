@@ -23,6 +23,7 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/download.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_lib/util.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
@@ -37,7 +38,7 @@ class SpiffTracks extends StatelessWidget {
       context.play(spiff.copyWith(index: index));
     } else if (spiff.isVideo) {
       final video = spiff.playlist.tracks[index];
-      context.showMovie(video);
+      context.showMovie(VideoTrack.fromEntry(video));
     }
   }
 

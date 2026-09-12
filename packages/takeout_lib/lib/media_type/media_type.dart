@@ -37,7 +37,7 @@ enum MediaType {
 
 enum PodcastType { all, subscribed }
 
-enum FilmType { all, recent, added, recommended, genre }
+enum FilmType { all, recent, added, recommended, genre, watched }
 
 enum MusicType { recent, added }
 
@@ -146,6 +146,8 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
   void nextFilmType() {
     switch (state.filmType) {
       case .all:
+        emit(state.copyWith(filmType: .watched));
+      case .watched:
         emit(state.copyWith(filmType: .recent));
       case .recent:
         emit(state.copyWith(filmType: .added));

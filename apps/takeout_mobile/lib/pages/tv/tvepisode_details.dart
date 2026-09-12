@@ -8,7 +8,7 @@ import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/video/play_movie.dart';
+import 'package:takeout_lib/video/play_video.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
@@ -101,7 +101,9 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                                     onSelect: () => _onPlay(context, state),
                                     child: OutlinedButton.icon(
                                       onPressed: () => _onPlay(context, state),
-                                      label: const Text('Play from start'),
+                                      label: Text(
+                                        context.strings.playFromStartLabel,
+                                      ),
                                       icon: const Icon(Icons.replay),
                                     ),
                                   )
@@ -111,7 +113,7 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
                                     child: FilledButton.icon(
                                       autofocus: true,
                                       onPressed: () => _onPlay(context, state),
-                                      label: const Text('Play'),
+                                      label: Text(context.strings.playLabel),
                                       icon: const Icon(Icons.play_arrow),
                                     ),
                                   ),
@@ -237,13 +239,13 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
   }
 
   void _onPlay(BuildContext context, TVEpisodeView view) {
-    playMovie(context, TVEpisodeMediaTrack(view));
+    playVideo(context, VideoTrack.fromTVEpisode(view));
   }
 
   void _onResume(BuildContext context, TVEpisodeView view) {
-    playMovie(
+    playVideo(
       context,
-      TVEpisodeMediaTrack(view),
+      VideoTrack.fromTVEpisode(view),
       startOffset: context.offsets.state.position(view.episode),
     );
   }

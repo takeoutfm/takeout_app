@@ -112,6 +112,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resumeLabel => 'Resume';
 
   @override
+  String get playFromStartLabel => 'Play from start';
+
+  @override
   String get refreshLabel => 'Refresh';
 
   @override

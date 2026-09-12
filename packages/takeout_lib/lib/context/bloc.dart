@@ -59,6 +59,8 @@ import 'package:takeout_lib/subscribed/repository.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
+import 'package:takeout_lib/video/track.dart';
+import 'package:takeout_lib/video/watching.dart';
 
 import '../page/reload.dart';
 import 'context.dart';
@@ -251,7 +253,8 @@ class TakeoutBloc {
           return subscribed;
         },
       ),
-      BlocProvider(lazy: false, create: (context) => IntentCubit()),
+      if (Platform.isAndroid)
+        BlocProvider(lazy: true, create: (context) => IntentCubit()),
       BlocProvider(
         lazy: false,
         create: (context) {
@@ -260,9 +263,8 @@ class TakeoutBloc {
           return stats;
         },
       ),
-      BlocProvider(
-        create: (context) => ReloadCubit(),
-      ),
+      BlocProvider(create: (context) => ReloadCubit()),
+      BlocProvider(create: (context) => NowWatchingCubit()),
     ];
   }
 
@@ -349,14 +351,29 @@ class TakeoutBloc {
           _onDownloadChange(context, state);
         },
       ),
-      BlocListener<IntentCubit, IntentState>(
+      if (Platform.isAndroid)
+        BlocListener<IntentCubit, IntentState>(
+          listenWhen: (_, state) =>
+              state is IntentStart || state is IntentReceive,
+          listener: (context, state) {
+            if (state is IntentStart) {
+              onIntentStart(context, state);
+            } else if (state is IntentReceive) {
+              onIntentReceive(context, state);
+            }
+          },
+        ),
+      BlocListener<NowWatchingCubit, NowWatchingState>(
         listenWhen: (_, state) =>
-            state is IntentStart || state is IntentReceive,
+            state is NowWatchingChange ||
+            state is NowWatchingAudioTrackChange ||
+            state is NowWatchingSubtitleTrackChange ||
+            state is NowWatchingOffsetChange,
         listener: (context, state) {
-          if (state is IntentStart) {
-            onIntentStart(context, state);
-          } else if (state is IntentReceive) {
-            onIntentReceive(context, state);
+          if (state is NowWatchingChange) {
+            onNowWatchingChange(context, state);
+          } else {
+            onNowWatchingUpdate(context, state);
           }
         },
       ),
@@ -568,6 +585,21 @@ class TakeoutBloc {
     }
   }
 
+  void onNowWatchingChange(BuildContext context, NowWatchingChange state) {
+    final video = state.nowWatching.video;
+    final offset = state.nowWatching.offset;
+    if (video != null) {
+      addVideoHistory(context, video, offset);
+    }
+  }
+
+  void onNowWatchingUpdate(BuildContext context, NowWatchingState state) {
+    final video = state.nowWatching.video;
+    if (video != null) {
+      updateVideoHistory(context, video, state);
+    }
+  }
+
   // override this to change behavior
   void saveProgress(BuildContext context, PlayerPositionEvent state) {
     _saveProgress(context, state);
@@ -629,6 +661,21 @@ class TakeoutBloc {
       final track = state.nowPlaying.spiff[state.nowPlaying.spiff.index];
       context.history.add(track: track, dateTime: listenedAt);
     }
+  }
+
+  // add to local video history
+  void addVideoHistory(BuildContext context, VideoTrack video, Offset? offset) {
+    context.history.add(video: video, offset: offset);
+  }
+
+  // update local video history
+  void updateVideoHistory(
+    BuildContext context,
+    VideoTrack video,
+    NowWatchingState state,
+  ) {
+    final offset = state.nowWatching.offset;
+    context.history.add(video: video, offset: offset);
   }
 }
 

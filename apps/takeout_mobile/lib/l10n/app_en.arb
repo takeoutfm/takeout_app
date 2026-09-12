@@ -33,6 +33,7 @@
   "similarArtists": "Similar Artists",
   "playLabel": "Play",
   "resumeLabel": "Resume",
+  "playFromStartLabel": "Play from start",
   "refreshLabel": "Refresh",
   "logoutLabel": "Logout",
   "aboutLabel": "About",

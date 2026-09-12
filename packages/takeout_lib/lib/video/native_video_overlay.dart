@@ -21,6 +21,8 @@ import 'native_subtitle_picker.dart';
 /// traversal is allowed to search past the edge of our controls.
 class CustomVideoOverlay extends StatefulWidget {
   final void Function(Duration position, Duration duration)? onPause;
+  final void Function(int)? onAudioTrackChange;
+  final void Function(int)? onSubtitleTrackChange;
   final VoidCallback? onUserInteraction;
   final VoidCallback? onSeekHoldStart;
   final VoidCallback? onSeekHoldEnd;
@@ -31,6 +33,8 @@ class CustomVideoOverlay extends StatefulWidget {
     this.onSeekHoldStart,
     this.onSeekHoldEnd,
     this.onPause,
+    this.onAudioTrackChange,
+    this.onSubtitleTrackChange,
     super.key,
   });
 
@@ -156,6 +160,7 @@ class _CustomVideoOverlayState extends State<CustomVideoOverlay> {
       return;
     }
     setState(() {
+      print('pip available $isAvailable');
       _isPipAvailable = isAvailable;
     });
   }
@@ -509,10 +514,10 @@ class _CustomVideoOverlayState extends State<CustomVideoOverlay> {
                 // Skip forward
                 IconButton(
                   focusNode: _forwardFocusNode,
-                  icon: const Icon(Icons.forward_10),
+                  icon: const Icon(Icons.forward_30),
                   onPressed: () {
                     widget.controller.seekTo(
-                      _currentPosition + const Duration(seconds: 10),
+                      _currentPosition + const Duration(seconds: 30),
                     );
                   },
                 ),
@@ -704,7 +709,7 @@ class _CustomVideoOverlayState extends State<CustomVideoOverlay> {
   void _showQualitySelector() {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.black87,
+      // backgroundColor: Colors.black87,
       useRootNavigator: false,
       builder: (context) {
         return SafeArea(
@@ -767,7 +772,7 @@ class _CustomVideoOverlayState extends State<CustomVideoOverlay> {
   void _showSpeedSelector() {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Colors.black87,
+      // backgroundColor: Colors.black87,
       useRootNavigator: false,
       builder: (context) {
         return SafeArea(
@@ -842,10 +847,15 @@ class _CustomVideoOverlayState extends State<CustomVideoOverlay> {
           });
         }
       },
+      onSubtitleTrackChanged: widget.onSubtitleTrackChange,
     );
   }
 
   void _showAudioTrackPicker() {
-    showAudioTrackPicker(context: context, controller: widget.controller);
+    showAudioTrackPicker(
+      context: context,
+      controller: widget.controller,
+      onAudioTrackChanged: widget.onAudioTrackChange,
+    );
   }
 }

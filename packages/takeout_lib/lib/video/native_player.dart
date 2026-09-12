@@ -23,7 +23,13 @@ import 'package:takeout_lib/video/native_video_with_overlay.dart';
 import 'player.dart';
 
 class NativeVideoPlayer extends VideoPlayer {
-  const NativeVideoPlayer({required super.media, super.onPause, super.key});
+  const NativeVideoPlayer({
+    required super.state,
+    super.onPause,
+    super.onAudioTrackChange,
+    super.onSubtitleTrackChange,
+    super.key,
+  });
 
   @override
   State<NativeVideoPlayer> createState() => _NativeVideoPlayerState();
@@ -39,7 +45,7 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
   }
 
   Future<void> prepareController() async {
-    final source = await widget.media.resolve();
+    final source = await widget.state.resolve();
     setState(() {
       _source = source;
     });
@@ -52,9 +58,11 @@ class _NativeVideoPlayerState extends State<NativeVideoPlayer> {
       return const Center(child: CircularProgressIndicator());
     }
     return VideoWithOverlayScreen(
-      video: widget.media,
+      state: widget.state,
       source: source,
       onPause: widget.onPause,
+      onAudioTrackChange: widget.onAudioTrackChange,
+      onSubtitleTrackChange: widget.onSubtitleTrackChange,
     );
   }
 }

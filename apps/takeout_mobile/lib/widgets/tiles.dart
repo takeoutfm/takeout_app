@@ -25,7 +25,6 @@ import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/app/text_style.dart';
-import 'package:takeout_mobile/widgets/now_playing.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 
@@ -37,15 +36,16 @@ class ArtistListTile extends StatelessWidget {
   final Widget? trailing;
   final bool selected;
 
-  const ArtistListTile(BuildContext context,
-      this.artist, {
-        super.key,
-        this.onTap,
-        this.onLongPress,
-        this.leading,
-        this.trailing,
-        this.selected = false,
-      });
+  const ArtistListTile(
+    BuildContext context,
+    this.artist, {
+    super.key,
+    this.onTap,
+    this.onLongPress,
+    this.leading,
+    this.trailing,
+    this.selected = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +70,18 @@ class AlbumListTile extends StatelessWidget {
   final Widget? trailing;
   final bool selected;
 
-  AlbumListTile(BuildContext context,
-      this.artist,
-      this.album,
-      this.cover, {
-        super.key,
-        Widget? leading,
-        this.onTap,
-        this.onLongPress,
-        this.trailing,
-        this.selected = false,
-      }) : _leading = leading ?? tileCover(context, cover);
+  AlbumListTile(
+    BuildContext context,
+    this.artist,
+    this.album,
+    this.cover, {
+    super.key,
+    Widget? leading,
+    this.onTap,
+    this.onLongPress,
+    this.trailing,
+    this.selected = false,
+  }) : _leading = leading ?? tileCover(context, cover);
 
   @override
   Widget build(BuildContext context) {
@@ -116,18 +117,19 @@ class _TrackListTile extends StatelessWidget {
   final bool selected;
   final bool nowPlaying;
 
-  const _TrackListTile(this.artist,
-      this.album,
-      this.title, {
-        super.key,
-        this.leading,
-        this.onTap,
-        this.onLongPress,
-        this.trailing,
-        this.dateTime,
-        this.selected = false,
-        this.nowPlaying = false,
-      });
+  const _TrackListTile(
+    this.artist,
+    this.album,
+    this.title, {
+    super.key,
+    this.leading,
+    this.onTap,
+    this.onLongPress,
+    this.trailing,
+    this.dateTime,
+    this.selected = false,
+    this.nowPlaying = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -165,31 +167,6 @@ class _TrackListTile extends StatelessWidget {
       title: Text(title, style: AppTextStyle.mediaTrackTileTitle),
     );
   }
-
-  Widget _nowPlaying(Widget? widget) {
-    // widget ??= SizedBox(height: 40, width: 40)
-    widget ??= Icon(Icons.speaker);
-    return Stack(
-      children: [
-        widget,
-        Positioned(
-          left: 0,
-          top: 0,
-          child: Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              // borderRadius: BorderRadius.circular(8),
-            ),
-            child: const NowPlayingIndicator(
-              size: 40,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class NumberedTrackListTile extends StatelessWidget {
@@ -200,7 +177,8 @@ class NumberedTrackListTile extends StatelessWidget {
   final bool selected;
   final num? number;
 
-  const NumberedTrackListTile(this.track, {
+  const NumberedTrackListTile(
+    this.track, {
     super.key,
     this.onTap,
     this.onLongPress,
@@ -233,29 +211,31 @@ class NumberedTrackListTile extends StatelessWidget {
 }
 
 class CoverTrackListTile extends _TrackListTile {
-  CoverTrackListTile(BuildContext context,
-      super.artist,
-      super.album,
-      super.title,
-      String? cover, {
-        super.key,
-        super.onTap,
-        super.onLongPress,
-        super.trailing,
-        super.selected,
-        super.dateTime,
-        super.nowPlaying,
-      }) : super(leading: cover != null ? tileCover64(context, cover) : null);
+  CoverTrackListTile(
+    BuildContext context,
+    super.artist,
+    super.album,
+    super.title,
+    String? cover, {
+    super.key,
+    super.onTap,
+    super.onLongPress,
+    super.trailing,
+    super.selected,
+    super.dateTime,
+    super.nowPlaying,
+  }) : super(leading: cover != null ? tileCover64(context, cover) : null);
 
-  factory CoverTrackListTile.mediaTrack(BuildContext context,
-      MediaTrack track, {
-        bool showCover = true,
-        VoidCallback? onTap,
-        VoidCallback? onLongPress,
-        Widget? trailing,
-        bool selected = false,
-        bool nowPlaying = false,
-      }) {
+  factory CoverTrackListTile.mediaTrack(
+    BuildContext context,
+    MediaTrack track, {
+    bool showCover = true,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    Widget? trailing,
+    bool selected = false,
+    bool nowPlaying = false,
+  }) {
     return CoverTrackListTile(
       context,
       track.creator,
@@ -270,13 +250,14 @@ class CoverTrackListTile extends _TrackListTile {
     );
   }
 
-  factory CoverTrackListTile.liveTrack(BuildContext context,
-      LiveTrack track, {
-        bool showCover = true,
-        bool selected = false,
-        DateTime? dateTime,
-        bool nowPlaying = false,
-      }) {
+  factory CoverTrackListTile.liveTrack(
+    BuildContext context,
+    LiveTrack track, {
+    bool showCover = true,
+    bool selected = false,
+    DateTime? dateTime,
+    bool nowPlaying = false,
+  }) {
     return CoverTrackListTile(
       context,
       track.name,
@@ -289,15 +270,16 @@ class CoverTrackListTile extends _TrackListTile {
     );
   }
 
-  factory CoverTrackListTile.mediaItem(BuildContext context,
-      MediaItem item, {
-        bool showCover = true,
-        VoidCallback? onTap,
-        VoidCallback? onLongPress,
-        Widget? trailing,
-        bool selected = false,
-        bool nowPlaying = false,
-      }) {
+  factory CoverTrackListTile.mediaItem(
+    BuildContext context,
+    MediaItem item, {
+    bool showCover = true,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    Widget? trailing,
+    bool selected = false,
+    bool nowPlaying = false,
+  }) {
     return CoverTrackListTile(
       context,
       item.artist ?? '',
@@ -312,15 +294,16 @@ class CoverTrackListTile extends _TrackListTile {
     );
   }
 
-  factory CoverTrackListTile.track(BuildContext context,
-      Track track, {
-        bool showCover = true,
-        VoidCallback? onTap,
-        VoidCallback? onLongPress,
-        Widget? trailing,
-        bool selected = false,
-        bool nowPlaying = false,
-      }) {
+  factory CoverTrackListTile.track(
+    BuildContext context,
+    Track track, {
+    bool showCover = true,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    Widget? trailing,
+    bool selected = false,
+    bool nowPlaying = false,
+  }) {
     return CoverTrackListTile(
       context,
       track.trackArtist,
@@ -398,18 +381,23 @@ class RelativeDateWidget extends StatelessWidget {
   final String prefix;
   final String suffix;
   final String separator;
+  final TextStyle? style;
 
-  const RelativeDateWidget(this.dateTime, {
+  const RelativeDateWidget(
+    this.dateTime, {
     super.key,
     this.prefix = '',
     this.suffix = '',
     this.separator = textSeparator,
+    this.style,
   });
 
-  factory RelativeDateWidget.from(String date, {
+  factory RelativeDateWidget.from(
+    String date, {
     String prefix = '',
     String suffix = '',
     String separator = textSeparator,
+    TextStyle? style,
   }) {
     try {
       final t = DateTime.parse(date);
@@ -418,9 +406,10 @@ class RelativeDateWidget extends StatelessWidget {
         prefix: prefix,
         suffix: suffix,
         separator: separator,
+        style: style,
       );
     } on FormatException {
-      return RelativeDateWidget(DateTime(1, 1, 1));
+      return RelativeDateWidget(DateTime(1, 1, 1), style: style);
     }
   }
 
@@ -444,12 +433,16 @@ class RelativeDateWidget extends StatelessWidget {
           return Text(
             merge([prefix, v, suffix], separator: separator),
             overflow: TextOverflow.ellipsis,
+            style: style,
           );
         },
       );
     } else {
       // more than 1 day so don't bother refreshing
-      return Text(merge([prefix, timeago.format(dateTime), suffix]));
+      return Text(
+        merge([prefix, timeago.format(dateTime), suffix]),
+        style: style,
+      );
     }
   }
 }

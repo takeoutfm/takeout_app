@@ -21,7 +21,8 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
-import 'package:takeout_lib/video/play_movie.dart';
+import 'package:takeout_lib/video/play_video.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_watch/app/context.dart';
 import 'package:takeout_watch/nav.dart';
 import 'package:takeout_watch/pages/media.dart';
@@ -52,6 +53,7 @@ class FilmPage extends StatelessWidget {
         }
       case FilmType.all:
       case FilmType.genre:
+      case FilmType.watched:
         // TODO not supported yet
         movies = [];
     }
@@ -145,7 +147,7 @@ class MoviePage extends ClientPage<MovieView> {
   }
 
   void onPlay(BuildContext context, MovieView state) {
-    playMovie(context, movie);
+    playVideo(context, VideoTrack.fromMovie(state));
   }
 
   void onResume(BuildContext context, MovieView state) {
@@ -153,7 +155,7 @@ class MoviePage extends ClientPage<MovieView> {
     final startOffset = offset != null
         ? Duration(seconds: offset.offset)
         : null;
-    playMovie(context, movie, startOffset: startOffset);
+    playVideo(context, VideoTrack.fromMovie(state), startOffset: startOffset);
   }
 
   void onGenres(BuildContext context, MovieView state) {

@@ -5,7 +5,7 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/video/play_movie.dart';
+import 'package:takeout_lib/video/play_video.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
