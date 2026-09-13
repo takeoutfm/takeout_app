@@ -105,7 +105,6 @@ class JsonHistoryProvider implements HistoryProvider {
     }
     if (video != null) {
       final latest = history.latestVideo;
-      print('video latest is ${latest?.title} ${latest?.video.etag} ${offset}');
       if (latest != null && video.etag == latest.video.etag) {
         // updated latest movie with new offset as needed
         final entry = latest.copyWith(offset: offset, dateTime: dateTime);
@@ -116,7 +115,6 @@ class JsonHistoryProvider implements HistoryProvider {
           offset: offset,
           dateTime: dateTime,
         );
-        print('adding new entry $entry');
         history.videos.add(entry);
       }
     }

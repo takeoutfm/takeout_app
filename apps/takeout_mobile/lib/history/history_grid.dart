@@ -47,13 +47,13 @@ class SliverHistoryGrid extends StatelessWidget {
       padding: padding,
       sliver: SliverGrid.extent(
         maxCrossAxisExtent: coverGridWidth,
-        childAspectRatio: coverAspectRatio,
+        childAspectRatio: 1.0,
         crossAxisSpacing: historyGridSpacing,
         mainAxisSpacing: historyGridSpacing,
         children: [
           ..._history.map(
             (h) => SliverGridTile(
-              image: gridPoster(context, h.image),
+              image: historyTile(context, h.image),
               title: h.title,
               // subtitle: h.spiff.creator,
               dateTime: h.dateTime,

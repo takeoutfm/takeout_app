@@ -176,6 +176,15 @@ class Artwork {
   factory Artwork.background(String url) =>
       Artwork(url, 1920, 1080, BoxFit.cover);
 
+  factory Artwork.historyTile(String url) => Artwork(
+    url,
+    null,
+    null,
+    BoxFit.fitHeight,
+    aspectRatio: 1.0,
+    placeholder: const Icon(Icons.image, size: coverGridHeight / 3),
+  );
+
   factory Artwork.coverGrid(String url) => Artwork(
     url,
     coverGridWidth,

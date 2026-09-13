@@ -70,6 +70,10 @@ Widget spiffCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.cover(url), hero: true).build(context);
 }
 
+Widget historyTile(BuildContext context, String url) {
+  return ArtworkBuilder(Artwork.historyTile(url), hero: true).build(context);
+}
+
 Widget gridCover(BuildContext context, String url) {
   return ArtworkBuilder(Artwork.coverGrid(url), hero: true).build(context);
 }
