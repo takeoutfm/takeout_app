@@ -254,7 +254,7 @@ class GenresPage extends StatelessWidget {
 class GenrePage extends ClientPage<GenreView> {
   final String genre;
 
-  GenrePage(this.genre, {super.key});
+  const GenrePage(this.genre, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

@@ -33,7 +33,7 @@ class RadioEntry {
 }
 
 class RadioPage extends ClientPage<RadioView> {
-  RadioPage({super.key});
+  const RadioPage({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

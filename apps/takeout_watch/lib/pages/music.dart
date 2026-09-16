@@ -49,7 +49,7 @@ class MusicPage extends StatelessWidget {
 }
 
 class ArtistsPage extends ClientPage<ArtistsView> {
-  ArtistsPage({super.key});
+  const ArtistsPage({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -80,7 +80,7 @@ class ArtistsPage extends ClientPage<ArtistsView> {
 class ArtistPage extends ClientPage<ArtistView> {
   final Artist artist;
 
-  ArtistPage(this.artist, {super.key});
+  const ArtistPage(this.artist, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -100,7 +100,7 @@ class ArtistPage extends ClientPage<ArtistView> {
 class ReleasePage extends ClientPage<ReleaseView> {
   final Release release;
 
-  ReleasePage(this.release, {super.key});
+  const ReleasePage(this.release, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

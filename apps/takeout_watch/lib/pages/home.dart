@@ -49,7 +49,7 @@ class HomeEntry {
 }
 
 class HomePage extends ClientPage<HomeView> {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

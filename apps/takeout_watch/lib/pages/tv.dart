@@ -28,7 +28,7 @@ import 'package:takeout_watch/pages/settings.dart';
 import 'package:takeout_watch/widgets/list.dart';
 
 class ShowsPage extends ClientPage<TVShowsView> {
-  ShowsPage({super.key});
+  const ShowsPage({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -55,7 +55,7 @@ class ShowsPage extends ClientPage<TVShowsView> {
 class TVSeriesPage extends ClientPage<TVSeriesView> {
   final TVSeries series;
 
-  TVSeriesPage(this.series, {super.key});
+  const TVSeriesPage(this.series, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
@@ -122,7 +122,7 @@ class _PageEntry {
 class TVEpisodePage extends ClientPage<TVEpisodeView> {
   final TVEpisode episode;
 
-  TVEpisodePage(this.episode, {super.key});
+  const TVEpisodePage(this.episode, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

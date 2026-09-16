@@ -47,7 +47,7 @@ class ConnectPage extends StatelessWidget {
 }
 
 class CodePage extends ClientPage<AccessCode> {
-  CodePage({super.key});
+  const CodePage({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

@@ -63,7 +63,7 @@ void _onSeries(BuildContext context, Series series) {
 class SeriesPage extends ClientPage<SeriesView> {
   final Series series;
 
-  SeriesPage(this.series, {super.key});
+  const SeriesPage(this.series, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

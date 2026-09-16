@@ -24,7 +24,7 @@ import 'package:takeout_watch/pages/settings.dart';
 import 'package:takeout_watch/widgets/list.dart';
 
 class PlaylistsPage extends ClientPage<PlaylistsView> {
-  PlaylistsPage({super.key});
+  const PlaylistsPage({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

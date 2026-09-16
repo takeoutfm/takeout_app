@@ -57,7 +57,7 @@ class ProfilePage extends ClientPage<ProfileView> {
   final MediaEntryCallback? onLongPress;
   final MediaEntryCallback onTap;
 
-  ProfilePage(this.person, this.onTap, {super.key, this.onLongPress});
+  const ProfilePage(this.person, this.onTap, {super.key, this.onLongPress});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {
