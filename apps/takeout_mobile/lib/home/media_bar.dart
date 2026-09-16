@@ -7,7 +7,6 @@ import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
-import 'package:takeout_mobile/pages/search/search_results.dart';
 
 class MediaActions {
   List<Widget> call(BuildContext context) {

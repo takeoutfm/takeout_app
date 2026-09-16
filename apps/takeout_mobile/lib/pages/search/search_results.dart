@@ -16,7 +16,7 @@ import 'package:takeout_mobile/widgets/sliver_title.dart';
 class SearchResults extends ClientPage<SearchView> {
   final String _query;
 
-  SearchResults(this._query, {super.key});
+  const SearchResults(this._query, {super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) async {

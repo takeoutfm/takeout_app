@@ -70,6 +70,9 @@ extension AppContext on BuildContext {
   /// used for body text that is hyperlink
   TextStyle? get bodyLink => bodyMedium?.copyWith(decoration: .underline);
 
+  TextStyle? get bodyDimmed =>
+      bodyMedium?.copyWith(color: body?.color?.withValues(alpha: 0.6));
+
   /// used for grid item title - always dark bg
   TextStyle? get gridTitle {
     final scheme = ColorScheme.dark();

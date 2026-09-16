@@ -1348,6 +1348,7 @@ class TVListView {
 @JsonSerializable(fieldRename: FieldRename.pascal)
 class TVShowsView {
   final List<TVSeries> series;
+
   TVShowsView({required this.series});
 
   factory TVShowsView.fromJson(Map<String, dynamic> json) =>
@@ -1652,6 +1653,9 @@ class Episode extends DownloadIdentifier
   int get number => 0;
 
   String get reference => '/podcasts/episodes/$id';
+
+  DateTime get dateTime =>
+      DateTime.tryParse(date) ?? DateTime.fromMillisecondsSinceEpoch(0);
 }
 
 @JsonSerializable(fieldRename: FieldRename.pascal)
@@ -1718,7 +1722,9 @@ class Offset implements OffsetIdentifier {
     date: date ?? this.date,
   );
 
-  DateTime get dateTime => DateTime.parse(date);
+  DateTime? _dateTime;
+
+  DateTime get dateTime => _dateTime ??= DateTime.parse(date);
 
   bool newerThan(Offset o) {
     return dateTime.isAfter(o.dateTime);

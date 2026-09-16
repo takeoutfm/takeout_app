@@ -131,7 +131,7 @@ class TrackStatsWidget extends ClientPage<TrackStatsView> {
 }
 
 class TrackHistoryWidget extends ClientPage<TrackHistoryView> {
-  TrackHistoryWidget({super.key});
+  const TrackHistoryWidget({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

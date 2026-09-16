@@ -16,7 +16,6 @@
 // along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:media_kit_video/media_kit_video.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/spiff/model.dart';

@@ -17,8 +17,6 @@
 
 import 'package:flutter/material.dart';
 
-import '../model.dart';
-import '../spiff/model.dart';
 import 'builder.dart';
 
 typedef ScaffoldBodyFunc = Widget? Function(Color?, {String? image});

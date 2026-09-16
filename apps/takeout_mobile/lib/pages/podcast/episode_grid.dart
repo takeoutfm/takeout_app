@@ -33,7 +33,8 @@ class SliverEpisodeGrid extends StatelessWidget {
           ..._episodes.map(
             (e) => SliverGridTile(
               title: e.title,
-              subtitle: 'FIXME',
+              subtitle: null,
+              dateTime: e.dateTime,
               image: gridPodcastEpisode(context, e.image),
               onTap: () => _onTap(context, e),
             ),
@@ -41,10 +42,6 @@ class SliverEpisodeGrid extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget _subtitle(Episode e) {
-    return RelativeDateWidget.from(e.date, suffix: e.creator);
   }
 
   void _onTap(BuildContext context, Episode e) {

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/builder.dart';
-import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/empty.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/player/player_widgets.dart';
 
 class MiniPlayer extends StatelessWidget with PlayerWidgets {

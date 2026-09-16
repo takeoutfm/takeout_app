@@ -68,7 +68,6 @@ void pauseVideo(
     duration: duration,
     offset: position,
   );
-  print('video setoffset $offset');
   context.nowWatching.setOffset(offset);
   context.updateProgress(video.etag, position: position, duration: duration);
 }

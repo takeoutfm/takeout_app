@@ -36,8 +36,6 @@ Widget _trackListView(
   PlayerEvent state,
 ) {
   final tracks = state.spiff.playlist.tracks;
-  final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
-  // final playing = (state is PlayerPositionEvent) && state.playing;
 
   return ListView.builder(
     controller: scrollController, // 👈 required, not optional
@@ -49,8 +47,6 @@ Widget _trackListView(
               context,
               tracks[index],
               showCover: true,
-              //!sameArtwork,
-              // trailing: _cachedIcon(),
               nowPlaying: index == state.currentIndex,
               onTap: () {
                 player.playIndex(index);

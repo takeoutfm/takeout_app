@@ -23,7 +23,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ArtistDetailsPage extends ClientPage<ArtistView> {
   final Artist _artist;
 
-  ArtistDetailsPage(this._artist, {super.key});
+  const ArtistDetailsPage(this._artist, {super.key});
 
   Artist get artist => _artist;
 

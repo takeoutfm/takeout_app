@@ -24,7 +24,6 @@ import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:timeago_flutter/timeago_flutter.dart';
 
@@ -141,13 +140,13 @@ class _TrackListTile extends StatelessWidget {
           Text(
             artist,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyle.mediaTrackTileSubtitle,
+            style: context.bodyDimmed,
           ),
         if (album.isNotEmpty)
           Text(
             album,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyle.mediaTrackTileSubtitle,
+            style: context.bodyDimmed,
           ),
         if (t != null) RelativeDateWidget(t),
       ],
@@ -164,7 +163,7 @@ class _TrackListTile extends StatelessWidget {
       tileColor: nowPlaying ? Colors.white.withValues(alpha: 0.25) : null,
       trailing: trailing,
       subtitle: subtitle,
-      title: Text(title, style: AppTextStyle.mediaTrackTileTitle),
+      title: Text(title, style: context.bodyMedium),
     );
   }
 }

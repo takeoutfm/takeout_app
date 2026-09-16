@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/download.dart';
-import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -17,6 +15,7 @@ class SliverTrackList extends StatelessWidget {
   List<Track> get tracks => _tracks;
 
   void _onPlay(BuildContext context, int index) {
+    // TODO need to create local spiff to play not this older code
     // context.playlist.replace(
     //   _view.release.reference,
     //   index: index,
@@ -25,18 +24,18 @@ class SliverTrackList extends StatelessWidget {
     // );
   }
 
-  void _onLongPress(BuildContext context, Track t, RelativeRect pos) {
-    showPopupMenu(context, pos, [
-      PopupItem.trackPlaylist(context, (_) {
-        pushSpiff(
-          ref: '/music/tracks/${t.id}/playlist',
-          context,
-          (client, {Duration? ttl}) =>
-              client.trackPlaylist('${t.id}', ttl: Duration.zero),
-        );
-      }),
-    ]);
-  }
+  // void _onLongPress(BuildContext context, Track t, RelativeRect pos) {
+  //   showPopupMenu(context, pos, [
+  //     PopupItem.trackPlaylist(context, (_) {
+  //       pushSpiff(
+  //         ref: '/music/tracks/${t.id}/playlist',
+  //         context,
+  //         (client, {Duration? ttl}) =>
+  //             client.trackPlaylist('${t.id}', ttl: Duration.zero),
+  //       );
+  //     }),
+  //   ]);
+  // }
 
   @override
   Widget build(BuildContext context) {

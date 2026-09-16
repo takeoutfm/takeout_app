@@ -5,7 +5,6 @@ import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
-import 'package:takeout_mobile/widgets/focus_item.dart';
 
 const tvSeriesGridEdgeInset = 20.0;
 const tvSeriesGridSpacing = 12.0;

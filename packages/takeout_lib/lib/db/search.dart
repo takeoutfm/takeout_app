@@ -58,6 +58,10 @@ class Search {
     return movieRepository.findMovie(title, year: year);
   }
 
+  Movie? getMovie({String? etag, int? tmid}) {
+    return movieRepository.get(etag: etag, tmid: tmid);
+  }
+
   TVEpisode? findTVEpisode(String name, {int? year, int? season, int? episode}) {
     return tvRepository.findTVEpisode(
         name, year: year, season: season, episode: episode);

@@ -17,17 +17,6 @@
 
 import 'package:dpad/dpad.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/api/model.dart';
-import 'package:takeout_lib/art/artwork.dart';
-import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/index/index.dart';
-import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/film/movie_details.dart';
-import 'package:takeout_mobile/widgets/media_progress.dart';
-import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
-
-import 'package:flutter/material.dart';
 
 class Genre {
   final String name;

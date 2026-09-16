@@ -37,6 +37,18 @@ class OffsetCacheState {
   //   return offsets.containsKey(id.etag);
   // }
 
+  /// default returns offsets sorted by most recent first
+  static int defaultCompare(Offset a, Offset b) =>
+      b.dateTime.compareTo(a.dateTime);
+
+  List<Offset> sort({
+    int Function(Offset a, Offset b) compare = defaultCompare,
+  }) {
+    final list = List<Offset>.from(offsets.values);
+    list.sort(compare);
+    return list;
+  }
+
   Offset? get(OffsetIdentifier id) {
     return offsets[id.etag];
   }

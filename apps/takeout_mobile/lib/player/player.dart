@@ -28,7 +28,6 @@ import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/scaffold.dart';
 import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/player/player_sheet.dart';
@@ -334,14 +333,11 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
     final player = context.player;
     final isPodcast = state.spiff.isPodcast;
     final isLive = state.spiff.isLive;
-    final isMusic = state.spiff.isMusic;
     final playing = state.playing;
     final buffering = state.buffering;
     return Wrap(
-      // mainAxisAlignment: MainAxisAlignment.center,
       spacing: 20,
       children: [
-        // if (isMusic) _repeatButton(),
         if (!isLive)
           IconButton(
             icon: const Icon(Icons.skip_previous),
@@ -390,13 +386,8 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
             iconSize: 32,
             onPressed: state.hasNext ? () => player.skipToNext() : null,
           ),
-        // if (isMusic) _invisibleButton(),
       ],
     );
-  }
-
-  Widget _invisibleButton() {
-    return const SizedBox.square(dimension: 36 + 16);
   }
 
   void _onArtist(BuildContext context, String artist) {
@@ -405,8 +396,6 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
 
   Widget _trackList(BuildContext context, Player player, PlayerEvent state) {
     final tracks = state.spiff.playlist.tracks;
-    final sameArtwork = tracks.every((t) => t.image == tracks.first.image);
-    // final playing = (state is PlayerPositionEvent) && state.playing;
     return Column(
       children: [
         ...List.generate(tracks.length * 2 - 1, (i) {
@@ -416,7 +405,6 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
                   context,
                   tracks[index],
                   showCover: true,
-                  //!sameArtwork,
                   trailing: _cachedIcon(),
                   nowPlaying: index == state.currentIndex,
                   // TODO

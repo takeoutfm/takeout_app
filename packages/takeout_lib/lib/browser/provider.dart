@@ -638,7 +638,7 @@ class DefaultMediaProvider implements MediaProvider {
     if (podcastType == PodcastType.subscribed) {
       series = subscribedRepository.series;
     } else {
-      final home = await clientRepository.home();
+      // final home = await clientRepository.home();
       // if (podcastType == PodcastType.recent) {
       //   series = home.newSeries ?? [];
       // } else {
@@ -748,8 +748,7 @@ class DefaultMediaProvider implements MediaProvider {
     }
 
     return {
-      if (completionPercentage != null)
-        extrasKeyCompletionPercentage: completionPercentage,
+      extrasKeyCompletionPercentage: ?completionPercentage,
       extrasKeyCompletionStatus: completionStatus,
     };
   }
@@ -773,7 +772,7 @@ class DefaultMediaProvider implements MediaProvider {
       // use grid for artist releases
       extrasKeyContentBrowsableStyle: extrasValueContentStyleGridItem,
       extrasKeyContentPlayableStyle: extrasValueContentStyleGridItem,
-      if (group != null) extrasKeyContentStyleGroupTitle: group,
+      extrasKeyContentStyleGroupTitle: ?group,
     };
     return MediaItem(
       id: '/artists/${a.id}',

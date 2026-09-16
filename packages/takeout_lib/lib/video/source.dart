@@ -1,5 +1,4 @@
 import 'package:takeout_lib/client/resolver.dart';
-import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/video/track.dart';

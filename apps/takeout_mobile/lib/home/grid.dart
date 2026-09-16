@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart' hide Offset;
 import 'package:takeout_lib/art/artwork.dart';
 import 'package:takeout_lib/art/cover.dart';
-import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/spiff.dart';
 import 'package:takeout_lib/cache/spiff_track.dart';
 import 'package:takeout_lib/cache/track.dart';
@@ -26,7 +25,6 @@ import 'package:takeout_mobile/pages/podcast/series_details.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
-import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 
@@ -94,7 +92,7 @@ abstract class GridClientPage<T> extends ClientPage<T> {
                 result = recommended.first.movies ?? [];
               }
             case .watched:
-              result = _recentlyWatched(context);
+              result = context.recentlyWatched(.movie);
             default:
               result = [];
           }
@@ -192,18 +190,6 @@ abstract class GridClientPage<T> extends ClientPage<T> {
   }
 
   Widget _grid(BuildContext context, T state, SpiffTrackCacheState cache);
-
-  static List<Movie> _recentlyWatched(BuildContext context) {
-    final result = <Movie>[];
-    final entries = context.history.state.history.videos;
-    for (var entry in entries) {
-      final movie = context.search.findMovie(entry.title, year: entry.year);
-      if (movie != null) {
-        result.insert(0, movie);
-      }
-    }
-    return result;
-  }
 }
 
 class HomeViewGrid extends GridClientPage<HomeView> {

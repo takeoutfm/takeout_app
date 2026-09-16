@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
-import 'package:takeout_lib/video/play_video.dart';
-import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/film/genre_page.dart';
@@ -23,7 +20,7 @@ import 'package:takeout_mobile/widgets/surface_theme.dart';
 class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
   final TVSeries _series;
 
-  TVSeriesDetailsPage(this._series, {super.key});
+  const TVSeriesDetailsPage(this._series, {super.key});
 
   TVSeries get series => _series;
 

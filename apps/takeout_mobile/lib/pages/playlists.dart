@@ -101,7 +101,7 @@ class _SelectPlaylistWidget extends ClientPage<PlaylistsView> {
 }
 
 class PlaylistsWidget extends ClientPage<PlaylistsView> {
-  PlaylistsWidget({super.key});
+  const PlaylistsWidget({super.key});
 
   @override
   Future<void> load(BuildContext context, {Duration? ttl}) {

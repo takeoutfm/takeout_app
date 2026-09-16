@@ -17,11 +17,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:takeout_lib/art/scaffold.dart';
+import 'package:takeout_lib/art/builder.dart';
+import 'package:takeout_lib/spiff/model.dart';
 
-import '../art/builder.dart';
-import '../model.dart';
-import '../spiff/model.dart';
 import 'player.dart';
 
 typedef PlayerScaffoldBodyFunc = Widget? Function(Color?, {Spiff? spiff});

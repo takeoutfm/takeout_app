@@ -12,7 +12,6 @@ import 'package:takeout_lib/video/play_video.dart';
 import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/film/genre_page.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
@@ -23,7 +22,7 @@ import 'package:takeout_mobile/widgets/surface_theme.dart';
 class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
   final TVEpisode _episode;
 
-  TVEpisodeDetailsPage(this._episode, {super.key});
+  const TVEpisodeDetailsPage(this._episode, {super.key});
 
   TVEpisode get episode => _episode;
 
@@ -228,14 +227,6 @@ class TVEpisodeDetailsPage extends ClientPage<TVEpisodeView> {
         ),
       ),
     );
-  }
-
-  void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => GenrePage(genre));
-  }
-
-  void _onSeason(BuildContext context, int season) {
-    // push(context, builder: (_) => SeasonDetailsPage(series, season));
   }
 
   void _onPlay(BuildContext context, TVEpisodeView view) {

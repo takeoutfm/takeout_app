@@ -5,7 +5,6 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/client/download.dart';
 import 'package:takeout_mobile/app/context.dart';
-import 'package:takeout_mobile/app/text_style.dart';
 import 'package:takeout_mobile/widgets/style.dart';
 import 'package:takeout_mobile/widgets/tiles.dart';
 
@@ -54,7 +53,7 @@ class ReleaseTracks extends StatelessWidget {
             children.add(
               Text(
                 context.strings.discLabel(e.discNum, discs),
-                style: AppTextStyle.musicDiscNumber,
+                style: context.body,
               ),
             );
             d = e.discNum;

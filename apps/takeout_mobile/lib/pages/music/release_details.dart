@@ -25,7 +25,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ReleaseDetailsPage extends ClientPage<ReleaseView> {
   final Release _release;
 
-  ReleaseDetailsPage(this._release, {super.key});
+  const ReleaseDetailsPage(this._release, {super.key});
 
   Release get release => _release;
 

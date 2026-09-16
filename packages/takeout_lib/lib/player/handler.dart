@@ -176,7 +176,6 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   }
 
   Future<void> _init() async {
-    print('_init');
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
 
@@ -273,7 +272,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
       _player.icyMetadataStream.listen((event) {
         // TODO icy events are sometimes sent for regular media so ignore them.
         if (_spiff.isLive && event != null) {
-          print('icy event $event');
+          // print('icy event $event');
           final title = event.info?.title;
           if (title == null || title == mediaItem.value?.title) {
             // only proceed if there's a new title
@@ -315,7 +314,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           );
 
           // update LiveTrack change
-          print('icy ${icyTrack.title}');
+          // print('icy ${icyTrack.title}');
           onLiveTrackChange(_spiff, icyTrack);
         }
       }),

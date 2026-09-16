@@ -421,7 +421,7 @@ class TakeoutClient implements ClientProvider {
             jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
         return AccessCode.fromJson(result);
       }
-      return Future.error(CodeError());
+      return await Future.error(CodeError());
     } catch (e) {
       return Future.error(e);
     }
@@ -467,7 +467,7 @@ class TakeoutClient implements ClientProvider {
         success = false;
       } else {
         // 401 code is bad or expired
-        return Future.error(InvalidCodeError());
+        return await Future.error(InvalidCodeError());
       }
     } on TlsException catch (e) {
       return Future.error(e);

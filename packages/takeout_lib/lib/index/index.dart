@@ -59,7 +59,6 @@ class IndexCubit extends Cubit<IndexState> {
     await clientRepository
         .index(ttl: ttl)
         .then((view) {
-          print('got $view');
           emit(
             IndexState(
               movies: view.hasMovies,
@@ -73,7 +72,6 @@ class IndexCubit extends Cubit<IndexState> {
           );
         })
         .onError((error, stackTrace) {
-          print('got $error');
           Future.delayed(const Duration(minutes: 3), () => _load());
         });
   }

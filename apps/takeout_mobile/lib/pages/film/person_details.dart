@@ -37,7 +37,7 @@ import 'package:takeout_mobile/widgets/sliver_stack.dart';
 class PersonDetailsPage extends ClientPage<ProfileView> {
   final Person _person;
 
-  PersonDetailsPage(this._person, {super.key});
+  const PersonDetailsPage(this._person, {super.key});
 
   Person get person => _person;
 

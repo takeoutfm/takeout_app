@@ -34,6 +34,10 @@ class MovieRepository {
     return _provider.findMovie(title, year: year);
   }
 
+  Movie? get({String? etag, int? tmid}) {
+    return _provider.get(etag: etag, tmid: tmid);
+  }
+
   Future<void> reload() {
     return _provider.reload();
   }
@@ -44,6 +48,8 @@ abstract class MovieProvider {
 
   Movie? findMovie(String title, {int? year});
 
+  Movie? get({String? etag, int? tmid});
+
   Future<void> reload();
 }
 
@@ -51,6 +57,7 @@ class DefaultMovieProvider extends MovieProvider {
   final ClientRepository clientRepository;
   final movies = <int, Movie>{};
   final titles = <String>[];
+  final etags = <String, Movie>{};
 
   DefaultMovieProvider(this.clientRepository) {
     _load();
@@ -67,9 +74,11 @@ class DefaultMovieProvider extends MovieProvider {
         .then((view) {
           movies.clear();
           titles.clear();
+          etags.clear();
           for (var movie in view.movies) {
             movies[movie.tmid] = movie;
             titles.add(movie.title);
+            etags[movie.etag] = movie;
           }
         })
         .onError((error, stackTrace) {
@@ -92,6 +101,23 @@ class DefaultMovieProvider extends MovieProvider {
       // TODO slow search but should be ok
       if (m.title.toLowerCase() == title && (year == null || year == m.year)) {
         return m;
+      }
+    }
+    return null;
+  }
+
+  @override
+  Movie? get({String? etag, int? tmid}) {
+    if (etag != null) {
+      final result = etags[etag];
+      if (result != null) {
+        return result;
+      }
+    }
+    if (tmid != null) {
+      final result = movies[tmid];
+      if (result != null) {
+        return result;
       }
     }
     return null;

@@ -43,6 +43,7 @@ import 'package:takeout_lib/stats/stats.dart';
 import 'package:takeout_lib/subscribed/subscribed.dart';
 import 'package:takeout_lib/tokens/repository.dart';
 import 'package:takeout_lib/tokens/tokens.dart';
+import 'package:takeout_lib/video/track.dart';
 import 'package:takeout_lib/video/watching.dart';
 
 extension TakeoutContext on BuildContext {
@@ -150,6 +151,44 @@ extension TakeoutContext on BuildContext {
 
   Future<void> updatePosition(int index, double position) async {
     await clientRepository.updatePosition(index, position);
+  }
+
+  List<Movie> recentlyWatched(VideoTrackType type) {
+    final watched = <String, (Movie, DateTime)>{};
+
+    // local history of watched videos
+    final entries = history.state.history.videos;
+    for (var entry in entries) {
+      if (type == .movie) {
+        final movie = search.findMovie(entry.title, year: entry.year);
+        if (movie != null) {
+          watched[movie.etag] = (movie, entry.dateTime);
+        }
+      }
+      // else TODO
+    }
+
+    // local/remote history of all offsets; will prune to videos only
+    final notBefore = DateTime.now().subtract(Duration(days: 30));
+    final recentOffsets = offsets.state.sort();
+    for (var offset in recentOffsets) {
+      if (offset.dateTime.isBefore(notBefore)) {
+        break;
+      }
+      if (type == .movie) {
+        final movie = search.getMovie(etag: offset.etag);
+        if (movie != null) {
+          watched[movie.etag] = (movie, offset.dateTime);
+        }
+      }
+      // else TODO
+    }
+
+    // latest first
+    final list = watched.values.toList();
+    list.sort((a, b) => b.$2.compareTo(a.$2));
+
+    return list.map((e) => e.$1).toList();
   }
 
   ArtProvider get imageProvider => read<ArtProvider>();

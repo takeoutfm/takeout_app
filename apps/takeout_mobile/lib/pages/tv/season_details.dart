@@ -14,7 +14,7 @@ class SeasonDetailsPage extends ClientPage<TVSeriesView> {
   final TVSeries _series;
   final int _season;
 
-  SeasonDetailsPage(this._series, this._season, {super.key});
+  const SeasonDetailsPage(this._series, this._season, {super.key});
 
   TVSeries get series => _series;
 
