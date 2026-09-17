@@ -609,7 +609,7 @@ class _SliverFilmAppBar extends _SliverAppBar {
         },
       ),
       MyChip(
-        icon: state.filmType == .added ? selectedIcon : null,
+        icon: state.filmType == .watched ? selectedIcon : null,
         label: 'Recently Watched',
         onTap: () {
           context.selectedMediaType.select(.film, filmType: .watched);

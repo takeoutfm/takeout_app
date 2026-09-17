@@ -47,6 +47,92 @@ abstract class MediaTrack implements MediaEntry {
   String get location;
 }
 
+class SimpleTrack implements MediaTrack {
+  final String creator;
+  final String album;
+  final String image;
+  final String date;
+  final int year;
+  final String title;
+  final String etag;
+  final int size;
+  final int number;
+  final int disc;
+  final String location;
+
+  SimpleTrack._({
+    required this.creator,
+    required this.album,
+    required this.image,
+    required this.date,
+    required this.year,
+    required this.title,
+    required this.etag,
+    required this.size,
+    required this.number,
+    required this.disc,
+    required this.location,
+  });
+
+  factory SimpleTrack._empty() => SimpleTrack._(
+    creator: '',
+    album: '',
+    image: '',
+    date: '',
+    year: 0,
+    title: '',
+    etag: '',
+    size: 0,
+    number: 0,
+    disc: 0,
+    location: '',
+  );
+
+  SimpleTrack copyWith({String? creator, String? title, String? image}) =>
+      SimpleTrack._(
+        creator: creator ?? this.creator,
+        album: album,
+        image: image ?? this.image,
+        date: date,
+        year: year,
+        title: title ?? this.title,
+        etag: etag,
+        size: size,
+        number: number,
+        disc: disc,
+        location: location,
+      );
+
+  factory SimpleTrack.fromLiveTrack(LiveTrack track) {
+    ({String? artist, String title}) parseArtistTitle(String title) {
+      final regex = RegExp(r'^(.+?)\s*-\s*(.+)$');
+      final match = regex.firstMatch(title);
+      if (match == null) {
+        return (artist: null, title: title);
+      }
+      return (
+        artist: match.group(1)?.trim(),
+        title: match.group(2)?.trim() ?? title,
+      );
+    }
+
+    // should be "artist - title"
+    final result = parseArtistTitle(track.title);
+    if (result.artist != null) {
+      return SimpleTrack._empty().copyWith(
+        creator: result.artist,
+        title: result.title,
+        image: track.image,
+      );
+    } else {
+      return SimpleTrack._empty().copyWith(
+        title: track.title,
+        image: track.image,
+      );
+    }
+  }
+}
+
 abstract class LiveTrack {
   String get name; // name of radio live stream
 

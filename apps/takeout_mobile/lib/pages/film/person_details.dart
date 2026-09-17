@@ -58,42 +58,55 @@ class PersonDetailsPage extends ClientPage<ProfileView> {
               slivers: [
                 SliverFavoriteBar(onTap: () {}),
                 SliverBox(
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: .start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: movieSmallPoster(context, person.image),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                Text(person.name, style: context.header1),
-                                const SizedBox(height: 12),
-                                Wrap(
-                                  children: [
-                                    Text(
-                                      ymd(person.birthday),
-                                      style: context.body,
-                                    ),
-                                    SizedBox(width: 16),
-                                    Text(
-                                      '${person.birthplace}',
-                                      style: context.body,
-                                    ),
-                                  ],
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      const posterWidth = 223.0;
+                      const minDetailsWidth = 300.0;
+                      final hasRoom =
+                          constraints.maxWidth >= posterWidth + minDetailsWidth;
+                      if (hasRoom) {
+                        // wide view
+                        return IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: .stretch,
+                            children: [
+                              SizedBox(
+                                width: posterWidth,
+                                child: _profileImage(context, state),
+                              ),
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    minHeight: 0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: .start,
+                                    mainAxisAlignment: .spaceBetween,
+                                    children: [_profileDetails(context, state)],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
+                        );
+                      }
+                      // tall view
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _profileImage(context, state),
+                          const SizedBox(height: 16),
+                          _profileDetails(context, state),
                         ],
-                      ),
-                      const SizedBox(height: 20),
+                      );
+                    },
+                  ),
+                ),
+                SliverBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
                         context.strings.biographyLabel,
                         style: context.header2,
@@ -174,23 +187,27 @@ class PersonDetailsPage extends ClientPage<ProfileView> {
     );
   }
 
-  void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => GenrePage(genre));
-  }
-
-  void _onPlay(BuildContext context, MovieView view) {
-    playVideo(context, VideoTrack.fromMovie(view));
-  }
-
-  void _onResume(BuildContext context, MovieView view) {
-    playVideo(
-      context,
-      VideoTrack.fromMovie(view),
-      startOffset: context.offsets.state.position(view.movie),
+  Widget _profileImage(BuildContext context, ProfileView state) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: movieSmallPoster(context, person.image),
     );
   }
 
-  void _onPerson(BuildContext context, Person person) {
-    push(context, builder: (_) => ProfileWidget(person));
+  Widget _profileDetails(BuildContext context, ProfileView state) {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Text(person.name, style: context.header1),
+        const SizedBox(height: 12),
+        Wrap(
+          children: [
+            Text(ymd(person.birthday), style: context.body),
+            SizedBox(width: 16),
+            Text('${person.birthplace}', style: context.body),
+          ],
+        ),
+      ],
+    );
   }
 }

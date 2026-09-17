@@ -12,6 +12,7 @@
 - redesigned user experience
 - removed unpopulated podcasts recent
 - support movie genre grid
+- submit icy live tracks to listenbrainz
 - flutter, gradle, and related ecosystem updates to latest possible versions
 
 ## 0.25.3

@@ -141,10 +141,14 @@ class TakeoutListenProvider implements ListenProvider {
   bool get _sendTrackActivity =>
       settingsRepository.settings?.enableTrackActivity ?? false;
 
-  Future<void> _updateActivity(MediaTrack track, DateTime listenedAt) {
+  Future<void> _updateActivity(MediaTrack track, DateTime listenedAt) async {
+    if (track.etag.isEmpty) {
+      // likely a live track, not supported in Takeout activity
+      return;
+    }
     final events = Events(
       trackEvents: [TrackEvent.from(track.etag, listenedAt)],
     );
-    return clientRepository.updateActivity(events);
+    await clientRepository.updateActivity(events);
   }
 }

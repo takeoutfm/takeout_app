@@ -46,6 +46,7 @@ import 'package:takeout_lib/intent/intent.dart';
 import 'package:takeout_lib/listen/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/media_type/repository.dart';
+import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
 import 'package:takeout_lib/player/playlist.dart';
@@ -562,6 +563,12 @@ class TakeoutBloc {
     PlayerLiveTrackChange state,
   ) {
     context.history.add(liveTrack: state.track);
+
+    // submit live track listen to listenbrainz
+    // TODO consider setting to not do this
+    final listenedAt = DateTime.now();
+    final track = SimpleTrack.fromLiveTrack(state.track);
+    context.listenRepository.listenedAt(track, listenedAt);
   }
 
   void _onDownloadComplete(BuildContext context, DownloadComplete state) {
