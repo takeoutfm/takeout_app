@@ -378,6 +378,11 @@ class TakeoutBloc {
           }
         },
       ),
+      BlocListener<IndexCubit, IndexState>(
+        listener: (context, state) {
+          onIndexChanged(context, state);
+        },
+      ),
     ];
   }
 
@@ -683,6 +688,20 @@ class TakeoutBloc {
   ) {
     final offset = state.nowWatching.offset;
     context.history.add(video: video, offset: offset);
+  }
+
+  void onIndexChanged(BuildContext context, IndexState state) {
+    final types = Set<FilmType>.from(
+      context.selectedMediaType.state.skipFilmTypes,
+    );
+    if (state.recommendMovies) {
+      // has recommended so don't skip
+      types.remove(FilmType.recommended);
+    } else {
+      // no recommended so skip empty list
+      types.add(FilmType.recommended);
+    }
+    context.selectedMediaType.skipFilmTypes(types);
   }
 }
 

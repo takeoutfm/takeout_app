@@ -241,7 +241,7 @@ abstract class AppLocalizations {
   /// No description provided for @navHistory.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'Recent'**
   String get navHistory;
 
   /// No description provided for @navRadio.
@@ -481,7 +481,7 @@ abstract class AppLocalizations {
   /// No description provided for @historyLabel.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'Recent'**
   String get historyLabel;
 
   /// No description provided for @searchHelperText.
@@ -601,7 +601,7 @@ abstract class AppLocalizations {
   /// No description provided for @history.
   ///
   /// In en, this message translates to:
-  /// **'History'**
+  /// **'Recent'**
   String get history;
 
   /// No description provided for @seriesLabel.

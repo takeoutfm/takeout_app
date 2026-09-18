@@ -10,6 +10,7 @@ import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/music/album_grid.dart';
 import 'package:takeout_mobile/pages/music/all_artists_grid.dart';
 import 'package:takeout_mobile/pages/music/artist_grid.dart';
+import 'package:takeout_mobile/pages/music/want.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
@@ -79,7 +80,7 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
                           (_) => launchUrl(Uri.parse(artistUrl)),
                         ),
                         PopupItem.divider(),
-                        // PopupItem.wantList(context, (_) => _onWantList(context)),
+                        PopupItem.wantList(context, (_) => _onWantList(context)),
                         PopupItem.reload(context, (_) => reloadPage(context)),
                       ],
                     ),
@@ -272,9 +273,9 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
     push(context, builder: (_) => AllArtistsGrid(area: area));
   }
 
-  // void _onWantList(BuildContext context) {
-  //   push(context, builder: (_) => ArtistWantListWidget(_artist));
-  // }
+  void _onWantList(BuildContext context) {
+    push(context, builder: (_) => ArtistWantListWidget(_artist));
+  }
 
   void _onPlaylistAppend(BuildContext context) {
     final ref = '/music/artists/${_artist.id}/playlist';

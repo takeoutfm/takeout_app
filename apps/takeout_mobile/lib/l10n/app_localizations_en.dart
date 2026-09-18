@@ -82,7 +82,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navSearch => 'Search';
 
   @override
-  String get navHistory => 'History';
+  String get navHistory => 'Recent';
 
   @override
   String get navRadio => 'Radio';
@@ -202,7 +202,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get moviesLabel => 'Movies';
 
   @override
-  String get historyLabel => 'History';
+  String get historyLabel => 'Recent';
 
   @override
   String get searchHelperText => 'text or artist:name or guitar:person';
@@ -262,7 +262,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get popularTracks => 'Popular Tracks';
 
   @override
-  String get history => 'History';
+  String get history => 'Recent';
 
   @override
   String get seriesLabel => 'Series';

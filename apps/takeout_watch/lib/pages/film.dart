@@ -51,9 +51,10 @@ class FilmPage extends StatelessWidget {
         } else {
           movies = [];
         }
+      case FilmType.watched:
+        movies = context.recentlyWatched(.movie);
       case FilmType.all:
       case FilmType.genre:
-      case FilmType.watched:
         // TODO not supported yet
         movies = [];
     }

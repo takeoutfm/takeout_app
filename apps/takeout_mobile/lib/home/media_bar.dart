@@ -7,6 +7,7 @@ import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
+import 'package:takeout_mobile/home/title.dart';
 
 class MediaActions {
   List<Widget> call(BuildContext context) {
@@ -128,6 +129,7 @@ class SliverMediaState extends State<SliverMediaBar> {
         },
         icon: Icon(Icons.search),
       ),
+      title: NavTitleWidget(),
       actionsPadding: EdgeInsets.zero,
       actionsIconTheme: const IconThemeData(size: 22),
       actions: actions(context),

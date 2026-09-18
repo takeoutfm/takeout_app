@@ -47,6 +47,7 @@ class MediaTypeState {
   final PodcastType podcastType;
   final FilmType filmType;
   final MusicType musicType;
+  final Set<FilmType> skipFilmTypes;
 
   factory MediaTypeState.initial() => MediaTypeState(
     MediaType.music,
@@ -61,6 +62,7 @@ class MediaTypeState {
     this.podcastType = .all,
     this.filmType = .added,
     this.musicType = .added,
+    this.skipFilmTypes = const {},
   });
 
   bool isMusic() {
@@ -84,11 +86,13 @@ class MediaTypeState {
     PodcastType? podcastType,
     FilmType? filmType,
     MusicType? musicType,
+    Set<FilmType>? skipFilmTypes,
   }) => MediaTypeState(
     mediaType ?? this.mediaType,
     podcastType: podcastType ?? this.podcastType,
     filmType: filmType ?? this.filmType,
     musicType: musicType ?? this.musicType,
+    skipFilmTypes: skipFilmTypes ?? this.skipFilmTypes,
   );
 
   factory MediaTypeState.fromJson(Map<String, dynamic> json) =>
@@ -142,22 +146,27 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
     }
   }
 
-  // all -> recent -> added -> recommended -> genre
+  // all -> watched -> recent -> added -> recommended -> genre
   void nextFilmType() {
-    switch (state.filmType) {
-      case .all:
-        emit(state.copyWith(filmType: .watched));
-      case .watched:
-        emit(state.copyWith(filmType: .recent));
-      case .recent:
-        emit(state.copyWith(filmType: .added));
-      case .added:
-        emit(state.copyWith(filmType: .recommended));
-      case .recommended:
-        emit(state.copyWith(filmType: .genre));
-      case .genre:
-        emit(state.copyWith(filmType: .all));
-    }
+    var current = state.filmType;
+    FilmType next;
+    do {
+      next = switch (current) {
+        .all => FilmType.watched,
+        .watched => FilmType.recent,
+        .recent => FilmType.added,
+        .added => FilmType.recommended,
+        .recommended => FilmType.genre,
+        .genre => FilmType.all,
+      };
+      current = next;
+    } while (state.skipFilmTypes.contains(current));
+
+    emit(state.copyWith(filmType: next));
+  }
+
+  void skipFilmTypes(Set<FilmType> skipFilmTypes) {
+    emit(state.copyWith(skipFilmTypes: skipFilmTypes));
   }
 
   // recent -> added

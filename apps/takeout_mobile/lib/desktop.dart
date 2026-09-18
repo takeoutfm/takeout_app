@@ -24,6 +24,7 @@ import 'package:takeout_mobile/app/app.dart';
 import 'package:takeout_mobile/app/bloc.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/home/menu.dart';
+import 'package:takeout_mobile/home/title.dart';
 import 'package:takeout_mobile/player/mini_player.dart';
 import 'package:takeout_mobile/takeout.dart';
 
@@ -41,7 +42,7 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
     return Scaffold(
       appBar: AppBar(
         leading: _searchButton(context),
-        title: _NavTitleWidget(),
+        title: NavTitleWidget(),
         actions: [HomeMenu()],
         // actions: actions(context),
       ),
@@ -261,22 +262,3 @@ class TakeoutDesktopState extends TakeoutState<TakeoutDesktopWidget>
   }
 }
 
-class _NavTitleWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final state = context.watch<AppCubit>().state;
-    final title = switch (state.navigationIndex) {
-      .music => context.strings.navMusic,
-      .artists => context.strings.navArtists,
-      .radio => context.strings.navRadio,
-      .film => context.strings.navMovies,
-      .tv => context.strings.navTVShows,
-      .podcast => context.strings.navPodcasts,
-      .history => context.strings.navHistory,
-      .player => context.strings.navPlayer,
-      .search => context.strings.navSearch,
-      _ => 'Takeout',
-    };
-    return Text(title);
-  }
-}

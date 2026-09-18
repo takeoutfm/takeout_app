@@ -44,19 +44,24 @@ class HistoryWidget extends StatelessWidget {
 
   Widget page(BuildContext context, List<HistoryEntry> entries) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverMenuBar(
-            allowBack: false,
-            items: [
-              PopupItem.streamHistory(
-                context,
-                (context) => _onStreamHistory(context),
-              ),
-            ],
-          ),
-          SliverHistoryGrid(entries),
-        ],
+      body: OrientationBuilder(
+        builder: (context, orientation) => CustomScrollView(
+          slivers: [
+            SliverMenuBar(
+              allowBack: false,
+              title: orientation == .portrait
+                  ? context.strings.historyLabel
+                  : null,
+              items: [
+                PopupItem.streamHistory(
+                  context,
+                  (context) => _onStreamHistory(context),
+                ),
+              ],
+            ),
+            SliverHistoryGrid(entries),
+          ],
+        ),
       ),
     );
   }

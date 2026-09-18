@@ -123,26 +123,26 @@ class SearchPage extends ClientPage<SearchView> {
                         },
                         fieldViewBuilder:
                             (context, controller, focusNode, onFieldSubmitted) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                focusNode.requestFocus();
-                              });
+                              // WidgetsBinding.instance.addPostFrameCallback((_) {
+                              //   focusNode.requestFocus();
+                              // });
                               return TextField(
                                 controller: controller,
                                 focusNode: focusNode,
                                 textInputAction: .search,
                                 onSubmitted: (value) => onFieldSubmitted(),
-                                onChanged: (q) {
-                                  if (q.length > 3) {
-                                    // auto submit
-                                    debounce?.cancel();
-                                    debounce = Timer(
-                                      const Duration(milliseconds: 750),
-                                      () {
-                                        _onSubmit(context, q);
-                                      },
-                                    );
-                                  }
-                                },
+                                // onChanged: (q) {
+                                //   if (q.length > 3) {
+                                //     // auto submit
+                                //     debounce?.cancel();
+                                //     debounce = Timer(
+                                //       const Duration(milliseconds: 750),
+                                //       () {
+                                //         _onSubmit(context, q);
+                                //       },
+                                //     );
+                                //   }
+                                // },
                                 decoration: InputDecoration(
                                   hintText: 'Takeout Search',
                                   filled: true,
