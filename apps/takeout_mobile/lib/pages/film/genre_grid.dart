@@ -64,18 +64,26 @@ class GenreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = genre.imageUrl != null;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+
+    // White-on-scrim is fine regardless of theme when there's a background
+    // image — contrast is against the photo, not the app background. But
+    // with no image, content sits directly on the card's own surface tint,
+    // so it needs to track the theme or it's invisible in light mode.
+    final contentColor = hasImage ? Colors.white : onSurface;
+
     return DpadFocusable(
       onSelect: onTap,
       child: Material(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: onSurface.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background image, if provided
-              if (genre.imageUrl != null)
+              if (hasImage)
                 Image.network(
                   genre.imageUrl!,
                   fit: BoxFit.cover,
@@ -83,22 +91,21 @@ class GenreCard extends StatelessWidget {
                       const SizedBox.shrink(),
                 ),
 
-              // Dark scrim so text stays legible over an image
-              if (genre.imageUrl != null)
-                DecoratedBox(
+              if (hasImage)
+                const DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.5),
+                        Color.fromRGBO(0, 0, 0, 0.5),
+                        // scrim stays black regardless of theme
                       ],
                     ),
                   ),
                 ),
 
-              // Content: icon + name
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -106,12 +113,12 @@ class GenreCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (genre.icon != null)
-                      Icon(genre.icon, color: Colors.white, size: 28),
+                      Icon(genre.icon, color: contentColor, size: 28),
                     if (genre.icon != null) const SizedBox(height: 8),
                     Text(
                       genre.name,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: contentColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),

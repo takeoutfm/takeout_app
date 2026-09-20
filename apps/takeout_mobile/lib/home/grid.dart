@@ -1,3 +1,20 @@
+// Copyright 2026 defsub
+//
+// This file is part of TakeoutFM.
+//
+// TakeoutFM is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// TakeoutFM is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with TakeoutFM.  If not, see <https://www.gnu.org/licenses/>.
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -523,6 +540,8 @@ abstract class _SliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final surface = Theme.of(context).colorScheme.surface;
+
     return SliverAppBar(
       pinned: true,
       backgroundColor: Colors.transparent,
@@ -531,7 +550,7 @@ abstract class _SliverAppBar extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            color: Colors.black.withValues(alpha: 0.1), // slight tint helps too
+            color: surface.withValues(alpha: 0.1), // matches page bg, blends in both themes
           ),
         ),
       ),

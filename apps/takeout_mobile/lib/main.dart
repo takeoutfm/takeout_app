@@ -122,17 +122,10 @@ class TakeoutApp extends StatelessWidget {
                     effects: [
                       DpadScaleEffect(scale: 1.06),
                       DpadBorderEffect(),
-                      DpadGlowEffect(),
+                      // DpadGlowEffect(),
                     ],
                     scrollPadding: 48,
                   ),
-                  // onBack: () {
-                  //   // final handled = orientation == .landscape
-                  //   //     ? (_desktopKey.currentState?.handleBack() ?? false)
-                  //   //     : (_mobileKey.currentState?.handleBack() ?? false);
-                  //   // return handled;
-                  //   return false;
-                  // },
                   keySet: DpadKeySet().copyWith(back: []),
                   onBack: null,
                   shortcuts: {

@@ -30,6 +30,7 @@ import 'package:takeout_lib/spiff/model.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
 import 'package:takeout_mobile/pages/playlists.dart';
+import 'package:takeout_mobile/player/live.dart';
 import 'package:takeout_mobile/player/player_sheet.dart';
 import 'package:takeout_mobile/player/player_widgets.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
@@ -196,7 +197,6 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
     if (spiff.isNotEmpty) {
       track = spiff[spiff.index];
     }
-    final scheme = ColorScheme.of(context);
     return Column(
       mainAxisAlignment: center ? .center : .start,
       children: [
@@ -213,47 +213,7 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
               ),
             ],
           ),
-        if (spiff.isLive)
-          Wrap(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: scheme.surfaceDim,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: scheme.onSurface,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'LIVE',
-                      style: TextStyle(
-                        // color: color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        if (spiff.isLive) Wrap(children: [LiveWidget()]),
         if (spiff.isMusic) ...[
           SizedBox(height: spacing),
           Row(
