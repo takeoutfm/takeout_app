@@ -23,7 +23,6 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
-import 'package:takeout_mobile/pages/film/genre_page.dart';
 import 'package:takeout_mobile/pages/film/person_details.dart';
 import 'package:takeout_mobile/pages/tv/season_details.dart';
 import 'package:takeout_mobile/widgets/avatar_button.dart';
@@ -132,7 +131,7 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.10),
+                          color: Colors.black.withValues(alpha: 0.30),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(series.overview, style: context.synopsis),
@@ -208,19 +207,6 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
             Text('${series.year}', style: context.details),
           ],
         ),
-        // Wrap(
-        //   children: [
-        //     Text(
-        //       context.strings.seasonCount(series.seasonCount),
-        //       style: context.details,
-        //     ),
-        //     SizedBox(width: 8),
-        //     Text(
-        //       context.strings.episodeCount(series.episodeCount),
-        //       style: context.details,
-        //     ),
-        //   ],
-        // ),
         if (state.hasGenres()) ...[
           const SizedBox(height: 16),
           Wrap(
@@ -256,7 +242,8 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
   }
 
   void _onGenre(BuildContext context, String genre) {
-    push(context, builder: (_) => GenrePage(genre));
+    // TODO no tv show genre API yet
+    // push(context, builder: (_) => GenrePage(genre));
   }
 
   void _onSeason(BuildContext context, int season) {

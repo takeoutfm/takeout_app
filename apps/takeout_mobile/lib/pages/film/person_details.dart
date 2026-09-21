@@ -33,6 +33,7 @@ import 'package:takeout_mobile/pages/tv/tvseries_grid.dart';
 import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_stack.dart';
+import 'package:takeout_mobile/widgets/surface_theme.dart';
 
 class PersonDetailsPage extends ClientPage<ProfileView> {
   final Person _person;
@@ -54,132 +55,154 @@ class PersonDetailsPage extends ClientPage<ProfileView> {
         onRefresh: () => reloadPage(context),
         child: BlocBuilder<TrackCacheCubit, TrackCacheState>(
           builder: (context, cacheState) {
-            return SliverStack(
-              slivers: [
-                SliverFavoriteBar(onTap: () {}),
-                SliverBox(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      const posterWidth = 223.0;
-                      const minDetailsWidth = 300.0;
-                      final hasRoom =
-                          constraints.maxWidth >= posterWidth + minDetailsWidth;
-                      if (hasRoom) {
-                        // wide view
-                        return IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: .stretch,
+            return SurfaceTheme(
+              brightness: Brightness.dark,
+              child: Builder(
+                builder: (context) => SliverStack(
+                  slivers: [
+                    SliverFavoriteBar(onTap: () {}),
+                    SliverBox(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          const posterWidth = 223.0;
+                          const minDetailsWidth = 300.0;
+                          final hasRoom =
+                              constraints.maxWidth >=
+                              posterWidth + minDetailsWidth;
+                          if (hasRoom) {
+                            // wide view
+                            return IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: .stretch,
+                                children: [
+                                  SizedBox(
+                                    width: posterWidth,
+                                    child: _profileImage(context, state),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisAlignment: .spaceBetween,
+                                        children: [
+                                          _profileDetails(context, state),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // tall view
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(
-                                width: posterWidth,
-                                child: _profileImage(context, state),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    minHeight: 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [_profileDetails(context, state)],
-                                  ),
-                                ),
-                              ),
+                              _profileImage(context, state),
+                              const SizedBox(height: 16),
+                              _profileDetails(context, state),
                             ],
-                          ),
-                        );
-                      }
-                      // tall view
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _profileImage(context, state),
-                          const SizedBox(height: 16),
-                          _profileDetails(context, state),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                SliverBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.strings.biographyLabel,
-                        style: context.header2,
+                          );
+                        },
                       ),
-                      const SizedBox(height: 16),
-                      Text('${person.bio}', style: context.synopsis),
+                    ),
+                    if (person.bio != null)
+                      SliverBox(
+                        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              context.strings.biographyLabel,
+                              style: context.header2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (person.bio != null)
+                      SliverBox(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.10),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            person.bio ?? '',
+                            style: context.synopsis,
+                          ),
+                        ),
+                      ),
+                    if (state.hasStarringMovies()) ...[
+                      SliverBox(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              context.strings.starringLabel,
+                              style: context.header2,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SliverMovieGrid(
+                        state.movies.starring,
+                        padding: EdgeInsetsGeometry.only(
+                          left: movieGridEdgeInset,
+                          right: movieGridEdgeInset,
+                          bottom: movieGridEdgeInset,
+                        ),
+                      ),
                     ],
-                  ),
+                    if (state.hasStarringShows()) ...[
+                      SliverBox(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              context.strings.starringShowsLabel,
+                              style: context.header2,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SliverTVSeriesGrid(
+                        state.shows.starring,
+                        padding: EdgeInsetsGeometry.only(
+                          left: movieGridEdgeInset,
+                          right: movieGridEdgeInset,
+                          bottom: movieGridEdgeInset,
+                        ),
+                      ),
+                    ],
+                    if (state.hasDirecting()) ...[
+                      SliverBox(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            Text(
+                              context.strings.directingLabel,
+                              style: context.header2,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SliverMovieGrid(
+                        state.movies.directing,
+                        padding: EdgeInsetsGeometry.only(
+                          left: movieGridEdgeInset,
+                          right: movieGridEdgeInset,
+                          bottom: movieGridEdgeInset,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                if (state.hasStarringMovies()) ...[
-                  SliverBox(
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        Text(
-                          context.strings.starringLabel,
-                          style: context.header2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SliverMovieGrid(
-                    state.movies.starring,
-                    padding: EdgeInsetsGeometry.only(
-                      left: movieGridEdgeInset,
-                      right: movieGridEdgeInset,
-                      bottom: movieGridEdgeInset,
-                    ),
-                  ),
-                ],
-                if (state.hasStarringShows()) ...[
-                  SliverBox(
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        Text(
-                          context.strings.starringShowsLabel,
-                          style: context.header2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SliverTVSeriesGrid(
-                    state.shows.starring,
-                    padding: EdgeInsetsGeometry.only(
-                      left: movieGridEdgeInset,
-                      right: movieGridEdgeInset,
-                      bottom: movieGridEdgeInset,
-                    ),
-                  ),
-                ],
-                if (state.hasDirecting()) ...[
-                  SliverBox(
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        Text(
-                          context.strings.directingLabel,
-                          style: context.header2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SliverMovieGrid(
-                    state.movies.directing,
-                    padding: EdgeInsetsGeometry.only(
-                      left: movieGridEdgeInset,
-                      right: movieGridEdgeInset,
-                      bottom: movieGridEdgeInset,
-                    ),
-                  ),
-                ],
-              ],
+              ),
             );
           },
         ),
