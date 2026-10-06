@@ -146,6 +146,7 @@ class ArtistView {
   final List<Track> popular;
   final List<Track> singles;
   final List<Artist> similar;
+  final bool isFavorite;
 
   ArtistView({
     required this.artist,
@@ -155,6 +156,7 @@ class ArtistView {
     this.popular = const [],
     this.singles = const [],
     this.similar = const [],
+    this.isFavorite = false,
   });
 
   factory ArtistView.fromJson(Map<String, dynamic> json) =>
@@ -673,6 +675,7 @@ class MovieView {
   final int? vote;
   final int? voteCount;
   final List<Trailer>? trailers;
+  final bool isFavorite;
 
   MovieView({
     required this.movie,
@@ -688,6 +691,7 @@ class MovieView {
     this.vote,
     this.voteCount,
     this.trailers = const [],
+    this.isFavorite = false,
   });
 
   // @override
@@ -1369,6 +1373,7 @@ class TVSeriesView {
   final List<String>? genres;
   final int vote;
   final int voteCount;
+  final bool isFavorite;
 
   TVSeriesView({
     required this.series,
@@ -1381,6 +1386,7 @@ class TVSeriesView {
     this.genres = const [],
     required this.vote,
     required this.voteCount,
+    this.isFavorite = false,
   });
 
   factory TVSeriesView.fromJson(Map<String, dynamic> json) =>
@@ -2038,4 +2044,26 @@ class PlaylistsView {
   Map<String, dynamic> toJson() => _$PlaylistsViewToJson(this);
 
   String get location => '/api/playlists';
+}
+
+@JsonSerializable(fieldRename: FieldRename.pascal)
+class FavoriteView {
+  final List<Artist> artists;
+  final List<Movie> movies;
+  final List<TVSeries> shows;
+  final List<Track> tracks;
+
+  FavoriteView({
+    this.artists = const [],
+    this.movies = const [],
+    this.shows = const [],
+    this.tracks = const [],
+  });
+
+  factory FavoriteView.fromJson(Map<String, dynamic> json) =>
+      _$FavoriteViewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$FavoriteViewToJson(this);
+
+  String get location => '/api/favorite';
 }

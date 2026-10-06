@@ -28,6 +28,7 @@ import 'package:just_audio_media_kit/just_audio_media_kit.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/favorite/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -50,6 +51,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final SettingsRepository settingsRepository;
   final OffsetCacheRepository offsetRepository;
   final MediaRepository mediaRepository;
+  final FavoriteRepository favoriteRepository;
 
   final AudioPlayer _player = AudioPlayer(maxSkipsOnError: 1);
   final PlayCallback onPlay;
@@ -63,6 +65,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
   final TrackEndCallback onTrackEnd;
   final RepeatModeChangeCallback onRepeatModeChange;
   final LiveTrackChangeCallback onLiveTrackChange;
+  final FavoriteTrackChangeCallback onFavoriteTrackChange;
 
   final _subscriptions = <StreamSubscription<dynamic>>[];
   final _listens = ExpiringSet<String>(const Duration(minutes: 15));
@@ -90,11 +93,13 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required this.onTrackEnd,
     required this.onRepeatModeChange,
     required this.onLiveTrackChange,
+    required this.onFavoriteTrackChange,
     required this.trackResolver,
     required this.tokenRepository,
     required this.settingsRepository,
     required this.offsetRepository,
     required this.mediaRepository,
+    required this.favoriteRepository,
     Duration? skipToBeginningInterval,
     int? positionSteps,
     Duration? minPositionPeriod,
@@ -115,6 +120,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required SettingsRepository settingsRepository,
     required OffsetCacheRepository offsetRepository,
     required MediaRepository mediaRepository,
+    required FavoriteRepository favoriteRepository,
     required PlayCallback onPlay,
     required PauseCallback onPause,
     required StoppedCallback onStop,
@@ -126,6 +132,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
     required LiveTrackChangeCallback onLiveTrackChange,
+    required FavoriteTrackChangeCallback onFavoriteTrackChange,
     Duration? skipBeginningInterval,
     Duration? fastForwardInterval,
     Duration? rewindInterval,
@@ -152,11 +159,13 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         onTrackEnd: onTrackEnd,
         onRepeatModeChange: onRepeatModeChange,
         onLiveTrackChange: onLiveTrackChange,
+        onFavoriteTrackChange: onFavoriteTrackChange,
         trackResolver: trackResolver,
         tokenRepository: tokenRepository,
         settingsRepository: settingsRepository,
         offsetRepository: offsetRepository,
         mediaRepository: mediaRepository,
+        favoriteRepository: favoriteRepository,
         skipToBeginningInterval: skipBeginningInterval,
         positionSteps: positionSteps,
         minPositionPeriod: minPositionPeriod,
@@ -396,6 +405,11 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
             }
           }),
     );
+
+    _subscriptions.add(favoriteRepository.stream.listen((_) {
+      // (re)broadcast state to ensure latest favorite state is shown
+      _broadcastState(_player.playbackEvent);
+    }));
   }
 
   Stream<Duration> _throttlePositionStream(
@@ -824,6 +838,28 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
     };
   }
 
+  MediaControl _favoriteControl(bool isFavorite) {
+    return isFavorite
+        ? const MediaControl(
+            androidIcon: 'drawable/favorite_filled_24dp',
+            label: 'Unfavorite',
+            action: MediaAction.custom,
+            customAction: CustomMediaAction(
+              name: 'setFavorite',
+              extras: {'favorite': 'false'},
+            ),
+          )
+        : const MediaControl(
+            androidIcon: 'drawable/favorite_24dp',
+            label: 'Favorite',
+            action: MediaAction.custom,
+            customAction: CustomMediaAction(
+              name: 'setFavorite',
+              extras: {'favorite': 'true'},
+            ),
+          );
+  }
+
   @override
   Future<dynamic> customAction(String name, [Map<String, dynamic>? extras]) {
     if (name == 'setRepeatMode') {
@@ -835,6 +871,12 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
           onRepeatModeChange(_spiff, m);
         }
       }
+    } else if (name == 'setFavorite') {
+      final value = extras?['favorite'] == 'true';
+      final track = _spiff[_spiff.index];
+      // invoke to callback to pass along the request to set favorite or not
+      // the change will made in the cubit, updated async via stream listener
+      onFavoriteTrackChange(_spiff, track.etag, value);
     }
     return super.customAction(name, extras);
   }
@@ -848,6 +890,9 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
 
     final isPodcast = _spiff.isPodcast;
     final isLive = _spiff.isLive;
+    final isFavorite = _spiff.isMusic && _spiff.index != -1
+        ? favoriteRepository.isFavoriteTrack(_spiff[_spiff.index].etag)
+        : false;
 
     if (isPodcast) {
       controls = [
@@ -878,6 +923,7 @@ class TakeoutPlayerHandler extends BaseAudioHandler with QueueHandler {
         if (playing) MediaControl.pause else MediaControl.play,
         MediaControl.skipToNext,
         _loopControl(loopMode),
+        _favoriteControl(isFavorite),
       ];
       systemActions = const [
         MediaAction.skipToPrevious,

@@ -67,7 +67,13 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                   backdrop: series.backdrop,
                   slivers: [
                     // SliverFavoriteBar(title: series.nameYear, onTap: () {}),
-                    SliverFavoriteBar(onTap: () {}),
+                    SliverFavoriteBar(
+                      isFavorite: state.isFavorite,
+                      onTap: () => context.toggleFavoriteTVSeries(
+                        series,
+                        state.isFavorite,
+                      ),
+                    ),
                     SliverBox(
                       child: LayoutBuilder(
                         builder: (context, constraints) {

@@ -140,4 +140,22 @@ abstract class ClientProvider {
   Future<PodcastsView> podcasts({Duration? ttl});
 
   Future<PodcastsView> podcastsSubscribed({Duration? ttl});
+
+  Future<FavoriteView> favorite({Duration? ttl});
+
+  Future<void> favoriteArtist(Artist artist);
+
+  Future<void> unfavoriteArtist(Artist artist);
+
+  Future<void> favoriteMovie(Movie movie);
+
+  Future<void> unfavoriteMovie(Movie movie);
+
+  Future<void> favoriteTrack(String etag);
+
+  Future<void> unfavoriteTrack(String etag);
+
+  Future<void> favoriteTVSeries(TVSeries series);
+
+  Future<void> unfavoriteTVSeries(TVSeries series);
 }

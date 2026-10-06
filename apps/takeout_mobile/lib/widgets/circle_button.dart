@@ -49,10 +49,11 @@ class CircleButton extends StatelessWidget {
   const CircleButton.favorite({
     Key? key,
     required VoidCallback? onTap,
+    bool isFavorite = false,
     double? padding,
   }) : this(
          key: key,
-         icon: Icons.favorite_border,
+         icon: isFavorite ? Icons.favorite : Icons.favorite_border,
          onTap: onTap,
          padding: padding ?? _appBarPadding,
        );

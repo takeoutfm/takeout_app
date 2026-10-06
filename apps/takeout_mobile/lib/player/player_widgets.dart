@@ -19,6 +19,7 @@ import 'package:flutter/material.dart' hide RepeatMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/empty.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/player/player.dart';
 import 'package:takeout_lib/player/playing.dart';
@@ -231,6 +232,25 @@ mixin PlayerWidgets {
               isSelected: true,
               onPressed: () => nowPlaying.repeatMode(RepeatMode.none),
             );
+        }
+      },
+    );
+  }
+
+  Widget favoriteButton() {
+    return Builder(
+      builder: (context) {
+        final state = context.watch<FavoriteCubit>().state;
+        final currentTrack = context.watch<Player>().state.currentTrack;
+        if (currentTrack != null) {
+          final isFavorite = state.favorite.isFavoriteTrack(currentTrack.etag);
+          return IconButton(
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
+            onPressed: () =>
+                context.favorite.toggleFavoriteTrack(currentTrack.etag),
+          );
+        } else {
+          return IconButton(icon: Icon(Icons.heart_broken), onPressed: () {});
         }
       },
     );

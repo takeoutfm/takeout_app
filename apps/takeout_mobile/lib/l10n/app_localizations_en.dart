@@ -343,6 +343,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get biographyLabel => 'Bio';
 
   @override
+  String get favorite => 'Favorite';
+
+  @override
+  String get unfavorite => 'Unfavorite';
+
+  @override
   String deleteTitle(String title) {
     return 'Really delete $title?';
   }

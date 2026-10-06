@@ -29,6 +29,7 @@ import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/db/search.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/index/index.dart';
 import 'package:takeout_lib/listen/repository.dart';
@@ -211,6 +212,8 @@ extension TakeoutContext on BuildContext {
 
   NowPlayingCubit get nowPlaying => read<NowPlayingCubit>();
 
+  FavoriteCubit get favorite => read<FavoriteCubit>();
+
   OffsetCacheCubit get offsets => read<OffsetCacheCubit>();
 
   Player get player => read<Player>();
@@ -255,5 +258,17 @@ extension TakeoutContext on BuildContext {
 
   bool get enableListenBrainz {
     return settings.state.settings.enableListenBrainz;
+  }
+
+  void toggleFavoriteArtist(Artist artist, bool isFavorite) {
+    client.toggleFavoriteArtist(artist, isFavorite);
+  }
+
+  void toggleFavoriteMovie(Movie movie, bool isFavorite) {
+    client.toggleFavoriteMovie(movie, isFavorite);
+  }
+
+  void toggleFavoriteTVSeries(TVSeries series, bool isFavorite) {
+    client.toggleFavoriteTVSeries(series, isFavorite);
   }
 }

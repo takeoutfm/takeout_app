@@ -38,6 +38,8 @@ import 'package:takeout_lib/client/resolver.dart';
 import 'package:takeout_lib/connectivity/connectivity.dart';
 import 'package:takeout_lib/connectivity/repository.dart';
 import 'package:takeout_lib/db/search.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
+import 'package:takeout_lib/favorite/repository.dart';
 import 'package:takeout_lib/history/history.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/hive/adapters.dart';
@@ -137,6 +139,8 @@ class TakeoutBloc {
 
     final subscribedRepository = SubscribedRepository();
 
+    final favoriteRepository = FavoriteRepository();
+
     final mediaRepository = MediaRepository(
       clientRepository: clientRepository,
       historyRepository: historyRepository,
@@ -173,6 +177,7 @@ class TakeoutBloc {
       RepositoryProvider(create: (_) => mediaTypeRepository),
       RepositoryProvider(create: (_) => subscribedRepository),
       RepositoryProvider(create: (_) => statsRepository),
+      RepositoryProvider(create: (_) => favoriteRepository),
     ];
   }
 
@@ -266,6 +271,14 @@ class TakeoutBloc {
       ),
       BlocProvider(create: (context) => ReloadCubit()),
       BlocProvider(create: (context) => NowWatchingCubit()),
+      BlocProvider(
+        lazy: false,
+        create: (context) {
+          final favorite = FavoriteCubit(context.read<ClientRepository>());
+          context.read<FavoriteRepository>().init(favorite);
+          return favorite;
+        },
+      ),
     ];
   }
 
@@ -299,7 +312,8 @@ class TakeoutBloc {
             state is PlayerIndexChange ||
             state is PlayerTrackEnd ||
             state is PlayerRepeatModeChange ||
-            state is PlayerLiveTrackChange,
+            state is PlayerLiveTrackChange ||
+            state is PlayerFavoriteTrackChange,
         listener: (context, state) {
           switch (state) {
             case PlayerReady():
@@ -320,6 +334,8 @@ class TakeoutBloc {
               _onPlayerRepeatModeChange(context, state);
             case PlayerLiveTrackChange():
               _onPlayerLiveTrackChange(context, state);
+            case PlayerFavoriteTrackChange():
+              _onPlayerFavoriteTrackChange(context, state);
           }
         },
       ),
@@ -411,6 +427,7 @@ class TakeoutBloc {
       tokenRepository: context.read<TokenRepository>(),
       trackResolver: context.read<MediaTrackResolver>(),
       mediaRepository: context.read<MediaRepository>(),
+      favoriteRepository: context.read<FavoriteRepository>(),
     );
   }
 
@@ -574,6 +591,19 @@ class TakeoutBloc {
     final listenedAt = DateTime.now();
     final track = SimpleTrack.fromLiveTrack(state.track);
     context.listenRepository.listenedAt(track, listenedAt);
+  }
+
+  void _onPlayerFavoriteTrackChange(
+      BuildContext context,
+      PlayerFavoriteTrackChange state,
+      ) {
+    if (state.isFavorite) {
+      // player request to make track a favorite
+      context.favorite.favoriteTrack(state.etag);
+    } else {
+      // player request to unfavorite a track
+      context.favorite.unfavoriteTrack(state.etag);
+    }
   }
 
   void _onDownloadComplete(BuildContext context, DownloadComplete state) {

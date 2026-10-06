@@ -291,6 +291,42 @@ class ClientRepository {
     return _provider.podcastsSubscribed(ttl: ttl);
   }
 
+  Future<FavoriteView> favorite({Duration? ttl}) async {
+    return _provider.favorite(ttl: ttl);
+  }
+
+  Future<void> favoriteArtist(Artist artist) async {
+    return _provider.favoriteArtist(artist);
+  }
+
+  Future<void> unfavoriteArtist(Artist artist) async {
+    return _provider.unfavoriteArtist(artist);
+  }
+
+  Future<void> favoriteMovie(Movie movie) async {
+    return _provider.favoriteMovie(movie);
+  }
+
+  Future<void> unfavoriteMovie(Movie movie) async {
+    return _provider.unfavoriteMovie(movie);
+  }
+
+  Future<void> favoriteTrack(String etag) async {
+    return _provider.favoriteTrack(etag);
+  }
+
+  Future<void> unfavoriteTrack(String etag) async {
+    return _provider.unfavoriteTrack(etag);
+  }
+
+  Future<void> favoriteTVSeries(TVSeries series) async {
+    return _provider.favoriteTVSeries(series);
+  }
+
+  Future<void> unfavoriteTVSeries(TVSeries series) async {
+    return _provider.unfavoriteTVSeries(series);
+  }
+
   Future<void> updatePosition(int index, double position) async {
     await patch(patchPosition(index, position));
   }

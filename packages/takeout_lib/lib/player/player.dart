@@ -19,6 +19,7 @@ import 'package:bloc/bloc.dart';
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/favorite/repository.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/player/provider.dart';
 import 'package:takeout_lib/settings/repository.dart';
@@ -214,6 +215,13 @@ class PlayerLiveTrackChange extends PlayerEvent {
   PlayerLiveTrackChange(super.spiff, this.track);
 }
 
+class PlayerFavoriteTrackChange extends PlayerEvent {
+  final String etag;
+  final bool isFavorite;
+
+  PlayerFavoriteTrackChange(super.spiff, this.etag, this.isFavorite);
+}
+
 class Player extends Cubit<PlayerEvent> {
   final PlayerProvider _provider;
   final MediaTrackResolver trackResolver;
@@ -221,6 +229,7 @@ class Player extends Cubit<PlayerEvent> {
   final SettingsRepository settingsRepository;
   final OffsetCacheRepository offsetRepository;
   final MediaRepository mediaRepository;
+  final FavoriteRepository favoriteRepository;
 
   Player({
     required this.trackResolver,
@@ -228,6 +237,7 @@ class Player extends Cubit<PlayerEvent> {
     required this.settingsRepository,
     required this.offsetRepository,
     required this.mediaRepository,
+    required this.favoriteRepository,
     PositionInterval? positionInterval,
     PlayerProvider? provider,
   }) : _provider = provider ?? DefaultPlayerProvider(),
@@ -239,6 +249,7 @@ class Player extends Cubit<PlayerEvent> {
           trackResolver: trackResolver,
           offsetRepository: offsetRepository,
           mediaRepository: mediaRepository,
+          favoriteRepository: favoriteRepository,
           positionInterval: positionInterval,
           onPlay: (spiff, duration, position, buffering) => emit(
             PlayerPlay(
@@ -298,6 +309,8 @@ class Player extends Cubit<PlayerEvent> {
               emit(PlayerRepeatModeChange(spiff, repeat)),
           onLiveTrackChange: (spiff, track) =>
               emit(PlayerLiveTrackChange(spiff, track)),
+          onFavoriteTrackChange: (spiff, etag, isFavorite) =>
+              emit(PlayerFavoriteTrackChange(spiff, etag, isFavorite)),
         )
         .whenComplete(() => emit(PlayerReady()));
   }

@@ -65,7 +65,7 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
                 builder: (context) => SliverStack(
                   backdrop: state.background,
                   slivers: [
-                    SliverMenuBar(
+                    SliverFavoriteMenuBar(
                       // title: artist.name,
                       items: [
                         PopupItem.shuffle(context, (_) => _onShuffle(context)),
@@ -100,6 +100,10 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
                         PopupItem.wantList(context, (_) => _onWantList(context)),
                         PopupItem.reload(context, (_) => reloadPage(context)),
                       ],
+                      onTap: () => context.toggleFavoriteArtist(
+                        artist,
+                        state.isFavorite,
+                      ),
                     ),
                     SliverBox(
                       child: LayoutBuilder(

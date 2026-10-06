@@ -110,6 +110,8 @@
   "tvEpisodesLabel": "TV Episodes",
   "synopsisLabel": "Synopsis",
   "biographyLabel": "Bio",
+  "favorite": "Favorite",
+  "unfavorite": "Unfavorite",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

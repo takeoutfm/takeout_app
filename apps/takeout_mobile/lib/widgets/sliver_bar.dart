@@ -76,8 +76,14 @@ class SliverMenuBar extends StatelessWidget {
 class SliverFavoriteBar extends StatelessWidget {
   final String? title;
   final void Function() onTap;
+  final bool isFavorite;
 
-  const SliverFavoriteBar({super.key, this.title, required this.onTap});
+  const SliverFavoriteBar({
+    super.key,
+    this.title,
+    this.isFavorite = false,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +112,66 @@ class SliverFavoriteBar extends StatelessWidget {
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 6),
-          child: CircleButton.favorite(onTap: onTap),
+          child: CircleButton.favorite(isFavorite: isFavorite, onTap: onTap),
+        ),
+      ],
+    );
+  }
+}
+
+class SliverFavoriteMenuBar extends StatelessWidget {
+  final String? title;
+  final List<PopupItem> items;
+  final bool allowBack;
+  final bool isFavorite;
+  final void Function() onTap;
+
+  const SliverFavoriteMenuBar({
+    super.key,
+    this.title,
+    required this.items,
+    required this.onTap,
+    this.allowBack = true,
+    this.isFavorite = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverAppBar(
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      pinned: true,
+      flexibleSpace: title != null
+          ? ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  color: Colors.black.withValues(
+                    alpha: 0.1,
+                  ), // slight tint helps too
+                ),
+              ),
+            )
+          : null,
+      leading: allowBack
+          ? Center(
+              child: CircleButton.back(onTap: () => Navigator.pop(context)),
+            )
+          : null,
+      title: OptionalText(title),
+      actions: [
+        popupMenu(
+          context,
+          items,
+          icon: null,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: CircleButton.dropDown(),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 6, right: 6),
+          child: CircleButton.favorite(isFavorite: isFavorite, onTap: onTap),
         ),
       ],
     );

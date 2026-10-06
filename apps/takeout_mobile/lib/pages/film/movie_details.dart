@@ -68,8 +68,11 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                 builder: (context) => SliverStack(
                   backdrop: movie.backdrop,
                   slivers: [
-                    // SliverFavoriteBar(title: movie.titleYear, onTap: () {}),
-                    SliverFavoriteBar(onTap: () {}),
+                    SliverFavoriteBar(
+                      isFavorite: state.isFavorite,
+                      onTap: () =>
+                          context.toggleFavoriteMovie(movie, state.isFavorite),
+                    ),
                     SliverBox(
                       child: LayoutBuilder(
                         builder: (context, constraints) {

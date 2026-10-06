@@ -308,6 +308,65 @@ class ClientCubit extends Cubit<ClientState> {
     ttl: ttl,
   );
 
+  Future<void> favorite({Duration? ttl}) => _doit<FavoriteView>(
+        ({Duration? ttl}) => repository.favorite(ttl: ttl),
+    ttl: ttl,
+  );
+
+  Future<void> toggleFavoriteArtist(Artist artist, bool isFavorite) {
+    if (isFavorite) {
+      return _doit2<ArtistView>(
+        ({Duration? ttl}) => repository.unfavoriteArtist(artist),
+        ({Duration? ttl}) => repository.artist(artist.id),
+      );
+    } else {
+      return _doit2<ArtistView>(
+        ({Duration? ttl}) => repository.favoriteArtist(artist),
+        ({Duration? ttl}) => repository.artist(artist.id),
+      );
+    }
+  }
+
+  Future<void> toggleFavoriteMovie(Movie movie, bool isFavorite) {
+    if (isFavorite) {
+      return _doit2<MovieView>(
+        ({Duration? ttl}) => repository.unfavoriteMovie(movie),
+        ({Duration? ttl}) => repository.movie(movie.id),
+      );
+    } else {
+      return _doit2<MovieView>(
+        ({Duration? ttl}) => repository.favoriteMovie(movie),
+        ({Duration? ttl}) => repository.movie(movie.id),
+      );
+    }
+  }
+
+  // Future<void> toggleFavoriteTrack(String etag, bool isFavorite) {
+  //   if (isFavorite) {
+  //     return _doit<void>(
+  //           ({Duration? ttl}) => repository.unfavoriteTrack(etag),
+  //     );
+  //   } else {
+  //     return _doit<void>(
+  //           ({Duration? ttl}) => repository.favoriteTrack(etag),
+  //     );
+  //   }
+  // }
+
+  Future<void> toggleFavoriteTVSeries(TVSeries series, bool isFavorite) {
+    if (isFavorite) {
+      return _doit2<TVSeriesView>(
+        ({Duration? ttl}) => repository.unfavoriteTVSeries(series),
+        ({Duration? ttl}) => repository.tvSeries(series.id),
+      );
+    } else {
+      return _doit2<TVSeriesView>(
+        ({Duration? ttl}) => repository.favoriteTVSeries(series),
+        ({Duration? ttl}) => repository.tvSeries(series.id),
+      );
+    }
+  }
+
   Future<void> _doit<T>(ClientRequest<T> call, {Duration? ttl}) async {
     emit(ClientLoading());
     return call(ttl: ttl)

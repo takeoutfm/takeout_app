@@ -18,6 +18,7 @@
 import 'package:takeout_lib/browser/repository.dart';
 import 'package:takeout_lib/cache/offset_repository.dart';
 import 'package:takeout_lib/client/resolver.dart';
+import 'package:takeout_lib/favorite/repository.dart';
 import 'package:takeout_lib/model.dart';
 import 'package:takeout_lib/settings/repository.dart';
 import 'package:takeout_lib/spiff/model.dart';
@@ -39,6 +40,7 @@ typedef TrackEndCallback =
     void Function(Spiff, int index, Duration, Duration, bool);
 typedef RepeatModeChangeCallback = void Function(Spiff, RepeatMode);
 typedef LiveTrackChangeCallback = void Function(Spiff, LiveTrack);
+typedef FavoriteTrackChangeCallback = void Function(Spiff, String, bool);
 
 class PositionInterval {
   final int steps;
@@ -65,6 +67,7 @@ abstract class PlayerProvider {
     required SettingsRepository settingsRepository,
     required OffsetCacheRepository offsetRepository,
     required MediaRepository mediaRepository,
+    required FavoriteRepository favoriteRepository,
     required PlayCallback onPlay,
     required PauseCallback onPause,
     required StoppedCallback onStop,
@@ -76,6 +79,7 @@ abstract class PlayerProvider {
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
     required LiveTrackChangeCallback onLiveTrackChange,
+    required FavoriteTrackChangeCallback onFavoriteTrackChange,
     PositionInterval? positionInterval,
   });
 
@@ -121,6 +125,7 @@ class DefaultPlayerProvider implements PlayerProvider {
     required SettingsRepository settingsRepository,
     required OffsetCacheRepository offsetRepository,
     required MediaRepository mediaRepository,
+    required FavoriteRepository favoriteRepository,
     required PlayCallback onPlay,
     required PauseCallback onPause,
     required StoppedCallback onStop,
@@ -132,6 +137,7 @@ class DefaultPlayerProvider implements PlayerProvider {
     required TrackEndCallback onTrackEnd,
     required RepeatModeChangeCallback onRepeatModeChange,
     required LiveTrackChangeCallback onLiveTrackChange,
+    required FavoriteTrackChangeCallback onFavoriteTrackChange,
     PositionInterval? positionInterval,
   }) async {
     handler = await TakeoutPlayerHandler.create(
@@ -140,6 +146,7 @@ class DefaultPlayerProvider implements PlayerProvider {
       settingsRepository: settingsRepository,
       offsetRepository: offsetRepository,
       mediaRepository: mediaRepository,
+      favoriteRepository: favoriteRepository,
       positionSteps: positionInterval?.steps,
       minPositionPeriod: positionInterval?.minPeriod,
       maxPositionPeriod: positionInterval?.maxPeriod,
@@ -154,6 +161,7 @@ class DefaultPlayerProvider implements PlayerProvider {
       onTrackEnd: onTrackEnd,
       onRepeatModeChange: onRepeatModeChange,
       onLiveTrackChange: onLiveTrackChange,
+      onFavoriteTrackChange: onFavoriteTrackChange,
     );
   }
 

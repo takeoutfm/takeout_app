@@ -221,6 +221,7 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
               repeatButton(),
               Expanded(child: ExcludeFocus(child: playerSeekBar(context))),
               // Expanded(child: newSeekBar(context)),
+              favoriteButton(),
             ],
           ),
         ],

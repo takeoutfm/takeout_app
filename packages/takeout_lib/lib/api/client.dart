@@ -944,6 +944,77 @@ class TakeoutClient implements ClientProvider {
   Future<Spiff> popularTracksPlaylist({Duration? ttl}) async =>
       spiff('/api/activity/tracks/popular/playlist', ttl: ttl);
 
+  /// GET /api/favorite
+  @override
+  Future<FavoriteView> favorite({Duration? ttl}) async =>
+      _getJson('/api/favorite', ttl: ttl)
+          .then((j) => FavoriteView.fromJson(j))
+          .catchError((Object e) => Future<FavoriteView>.error(e));
+
+  /// PUT /api/favorite/artists/arid
+  @override
+  Future<void> favoriteArtist(Artist artist) async => _retry<void>(
+    () => _put(
+      '/api/favorite/artists/${artist.arid}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// DELETE /api/favorite/artists/arid
+  @override
+  Future<void> unfavoriteArtist(Artist artist) async => _retry<void>(
+    () => _delete(
+      '/api/favorite/artists/${artist.arid}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// PUT /api/favorite/movies/imid
+  @override
+  Future<void> favoriteMovie(Movie movie) async => _retry<void>(
+    () => _put(
+      '/api/favorite/movies/${movie.imid}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// DELETE /api/favorite/movies/imid
+  @override
+  Future<void> unfavoriteMovie(Movie movie) async => _retry<void>(
+    () => _delete(
+      '/api/favorite/movies/${movie.imid}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// PUT /api/favorite/tracks/etag
+  @override
+  Future<void> favoriteTrack(String etag) async => _retry<void>(
+    () => _put(
+      '/api/favorite/tracks/${Uri.encodeQueryComponent(etag)}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// DELETE /api/favorite/tracks/etag
+  @override
+  Future<void> unfavoriteTrack(String etag) async => _retry<void>(
+    () => _delete(
+      '/api/favorite/tracks/${Uri.encodeQueryComponent(etag)}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// PUT /api/favorite/shows/tvid
+  @override
+  Future<void> favoriteTVSeries(TVSeries series) async => _retry<void>(
+    () => _put(
+      '/api/favorite/shows/${series.tvid}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
+  /// DELETE /api/favorite/shows/tvid
+  @override
+  Future<void> unfavoriteTVSeries(TVSeries series) async => _retry<void>(
+    () => _delete(
+      '/api/favorite/shows/${series.tvid}',
+    ).catchError((Object e) => Future<void>.error(e)),
+  );
+
   /// Download uri to a file with optional retries.
   @override
   Future<int> download(

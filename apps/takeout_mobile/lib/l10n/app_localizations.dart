@@ -760,6 +760,18 @@ abstract class AppLocalizations {
   /// **'Bio'**
   String get biographyLabel;
 
+  /// No description provided for @favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get favorite;
+
+  /// No description provided for @unfavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfavorite'**
+  String get unfavorite;
+
   /// No description provided for @deleteTitle.
   ///
   /// In en, this message translates to:
