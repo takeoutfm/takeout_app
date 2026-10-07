@@ -349,6 +349,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unfavorite => 'Unfavorite';
 
   @override
+  String get favoriteTracks => 'Favorite Tracks';
+
+  @override
+  String get favoriteArtistTracks => 'Favorite Artist Tracks';
+
+  @override
   String deleteTitle(String title) {
     return 'Really delete $title?';
   }

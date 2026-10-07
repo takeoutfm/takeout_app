@@ -18,6 +18,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/circle_button.dart';
 import 'package:takeout_mobile/widgets/menu.dart';
 import 'package:takeout_mobile/widgets/text.dart';
@@ -205,4 +206,32 @@ class SliverTitleBar extends StatelessWidget {
       title: OptionalText(title),
     );
   }
+}
+
+abstract class SliverActionBar extends StatelessWidget {
+  const SliverActionBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final surface = Theme.of(context).colorScheme.surface;
+
+    return SliverAppBar(
+      pinned: true,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: surface.withValues(
+              alpha: 0.1,
+            ), // matches page bg, blends in both themes
+          ),
+        ),
+      ),
+      title: Wrap(spacing: 20, children: actions(context)),
+    );
+  }
+
+  List<MyChip> actions(BuildContext context);
 }

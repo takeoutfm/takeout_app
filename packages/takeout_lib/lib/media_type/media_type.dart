@@ -37,9 +37,11 @@ enum MediaType {
 
 enum PodcastType { all, subscribed }
 
-enum FilmType { all, recent, added, recommended, genre, watched }
+enum FilmType { all, recent, added, recommended, genre, watched, favorite }
 
 enum MusicType { recent, added }
+
+enum ArtistType { all, favorite }
 
 @JsonSerializable()
 class MediaTypeState {
@@ -48,12 +50,14 @@ class MediaTypeState {
   final FilmType filmType;
   final MusicType musicType;
   final Set<FilmType> skipFilmTypes;
+  final ArtistType artistType;
 
   factory MediaTypeState.initial() => MediaTypeState(
     MediaType.music,
     podcastType: .all,
     filmType: .added,
     musicType: .added,
+    artistType: .all,
   );
 
   // provide defaults for older state w/o all types
@@ -63,6 +67,7 @@ class MediaTypeState {
     this.filmType = .added,
     this.musicType = .added,
     this.skipFilmTypes = const {},
+    this.artistType = .all,
   });
 
   bool isMusic() {
@@ -87,12 +92,14 @@ class MediaTypeState {
     FilmType? filmType,
     MusicType? musicType,
     Set<FilmType>? skipFilmTypes,
+    ArtistType? artistType,
   }) => MediaTypeState(
     mediaType ?? this.mediaType,
     podcastType: podcastType ?? this.podcastType,
     filmType: filmType ?? this.filmType,
     musicType: musicType ?? this.musicType,
     skipFilmTypes: skipFilmTypes ?? this.skipFilmTypes,
+    artistType: artistType ?? this.artistType,
   );
 
   factory MediaTypeState.fromJson(Map<String, dynamic> json) =>
@@ -157,7 +164,8 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
         .recent => FilmType.added,
         .added => FilmType.recommended,
         .recommended => FilmType.genre,
-        .genre => FilmType.all,
+        .genre => FilmType.favorite,
+        .favorite => FilmType.all,
       };
       current = next;
     } while (state.skipFilmTypes.contains(current));
@@ -179,11 +187,22 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
     }
   }
 
+  // all -> favorite
+  void nextArtistType() {
+    switch (state.artistType) {
+      case .all:
+        emit(state.copyWith(artistType: .favorite));
+      case .favorite:
+        emit(state.copyWith(artistType: .all));
+    }
+  }
+
   void select(
     MediaType mediaType, {
     PodcastType? podcastType,
     FilmType? filmType,
     MusicType? musicType,
+    ArtistType? artistType,
   }) {
     emit(
       state.copyWith(
@@ -191,6 +210,7 @@ class MediaTypeCubit extends HydratedCubit<MediaTypeState> {
         podcastType: podcastType,
         filmType: filmType,
         musicType: musicType,
+        artistType: artistType,
       ),
     );
   }

@@ -37,6 +37,7 @@ class HomeMenu extends StatelessWidget {
     return popupMenu(context, [
       PopupItem.reload(context, (context) => _onReload(context)),
       PopupItem.playlist(context, (context) => _onRecentTracks(context)),
+      PopupItem.favoriteTracks(context, (context) => _onFavoriteTracks(context)),
       PopupItem.activity(context, (context) => _onTrackStats(context)),
       PopupItem.playlists(context, (context) => _onPlaylists(context)),
       PopupItem.divider(),
@@ -65,6 +66,16 @@ class HomeMenu extends StatelessWidget {
   void _onRecentTracks(BuildContext context) {
     push(context, builder: (_) => TrackHistoryWidget());
   }
+
+  void _onFavoriteTracks(BuildContext context) {
+    pushSpiff(
+      ref: '/favorite/tracks',
+      context,
+          (client, {Duration? ttl}) =>
+          client.favoriteTracksPlaylist(ttl: Duration.zero),
+    );
+  }
+
 
   void _onTrackStats(BuildContext context) {
     push(context, builder: (_) => TrackStatsWidget());

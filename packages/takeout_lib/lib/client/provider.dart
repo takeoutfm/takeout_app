@@ -143,6 +143,10 @@ abstract class ClientProvider {
 
   Future<FavoriteView> favorite({Duration? ttl});
 
+  Future<Spiff> favoriteTracksPlaylist({Duration? ttl});
+
+  Future<Spiff> favoriteArtistsPlaylist(String res, {Duration? ttl});
+
   Future<void> favoriteArtist(Artist artist);
 
   Future<void> unfavoriteArtist(Artist artist);

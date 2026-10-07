@@ -313,33 +313,38 @@ class ClientCubit extends Cubit<ClientState> {
     ttl: ttl,
   );
 
-  Future<void> toggleFavoriteArtist(Artist artist, bool isFavorite) {
-    if (isFavorite) {
-      return _doit2<ArtistView>(
-        ({Duration? ttl}) => repository.unfavoriteArtist(artist),
-        ({Duration? ttl}) => repository.artist(artist.id),
-      );
-    } else {
-      return _doit2<ArtistView>(
-        ({Duration? ttl}) => repository.favoriteArtist(artist),
-        ({Duration? ttl}) => repository.artist(artist.id),
-      );
-    }
-  }
+  Future<void> favoriteTracksPlaylist({Duration? ttl}) => _doit<Spiff>(
+        ({Duration? ttl}) => repository.favoriteTracksPlaylist(ttl: ttl),
+    ttl: ttl,
+  );
 
-  Future<void> toggleFavoriteMovie(Movie movie, bool isFavorite) {
-    if (isFavorite) {
-      return _doit2<MovieView>(
-        ({Duration? ttl}) => repository.unfavoriteMovie(movie),
-        ({Duration? ttl}) => repository.movie(movie.id),
-      );
-    } else {
-      return _doit2<MovieView>(
-        ({Duration? ttl}) => repository.favoriteMovie(movie),
-        ({Duration? ttl}) => repository.movie(movie.id),
-      );
-    }
-  }
+  // Future<void> toggleFavoriteArtist(Artist artist, bool isFavorite) {
+  //   if (isFavorite) {
+  //     return _doit2<ArtistView>(
+  //       ({Duration? ttl}) => repository.unfavoriteArtist(artist),
+  //       ({Duration? ttl}) => repository.artist(artist.id, ttl: .zero),
+  //     );
+  //   } else {
+  //     return _doit2<ArtistView>(
+  //       ({Duration? ttl}) => repository.favoriteArtist(artist),
+  //       ({Duration? ttl}) => repository.artist(artist.id, ttl: .zero),
+  //     );
+  //   }
+  // }
+
+  // Future<void> toggleFavoriteMovie(Movie movie, bool isFavorite) {
+  //   if (isFavorite) {
+  //     return _doit2<MovieView>(
+  //       ({Duration? ttl}) => repository.unfavoriteMovie(movie),
+  //       ({Duration? ttl}) => repository.movie(movie.id, ttl: .zero),
+  //     );
+  //   } else {
+  //     return _doit2<MovieView>(
+  //       ({Duration? ttl}) => repository.favoriteMovie(movie),
+  //       ({Duration? ttl}) => repository.movie(movie.id, ttl: .zero),
+  //     );
+  //   }
+  // }
 
   // Future<void> toggleFavoriteTrack(String etag, bool isFavorite) {
   //   if (isFavorite) {
@@ -353,19 +358,19 @@ class ClientCubit extends Cubit<ClientState> {
   //   }
   // }
 
-  Future<void> toggleFavoriteTVSeries(TVSeries series, bool isFavorite) {
-    if (isFavorite) {
-      return _doit2<TVSeriesView>(
-        ({Duration? ttl}) => repository.unfavoriteTVSeries(series),
-        ({Duration? ttl}) => repository.tvSeries(series.id),
-      );
-    } else {
-      return _doit2<TVSeriesView>(
-        ({Duration? ttl}) => repository.favoriteTVSeries(series),
-        ({Duration? ttl}) => repository.tvSeries(series.id),
-      );
-    }
-  }
+  // Future<void> toggleFavoriteTVSeries(TVSeries series, bool isFavorite) {
+  //   if (isFavorite) {
+  //     return _doit2<TVSeriesView>(
+  //       ({Duration? ttl}) => repository.unfavoriteTVSeries(series),
+  //       ({Duration? ttl}) => repository.tvSeries(series.id, ttl: .zero),
+  //     );
+  //   } else {
+  //     return _doit2<TVSeriesView>(
+  //       ({Duration? ttl}) => repository.favoriteTVSeries(series),
+  //       ({Duration? ttl}) => repository.tvSeries(series.id, ttl: .zero),
+  //     );
+  //   }
+  // }
 
   Future<void> _doit<T>(ClientRequest<T> call, {Duration? ttl}) async {
     emit(ClientLoading());

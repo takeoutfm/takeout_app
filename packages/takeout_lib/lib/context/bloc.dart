@@ -151,6 +151,7 @@ class TakeoutBloc {
       offsetCacheRepository: offsetCacheRepository,
       trackCacheRepository: trackCacheRepository,
       searchRepository: search,
+      favoriteRepository: favoriteRepository,
     );
 
     final listenRepository = ListenRepository(
@@ -302,7 +303,7 @@ class TakeoutBloc {
           }
         },
       ),
-      BlocListener<Player, PlayerEvent>(
+      BlocListener<Player, PlayerState>(
         listenWhen: (_, state) =>
             state is PlayerReady ||
             state is PlayerLoad ||
@@ -339,7 +340,7 @@ class TakeoutBloc {
           }
         },
       ),
-      BlocListener<PlaylistCubit, PlaylistEvent>(
+      BlocListener<PlaylistCubit, PlaylistState>(
         listenWhen: (_, state) =>
             state is PlaylistChange || state is PlaylistSync,
         listener: (context, state) {
@@ -518,11 +519,11 @@ class TakeoutBloc {
     }
   }
 
-  void _onPlaylistChange(BuildContext context, PlaylistEvent state) {
+  void _onPlaylistChange(BuildContext context, PlaylistState state) {
     context.play(state.spiff);
   }
 
-  void _onPlaylistSyncChange(BuildContext context, PlaylistEvent state) {
+  void _onPlaylistSyncChange(BuildContext context, PlaylistState state) {
     context.play(state.spiff, autoPlay: false);
   }
 
@@ -594,9 +595,9 @@ class TakeoutBloc {
   }
 
   void _onPlayerFavoriteTrackChange(
-      BuildContext context,
-      PlayerFavoriteTrackChange state,
-      ) {
+    BuildContext context,
+    PlayerFavoriteTrackChange state,
+  ) {
     if (state.isFavorite) {
       // player request to make track a favorite
       context.favorite.favoriteTrack(state.etag);
@@ -643,11 +644,11 @@ class TakeoutBloc {
   }
 
   // override this to change behavior
-  void saveProgress(BuildContext context, PlayerPositionEvent state) {
+  void saveProgress(BuildContext context, PlayerPositionState state) {
     _saveProgress(context, state);
   }
 
-  void _saveProgress(BuildContext context, PlayerPositionEvent state) {
+  void _saveProgress(BuildContext context, PlayerPositionState state) {
     if (state.buffering == false) {
       if (state.spiff.isPodcast) {
         // save podcast progress at server
@@ -669,7 +670,7 @@ class TakeoutBloc {
 
   void _updateSpiffHistoryPosition(
     BuildContext context,
-    PlayerPositionEvent state,
+    PlayerPositionState state,
   ) {
     final spiff = state.spiff.copyWith(
       position: state.position.inSeconds.toDouble(),

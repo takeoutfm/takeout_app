@@ -42,6 +42,7 @@ import 'package:takeout_mobile/pages/podcast/series_details.dart';
 import 'package:takeout_mobile/pages/tv/tvseries_details.dart';
 import 'package:takeout_mobile/widgets/chip.dart';
 import 'package:takeout_mobile/widgets/media_progress.dart';
+import 'package:takeout_mobile/widgets/sliver_bar.dart';
 import 'package:takeout_mobile/widgets/sliver_box.dart';
 import 'package:takeout_mobile/widgets/sliver_grid_tile.dart';
 
@@ -110,6 +111,8 @@ abstract class GridClientPage<T> extends ClientPage<T> {
               }
             case .watched:
               result = context.recentlyWatched(.movie);
+            case .favorite:
+              result = context.favorite.state.favorite.sortedMovies().toList();
             default:
               result = [];
           }
@@ -535,33 +538,7 @@ void _onSeries(BuildContext context, Series series) => Navigator.of(
 
 final selectedIcon = Icons.check;
 
-abstract class _SliverAppBar extends StatelessWidget {
-  const _SliverAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final surface = Theme.of(context).colorScheme.surface;
-
-    return SliverAppBar(
-      pinned: true,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: surface.withValues(alpha: 0.1), // matches page bg, blends in both themes
-          ),
-        ),
-      ),
-      title: Wrap(spacing: 20, children: actions(context)),
-    );
-  }
-
-  List<MyChip> actions(BuildContext context);
-}
-
-class _SliverMusicAppBar extends _SliverAppBar {
+class _SliverMusicAppBar extends SliverActionBar {
   @override
   List<MyChip> actions(BuildContext context) {
     final state = context.selectedMediaType.state;
@@ -584,7 +561,7 @@ class _SliverMusicAppBar extends _SliverAppBar {
   }
 }
 
-class _SliverFilmAppBar extends _SliverAppBar {
+class _SliverFilmAppBar extends SliverActionBar {
   @override
   List<MyChip> actions(BuildContext context) {
     final state = context.selectedMediaType.state;
@@ -634,11 +611,18 @@ class _SliverFilmAppBar extends _SliverAppBar {
           context.selectedMediaType.select(.film, filmType: .watched);
         },
       ),
+      MyChip(
+        icon: state.filmType == .favorite ? selectedIcon : null,
+        label: 'Favorite',
+        onTap: () {
+          context.selectedMediaType.select(.film, filmType: .favorite);
+        },
+      ),
     ];
   }
 }
 
-class _SliverPodcastAppBar extends _SliverAppBar {
+class _SliverPodcastAppBar extends SliverActionBar {
   @override
   List<MyChip> actions(BuildContext context) {
     final state = context.selectedMediaType.state;

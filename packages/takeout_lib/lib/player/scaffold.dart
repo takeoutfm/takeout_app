@@ -33,7 +33,7 @@ class PlayerScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (context, state) {
         return state is PlayerLoad || state is PlayerIndexChange;
       },

@@ -17,7 +17,9 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
@@ -38,6 +40,7 @@ class FilmPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final favorite = context.watch<FavoriteCubit>().state.favorite;
     List<Movie> movies;
     switch (context.selectedMediaType.state.filmType) {
       case FilmType.added:
@@ -53,9 +56,10 @@ class FilmPage extends StatelessWidget {
         }
       case FilmType.watched:
         movies = context.recentlyWatched(.movie);
+      case FilmType.favorite:
+        movies = favorite.sortedMovies().toList();
       case FilmType.all:
       case FilmType.genre:
-        // TODO not supported yet
         movies = [];
     }
     return MediaPage(

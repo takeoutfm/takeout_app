@@ -295,6 +295,14 @@ class ClientRepository {
     return _provider.favorite(ttl: ttl);
   }
 
+  Future<Spiff> favoriteTracksPlaylist({Duration? ttl}) async {
+    return _provider.favoriteTracksPlaylist(ttl: ttl);
+  }
+
+  Future<Spiff> favoriteArtistsPlaylist(String res, {Duration? ttl}) async {
+    return _provider.favoriteArtistsPlaylist(res, ttl: ttl);
+  }
+
   Future<void> favoriteArtist(Artist artist) async {
     return _provider.favoriteArtist(artist);
   }

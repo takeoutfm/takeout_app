@@ -22,6 +22,7 @@ import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/offset.dart';
 import 'package:takeout_lib/cache/track.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_lib/video/play_video.dart';
@@ -54,6 +55,16 @@ class MovieDetailsPage extends ClientPage<MovieView> {
 
   @override
   Widget page(BuildContext context, MovieView state) {
+    return Builder(
+      builder: (context) {
+        context.watch<FavoriteCubit>();
+        return _page(context, state);
+      },
+    );
+  }
+
+  Widget _page(BuildContext context, MovieView state) {
+    final favorite = context.favorite.state.favorite;
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
@@ -69,9 +80,8 @@ class MovieDetailsPage extends ClientPage<MovieView> {
                   backdrop: movie.backdrop,
                   slivers: [
                     SliverFavoriteBar(
-                      isFavorite: state.isFavorite,
-                      onTap: () =>
-                          context.toggleFavoriteMovie(movie, state.isFavorite),
+                      isFavorite: favorite.isFavoriteMovie(movie),
+                      onTap: () => _onFavorite(context, movie),
                     ),
                     SliverBox(
                       child: LayoutBuilder(
@@ -235,6 +245,10 @@ class MovieDetailsPage extends ClientPage<MovieView> {
         ),
       ),
     );
+  }
+
+  Future<void> _onFavorite(BuildContext context, Movie movie) {
+    return context.favorite.toggleFavoriteMovie(movie);
   }
 
   Widget _playButtons(BuildContext context, MovieView state, bool hasProgress) {

@@ -20,6 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/track.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_lib/util.dart';
 import 'package:takeout_mobile/app/context.dart';
@@ -52,7 +53,17 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
 
   @override
   Widget page(BuildContext context, ArtistView state) {
+    return Builder(
+      builder: (context) {
+        context.watch<FavoriteCubit>();
+        return _page(context, state);
+      },
+    );
+  }
+
+  Widget _page(BuildContext context, ArtistView state) {
     final artistUrl = 'https://musicbrainz.org/artist/${_artist.arid}';
+    final favorite = context.favorite.state.favorite;
     return Scaffold(
       backgroundColor: Colors.black,
       body: RefreshIndicator(
@@ -97,13 +108,14 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
                           (_) => launchUrl(Uri.parse(artistUrl)),
                         ),
                         PopupItem.divider(),
-                        PopupItem.wantList(context, (_) => _onWantList(context)),
+                        PopupItem.wantList(
+                          context,
+                          (_) => _onWantList(context),
+                        ),
                         PopupItem.reload(context, (_) => reloadPage(context)),
                       ],
-                      onTap: () => context.toggleFavoriteArtist(
-                        artist,
-                        state.isFavorite,
-                      ),
+                      onTap: () => _onFavorite(context, artist),
+                      isFavorite: favorite.isFavoriteArtist(artist),
                     ),
                     SliverBox(
                       child: LayoutBuilder(
@@ -190,6 +202,10 @@ class ArtistDetailsPage extends ClientPage<ArtistView> {
         ),
       ),
     );
+  }
+
+  Future<void> _onFavorite(BuildContext context, Artist artist) {
+    return context.favorite.toggleFavoriteArtist(artist);
   }
 
   Widget _artistPoster(BuildContext context, ArtistView state) {

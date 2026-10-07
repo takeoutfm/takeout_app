@@ -27,7 +27,7 @@ class LiveWidget extends StatelessWidget {
     final state = context.watch<Player>().state;
     final scheme = ColorScheme.of(context);
     var playing = false;
-    if (state is PlayerProcessingEvent) {
+    if (state is PlayerProcessingState) {
       playing = state.playing;
     }
     return Container(

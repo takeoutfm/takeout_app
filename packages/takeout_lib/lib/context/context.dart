@@ -129,6 +129,7 @@ extension TakeoutContext on BuildContext {
     await index.reload();
     await search.reload();
     await offsets.reload();
+    await favorite.reload();
   }
 
   void removeDownloads() {
@@ -258,17 +259,5 @@ extension TakeoutContext on BuildContext {
 
   bool get enableListenBrainz {
     return settings.state.settings.enableListenBrainz;
-  }
-
-  void toggleFavoriteArtist(Artist artist, bool isFavorite) {
-    client.toggleFavoriteArtist(artist, isFavorite);
-  }
-
-  void toggleFavoriteMovie(Movie movie, bool isFavorite) {
-    client.toggleFavoriteMovie(movie, isFavorite);
-  }
-
-  void toggleFavoriteTVSeries(TVSeries series, bool isFavorite) {
-    client.toggleFavoriteTVSeries(series, isFavorite);
   }
 }

@@ -27,6 +27,7 @@ import 'package:takeout_lib/cache/track.dart';
 import 'package:takeout_lib/cache/track_repository.dart';
 import 'package:takeout_lib/client/repository.dart';
 import 'package:takeout_lib/db/search.dart';
+import 'package:takeout_lib/favorite/repository.dart';
 import 'package:takeout_lib/history/model.dart';
 import 'package:takeout_lib/history/repository.dart';
 import 'package:takeout_lib/media_type/media_type.dart';
@@ -75,6 +76,12 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 |         |/artists                   |List    |
 +---------+---------------------------+--------+
 |         |/artists/{id}              |Grid    |
++---------+---------------------------+--------+
+|Favorites|/favorite                  |List    |
++---------+---------------------------+--------+
+|         |/favorite/tracks           |Playable|
+|         |/favorite/artists/tracks   |Playable|
+|         |/favorite/artists          |Grid    |
 +---------+---------------------------+--------+
 |Playlists|/playlists                 |List    |
 +---------+---------------------------+--------+
@@ -147,6 +154,10 @@ const stringsPodcasts = 'Podcasts';
 const stringsRadio = 'Radio';
 const stringsArtists = 'Artists';
 const stringsAllArtists = 'More Artists';
+const stringsFavorites = 'Favorites';
+const stringsFavoriteTracks = 'Favorite Tracks';
+const stringsFavoriteArtistsTracks = 'Favorite Artist Tracks';
+const stringsFavoriteArtists = 'Favorite Artists';
 const stringsPlaylists = 'Playlists';
 const stringsDownloads = 'Downloads';
 const stringsMovies = 'Movies';
@@ -193,6 +204,7 @@ class DefaultMediaProvider implements MediaProvider {
   final OffsetCacheRepository offsetCacheRepository;
   final TrackCacheRepository trackCacheRepository;
   final Search searchRepository;
+  final FavoriteRepository favoriteRepository;
 
   DefaultMediaProvider(
     this.clientRepository,
@@ -204,6 +216,7 @@ class DefaultMediaProvider implements MediaProvider {
     this.offsetCacheRepository,
     this.trackCacheRepository,
     this.searchRepository,
+    this.favoriteRepository,
   );
 
   @override
@@ -243,6 +256,13 @@ class DefaultMediaProvider implements MediaProvider {
         const MediaItem(
           id: '/history/artists',
           title: stringsArtists,
+          playable: false,
+        ),
+      );
+      items.add(
+        const MediaItem(
+          id: '/favorite',
+          title: stringsFavorites,
           playable: false,
         ),
       );
@@ -305,6 +325,10 @@ class DefaultMediaProvider implements MediaProvider {
         return _getHistoryArtists();
       case '/artists':
         return _getArtists();
+      case '/favorite':
+        return _getFavorite();
+      case '/favorite/artists':
+        return _getFavoriteArtists();
       case '/playlists':
         return _getPlaylists();
       case '/downloads':
@@ -405,6 +429,10 @@ class DefaultMediaProvider implements MediaProvider {
     } else if (mediaId.startsWith('/playlists/')) {
       final id = int.parse(mediaId.split('/')[2]);
       spiff = await clientRepository.playlist(id: id);
+    } else if (mediaId.startsWith('/favorite/tracks')) {
+      spiff = await clientRepository.favoriteTracksPlaylist();
+    } else if (mediaId.startsWith('/favorite/artists/popular')) {
+      spiff = await clientRepository.favoriteArtistsPlaylist('popular');
     }
     return spiff;
   }
@@ -449,6 +477,42 @@ class DefaultMediaProvider implements MediaProvider {
     final view = await clientRepository.playlists();
     for (var p in view.playlists) {
       items.add(await _playlist(p));
+    }
+    return items;
+  }
+
+  Future<List<MediaItem>> _getFavorite() async {
+    final items = <MediaItem>[];
+    items.add(
+      const MediaItem(
+        id: '/favorite/tracks',
+        title: stringsFavoriteTracks,
+        playable: true,
+      ),
+    );
+    items.add(
+      const MediaItem(
+        id: '/favorite/artists/popular',
+        title: stringsFavoriteArtistsTracks,
+        playable: true,
+      ),
+    );
+    items.add(
+      const MediaItem(
+        id: '/favorite/artists',
+        title: stringsFavoriteArtists,
+        playable: false,
+      ),
+    );
+    return items;
+  }
+
+  Future<List<MediaItem>> _getFavoriteArtists() async {
+    final items = <MediaItem>[];
+    final favorite = favoriteRepository.favorite;
+    final artists = favorite.sortedArtists();
+    for (final a in artists) {
+      items.add(_artist(a));
     }
     return items;
   }
@@ -615,6 +679,8 @@ class DefaultMediaProvider implements MediaProvider {
         if (recommended != null) {
           movies = recommended.first.movies ?? [];
         }
+      case FilmType.favorite:
+        movies = favoriteRepository.favorite.sortedMovies();
       case FilmType.all:
       case FilmType.genre: // TODO support genres
       case FilmType.watched: // TODO support watched

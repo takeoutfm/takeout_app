@@ -21,30 +21,30 @@ import 'package:takeout_lib/media_type/media_type.dart';
 import 'package:takeout_lib/patch.dart';
 import 'package:takeout_lib/spiff/model.dart';
 
-class PlaylistEvent {
+class PlaylistState {
   final Spiff spiff;
 
-  PlaylistEvent(this.spiff);
+  PlaylistState(this.spiff);
 
-  factory PlaylistEvent.initial() => PlaylistEvent(Spiff.empty());
+  factory PlaylistState.initial() => PlaylistState(Spiff.empty());
 }
 
-class PlaylistLoad extends PlaylistEvent {
+class PlaylistLoad extends PlaylistState {
   PlaylistLoad(super.spiff);
 }
 
-class PlaylistChange extends PlaylistEvent {
+class PlaylistChange extends PlaylistState {
   PlaylistChange(super.spiff);
 }
 
-class PlaylistSync extends PlaylistEvent {
+class PlaylistSync extends PlaylistState {
   PlaylistSync(super.spiff);
 }
 
-class PlaylistCubit extends Cubit<PlaylistEvent> {
+class PlaylistCubit extends Cubit<PlaylistState> {
   final ClientRepository clientRepository;
 
-  PlaylistCubit(this.clientRepository) : super(PlaylistEvent.initial()) {
+  PlaylistCubit(this.clientRepository) : super(PlaylistState.initial()) {
     load();
   }
 

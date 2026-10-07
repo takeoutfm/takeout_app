@@ -112,6 +112,8 @@
   "biographyLabel": "Bio",
   "favorite": "Favorite",
   "unfavorite": "Unfavorite",
+  "favoriteTracks": "Favorite Tracks",
+  "favoriteArtistTracks": "Favorite Artist Tracks",
   "deleteTitle": "Really delete {title}?",
   "@deleteTitle": {
     "placeholders": {

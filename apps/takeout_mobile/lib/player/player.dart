@@ -247,14 +247,14 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
   }
 
   Widget playerControls(BuildContext context) {
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) => state is PlayerPlay || state is PlayerPause,
       builder: (context, state) {
         if (state.spiff.isEmpty) {
           return const EmptyWidget();
         }
         if (state is PlayerPlay || state is PlayerPause) {
-          return _controlButtons(context, state as PlayerPositionEvent);
+          return _controlButtons(context, state as PlayerPositionState);
         } else {
           return IconButton(
             autofocus: true,
@@ -270,7 +270,7 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
 
   Widget playerQueue(BuildContext context) {
     final player = context.player;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       bloc: player,
       buildWhen: (_, state) =>
           state is PlayerLoad ||
@@ -290,7 +290,7 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
     );
   }
 
-  Widget _controlButtons(BuildContext context, PlayerPositionEvent state) {
+  Widget _controlButtons(BuildContext context, PlayerPositionState state) {
     final player = context.player;
     final isPodcast = state.spiff.isPodcast;
     final isLive = state.spiff.isLive;
@@ -355,7 +355,7 @@ class PlayerWidget extends StatelessWidget with PlayerWidgets {
     context.showArtist(artist);
   }
 
-  Widget _trackList(BuildContext context, Player player, PlayerEvent state) {
+  Widget _trackList(BuildContext context, Player player, PlayerState state) {
     final tracks = state.spiff.playlist.tracks;
     return Column(
       children: [

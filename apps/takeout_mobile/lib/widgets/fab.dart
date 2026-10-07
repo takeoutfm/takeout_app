@@ -27,7 +27,7 @@ class FabWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       builder: (context, state) {
         bool playing = false;
         double? progress;
@@ -43,7 +43,7 @@ class FabWidget extends StatelessWidget {
           // hide fab
           return const EmptyWidget();
         }
-        if (state is PlayerPositionEvent) {
+        if (state is PlayerPositionState) {
           playing = state.playing;
           progress = state.progress;
           if (state.buffering) {

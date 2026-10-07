@@ -33,7 +33,7 @@ class MiniPlayer extends StatelessWidget with PlayerWidgets {
   Widget build(BuildContext context) {
     MediaTrack? track;
     track = context.player.state.currentTrack;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
           state is PlayerLoad ||
           state is PlayerIndexChange ||
@@ -60,7 +60,7 @@ class MiniPlayer extends StatelessWidget with PlayerWidgets {
 
   Widget _build(
     BuildContext context,
-    PlayerEvent state,
+    PlayerState state,
     MediaTrack track,
     Color? backgroundColor,
   ) {

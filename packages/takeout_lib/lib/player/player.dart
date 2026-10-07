@@ -28,10 +28,10 @@ import 'package:takeout_lib/tokens/repository.dart';
 
 import 'repeat.dart';
 
-abstract class PlayerEvent {
+abstract class PlayerState {
   final Spiff spiff;
 
-  PlayerEvent(this.spiff);
+  PlayerState(this.spiff);
 
   int get currentIndex => spiff.index >= 0 ? spiff.index : 0;
 
@@ -50,22 +50,22 @@ abstract class PlayerEvent {
       : null;
 }
 
-abstract class PlayerProcessingEvent extends PlayerEvent {
+abstract class PlayerProcessingState extends PlayerState {
   final bool playing;
   final bool buffering;
 
-  PlayerProcessingEvent(
+  PlayerProcessingState(
     super.spiff, {
     this.playing = false,
     this.buffering = false,
   });
 }
 
-abstract class PlayerPositionEvent extends PlayerProcessingEvent {
+abstract class PlayerPositionState extends PlayerProcessingState {
   final Duration duration;
   final Duration position;
 
-  PlayerPositionEvent(
+  PlayerPositionState(
     super.spiff, {
     required this.duration,
     required this.position,
@@ -97,7 +97,7 @@ abstract class PlayerPositionEvent extends PlayerProcessingEvent {
   }
 }
 
-class PlayerLoad extends PlayerProcessingEvent {
+class PlayerLoad extends PlayerProcessingState {
   final bool autoPlay;
   final bool autoCache;
 
@@ -110,15 +110,15 @@ class PlayerLoad extends PlayerProcessingEvent {
   });
 }
 
-class PlayerInit extends PlayerEvent {
+class PlayerInit extends PlayerState {
   PlayerInit() : super(Spiff.empty());
 }
 
-class PlayerReady extends PlayerEvent {
+class PlayerReady extends PlayerState {
   PlayerReady() : super(Spiff.empty());
 }
 
-class PlayerPlay extends PlayerPositionEvent {
+class PlayerPlay extends PlayerPositionState {
   PlayerPlay(
     super.spiff, {
     required super.duration,
@@ -128,7 +128,7 @@ class PlayerPlay extends PlayerPositionEvent {
   });
 }
 
-class PlayerPause extends PlayerPositionEvent {
+class PlayerPause extends PlayerPositionState {
   PlayerPause(
     super.spiff, {
     required super.duration,
@@ -138,17 +138,17 @@ class PlayerPause extends PlayerPositionEvent {
   });
 }
 
-class PlayerStop extends PlayerEvent {
+class PlayerStop extends PlayerState {
   PlayerStop(super.spiff);
 }
 
-class PlayerIndexChange extends PlayerEvent {
+class PlayerIndexChange extends PlayerState {
   final bool playing;
 
   PlayerIndexChange(super.spiff, this.playing);
 }
 
-class PlayerPositionChange extends PlayerPositionEvent {
+class PlayerPositionChange extends PlayerPositionState {
   PlayerPositionChange(
     super.spiff, {
     required super.duration,
@@ -157,7 +157,7 @@ class PlayerPositionChange extends PlayerPositionEvent {
   });
 }
 
-class PlayerDurationChange extends PlayerPositionEvent {
+class PlayerDurationChange extends PlayerPositionState {
   PlayerDurationChange(
     super.spiff, {
     required super.duration,
@@ -183,7 +183,7 @@ class PlayerTrackListen extends PlayerPositionChange {
   });
 }
 
-class PlayerTrackChange extends PlayerEvent {
+class PlayerTrackChange extends PlayerState {
   final int index;
   final String? title;
   final String? image;
@@ -191,7 +191,7 @@ class PlayerTrackChange extends PlayerEvent {
   PlayerTrackChange(super.spiff, this.index, {this.title, this.image});
 }
 
-class PlayerTrackEnd extends PlayerPositionEvent {
+class PlayerTrackEnd extends PlayerPositionState {
   final int index;
 
   PlayerTrackEnd(
@@ -203,26 +203,26 @@ class PlayerTrackEnd extends PlayerPositionEvent {
   });
 }
 
-class PlayerRepeatModeChange extends PlayerEvent {
+class PlayerRepeatModeChange extends PlayerState {
   final RepeatMode repeat;
 
   PlayerRepeatModeChange(super.spiff, this.repeat);
 }
 
-class PlayerLiveTrackChange extends PlayerEvent {
+class PlayerLiveTrackChange extends PlayerState {
   final LiveTrack track;
 
   PlayerLiveTrackChange(super.spiff, this.track);
 }
 
-class PlayerFavoriteTrackChange extends PlayerEvent {
+class PlayerFavoriteTrackChange extends PlayerState {
   final String etag;
   final bool isFavorite;
 
   PlayerFavoriteTrackChange(super.spiff, this.etag, this.isFavorite);
 }
 
-class Player extends Cubit<PlayerEvent> {
+class Player extends Cubit<PlayerState> {
   final PlayerProvider _provider;
   final MediaTrackResolver trackResolver;
   final TokenRepository tokenRepository;
@@ -338,8 +338,8 @@ class Player extends Cubit<PlayerEvent> {
   Future<void> play() => _provider.play();
 
   Future<void> toggle() async {
-    if (state is PlayerProcessingEvent) {
-      final t = state as PlayerProcessingEvent;
+    if (state is PlayerProcessingState) {
+      final t = state as PlayerProcessingState;
       if (t.playing) {
         return pause();
       } else {

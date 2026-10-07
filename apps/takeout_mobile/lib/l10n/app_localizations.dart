@@ -772,6 +772,18 @@ abstract class AppLocalizations {
   /// **'Unfavorite'**
   String get unfavorite;
 
+  /// No description provided for @favoriteTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite Tracks'**
+  String get favoriteTracks;
+
+  /// No description provided for @favoriteArtistTracks.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite Artist Tracks'**
+  String get favoriteArtistTracks;
+
   /// No description provided for @deleteTitle.
   ///
   /// In en, this message translates to:

@@ -58,7 +58,7 @@ class PlayerPage extends StatelessWidget {
   Widget playerImage(BuildContext context) {
     String? image;
     final media = MediaQuery.of(context);
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
         buildWhen: (_, state) => state.currentTrack?.image != image,
         builder: (context, state) {
           final width = state.spiff.isLive
@@ -86,7 +86,7 @@ class PlayerPage extends StatelessWidget {
 
   Widget playerProgress(BuildContext context) {
     final media = MediaQuery.of(context);
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
         buildWhen: (_, state) => state is PlayerPositionChange,
         builder: (context, state) {
           if (state is PlayerPositionChange) {
@@ -108,17 +108,17 @@ class PlayerPage extends StatelessWidget {
   }
 
   Widget playerControls(BuildContext context) {
-    return BlocBuilder<Player, PlayerEvent>(
-        buildWhen: (_, state) => state is PlayerProcessingEvent,
+    return BlocBuilder<Player, PlayerState>(
+        buildWhen: (_, state) => state is PlayerProcessingState,
         builder: (context, state) {
-          if (state is PlayerProcessingEvent) {
+          if (state is PlayerProcessingState) {
             return _controlButtons(context, state);
           }
           return const EmptyWidget();
         });
   }
 
-  Widget _controlButtons(BuildContext context, PlayerProcessingEvent state) {
+  Widget _controlButtons(BuildContext context, PlayerProcessingState state) {
     final player = context.player;
     final isPodcast = state.spiff.isPodcast;
     final isStream = state.spiff.isLive;
@@ -176,11 +176,11 @@ class AmbientPlayer extends StatelessWidget {
     Navigator.push(
         context, CupertinoPageRoute<void>(builder: (_) => const PlayerPage()));
     String? title, artist;
-    buildWhen(PlayerEvent state) =>
+    buildWhen(PlayerState state) =>
         state.currentTrack?.title != title ||
         state.currentTrack?.creator != artist;
     return Scaffold(
-        body: BlocBuilder<Player, PlayerEvent>(
+        body: BlocBuilder<Player, PlayerState>(
             buildWhen: (_, state) => buildWhen(state),
             builder: (context, state) {
               if (buildWhen(state)) {
@@ -208,7 +208,7 @@ class PlayerArtist extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? artist;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
         buildWhen: (_, state) => state.currentTrack?.creator != artist,
         builder: (context, state) {
           // if (state.currentTrack?.creator != artist) {
@@ -237,7 +237,7 @@ class PlayerTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? title;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
         buildWhen: (_, state) => state.currentTrack?.title != title,
         builder: (context, state) {
           // if (state.currentTrack?.title != title) {
@@ -263,7 +263,7 @@ class PlayerImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String? image;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
         buildWhen: (_, state) => state.currentTrack?.image != image,
         builder: (context, state) {
           final currentTrack = state.currentTrack;

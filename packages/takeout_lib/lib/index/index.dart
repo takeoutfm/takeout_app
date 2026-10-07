@@ -59,7 +59,6 @@ class IndexCubit extends Cubit<IndexState> {
     await clientRepository
         .index(ttl: ttl)
         .then((view) {
-          print('IndexState load got ${view.hasRecommendMovies}');
           emit(
             IndexState(
               movies: view.hasMovies,

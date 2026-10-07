@@ -20,6 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/art/cover.dart';
 import 'package:takeout_lib/cache/track.dart';
+import 'package:takeout_lib/favorite/favorite.dart';
 import 'package:takeout_lib/page/page.dart';
 import 'package:takeout_mobile/app/context.dart';
 import 'package:takeout_mobile/nav.dart';
@@ -47,6 +48,16 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
 
   @override
   Widget page(BuildContext context, TVSeriesView state) {
+    return Builder(
+      builder: (context) {
+        context.watch<FavoriteCubit>();
+        return _page(context, state);
+      },
+    );
+  }
+
+  Widget _page(BuildContext context, TVSeriesView state) {
+    final favorite = context.favorite.state.favorite;
     final seasons = <int>{};
     for (final e in state.episodes) {
       seasons.add(e.season);
@@ -68,11 +79,8 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
                   slivers: [
                     // SliverFavoriteBar(title: series.nameYear, onTap: () {}),
                     SliverFavoriteBar(
-                      isFavorite: state.isFavorite,
-                      onTap: () => context.toggleFavoriteTVSeries(
-                        series,
-                        state.isFavorite,
-                      ),
+                      isFavorite: favorite.isFavoriteTVSeries(series),
+                      onTap: () => _onFavorite(context, series),
                     ),
                     SliverBox(
                       child: LayoutBuilder(
@@ -181,6 +189,10 @@ class TVSeriesDetailsPage extends ClientPage<TVSeriesView> {
         ),
       ),
     );
+  }
+
+  Future<void> _onFavorite(BuildContext context, TVSeries series) {
+    return context.favorite.toggleFavoriteTVSeries(series);
   }
 
   Widget _seriesPoster(BuildContext context) {

@@ -155,6 +155,13 @@ class PopupItem {
         onSelected,
       );
 
+  PopupItem.favoriteTracks(BuildContext context, MenuCallback onSelected)
+      : this(
+    const Icon(Icons.favorite),
+    context.strings.favoriteTracks,
+    onSelected,
+  );
+
   PopupItem.wantList(BuildContext context, MenuCallback onSelected)
     : this(
         const Icon(Icons.shopping_bag_outlined),

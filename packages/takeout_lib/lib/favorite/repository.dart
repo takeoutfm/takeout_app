@@ -38,6 +38,14 @@ class FavoriteRepository {
     return provider.stream;
   }
 
+  Favorite get favorite {
+    final provider = _provider;
+    if (provider == null) {
+      throw StateError('no provider for favorite');
+    }
+    return provider.favorite;
+  }
+
   // Future<void> favoriteTrack(String etag) {
   //   final provider = _provider;
   //   if (provider == null) {

@@ -17,6 +17,7 @@
 
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/repository.dart';
 
 // import 'model.dart';
@@ -26,9 +27,9 @@ part 'favorite.g.dart';
 
 @JsonSerializable()
 class Favorite {
-  final Set<String> artists;
-  final Set<String> movies;
-  final Set<int> shows;
+  final Map<String, Artist> artists;
+  final Map<String, Movie> movies;
+  final Map<int, TVSeries> shows;
   final Set<String> tracks;
 
   Favorite({
@@ -47,9 +48,9 @@ class Favorite {
   Map<String, dynamic> toJson() => _$FavoriteToJson(this);
 
   Favorite copyWith({
-    Set<String>? artists,
-    Set<String>? movies,
-    Set<int>? shows,
+    Map<String, Artist>? artists,
+    Map<String, Movie>? movies,
+    Map<int, TVSeries>? shows,
     Set<String>? tracks,
   }) => Favorite(
     artists: artists ?? this.artists,
@@ -59,6 +60,12 @@ class Favorite {
   );
 
   bool isFavoriteTrack(String etag) => tracks.contains(etag);
+
+  bool isFavoriteArtist(Artist artist) => artists.containsKey(artist.arid);
+
+  bool isFavoriteMovie(Movie movie) => movies.containsKey(movie.imid);
+
+  bool isFavoriteTVSeries(TVSeries series) => shows.containsKey(series.tvid);
 
   Favorite addTrack(String etag) {
     final set = Set<String>.from(tracks);
@@ -70,6 +77,18 @@ class Favorite {
     final set = Set<String>.from(tracks);
     set.remove(etag);
     return copyWith(tracks: set);
+  }
+
+  Iterable<Artist> sortedArtists() {
+    final list = List<Artist>.from(artists.values);
+    list.sort((a, b) => a.sortName.compareTo(b.sortName));
+    return list;
+  }
+
+  Iterable<Movie> sortedMovies() {
+    final list = List<Movie>.from(movies.values);
+    list.sort((a, b) => a.sortTitle.compareTo(b.sortTitle));
+    return list;
   }
 }
 
@@ -95,6 +114,18 @@ final class FavoriteTrackChange extends FavoriteState {
   FavoriteTrackChange(super.favorite);
 }
 
+final class FavoriteArtistFailed extends FavoriteState {
+  FavoriteArtistFailed(super.favorite);
+}
+
+final class FavoriteMovieFailed extends FavoriteState {
+  FavoriteMovieFailed(super.favorite);
+}
+
+final class FavoriteTVSeriesFailed extends FavoriteState {
+  FavoriteTVSeriesFailed(super.favorite);
+}
+
 class FavoriteCubit extends HydratedCubit<FavoriteState> {
   final ClientRepository clientRepository;
   final Duration _timeout;
@@ -112,9 +143,9 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
           emit(
             FavoriteLoad(
               Favorite(
-                artists: view.artists.map((a) => a.arid).nonNulls.toSet(),
-                movies: view.movies.map((m) => m.imid).toSet(),
-                shows: view.shows.map((m) => m.tvid).toSet(),
+                artists: {for (final a in view.artists) ?a.arid: a},
+                movies: {for (final m in view.movies) m.imid: m},
+                shows: {for (final s in view.shows) s.tvid: s},
                 tracks: view.tracks.map((t) => t.etag).toSet(),
               ),
             ),
@@ -136,16 +167,107 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
     return clientRepository
         .favoriteTrack(etag)
         .timeout(_timeout)
-        .then((_) => emit(FavoriteTrackChange(state.favorite.addTrack(etag))));
+        .then((_) => isClosed ? null : _load());
   }
 
   Future<void> unfavoriteTrack(String etag) {
     return clientRepository
         .unfavoriteTrack(etag)
         .timeout(_timeout)
-        .then(
-          (_) => emit(FavoriteTrackChange(state.favorite.removeTrack(etag))),
-        );
+        .then((_) => isClosed ? null : _load());
+  }
+
+  Future<void> toggleFavoriteArtist(Artist artist) {
+    final isFavorite = state.favorite.isFavoriteArtist(artist);
+    return isFavorite ? unfavoriteArtist(artist) : favoriteArtist(artist);
+  }
+
+  Future<void> favoriteArtist(Artist artist) {
+    return clientRepository
+        .favoriteArtist(artist)
+        .timeout(_timeout)
+        .then((_) {
+          if (isClosed) return null;
+          return _load(ttl: .zero);
+        })
+        .catchError((Object e) {
+          if (!isClosed) emit(FavoriteArtistFailed(state.favorite));
+        });
+  }
+
+  Future<void> unfavoriteArtist(Artist artist) {
+    return clientRepository
+        .unfavoriteArtist(artist)
+        .timeout(_timeout)
+        .then((_) {
+          if (isClosed) return null;
+          return _load(ttl: .zero);
+        })
+        .catchError((Object e) {
+          if (!isClosed) emit(FavoriteArtistFailed(state.favorite));
+        });
+  }
+
+  Future<void> toggleFavoriteMovie(Movie movie) {
+    final isFavorite = state.favorite.isFavoriteMovie(movie);
+    return isFavorite ? unfavoriteMovie(movie) : favoriteMovie(movie);
+  }
+
+  Future<void> favoriteMovie(Movie movie) {
+    return clientRepository
+        .favoriteMovie(movie)
+        .timeout(_timeout)
+        .then((_) {
+          if (isClosed) return null;
+          return _load(ttl: .zero);
+        })
+        .catchError((Object e) {
+          if (!isClosed) emit(FavoriteMovieFailed(state.favorite));
+        });
+  }
+
+  Future<void> unfavoriteMovie(Movie movie) {
+    return clientRepository
+        .unfavoriteMovie(movie)
+        .timeout(_timeout)
+        .then((_) {
+          if (isClosed) return null;
+          return _load(ttl: .zero);
+        })
+        .catchError((Object e) {
+          if (!isClosed) emit(FavoriteMovieFailed(state.favorite));
+        });
+  }
+
+  Future<void> toggleFavoriteTVSeries(TVSeries series) {
+    final isFavorite = state.favorite.isFavoriteTVSeries(series);
+    return isFavorite ? unfavoriteTVSeries(series) : favoriteTVSeries(series);
+  }
+
+  Future<void> favoriteTVSeries(TVSeries series) {
+    return clientRepository
+        .favoriteTVSeries(series)
+        .timeout(_timeout)
+        .then((_) {
+          if (isClosed) return null;
+          return _load(ttl: .zero);
+        })
+        .catchError((Object e) {
+          if (!isClosed) emit(FavoriteTVSeriesFailed(state.favorite));
+        });
+  }
+
+  Future<void> unfavoriteTVSeries(TVSeries series) {
+    return clientRepository
+        .unfavoriteTVSeries(series)
+        .timeout(_timeout)
+        .then((_) {
+          if (isClosed) return null;
+          return _load(ttl: .zero);
+        })
+        .catchError((Object e) {
+          if (!isClosed) emit(FavoriteTVSeriesFailed(state.favorite));
+        });
   }
 
   @override

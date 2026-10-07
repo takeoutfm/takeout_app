@@ -22,6 +22,8 @@ abstract class FavoriteProvider {
 
   Stream<Favorite> get stream;
 
+  Favorite get favorite;
+
   // Future<void> favoriteTrack(String etag);
   //
   // Future<void> unfavoriteTrack(String etag);
@@ -39,6 +41,9 @@ class DefaultFavoriteProvider implements FavoriteProvider {
 
   @override
   Stream<Favorite> get stream => _favoriteCubit.stream.map((s) => s.favorite);
+
+  @override
+  Favorite get favorite => _favoriteCubit.state.favorite;
 
   // @override
   // Future<void> favoriteTrack(String etag) => _favoriteCubit.favoriteTrack(etag);

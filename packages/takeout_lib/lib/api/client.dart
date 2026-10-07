@@ -951,6 +951,14 @@ class TakeoutClient implements ClientProvider {
           .then((j) => FavoriteView.fromJson(j))
           .catchError((Object e) => Future<FavoriteView>.error(e));
 
+  @override
+  Future<Spiff> favoriteTracksPlaylist({Duration? ttl}) async =>
+      spiff('/api/favorite/tracks/playlist', ttl: ttl);
+
+  @override
+  Future<Spiff> favoriteArtistsPlaylist(String res, {Duration? ttl}) async =>
+      spiff('/api/favorite/artists/$res/playlist', ttl: ttl);
+
   /// PUT /api/favorite/artists/arid
   @override
   Future<void> favoriteArtist(Artist artist) async => _retry<void>(

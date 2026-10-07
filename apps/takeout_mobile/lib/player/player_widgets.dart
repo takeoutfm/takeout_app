@@ -43,15 +43,15 @@ mixin PlayerWidgets {
     MediaTrack? track = context.player.state.currentTrack;
     bool isPlaying = false;
     bool isBuffering = false;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
-          state is PlayerProcessingEvent &&
+          state is PlayerProcessingState &&
               (isPlaying != state.playing || isBuffering != state.buffering) ||
           state is PlayerLoad ||
           state is PlayerIndexChange ||
           state is PlayerTrackChange,
       builder: (context, state) {
-        if (state is PlayerPositionEvent) {
+        if (state is PlayerPositionState) {
           track = state.currentTrack;
           isPlaying = state.playing;
           isBuffering = state.buffering;
@@ -102,7 +102,7 @@ mixin PlayerWidgets {
     final track = context.player.state.currentTrack;
     String title = track?.title ?? '';
     String artist = track?.creator ?? '';
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
           state is PlayerLoad ||
           state is PlayerIndexChange ||
@@ -130,7 +130,7 @@ mixin PlayerWidgets {
   Widget playerArtist(BuildContext context, {TextStyle? style}) {
     final track = context.player.state.currentTrack;
     String artist = track?.creator ?? '';
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
           state is PlayerLoad || state is PlayerIndexChange,
       builder: (context, state) {
@@ -149,11 +149,11 @@ mixin PlayerWidgets {
 
   Widget playPauseButton(BuildContext context, {double? iconSize}) {
     bool playing = false;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
-          state is PlayerPositionEvent && state.playing != playing,
+          state is PlayerPositionState && state.playing != playing,
       builder: (context, state) {
-        if (state is PlayerPositionEvent) {
+        if (state is PlayerPositionState) {
           playing = state.playing;
         }
         return IconButton(
@@ -167,15 +167,15 @@ mixin PlayerWidgets {
 
   Widget playerProgressBar(BuildContext context) {
     double value = 0;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
-          state is PlayerIndexChange || state is PlayerPositionEvent,
+          state is PlayerIndexChange || state is PlayerPositionState,
       builder: (context, state) {
         if (state.spiff.isEmpty || state.spiff.isLive) {
           // no seekbar streams
           return const EmptyWidget();
         }
-        if (state is PlayerPositionEvent) {
+        if (state is PlayerPositionState) {
           value = state.position.inMilliseconds / state.duration.inMilliseconds;
         }
         return RepaintBoundary(child: LinearProgressIndicator(value: value));
@@ -185,10 +185,10 @@ mixin PlayerWidgets {
 
   Widget playerSeekBar(BuildContext context) {
     final player = context.player;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       bloc: player,
       buildWhen: (_, state) =>
-          state is PlayerIndexChange || state is PlayerPositionEvent,
+          state is PlayerIndexChange || state is PlayerPositionState,
       builder: (context, state) {
         if (state.spiff.isEmpty || state.spiff.isLive) {
           // no seekbar streams
@@ -196,7 +196,7 @@ mixin PlayerWidgets {
         }
         if (state is PlayerIndexChange) {
           return _seekBar(player, Duration.zero, Duration.zero, state.playing);
-        } else if (state is PlayerPositionEvent) {
+        } else if (state is PlayerPositionState) {
           return _seekBar(
             player,
             state.duration,
@@ -259,13 +259,13 @@ mixin PlayerWidgets {
   Widget remainingTime(BuildContext context) {
     String? text;
     Duration position = Duration.zero;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
           state is PlayerIndexChange ||
-          (state is PlayerPositionEvent &&
+          (state is PlayerPositionState &&
               state.position.inSeconds != position.inSeconds),
       builder: (context, state) {
-        if (state is PlayerPositionEvent) {
+        if (state is PlayerPositionState) {
           position = state.position;
           final r = state.duration - position;
           text = _durationText(r);
@@ -279,13 +279,13 @@ mixin PlayerWidgets {
   Widget positionTime(BuildContext context) {
     String? text;
     Duration position = Duration.zero;
-    return BlocBuilder<Player, PlayerEvent>(
+    return BlocBuilder<Player, PlayerState>(
       buildWhen: (_, state) =>
           state is PlayerIndexChange ||
-          (state is PlayerPositionEvent &&
+          (state is PlayerPositionState &&
               state.position.inSeconds != position.inSeconds),
       builder: (context, state) {
-        if (state is PlayerPositionEvent) {
+        if (state is PlayerPositionState) {
           position = state.position;
           text = _durationText(position);
         }

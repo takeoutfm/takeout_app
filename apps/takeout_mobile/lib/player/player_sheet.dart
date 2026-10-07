@@ -26,7 +26,7 @@ import 'package:takeout_mobile/widgets/tiles.dart';
 
 Widget playerSheet(BuildContext context, ScrollController scrollController) {
   final player = context.player;
-  return BlocBuilder<Player, PlayerEvent>(
+  return BlocBuilder<Player, PlayerState>(
     bloc: player,
     buildWhen: (_, state) =>
         state is PlayerLoad ||
@@ -50,7 +50,7 @@ Widget _trackListView(
   BuildContext context,
   ScrollController scrollController,
   Player player,
-  PlayerEvent state,
+  PlayerState state,
 ) {
   final tracks = state.spiff.playlist.tracks;
 
