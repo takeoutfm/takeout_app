@@ -20,9 +20,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:takeout_lib/api/model.dart';
 import 'package:takeout_lib/client/repository.dart';
 
-// import 'model.dart';
-// import 'repository.dart';
-
 part 'favorite.g.dart';
 
 @JsonSerializable()
@@ -67,18 +64,6 @@ class Favorite {
 
   bool isFavoriteTVSeries(TVSeries series) => shows.containsKey(series.tvid);
 
-  Favorite addTrack(String etag) {
-    final set = Set<String>.from(tracks);
-    set.add(etag);
-    return copyWith(tracks: set);
-  }
-
-  Favorite removeTrack(String etag) {
-    final set = Set<String>.from(tracks);
-    set.remove(etag);
-    return copyWith(tracks: set);
-  }
-
   Iterable<Artist> sortedArtists() {
     final list = List<Artist>.from(artists.values);
     list.sort((a, b) => a.sortName.compareTo(b.sortName));
@@ -88,6 +73,12 @@ class Favorite {
   Iterable<Movie> sortedMovies() {
     final list = List<Movie>.from(movies.values);
     list.sort((a, b) => a.sortTitle.compareTo(b.sortTitle));
+    return list;
+  }
+
+  Iterable<TVSeries> sortedTVSeries() {
+    final list = List<TVSeries>.from(shows.values);
+    list.sort((a, b) => a.sortName.compareTo(b.sortName));
     return list;
   }
 }

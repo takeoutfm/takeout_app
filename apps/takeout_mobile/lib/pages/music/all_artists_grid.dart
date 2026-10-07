@@ -45,6 +45,7 @@ class AllArtistsGrid extends ClientPage<ArtistsView> {
       builder: (context) {
         context.watch<MediaTypeCubit>();
         context.watch<FavoriteCubit>();
+        final orientation = MediaQuery.of(context).orientation;
         final isAllArtists = genre == null && area == null;
         final title = isAllArtists
             ? null
@@ -53,7 +54,8 @@ class AllArtistsGrid extends ClientPage<ArtistsView> {
           onRefresh: () => reloadPage(context),
           child: CustomScrollView(
             slivers: [
-              if (isAllArtists) _SliverArtistsBar(),
+              if (isAllArtists && orientation == .landscape)
+                _SliverArtistsBar(),
               if (!isAllArtists)
                 SliverMenuBar(
                   title: title,
@@ -71,7 +73,14 @@ class AllArtistsGrid extends ClientPage<ArtistsView> {
 
   List<Artist> _artists(BuildContext context, ArtistsView view) {
     final artistType = context.selectedMediaType.state.artistType;
+    print(artistType);
     if (artistType == .favorite) {
+      print(
+        context.favorite.state.favorite
+            .sortedArtists()
+            .map((a) => a.name)
+            .toList(),
+      );
       return context.favorite.state.favorite.sortedArtists().toList();
     }
     return genre != null

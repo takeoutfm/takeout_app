@@ -79,9 +79,9 @@ Support for movie playback is TBD. Not sure right now if it's even possible.
 +---------+---------------------------+--------+
 |Favorites|/favorite                  |List    |
 +---------+---------------------------+--------+
+|         |/favorite/artists          |Grid    |
 |         |/favorite/tracks           |Playable|
 |         |/favorite/artists/tracks   |Playable|
-|         |/favorite/artists          |Grid    |
 +---------+---------------------------+--------+
 |Playlists|/playlists                 |List    |
 +---------+---------------------------+--------+
@@ -485,6 +485,13 @@ class DefaultMediaProvider implements MediaProvider {
     final items = <MediaItem>[];
     items.add(
       const MediaItem(
+        id: '/favorite/artists',
+        title: stringsFavoriteArtists,
+        playable: false,
+      ),
+    );
+    items.add(
+      const MediaItem(
         id: '/favorite/tracks',
         title: stringsFavoriteTracks,
         playable: true,
@@ -495,13 +502,6 @@ class DefaultMediaProvider implements MediaProvider {
         id: '/favorite/artists/popular',
         title: stringsFavoriteArtistsTracks,
         playable: true,
-      ),
-    );
-    items.add(
-      const MediaItem(
-        id: '/favorite/artists',
-        title: stringsFavoriteArtists,
-        playable: false,
       ),
     );
     return items;

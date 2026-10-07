@@ -126,10 +126,15 @@ extension TakeoutContext on BuildContext {
   }
 
   Future<void> reload() async {
-    await index.reload();
-    await search.reload();
-    await offsets.reload();
-    await favorite.reload();
+    final indexCubit = index;
+    final searchCubit = search;
+    final offsetsCubit = offsets;
+    final favoriteCubit = favorite;
+
+    await indexCubit.reload();
+    await searchCubit.reload();
+    await offsetsCubit.reload();
+    await favoriteCubit.reload();
   }
 
   void removeDownloads() {

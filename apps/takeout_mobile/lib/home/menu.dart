@@ -35,7 +35,7 @@ class HomeMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return popupMenu(context, [
-      PopupItem.reload(context, (context) => _onReload(context)),
+      PopupItem.reload(context, (_) => _onReload(context)), // use outer ctx
       PopupItem.playlist(context, (context) => _onRecentTracks(context)),
       PopupItem.favoriteTracks(context, (context) => _onFavoriteTracks(context)),
       PopupItem.activity(context, (context) => _onTrackStats(context)),
@@ -52,7 +52,9 @@ class HomeMenu extends StatelessWidget {
 
   void _onReload(BuildContext context) {
     context.reload();
-    context.read<ReloadCubit>().reload();
+    if (context.mounted) {
+      context.read<ReloadCubit>().reload();
+    }
   }
 
   void _onDownloads(BuildContext context) {

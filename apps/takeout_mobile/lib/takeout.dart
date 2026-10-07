@@ -61,10 +61,7 @@ abstract class TakeoutState<T> extends State
         AllArtistsGrid(),
         key: _navigators[NavigationIndex.artists],
       ),
-      navigatorPage(
-        HistoryWidget(),
-        key: _navigators[NavigationIndex.history],
-      ),
+      navigatorPage(HistoryWidget(), key: _navigators[NavigationIndex.history]),
       navigatorPage(RadioWidget(), key: _navigators[NavigationIndex.radio]),
       navigatorPage(PlayerWidget(), key: _navigators[NavigationIndex.player]),
       navigatorPage(
@@ -135,7 +132,13 @@ abstract class TakeoutState<T> extends State
       popped = popToFirst();
       if (!popped) {
         if (selectNextMediaType) {
-          context.selectedMediaType.next();
+          if (currentIndex == NavigationIndex.home) {
+            // repeated home taps show different media types
+            context.selectedMediaType.next();
+          } else if (currentIndex == NavigationIndex.artists) {
+            // repeated artist taps show different artist types
+            context.selectedMediaType.nextArtistType();
+          }
         }
       }
     } else {
