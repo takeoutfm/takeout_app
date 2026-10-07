@@ -158,14 +158,14 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
     return clientRepository
         .favoriteTrack(etag)
         .timeout(_timeout)
-        .then((_) => isClosed ? null : _load());
+        .then((_) => isClosed ? null : reload());
   }
 
   Future<void> unfavoriteTrack(String etag) {
     return clientRepository
         .unfavoriteTrack(etag)
         .timeout(_timeout)
-        .then((_) => isClosed ? null : _load());
+        .then((_) => isClosed ? null : reload());
   }
 
   Future<void> toggleFavoriteArtist(Artist artist) {
@@ -179,7 +179,7 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
         .timeout(_timeout)
         .then((_) {
           if (isClosed) return null;
-          return _load(ttl: .zero);
+          return reload();
         })
         .catchError((Object e) {
           if (!isClosed) emit(FavoriteArtistFailed(state.favorite));
@@ -192,7 +192,7 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
         .timeout(_timeout)
         .then((_) {
           if (isClosed) return null;
-          return _load(ttl: .zero);
+          return reload();
         })
         .catchError((Object e) {
           if (!isClosed) emit(FavoriteArtistFailed(state.favorite));
@@ -210,7 +210,7 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
         .timeout(_timeout)
         .then((_) {
           if (isClosed) return null;
-          return _load(ttl: .zero);
+          return reload();
         })
         .catchError((Object e) {
           if (!isClosed) emit(FavoriteMovieFailed(state.favorite));
@@ -223,7 +223,7 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
         .timeout(_timeout)
         .then((_) {
           if (isClosed) return null;
-          return _load(ttl: .zero);
+          return reload();
         })
         .catchError((Object e) {
           if (!isClosed) emit(FavoriteMovieFailed(state.favorite));
@@ -241,7 +241,7 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
         .timeout(_timeout)
         .then((_) {
           if (isClosed) return null;
-          return _load(ttl: .zero);
+          return reload();
         })
         .catchError((Object e) {
           if (!isClosed) emit(FavoriteTVSeriesFailed(state.favorite));
@@ -254,7 +254,7 @@ class FavoriteCubit extends HydratedCubit<FavoriteState> {
         .timeout(_timeout)
         .then((_) {
           if (isClosed) return null;
-          return _load(ttl: .zero);
+          return reload();
         })
         .catchError((Object e) {
           if (!isClosed) emit(FavoriteTVSeriesFailed(state.favorite));
